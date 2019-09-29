@@ -4,7 +4,7 @@ import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/model/tweet.dart';
 
 class TweetCard extends StatefulWidget {
-  final Tweet _tweet;
+  final BaseTweet _tweet;
   TweetCard(this._tweet);
 
   @override
@@ -14,7 +14,7 @@ class TweetCard extends StatefulWidget {
 }
 
 class _TweetCardState extends State<TweetCard> {
-  Tweet _tweet;
+  BaseTweet _tweet;
 
   _TweetCardState(this._tweet);
 

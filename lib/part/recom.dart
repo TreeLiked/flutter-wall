@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart' as prefix0;
 import 'package:iap_app/component/tweet_card.dart';
-import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/model/tweet.dart';
 
 class Recommendation extends StatefulWidget {
-  List<Tweet> _tweetList;
+  List<BaseTweet> _tweetList;
 
-  Recommendation(List<Tweet> tweets) {
+  Recommendation(List<BaseTweet> tweets) {
     this._tweetList = tweets;
   }
 
@@ -19,7 +18,7 @@ class Recommendation extends StatefulWidget {
 }
 
 class _RecommendationState extends State<Recommendation> {
-  Tweet t = new Tweet(
+  BaseTweet t = new BaseTweet(
       '在三体中，罗辑为什么会把控制权交给程心，难道他没有推测过后果吗？,因为罗辑遵守了人类伦理。这个伦理大概就叫民主。 大刘其实是个典型的精英主义者，在他笔下...',
       'OFFESSION_LOVE',
       true);

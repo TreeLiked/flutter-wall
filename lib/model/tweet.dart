@@ -1,15 +1,24 @@
 import 'package:iap_app/model/Account.dart';
+import 'package:iap_app/model/tweet_reply.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class Tweet {
-  String id;
-  String unId;
+part 'tweet.g.dart';
+
+@JsonSerializable()
+class BaseTweet {
+  int id;
+  int unId;
   String body;
   String type;
   bool anonymous;
   Account account;
   bool enableReply;
 
-  Tweet(this.body, this.type, this.anonymous);
-}
+  // Map<TweetReply, List<TweetReply>> replies;
 
-enum Color { CONFESSION }
+  List<String> pics;
+
+  BaseTweet(this.body, this.type, this.anonymous);
+
+  Map<String, dynamic> toJson() => _$BaseTweetToJson(this);
+}

@@ -18,7 +18,18 @@ class BaseTweet {
 
   List<String> pics;
 
-  BaseTweet(this.body, this.type, this.anonymous);
+  int hot;
+  int praise;
+  int views;
+  int replyCount;
+
+  DateTime gmtModified;
+  DateTime gmtCreated;
+
+  BaseTweet();
 
   Map<String, dynamic> toJson() => _$BaseTweetToJson(this);
+
+  factory BaseTweet.fromJson(Map<String, dynamic> json) =>
+      _$BaseTweetFromJson(json);
 }

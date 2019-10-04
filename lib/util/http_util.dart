@@ -35,7 +35,9 @@ class HttpUtil {
       receiveTimeout: 3000,
       headers: header,
     );
+
     dio = new Dio(options);
+
     // dio.interceptors.add(CookieManager(CookieJar()));
   }
 

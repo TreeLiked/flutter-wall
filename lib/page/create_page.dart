@@ -49,7 +49,7 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   BaseTweet _assembleTweet() {
-    BaseTweet _baseTweet = BaseTweet(_controller.text, _typeName, _anonymous);
+    BaseTweet _baseTweet = BaseTweet();
     print(_baseTweet.toJson());
     return _baseTweet;
   }
@@ -122,30 +122,33 @@ class _CreatePageState extends State<CreatePage> {
                   color: Colors.black54,
                 ),
                 Container(
-                    height: 350,
+                    // height: 350,
+                    // constraints: BoxConstraints(maxHeight: 500),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(16))),
-                    child: Container(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                    child: FractionallySizedBox(
+                        heightFactor: 0.46,
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+                          child: Column(
                             children: <Widget>[
-                              Text(
-                                '- 请选择内容类型 -',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 18),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    '- 请选择内容类型 -',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Container(
-                                padding: EdgeInsets.only(top: 15),
-                                child: Wrap(
+                              Expanded(
+                                child: Container(
+                                    child: Wrap(
                                   spacing: 2,
-                                  alignment: WrapAlignment.spaceEvenly,
+                                  alignment: WrapAlignment.start,
                                   runAlignment: WrapAlignment.spaceEvenly,
                                   runSpacing: 5,
                                   children: <Widget>[
@@ -155,8 +158,8 @@ class _CreatePageState extends State<CreatePage> {
                                         Icons.favorite,
                                         Colors.red),
                                     _clipItemInSheet(
-                                        TweetTypeEntity.ASK_MARRIAGE.zhTag,
-                                        TweetTypeEntity.ASK_MARRIAGE.name,
+                                        TweetTypeEntity.ASK_FOR_MARRIAGE.zhTag,
+                                        TweetTypeEntity.ASK_FOR_MARRIAGE.name,
                                         Icons.people,
                                         Colors.red),
                                     _clipItemInSheet(
@@ -203,10 +206,10 @@ class _CreatePageState extends State<CreatePage> {
                                         Colors.red),
                                   ],
                                 )),
-                          )
-                        ],
-                      ),
-                    )),
+                              )
+                            ],
+                          ),
+                        ))),
               ],
             );
           });

@@ -25,6 +25,12 @@ dependencies:
   cupertino_icons: ^0.1.2
   dio: ^3.0.2
   json_annotation: ^2.0.0
+  # 动画
+  flare_flutter: ^1.5.9
+  flustars: ^0.2.6+1
+  # 下拉刷新
+  pull_to_refresh: ^1.5.6
+  provider: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +44,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - assets/images/
+    - assets/flrs/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

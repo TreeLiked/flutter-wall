@@ -35,14 +35,16 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
           icon: Icon(Icons.perm_identity), title: Text('我的'), vsync: this),
     ];
     // 刷新视图
-    _navigationViews.forEach((v) => v.controller.addListener(_rebuild));
+    _navigationViews.forEach((v) => {
+          // v.controller.addListener(_rebuild)
+        });
 
     _pageList = <StatefulWidget>[
       new HomePage(),
-      null,
       new CreatePage(),
-      null,
-      null
+      new CreatePage(),
+      new CreatePage(),
+      new CreatePage(),
     ];
 
     _currentPage = _pageList[_currentIndex];
@@ -70,8 +72,12 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     );
 
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: new Scaffold(
-        body: new Center(child: _currentPage),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pageList,
+        ),
         bottomNavigationBar: bottomNavigationBar,
       ),
       theme: GlobalConfig.td,

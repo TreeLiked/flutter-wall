@@ -1,6 +1,7 @@
-import 'package:iap_app/model/Account.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'account.dart';
 
 part 'tweet.g.dart';
 
@@ -11,17 +12,24 @@ class BaseTweet {
   String body;
   String type;
   bool anonymous;
+
   Account account;
+
   bool enableReply;
 
   // Map<TweetReply, List<TweetReply>> replies;
 
-  List<String> pics;
+  List<String> picUrls;
 
   int hot;
   int praise;
   int views;
   int replyCount;
+
+  /*
+   * 直接回复
+   */
+  List<TweetReply> dirReplies;
 
   DateTime gmtModified;
   DateTime gmtCreated;

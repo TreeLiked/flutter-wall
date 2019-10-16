@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/model/page_param.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/util/api.dart';
 import 'package:iap_app/util/collection.dart';
@@ -15,7 +16,7 @@ class TweetApi {
     print(Api.API_BASE_URL + Api.API_TWEET_QUERYY);
     print(param.toJson());
     Response response = await httpUtil.dio.get(
-        Api.API_BASE_URL + Api.API_TWEET_QUERYY,
+        Api.API_BASE_URL + Api.API_TWEET_QUERYY + "?needSub=true",
         queryParameters: param.toJson());
     String jsonTemp = prefix0.json.encode(response.data);
     Map<String, dynamic> json = prefix0.json.decode(jsonTemp);
@@ -26,5 +27,24 @@ class TweetApi {
     List<BaseTweet> tweetList =
         jsonData.map((m) => BaseTweet.fromJson(m)).toList();
     return tweetList;
+  }
+
+  static Future<Result> pushTweet(BaseTweet tweet) async {
+    print(Api.API_BASE_URL + Api.API_TWEET_QUERYY);
+    Response response = await httpUtil.dio
+        .post(Api.API_BASE_URL + Api.API_TWEET_CREATE, data: tweet.toJson());
+
+    print('----------------------------------------------');
+    String jsonTemp = prefix0.json.encode(response.data);
+    prefix1.print(jsonTemp);
+    return Result();
+    // Map<String, dynamic> json = prefix0.json.decode(jsonTemp);
+    // List<dynamic> jsonData = json["data"];
+    // if (CollectionUtil.isListEmpty(jsonData)) {
+    //   return new List<BaseTweet>();
+    // }
+    // List<BaseTweet> tweetList =
+    //     jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+    // return tweetList;
   }
 }

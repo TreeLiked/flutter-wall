@@ -21,9 +21,9 @@ class TweetTypeEntity {
   const TweetTypeEntity({this.name, this.zhTag, this.color});
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
-      name: "LOVE_CONFESSION", zhTag: "表白系列", color: Color(0xffFA8072));
+      name: "LOVE_CONFESSION", zhTag: "表白", color: Color(0xffFA8072));
   static const ASK_FOR_MARRIAGE = const TweetTypeEntity(
-      name: "ASK_FOR_MARRIAGE", zhTag: "我要征婚", color: Color(0xffE9967A));
+      name: "ASK_FOR_MARRIAGE", zhTag: "征婚", color: Color(0xffE9967A));
   static const SOMEONE_FIND =
       const TweetTypeEntity(name: "SOMEONE_FIND", zhTag: "寻人");
 

@@ -36,4 +36,6 @@ class GlobalConfig {
 
   // 每个页面标题字体的大小
   static const double TEXT_TITLE_SIZE = 17;
+
+  static const int MAX_DISPLAY_REPLY = 6;
 }

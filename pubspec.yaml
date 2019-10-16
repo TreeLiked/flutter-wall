@@ -30,7 +30,12 @@ dependencies:
   flustars: ^0.2.6+1
   # 下拉刷新
   pull_to_refresh: ^1.5.6
+  # 全局数据存储，类vuex
   provider: ^3.1.0
+  # 本地存储
+  shared_preferences: ^0.5.3+4
+  # 微信登录
+  fluwx: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -46,7 +51,10 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/images/tab/
     - assets/flrs/
+    - assets/icons/
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

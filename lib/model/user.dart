@@ -1,9 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
-part 'account.g.dart';
+part 'user.g.dart';
 
 @JsonSerializable()
-class Account {
-  String id;
+class User {
   String nick;
   String signature;
   // User user;
@@ -13,11 +12,4 @@ class Account {
   String mobile;
   int regType;
   String openId;
-
-  Account();
-
-  Map<String, dynamic> toJson() => _$AccountToJson(this);
-
-  factory Account.fromJson(Map<String, dynamic> json) =>
-      _$AccountFromJson(json);
 }

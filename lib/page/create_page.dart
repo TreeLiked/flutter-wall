@@ -4,8 +4,10 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/component/InputSelect.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
@@ -50,7 +52,19 @@ class _CreatePageState extends State<CreatePage> {
 
   BaseTweet _assembleTweet() {
     BaseTweet _baseTweet = BaseTweet();
+    Account account = new Account();
+    account.id = "eec6a9c3f57045b7b2b9ed255cb4e273";
+    print(account.toJson());
+    _baseTweet.type = _typeName;
+    _baseTweet.body = _controller.text;
+    _baseTweet.account = account;
+    _baseTweet.enableReply = _enbaleReply;
+    _baseTweet.anonymous = _anonymous;
+    _baseTweet.unId = 1;
     print(_baseTweet.toJson());
+    TweetApi.pushTweet(_baseTweet).then((result) {
+      print(result.toString());
+    });
     return _baseTweet;
   }
 

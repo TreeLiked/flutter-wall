@@ -40,7 +40,7 @@ class RecommendationState extends State<Recommendation> {
           if (start) {
             children.insertAll(0, tweets);
           } else {
-            children.insertAll(children.length - 1, tweets);
+            children.addAll(tweets);
           }
         });
       } else {
@@ -59,7 +59,8 @@ class RecommendationState extends State<Recommendation> {
         child: SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
-        padding: EdgeInsets.only(top: 5),
+        color: Color(0xfff7f7f7),
+        // padding: EdgeInsets.only(top: 5),
         child: Column(
             // children: children,
             children: children.map((f) => TweetCard(f)).toList()),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +9,8 @@ import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/models/tabIconData.dart';
+import 'package:iap_app/part/bottomBarView.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -22,6 +26,9 @@ class _HomePageState extends State<HomePage> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  List<TabIconData> tabIconsList = TabIconData.tabIconsList;
+  AnimationController animationController;
+
   final recomKey = GlobalKey<RecommendationState>();
 
   List<BaseTweet> _homeTweets = new List();
@@ -29,23 +36,48 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    tabIconsList.forEach((tab) {
+      tab.isSelected = false;
+    });
+    tabIconsList[0].isSelected = true;
+
+    // animationController =
+    //     AnimationController(duration: Duration(milliseconds: 600), vsync: this);
+    // tabBody = MyDiaryScreen(animationController: animationController);
     super.initState();
     initData();
   }
 
+  Widget tabBody = Container(
+    color: Color(0xFFF2F3F8),
+  );
   void _onRefresh() async {
     print('On refresh');
     // monitor network fetch
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
-    print('temp');
-    _homeTweets.clear();
-    print('on refresh set state');
-    _homeTweets.addAll(temp);
 
-    recomKey.currentState.updateTweetList(temp, add: false);
-    // if failed,use refreshFailed()
-    _refreshController.refreshFailed();
+    List<String> exps = [
+      'https://tva1.sinaimg.cn/large/006y8mN6gy1g7e1wl1bc8j30u00u0grg.jpg',
+      'https://tva1.sinaimg.cn/large/006y8mN6gy1g7e2n5udwoj30zk0nogrk.jpg',
+      'https://tva1.sinaimg.cn/large/006y8mN6gy1g7e1xgu2qwj30u00u04cw.jpg',
+      'https://tva1.sinaimg.cn/large/006y8mN6gy1g7d7p910v1j30u00u0dhh.jpg',
+      'https://tva1.sinaimg.cn/large/006y8mN6ly1g7zu5er3dgj30hs0hswh5.jpg',
+    ];
+
+    if (!CollectionUtil.isListEmpty(temp)) {
+      // temp.forEach((f) {
+      //   int i = Random().nextInt(5);
+      //   if (i % 2 == 0) {
+      //     List<String> pics = [exps[i]];
+      //     f.pics = pics;
+      //   }
+      // });
+      _homeTweets.clear();
+      _homeTweets.addAll(temp);
+      recomKey.currentState.updateTweetList(temp, add: false);
+      _refreshController.refreshCompleted();
+    }
   }
 
   void initData() async {
@@ -74,7 +106,7 @@ class _HomePageState extends State<HomePage> {
 
   Future getData(int page) async {
     List<BaseTweet> pbt =
-        await (TweetApi.queryTweets(PageParam(page, pageSize: 3)));
+        await (TweetApi.queryTweets(PageParam(page, pageSize: 5)));
     // _updateTWeetList(pbt);
     return pbt;
   }
@@ -94,17 +126,16 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontSize: GlobalConfig.TEXT_TITLE_SIZE),
         ),
         elevation: 0,
-        leading: Icon(
-          Icons.bubble_chart,
-          color: Colors.lightGreen,
-        ),
+
         // iconTheme: IconThemeData(size: 5),
         actions: <Widget>[
           new IconButton(
             // action button
-            icon: Icon(Icons.bubble_chart),
+            icon: Icon(
+              Icons.bubble_chart,
+              color: Colors.lightGreen,
+            ),
             onPressed: () {
-              this.initData();
               // _select(choices[0]);
             },
           ),
@@ -119,7 +150,7 @@ class _HomePageState extends State<HomePage> {
         flexibleSpace: FlexibleSpaceBar(
           centerTitle: true,
           background: Image.network(
-            "https://tva1.sinaimg.cn/large/006y8mN6ly1g7lyhkuhz7j30rs0e875x.jpg",
+            "https://tva1.sinaimg.cn/large/006y8mN6ly1g7zu5er3dgj30hs0hswh5.jpg",
             fit: BoxFit.cover,
           ),
         ),
@@ -127,9 +158,43 @@ class _HomePageState extends State<HomePage> {
     ];
   }
 
+  Widget bottomBar() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: SizedBox(),
+        ),
+        BottomBarView(
+          tabIconsList: tabIconsList,
+          addClick: () {},
+          changeIndex: (index) {
+            if (index == 0 || index == 2) {
+              animationController.reverse().then((data) {
+                if (!mounted) return;
+                setState(() {
+                  // tabBody =
+                  //     MyDiaryScreen(animationController: animationController);
+                });
+              });
+            } else if (index == 1 || index == 3) {
+              animationController.reverse().then((data) {
+                if (!mounted) return;
+                setState(() {
+                  // tabBody =
+                  //     TrainingScreen(animationController: animationController);
+                });
+              });
+            }
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     print('home page state');
+
     return GestureDetector(
         behavior: HitTestBehavior.translucent,
         // onTap: () {
@@ -141,6 +206,7 @@ class _HomePageState extends State<HomePage> {
         // onPanDown: (details) =>
         //     FocusScope.of(context).requestFocus(FocusNode()),
         child: Scaffold(
+            backgroundColor: GlobalConfig.DEFAULT_BAR_BACK_COLOR,
             body: NestedScrollView(
                 headerSliverBuilder: (context, innerBoxIsScrolled) =>
                     _sliverBuilder(context, innerBoxIsScrolled),

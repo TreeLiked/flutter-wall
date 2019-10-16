@@ -31,6 +31,9 @@ class TimeUtil {
         } else {
           if (dt.year == DateTime.now().year) {
             // 同一年
+            if (dt.minute < 10) {
+              return MMDD(dt) + " ${dt.hour}:0${dt.minute}";
+            }
             return MMDD(dt) + " ${dt.hour}:${dt.minute}";
           } else {
             return DateUtil.formatDate(dt, format: DataFormats.zh_y_mo_d_h_m);

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/index/navigation_icon_view.dart';
+import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/home_page.dart';
+import 'package:iap_app/part/bottomBarView.dart';
 
 class Index extends StatefulWidget {
   @override
@@ -54,6 +56,39 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     setState(() {});
   }
 
+  Widget bottomBar() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: SizedBox(),
+        ),
+        BottomBarView(
+          tabIconsList: TabIconData.tabIconsList,
+          addClick: () {},
+          changeIndex: (index) {
+            if (index == 0 || index == 2) {
+              // animationController.reverse().then((data) {
+              //   if (!mounted) return;
+              //   setState(() {
+              //     tabBody =
+              //         MyDiaryScreen(animationController: animationController);
+              //   });
+              // });
+            } else if (index == 1 || index == 3) {
+              // animationController.reverse().then((data) {
+              //   if (!mounted) return;
+              //   setState(() {
+              //     tabBody =
+              //         TrainingScreen(animationController: animationController);
+              //   });
+              // });
+            }
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
@@ -74,12 +109,8 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _pageList,
-        ),
-        bottomNavigationBar: bottomNavigationBar,
-      ),
+          body: IndexedStack(index: _currentIndex, children: _pageList),
+          bottomNavigationBar: bottomNavigationBar),
       theme: GlobalConfig.td,
     );
   }

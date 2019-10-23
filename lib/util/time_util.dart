@@ -2,7 +2,6 @@ import 'package:flustars/flustars.dart';
 
 class TimeUtil {
   static String getShortTime(DateTime dt) {
-    dt = dt.subtract(Duration(hours: 5));
     int nowMs = DateTime.now().millisecondsSinceEpoch;
     int tarMs = dt.millisecondsSinceEpoch;
     // 相差的分钟

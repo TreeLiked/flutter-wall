@@ -32,7 +32,7 @@ class GlobalConfig {
 
   static const Color TEXT_DEFAULT_CLICKABLE_COLOR = Color(0xff686F8F);
 
-  static const int TWEET_MAX_LENGTH = 256;
+  static const int TWEET_MAX_LENGTH = 255;
 
   // 每个页面标题字体的大小
   static const double TEXT_TITLE_SIZE = 17;

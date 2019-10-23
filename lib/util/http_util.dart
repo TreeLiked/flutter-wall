@@ -14,6 +14,7 @@ Map<String, dynamic> headers = {
 Map<String, dynamic> headersJson = {
   "Accept": "application/json",
   "Content-Type": "application/json; charset=UTF-8",
+  "INDENTIFY-ID": "",
 };
 
 class HttpUtil {

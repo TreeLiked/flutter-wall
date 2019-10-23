@@ -8,6 +8,11 @@ class SizeConstant {
 
   static const double TWEET_TIME_SIZE = 14;
 
+  static const double TWEET_EXTRA_SIZE = 14;
+
   // static const double TWEET_TIME_SIZE = 14;
 
+  static const double HP_COVER_HEIGHT = 150;
+
+  static const double TWEET_MAX_SINGLE_PIC_HIEGHT = 180;
 }

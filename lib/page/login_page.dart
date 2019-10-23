@@ -21,7 +21,7 @@ class Login extends StatefulWidget {
 
 class LoginState extends State<Login> {
   LoginState() {
-    print('TweetDETAIL state construct');
+    print('LOGINSTATE state construct');
   }
 
   @override

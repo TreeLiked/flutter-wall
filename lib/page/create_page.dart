@@ -6,13 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/component/InputSelect.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/util/api.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
+import 'package:iap_app/util/string.dart';
 
 class CreatePage extends StatefulWidget {
   final String title = "发布内容";
@@ -24,16 +29,17 @@ class CreatePage extends StatefulWidget {
 
 class _CreatePageState extends State<CreatePage> {
   TextEditingController _controller = TextEditingController();
+  FocusNode _focusNode = FocusNode();
 
   // 开启回复
   bool _enbaleReply = true;
   // 是否匿名
   bool _anonymous = false;
 
-  String _typeText = "";
+  String _typeText = "选择内容标签";
   String _typeName = "";
 
-  String _textCountText = "";
+  int _textCountText = 0;
 
   // 是否禁用发布按钮
   bool _isPushBtnEnabled = false;
@@ -89,6 +95,13 @@ class _CreatePageState extends State<CreatePage> {
   //   );
   // }
 
+  void _selectTypeCallback(List<String> typeNames) {
+    if (!CollectionUtil.isListEmpty(typeNames)) {
+      this._typeName = typeNames[0];
+      this._typeText = tweetTypeMap[typeNames[0]].zhTag;
+    }
+  }
+
   void _reverseAnonymous() {
     setState(() {
       this._anonymous = !this._anonymous;
@@ -122,112 +135,71 @@ class _CreatePageState extends State<CreatePage> {
         ));
   }
 
-  void _modalBottomSheetMenu() {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (builder) {
-          return StatefulBuilder(builder: (context1, state) {
-            return Stack(
-              children: <Widget>[
-                Container(
-                  height: 30.0,
-                  width: double.infinity,
-                  color: Colors.black54,
-                ),
-                Container(
-                    // height: 350,
-                    // constraints: BoxConstraints(maxHeight: 500),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(16))),
-                    child: FractionallySizedBox(
-                        heightFactor: 0.46,
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
-                          child: Column(
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    '- 请选择内容类型 -',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                child: Container(
-                                    child: Wrap(
-                                  spacing: 2,
-                                  alignment: WrapAlignment.start,
-                                  runAlignment: WrapAlignment.spaceEvenly,
-                                  runSpacing: 5,
-                                  children: <Widget>[
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.LOVE_CONFESSION.zhTag,
-                                        TweetTypeEntity.LOVE_CONFESSION.name,
-                                        Icons.favorite,
-                                        Colors.red),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.ASK_FOR_MARRIAGE.zhTag,
-                                        TweetTypeEntity.ASK_FOR_MARRIAGE.name,
-                                        Icons.people,
-                                        Colors.red),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.SOMEONE_FIND.zhTag,
-                                        TweetTypeEntity.SOMEONE_FIND.name,
-                                        Icons.face,
-                                        Colors.blue),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.QUESTION_CONSULT.zhTag,
-                                        TweetTypeEntity.QUESTION_CONSULT.name,
-                                        Icons.help_outline,
-                                        Colors.orange),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.GOSSIP.zhTag,
-                                        TweetTypeEntity.GOSSIP.name,
-                                        Icons.mic_none,
-                                        Colors.blue),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.COMPLAINT.zhTag,
-                                        TweetTypeEntity.COMPLAINT.name,
-                                        Icons.mic,
-                                        Colors.blue),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.HAVE_FUN.zhTag,
-                                        TweetTypeEntity.HAVE_FUN.name,
-                                        Icons.toys,
-                                        Colors.lightGreen),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.LOST_AND_FOUND.zhTag,
-                                        TweetTypeEntity.LOST_AND_FOUND.name,
-                                        Icons.build,
-                                        Colors.red),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity.HELP_AND_REWARD.zhTag,
-                                        TweetTypeEntity.HELP_AND_REWARD.name,
-                                        Icons.fingerprint,
-                                        Colors.lightGreen),
-                                    _clipItemInSheet(
-                                        TweetTypeEntity
-                                            .SECOND_HAND_TRANSACTION.zhTag,
-                                        TweetTypeEntity
-                                            .SECOND_HAND_TRANSACTION.name,
-                                        Icons.compare_arrows,
-                                        Colors.red),
-                                  ],
-                                )),
-                              )
-                            ],
-                          ),
-                        ))),
-              ],
-            );
-          });
-        });
+  void _forwardSelPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TweetTypeSelect(
+                  title: "选择内容类型",
+                  multi: false,
+                  finishText: "完成",
+                  initNames:
+                      !StringUtil.isEmpty(_typeName) ? [_typeName] : null,
+                  callback: (typeNames) => _selectTypeCallback(typeNames),
+                )));
+    // showModalBottomSheet(
+    //     isScrollControlled: true,
+    //     context: context,
+    //     builder: (builder) {
+    //       return StatefulBuilder(builder: (context1, state) {
+    //         return Stack(
+    //           children: <Widget>[
+    //             Container(
+    //               height: 30.0,
+    //               width: double.infinity,
+    //               color: Colors.black54,
+    //             ),
+    //             Container(
+    //                 // height: 350,
+    //                 // constraints: BoxConstraints(maxHeight: 500),
+    //                 decoration: BoxDecoration(
+    //                     color: Colors.white,
+    //                     borderRadius:
+    //                         BorderRadius.vertical(top: Radius.circular(16))),
+    //                 child: FractionallySizedBox(
+    //                     heightFactor: 0.46,
+    //                     child: Container(
+    //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+    //                       child: Column(
+    //                         children: <Widget>[
+    //                           Row(
+    //                             mainAxisAlignment: MainAxisAlignment.center,
+    //                             children: <Widget>[
+    //                               Text(
+    //                                 '- 请选择内容类型 -',
+    //                                 style: TextStyle(
+    //                                     color: Colors.black, fontSize: 18),
+    //                               ),
+    //                             ],
+    //                           ),
+    //                           Expanded(
+    //                             child: Container(
+    //                                 child: Wrap(
+    //                               spacing: 2,
+    //                               alignment: WrapAlignment.start,
+    //                               runAlignment: WrapAlignment.spaceEvenly,
+    //                               runSpacing: 5,
+    //                               children: <Widget>[
+    //                               ],
+    //                             )),
+    //                           )
+    //                         ],
+    //                       ),
+    //                     ))),
+    //           ],
+    //         );
+    //       });
+    //     });
   }
 
   InkWell _rowItem(IconData iconData, String text, Function callback, bool show,
@@ -292,15 +264,22 @@ class _CreatePageState extends State<CreatePage> {
         backgroundColor: white ? Colors.white : Colors.black,
       ));
 
+  Widget _singlePicItem() {
+    return Container();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        resizeToAvoidBottomPadding: true,
         appBar: new AppBar(
-          title: Text(widget.title,
-              style: TextStyle(fontSize: GlobalConfig.TEXT_TITLE_SIZE)),
-          // backgroundColor: GlobalConfig.DEFAULT_BAR_BACK_COLOR,
+          title: Text(widget.title),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Text("取消"),
+          ),
           elevation: 0,
-          toolbarOpacity: 1,
+          toolbarOpacity: 0.8,
           actions: <Widget>[
             Container(
               height: 10,
@@ -312,6 +291,9 @@ class _CreatePageState extends State<CreatePage> {
                     : null,
                 child: Text(
                   '发表',
+                  style: TextStyle(
+                    color: _isPushBtnEnabled ? Colors.blue : Colors.grey,
+                  ),
                 ),
                 disabledTextColor: Colors.grey,
                 textColor: Colors.blue,
@@ -319,66 +301,187 @@ class _CreatePageState extends State<CreatePage> {
             )
           ],
         ),
-        backgroundColor: Colors.white,
-        body: Container(
-          child: new Container(
-            padding: EdgeInsets.all(10),
-            child: new Column(
-              children: <Widget>[
-                Flexible(
-                  child: Container(
-                      child: PreferredSize(
-                    preferredSize: Size.fromHeight(300),
-                    child: TextField(
-                      controller: _controller,
-                      cursorColor: Colors.blue,
-                      maxLengthEnforced: true,
-                      maxLength: GlobalConfig.TWEET_MAX_LENGTH,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 10,
-                      style: TextStyle(fontSize: 17),
-                      decoration: new InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(5),
-                          counterText: _textCountText),
-                      onChanged: (val) {
-                        setState(() {
-                          this._isPushBtnEnabled = val.length > 0;
-                          this._textCountText = (val.length == 0
-                              ? ''
-                              : val.length.toString() +
-                                  ' /' +
-                                  GlobalConfig.TWEET_MAX_LENGTH.toString());
-                        });
-                      },
-                    ),
-                  )),
-                ),
-                Divider(
-                  height: 1.0,
-                  indent: 0.0,
-                  color: Color(0xffF5F5F5),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 20),
-                  child: Column(
+        backgroundColor: ColorConstant.DEFAULT_BAR_BACK_COLOR,
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () => _hideKeyB(),
+                onPanDown: (_) => _hideKeyB(),
+                child: new Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                  child: new Column(
                     children: <Widget>[
-                      _rowItem(
-                          Icons.blur_on,
-                          "内容类型",
-                          this._modalBottomSheetMenu,
-                          true,
-                          Icons.chevron_right),
-                      _rowItem(Icons.flare, "为我匿名", this._reverseAnonymous,
-                          this._anonymous, null),
-                      _rowItem(Icons.rss_feed, "开启评论", this._reverseEnableReply,
-                          this._enbaleReply, null),
+                      // Container(
+                      //   height: 10,
+                      //   color: Colors.grey,
+                      // ),
+                      Container(
+                        child: TextField(
+                          controller: _controller,
+                          focusNode: _focusNode,
+                          cursorColor: Colors.blue,
+                          maxLengthEnforced: true,
+                          maxLength: GlobalConfig.TWEET_MAX_LENGTH,
+                          keyboardType: TextInputType.multiline,
+                          autocorrect: false,
+                          maxLines: 8,
+                          style: TextStyle(
+                              fontSize: SizeConstant.TWEET_FONT_SIZE,
+                              color: Colors.black),
+                          decoration: new InputDecoration(
+                              hintText: '分享新鲜事',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.all(5),
+                              counter: Text(
+                                _textCountText < GlobalConfig.TWEET_MAX_LENGTH
+                                    ? ""
+                                    : "最大长度 ${GlobalConfig.TWEET_MAX_LENGTH}",
+                                style: TextStyle(color: Color(0xffb22222)),
+                              )),
+                          onChanged: (val) {
+                            setState(() {
+                              this._isPushBtnEnabled = val.length > 0;
+                              this._textCountText = val.length;
+                            });
+                          },
+                        ),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            child: Image.asset(
+                              "assets/images/pic_select.png",
+                              width: 140,
+                              height: 140,
+                            ),
+                          )
+                        ],
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 20),
+                        child: Wrap(
+                          children: <Widget>[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () => _reverseEnableReply(),
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffF5F5F5),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                    child: Wrap(
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: <Widget>[
+                                        Icon(
+                                          _enbaleReply
+                                              ? Icons.lock_open
+                                              : Icons.lock,
+                                          color: _enbaleReply
+                                              ? Color(0xff87CEEB)
+                                              : Colors.grey,
+                                          size: 16,
+                                        ),
+                                        Text(
+                                          " " +
+                                              (_enbaleReply
+                                                  ? "允许评论 "
+                                                  : "禁止评论 "),
+                                          style: TextStyle(
+                                              fontSize: 12, color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => _reverseAnonymous(),
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffF5F5F5),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                    child: Wrap(
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: <Widget>[
+                                        Icon(
+                                          _anonymous
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          color: _anonymous
+                                              ? Color(0xff87CEEB)
+                                              : Colors.grey,
+                                          size: 16,
+                                        ),
+                                        Text(
+                                          " " + (_anonymous ? "开启匿名" : "公开"),
+                                          style: TextStyle(
+                                              fontSize: 12, color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () => _forwardSelPage(),
+                                      child: Container(
+                                        margin: EdgeInsets.only(right: 10),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                            color: Color(0xffF5F5F5),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20))),
+                                        child: Text(
+                                          "# " + _typeText,
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color:
+                                                  !StringUtil.isEmpty(_typeName)
+                                                      ? Colors.blue
+                                                      : Colors.grey),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ))
+                              ],
+                            ),
+                            Divider(
+                              height: 1.0,
+                              indent: 0.0,
+                              color: Color(0xffF5F5F5),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ));
+  }
+
+  void _hideKeyB() {
+    setState(() {
+      _focusNode.unfocus();
+    });
   }
 }

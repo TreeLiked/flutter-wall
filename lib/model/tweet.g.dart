@@ -42,7 +42,7 @@ Map<String, dynamic> _$BaseTweetToJson(BaseTweet instance) => <String, dynamic>{
       'anonymous': instance.anonymous,
       'account': instance.account,
       'enableReply': instance.enableReply,
-      'pics': instance.picUrls,
+      'picUrls': instance.picUrls,
       'hot': instance.hot,
       'praise': instance.praise,
       'views': instance.views,

@@ -1,5 +1,5 @@
 class Result<T> {
-  bool isSuccess;
+  bool isSuccess = false;
   String code;
   String message;
   T data;

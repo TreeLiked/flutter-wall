@@ -9,6 +9,13 @@ class MyDefaultTextStyle {
         fontWeight: FontWeight.bold);
   }
 
+  static TextStyle getTweetReplyNickStyle(double fontSize) {
+    return TextStyle(
+        color: ColorConstant.TWEET_REPLY_NICK_COLOR,
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold);
+  }
+
   static TextStyle getTweetTimeStyle(double fontSize) {
     return TextStyle(
       color: ColorConstant.TWEET_TIME_COLOR,

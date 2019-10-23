@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/index/navigation_icon_view.dart';
 import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/home_page.dart';
+import 'package:iap_app/page/hot_page.dart';
 import 'package:iap_app/part/bottomBarView.dart';
+import 'package:iap_app/part/hot_today.dart';
 
 class Index extends StatefulWidget {
   @override
@@ -22,34 +26,62 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
   // 当前页面
   StatefulWidget _currentPage;
 
+  final pageController = PageController();
+
   @override
   void initState() {
     super.initState();
     _navigationViews = <NavigationIconView>[
       NavigationIconView(
-          icon: Icon(Icons.navigation), title: Text('首页'), vsync: this),
+          icon: Icon(Icons.home),
+          title: Container(
+            child: Text('推荐'),
+            // height: 0.0,
+          ),
+          vsync: this),
       NavigationIconView(
-          icon: Icon(Icons.hdr_weak), title: Text('热门'), vsync: this),
-      NavigationIconView(icon: Icon(Icons.add), title: Text('创建'), vsync: this),
+          icon: Icon(Icons.room),
+          title: Container(
+            child: Text('热门'),
+          ),
+          vsync: this),
       NavigationIconView(
-          icon: Icon(Icons.all_inclusive), title: Text('消息'), vsync: this),
+          icon: Icon(Icons.notifications),
+          title: Container(
+            child: Text('通知'),
+          ),
+          vsync: this),
       NavigationIconView(
-          icon: Icon(Icons.perm_identity), title: Text('我的'), vsync: this),
+          icon: Icon(Icons.person),
+          title: Container(
+            child: Text('我的'),
+          ),
+          vsync: this),
     ];
     // 刷新视图
-    _navigationViews.forEach((v) => {
-          // v.controller.addListener(_rebuild)
-        });
+    // _navigationViews.forEach((v) => {
+    //       // v.controller.addListener(_rebuild)
+    //     });
 
     _pageList = <StatefulWidget>[
       new HomePage(),
-      new CreatePage(),
-      new CreatePage(),
+      new HotToday(),
+      // new CreatePage(),
       new CreatePage(),
       new CreatePage(),
     ];
 
     _currentPage = _pageList[_currentIndex];
+  }
+
+  void onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void pageOnTap(index) {
+    pageController.jumpToPage(index);
   }
 
   void _rebuild() {
@@ -91,27 +123,29 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
-      items: _navigationViews.map((navIconView) => navIconView.item).toList(),
-      currentIndex: _currentIndex,
-      fixedColor: Colors.blue,
-      type: BottomNavigationBarType.fixed,
-      onTap: (int index) {
-        setState(() {
-          _navigationViews[_currentIndex].controller.reverse();
-          _currentIndex = index;
-          _navigationViews[_currentIndex].controller.forward();
-          _currentPage = _pageList[_currentIndex];
-        });
-      },
-    );
+    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
 
-    return new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: new Scaffold(
-          body: IndexedStack(index: _currentIndex, children: _pageList),
-          bottomNavigationBar: bottomNavigationBar),
-      theme: GlobalConfig.td,
-    );
+    final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
+        backgroundColor: Color(0xffffffff),
+        elevation: 0,
+        items: _navigationViews.map((navIconView) => navIconView.item).toList(),
+        currentIndex: _currentIndex,
+        fixedColor: ColorConstant.QQ_BLUE,
+        // unselectedItemColor: Colors.black87,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => pageOnTap(index));
+
+    // return new Scaffold(
+    //     body: IndexedStack(index: _currentIndex, children: _pageList),
+    //     bottomNavigationBar: bottomNavigationBar);
+    return Scaffold(
+        bottomNavigationBar: bottomNavigationBar,
+        // body: bodyList[currentIndex],
+        body: PageView(
+          controller: pageController,
+          onPageChanged: onPageChanged,
+          children: _pageList,
+          physics: NeverScrollableScrollPhysics(), // 禁止滑动
+        ));
   }
 }

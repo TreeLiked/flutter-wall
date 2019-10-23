@@ -6,7 +6,10 @@ part 'page_param.g.dart';
 class PageParam {
   int currentPage;
   int pageSize;
-  PageParam(this.currentPage, {this.pageSize = 10});
+  // 限制查询的推文类型
+  List<String> types;
+
+  PageParam(this.currentPage, {this.pageSize = 10, this.types});
 
   Map<String, dynamic> toJson() => _$PageParamToJson(this);
 }

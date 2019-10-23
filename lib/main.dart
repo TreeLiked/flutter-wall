@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/shared_data.dart';
+import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/index/index.dart';
 import 'package:iap_app/page/login_page.dart';
 import 'package:iap_app/util/shared.dart';
@@ -23,6 +25,7 @@ void main() {
       //   ),
       // ),
       AlmondDonuts());
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   // runApp(MultiProvider(providers: [
   //   Provider<TweetBloc>.value(value: tweetBloc),
   // ], child: Iap()));
@@ -44,6 +47,11 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   void initState() {
     super.initState();
     _validateLogin();
+    // SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //     statusBarColor: Color(0xff000000),
+    //     statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   }
 
   @override
@@ -56,13 +64,14 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'iap',
+      theme: ThemeConstant.lightTheme,
       home: loginState == 1 ? Login() : Index(),
     );
   }
 
   Future _validateLogin() async {
     String s = await SharedPreferenceUtil.readStringValue(
-            AuthConstant.LOCAL_ACCOUNT_ID)
+            SharedConstant.LOCAL_ACCOUNT_ID)
         .catchError((onError) => print(onError));
     if (!StringUtil.isEmpty(s)) {
       setState(() {

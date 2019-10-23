@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -6,6 +7,7 @@ import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/string.dart';
@@ -179,8 +181,10 @@ class TweetDetailState extends State<TweetDetail> {
     }
     List<Widget> list = new List();
 
+    List<TweetReply> originReversed =
+        widget._tweet.dirReplies.reversed.toList();
     int displayCnt = 0;
-    for (var dirTr in widget._tweet.dirReplies) {
+    for (var dirTr in originReversed) {
       if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY) {
         break;
       }
@@ -267,7 +271,7 @@ class TweetDetailState extends State<TweetDetail> {
       );
     }
     return Container(
-      padding: EdgeInsets.only(bottom: 5, left: isSub ? 5 : 0),
+      padding: EdgeInsets.only(bottom: 5, left: isSub ? 10 : 0),
       child: Wrap(
         // mainAxisAlignment: MainAxisAlignment.start,
 
@@ -348,7 +352,7 @@ class TweetDetailState extends State<TweetDetail> {
             children: <Widget>[
               Text(time,
                   style: TextStyle(
-                    fontSize: SizeConstant.TWEET_FONT_SIZE - 2,
+                    fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
                     color: GlobalConfig.tweetTimeColor,
                   ))
             ],
@@ -417,10 +421,11 @@ class TweetDetailState extends State<TweetDetail> {
   Widget _imgContainerSingle(String url) {
     return Container(
         padding: EdgeInsets.only(right: 5, bottom: 5),
-        // width: 100,
-        // height: 100,
+        width: 100,
+        height: 100,
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: 200),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
           child: Image.network(
             url,
             fit: BoxFit.cover,
@@ -462,12 +467,15 @@ class TweetDetailState extends State<TweetDetail> {
     sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorConstant.DEFAULT_BAR_BACK_COLOR,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) =>
             _sliverBuilder(context, innerBoxIsScrolled),
         body: SingleChildScrollView(
             child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             children: <Widget>[
@@ -475,7 +483,7 @@ class TweetDetailState extends State<TweetDetail> {
               _bodyContainer(),
               _picContainer(),
               _viewContainer(),
-              _loveContainer(),
+              // _loveContainer(),
               _praiseContainer(),
               _replyContainer(),
             ],
@@ -486,23 +494,23 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
+    String coverUrl = tweetTypeMap[widget._tweet.type].coverUrl;
     return <Widget>[
       SliverAppBar(
         centerTitle: true, //标题居中
         title: Text('详情'),
-        elevation: 0,
-        expandedHeight: 200.0, //展开高度200
+        elevation: 0.5,
+        expandedHeight: 200,
         backgroundColor: Colors.white,
-        floating: true, //不随着滑动隐藏标题
-        pinned: true, //不固定在顶部
+        floating: true,
+        pinned: true,
         snap: false,
         flexibleSpace: FlexibleSpaceBar(
-          centerTitle: true,
-          background: Image.network(
-            "https://tva1.sinaimg.cn/large/006y8mN6ly1g7zu5er3dgj30hs0hswh5.jpg",
-            fit: BoxFit.cover,
-          ),
-        ),
+            centerTitle: true,
+            background: Image.network(
+              tweetTypeMap[widget._tweet.type].coverUrl,
+              fit: BoxFit.scaleDown,
+            )),
       ),
     ];
   }

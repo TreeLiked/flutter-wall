@@ -16,6 +16,10 @@ class Account {
 
   Account();
 
+  Account.fromId(String id) {
+    this.id = id;
+  }
+
   Map<String, dynamic> toJson() => _$AccountToJson(this);
 
   factory Account.fromJson(Map<String, dynamic> json) =>

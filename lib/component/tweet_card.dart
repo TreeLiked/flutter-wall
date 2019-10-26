@@ -2,13 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/component/divider.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/shared_data.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -21,6 +24,7 @@ import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -57,8 +61,6 @@ class TweetCardState extends State<TweetCard> {
   double sh;
   double max_width_single_pic;
 
-  String hintText = "Say Something";
-
   refresh() {
     setState(() {});
   }
@@ -90,7 +92,7 @@ class TweetCardState extends State<TweetCard> {
     return Container(
         // %2 因为索引从0开始，3的倍数右边距设为0
         padding: EdgeInsets.only(
-            right: totalSize == 4 ? 4 : (index % 3 == 2 ? 0 : 5), bottom: 4),
+            right: totalSize == 4 ? 1 : (index % 3 == 2 ? 0 : 1), bottom: 1),
         width: perw,
         height: perw,
         child: GestureDetector(
@@ -98,9 +100,11 @@ class TweetCardState extends State<TweetCard> {
           child: CachedNetworkImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            placeholder: (context, url) => GlowingOverscrollIndicator(
-              color: Colors.white,
-              axisDirection: AxisDirection.left,
+            placeholder: (context, url) => Container(
+              width: 30,
+              height: 30,
+              padding: EdgeInsets.all(20),
+              child: Image.asset(PathConstant.IAMGE_HOLDER),
             ),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
@@ -139,7 +143,7 @@ class TweetCardState extends State<TweetCard> {
                 .map((f) => PhotoWrapItem(index: index, url: f))
                 .toList(),
             backgroundDecoration: const BoxDecoration(
-              color: Colors.black,
+              color: Colors.white70,
             ),
             initialIndex: index,
           ),
@@ -283,7 +287,7 @@ class TweetCardState extends State<TweetCard> {
         children: <Widget>[
           ClipOval(
             child: Image.network(
-              profileUrl,
+              !tweet.anonymous ? profileUrl : PathConstant.ANONYMOUS_PROFILE,
               width: SizeConstant.TWEET_PROFILE_SIZE,
               height: SizeConstant.TWEET_PROFILE_SIZE,
               fit: BoxFit.cover,
@@ -295,15 +299,19 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _nickContainer(String nickName) {
-    return Container(
-      child: Text(
-        nickName,
-        style: TextStyle(
-            fontSize: SizeConstant.TWEET_FONT_SIZE,
-            fontWeight: FontWeight.bold,
-            color: ColorConstant.TWEET_NICK_COLOR),
-      ),
-    );
+    return tweet.anonymous
+        ? Container(
+            child: Text(
+            TextConstant.TWEET_ANONYMOUS_NICK,
+            style:
+                MyDefaultTextStyle.getTweetHeadNickStyle(14, anonymous: true),
+          ))
+        : Container(
+            child: Text(
+              nickName,
+              style: MyDefaultTextStyle.getTweetHeadNickStyle(14),
+            ),
+          );
   }
 
   Widget _timeContainer(DateTime dt) {
@@ -316,7 +324,7 @@ class TweetCardState extends State<TweetCard> {
 
   Widget _signatureContainer(String sig) {
     return Container(
-      child: Text(sig,
+      child: Text(!tweet.anonymous ? sig : TextConstant.TWEET_ANONYMOUS_SIG,
           style: TextStyle(
             fontSize: SizeConstant.TWEET_TIME_SIZE,
             color: ColorConstant.TWEET_TIME_COLOR,
@@ -463,7 +471,7 @@ class TweetCardState extends State<TweetCard> {
           child: GestureDetector(
             onTap: () {
               // 点击回复框，直接回复推文
-              _sendReply(widget.tweet.id, 1);
+              _sendReply(1, tweet.id, tweet.account.id);
             },
             child: Row(
               children: <Widget>[
@@ -479,7 +487,7 @@ class TweetCardState extends State<TweetCard> {
                   child: Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Text(
-                        hintText,
+                        TextConstant.TWEET_CARD_REPLY_HINT,
                         style: TextStyle(
                             fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
                             color: ColorConstant.TWEET_TIME_COLOR),
@@ -493,8 +501,11 @@ class TweetCardState extends State<TweetCard> {
     }
   }
 
-  String _getNickFromAccount(Account account) {
+  String _getNickFromAccount(Account account, {bool anonymous = false}) {
     if (account != null) {
+      if (anonymous) {
+        return TextConstant.TWEET_ANONYMOUS_NICK;
+      }
       if (!StringUtil.isEmpty(account.nick)) {
         return account.nick;
       }
@@ -513,39 +524,16 @@ class TweetCardState extends State<TweetCard> {
       if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY) {
         break;
       }
-      list.add(_singleReplyContainer(
-          dirTr.id,
-          _getNickFromAccount(dirTr.account),
-          _getNickFromAccount(dirTr.tarAccount),
-          // 对于直接回复，那么回复就是直接回复的账户
-          dirTr.account.id,
-          dirTr.body,
-          false,
-          false));
+      list.add(_singleReplyContainer(dirTr, true, false, parentId: dirTr.id));
       displayCnt++;
       if (!CollectionUtil.isListEmpty(dirTr.children)) {
         dirTr.children.forEach((tr) {
-          list.add(_singleReplyContainer(
-              dirTr.id,
-              _getNickFromAccount(tr.account),
-              _getNickFromAccount(tr.tarAccount),
-              // 如果是子回复，回复第一个用户, parentId不变
-              dirTr.account.id,
-              tr.body,
-              false,
-              false));
+          list.add(_singleReplyContainer(tr, true, false, parentId: dirTr.id));
         });
       }
     }
     if (tweet.replyCount > GlobalConfig.MAX_DISPLAY_REPLY) {
-      list.add(_singleReplyContainer(
-          -1,
-          "",
-          "",
-          "",
-          "查看更多 ${tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复..",
-          false,
-          true));
+      list.add(_singleReplyContainer(null, false, true));
     }
 
     return list;
@@ -571,24 +559,38 @@ class TweetCardState extends State<TweetCard> {
     }
   }
 
-  Widget _singleReplyContainer(int parentId, String user, String destUser,
-      String destAccId, String body, bool isSub, bool bottom) {
+  Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom,
+      {int parentId}) {
     if (bottom) {
       return Padding(
         padding: EdgeInsets.only(top: 5),
         child: Text(
-          body,
+          "查看更多 ${tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复 ..",
           style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
         ),
       );
     }
+    bool authorAnonymous = widget.tweet.anonymous;
+    String accNick = _getNickFromAccount(reply.account);
+    bool isAuthorReply = (tweet.account.id == reply.account.id);
+    if (isAuthorReply && authorAnonymous) {
+      accNick = "作者";
+    }
+
+    bool replyAuthor =
+        reply.tarAccount == null || (tweet.account.id == reply.tarAccount.id);
+    String tarNick = _getNickFromAccount(reply.tarAccount);
+    if (replyAuthor && authorAnonymous) {
+      tarNick = "作者";
+    }
+    // if (!replyAuthor) {
+
     return Container(
-        padding: EdgeInsets.only(bottom: 5, left: isSub ? 10 : 0),
+        padding: EdgeInsets.only(bottom: 5),
         child: GestureDetector(
           onTap: () {
             // 只要点击评论中的某一行，都是它的子回复
-            _sendReply(parentId, 2,
-                destAccountNick: user, destAccountId: destAccId);
+            _sendReply(2, parentId, reply.account.id, tarAccNick: accNick);
           },
           child: Wrap(
             children: <Widget>[
@@ -598,23 +600,30 @@ class TweetCardState extends State<TweetCard> {
                 softWrap: true,
                 text: TextSpan(children: [
                   TextSpan(
-                      text: user,
-                      style: MyDefaultTextStyle.getTweetReplyNickStyle(15)),
+                      text: accNick,
+                      style: isAuthorReply && authorAnonymous
+                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
+                              14)
+                          : MyDefaultTextStyle.getTweetReplyNickStyle(14)),
                   TextSpan(
-                    text: !StringUtil.isEmpty(destUser) ? ' 回复 ' : '',
-                    style: TextStyle(color: Colors.black87),
+                    text: reply.type == 2 ? ' 回复 ' : '',
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
                   ),
                   TextSpan(
-                      text: destUser,
-                      style: MyDefaultTextStyle.getTweetReplyNickStyle(15)),
+                      text: reply.type == 2 ? tarNick : '',
+                      style: replyAuthor && authorAnonymous
+                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
+                              14)
+                          : MyDefaultTextStyle.getTweetReplyNickStyle(14)),
                   TextSpan(
                     text: '：',
-                    style: TextStyle(color: Colors.black87),
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
                   ),
                   TextSpan(
-                    text: body,
-                    style:
-                        TextStyle(color: ColorConstant.TWEET_REPLY_FONT_COLOR),
+                    text: reply.body,
+                    style: TextStyle(
+                        color: ColorConstant.TWEET_REPLY_FONT_COLOR,
+                        fontWeight: FontWeight.w400),
                   ),
                 ]),
               ),
@@ -757,16 +766,38 @@ class TweetCardState extends State<TweetCard> {
   }
 
   /*
-   * desAccountNick 显示在输入框中的回复， destAccountId 移动推送
+   * tarAccNick 显示在输入框中的回复， tarAccId 移动推送
+   * type 1=> 评论， 2=> 子回复 
    */
-  _sendReply(int parentId, int type,
-      {String destAccountNick, String destAccountId}) {
+  _sendReply(int type, int parentId, String tarAccId, {String tarAccNick}) {
+    // TODO 检查本地account是否存在
     TweetReply tr = new TweetReply();
+    tr.tweetId = tweet.id;
     tr.type = type;
     tr.parentId = parentId;
-    if (type == 2) {
-      tr.tarAccount = Account.fromId(destAccountId);
+    tr.tarAccount = Account.fromId(tarAccId);
+
+    widget.callback(tr, tarAccNick, tarAccId, _sendReplyCallback);
+  }
+
+  _sendReplyCallback(TweetReply tr) {
+    print('评论回复结果回调 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！');
+    print(tr.toJson());
+    if (tr == null) {
+      ToastUtil.showToast(
+        '回复失败，请稍后重试',
+        gravity: ToastGravity.TOP,
+      );
+    } else {
+      if (tr.type == 1) {
+        // 设置到直接回复
+        setState(() {
+          tweet.dirReplies.add(tr);
+        });
+      } else {
+        // 子回复
+        int parentId = tr.parentId;
+      }
     }
-    widget.callback(tr, destAccountNick, destAccountId);
   }
 }

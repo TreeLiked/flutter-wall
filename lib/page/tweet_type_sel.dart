@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/util/collection.dart';
 
@@ -14,6 +16,8 @@ class TweetTypeSelect extends StatefulWidget {
   bool multi;
   final callback;
   List<String> initNames;
+
+  bool editState = false;
 
   TweetTypeSelect(
       {this.title,
@@ -53,7 +57,15 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
       appBar: AppBar(
         title: Text(widget.title),
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (!widget.multi) {
+              Navigator.pop(context);
+            } else {
+              setState(() {
+                widget.editState = !widget.editState;
+              });
+            }
+          },
           icon: Text(widget.backText),
         ),
         actions: <Widget>[
@@ -115,35 +127,46 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
                 ),
               ),
               trailing: sel && widget.multi
-                  ? Icon(
-                      Icons.near_me,
-                      color: Color(0xffCD5C5C),
-                    )
-                  : null,
+                  ? (widget.editState
+                      ? getIcon(PathConstant.ICON_CHECKBOX_SEL)
+                      : getIcon(PathConstant.ICON_TICK))
+                  : (widget.editState
+                      ? getIcon(PathConstant.ICON_CHECKBOX_UNSEL)
+                      : null),
               onTap: () {
-                setState(() {
-                  if (widget.multi) {
-                    if (selects.containsKey(typeKeysList[index])) {
-                      if (selects[typeKeysList[index]] == true) {
-                        selects[typeKeysList[index]] = false;
+                if (widget.editState || !widget.multi) {
+                  setState(() {
+                    if (widget.multi) {
+                      if (selects.containsKey(typeKeysList[index])) {
+                        if (selects[typeKeysList[index]] == true) {
+                          selects[typeKeysList[index]] = false;
+                        } else {
+                          selects[typeKeysList[index]] = true;
+                        }
                       } else {
                         selects[typeKeysList[index]] = true;
                       }
                     } else {
+                      for (int i = 0; i < typeKeysList.length; i++) {
+                        selects[typeKeysList[i]] = false;
+                      }
                       selects[typeKeysList[index]] = true;
                     }
-                  } else {
-                    for (int i = 0; i < typeKeysList.length; i++) {
-                      selects[typeKeysList[i]] = false;
-                    }
-                    selects[typeKeysList[index]] = true;
-                  }
-                });
+                  });
+                }
               },
             ),
           );
         },
       ),
+    );
+  }
+
+  static Image getIcon(String path) {
+    return Image.asset(
+      path,
+      fit: BoxFit.scaleDown,
+      width: ScreenUtil().setWidth(40),
     );
   }
 }

@@ -22,6 +22,7 @@ BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
     ..praise = json['praise'] as int
     ..views = json['views'] as int
     ..replyCount = json['replyCount'] as int
+    ..upTrend = json['upTrend'] as bool
     ..dirReplies = (json['dirReplies'] as List)
         ?.map((e) =>
             e == null ? null : TweetReply.fromJson(e as Map<String, dynamic>))
@@ -47,6 +48,7 @@ Map<String, dynamic> _$BaseTweetToJson(BaseTweet instance) => <String, dynamic>{
       'praise': instance.praise,
       'views': instance.views,
       'replyCount': instance.replyCount,
+      'upTrend': instance.upTrend,
       'dirReplies': instance.dirReplies,
       'gmtModified': instance.gmtModified?.toIso8601String(),
       'gmtCreated': instance.gmtCreated?.toIso8601String()

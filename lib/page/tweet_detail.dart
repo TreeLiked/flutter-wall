@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -14,11 +16,9 @@ import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
 
 class TweetDetail extends StatefulWidget {
-  BaseTweet _tweet;
+  final BaseTweet _tweet;
 
-  TweetDetail(BaseTweet bt) {
-    this._tweet = bt;
-  }
+  TweetDetail(this._tweet);
   @override
   State<StatefulWidget> createState() {
     print('TweetDetail create state');
@@ -26,7 +26,8 @@ class TweetDetail extends StatefulWidget {
   }
 }
 
-class TweetDetailState extends State<TweetDetail> {
+class TweetDetailState extends State<TweetDetail>
+    with AutomaticKeepAliveClientMixin {
   //获取实例
   OverlayState overlayState;
 //创建OverlayEntry
@@ -59,8 +60,8 @@ class TweetDetailState extends State<TweetDetail> {
                   child: ClipOval(
                     child: Image.network(
                       widget._tweet.account.avatarUrl,
-                      width: SizeConstant.TWEET_PROFILE_SIZE,
-                      height: SizeConstant.TWEET_PROFILE_SIZE,
+                      width: SizeConstant.TWEET_PROFILE_SIZE - 1,
+                      height: SizeConstant.TWEET_PROFILE_SIZE - 1,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -169,7 +170,6 @@ class TweetDetailState extends State<TweetDetail> {
               )
             ],
           ),
-          Divider()
         ],
       ),
     );
@@ -397,40 +397,43 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _imgContainer(String url, int index, int totalSize) {
-    double left = (sw - 30 - 5 * 2);
+    double left = (sw - 20 - (totalSize - 1) * 4);
     double perw;
-    if (totalSize == 4) {
-      perw = left / 2.5;
+    if (totalSize == 2) {
+      perw = left / 2.1;
+    } else if (totalSize == 4) {
+      perw = left / 2.1;
     } else {
-      perw = left / 3;
+      perw = left / 3.1;
     }
 
     return Container(
       // %2 因为索引从0开始，3的倍数右边距设为0
       padding: EdgeInsets.only(
-          right: totalSize == 4 ? 5 : (index % 3 == 2 ? 0 : 5), bottom: 5),
+          right: totalSize == 4 ? 1 : (index % 3 == 2 ? 0 : 1), bottom: 1),
       width: perw,
       height: perw,
-      child: Image.network(
-        url,
+      child: CachedNetworkImage(
+        imageUrl: url,
         fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          padding: EdgeInsets.all(20),
+          child: Image.asset(PathConstant.LOADING_GIF),
+        ),
+        errorWidget: (context, url, error) => Icon(Icons.error),
       ),
     );
   }
 
   Widget _imgContainerSingle(String url) {
     return Container(
-        padding: EdgeInsets.only(right: 5, bottom: 5),
-        width: 100,
-        height: 100,
         child: ConstrainedBox(
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
-          child: Image.network(
-            url,
-            fit: BoxFit.cover,
-          ),
-        ));
+      constraints: BoxConstraints(maxWidth: (sw - 15) * 0.9),
+      child: Image.network(
+        url,
+        fit: BoxFit.cover,
+      ),
+    ));
   }
 
   Widget replyWrapContainer(TweetReply reply, bool subDir) {
@@ -447,15 +450,22 @@ class TweetDetailState extends State<TweetDetail> {
             flex: 1,
             child: Container(
               padding: EdgeInsets.only(right: 10, left: 2, top: 5),
-              child: Column(
-                children: <Widget>[
-                  _headContainer(
-                      reply.account.nick,
-                      reply.tarAccount == null ? "" : reply.tarAccount.nick,
-                      TimeUtil.getShortTime(reply.gmtCreated)),
-                  _replyBodyContainer(reply.body),
-                ],
-              ),
+              child: Column(children: <Widget>[
+                _headContainer(
+                    reply.account.nick,
+                    reply.tarAccount == null ? "" : reply.tarAccount.nick,
+                    TimeUtil.getShortTime(reply.gmtCreated)),
+                _replyBodyContainer(reply.body),
+                Row(children: <Widget>[
+                  Container(
+                      padding: EdgeInsets.only(top: 5),
+                      child: Text(
+                        TimeUtil.getShortTime(reply.gmtCreated),
+                        style: MyDefaultTextStyle.getTweetTimeStyle(12),
+                      )),
+                ]),
+                Divider()
+              ]),
             )),
       ],
     );
@@ -469,6 +479,7 @@ class TweetDetailState extends State<TweetDetail> {
     return Scaffold(
       backgroundColor: ColorConstant.DEFAULT_BAR_BACK_COLOR,
       body: NestedScrollView(
+        // headerSliverBuilder: null,
         headerSliverBuilder: (context, innerBoxIsScrolled) =>
             _sliverBuilder(context, innerBoxIsScrolled),
         body: SingleChildScrollView(
@@ -494,24 +505,32 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
-    String coverUrl = tweetTypeMap[widget._tweet.type].coverUrl;
     return <Widget>[
       SliverAppBar(
-        centerTitle: true, //标题居中
-        title: Text('详情'),
-        elevation: 0.5,
-        expandedHeight: 200,
-        backgroundColor: Colors.white,
-        floating: true,
-        pinned: true,
-        snap: false,
-        flexibleSpace: FlexibleSpaceBar(
-            centerTitle: true,
-            background: Image.network(
-              tweetTypeMap[widget._tweet.type].coverUrl,
-              fit: BoxFit.scaleDown,
-            )),
-      ),
+          centerTitle: true, //标题居中
+          title: Text('详情'),
+          elevation: 0.5,
+          expandedHeight: 120,
+          floating: true,
+          pinned: true,
+          snap: false,
+          flexibleSpace: Container(
+            margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 60),
+            padding: EdgeInsets.only(left: 20),
+            decoration: BoxDecoration(color: Colors.white),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  '今日热门',
+                  style: TextStyle(color: Colors.black),
+                )
+              ],
+            ),
+          )),
     ];
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

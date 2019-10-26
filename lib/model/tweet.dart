@@ -25,6 +25,7 @@ class BaseTweet {
   int praise;
   int views;
   int replyCount;
+  bool upTrend;
 
   /*
    * 直接回复

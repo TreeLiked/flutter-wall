@@ -9,6 +9,7 @@ part of 'tweet_reply.dart';
 TweetReply _$TweetReplyFromJson(Map<String, dynamic> json) {
   return TweetReply()
     ..id = json['id'] as int
+    ..tweetId = json['tweetId'] as int
     ..parentId = json['parentId'] as int
     ..type = json['type'] as int
     ..body = json['body'] as String
@@ -36,11 +37,15 @@ TweetReply _$TweetReplyFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'tweetId': instance.tweetId,
       'parentId': instance.parentId,
       'type': instance.type,
       'body': instance.body,
-      'account': instance.account,
-      'tarAccount': instance.tarAccount,
+      'account':
+          instance.account == null ? 'account null' : instance.account.toJson(),
+      'tarAccount': instance.tarAccount == null
+          ? 'tar account null'
+          : instance.tarAccount.toJson(),
       'children': instance.children,
       'hot': instance.hot,
       'praise': instance.praise,

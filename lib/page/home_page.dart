@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/config/routes.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
@@ -45,6 +48,7 @@ class _HomePageState extends State<HomePage>
   int _currentPage = 1;
 
   bool isIniting = true;
+  bool isLoading = true;
 
   // 回复相关
   TextEditingController _controller = TextEditingController();
@@ -55,6 +59,8 @@ class _HomePageState extends State<HomePage>
   double _replyContainerHeight = 0;
 
   List<String> tweetQueryTypes = List();
+
+  Function sendCallback;
 
   @override
   void initState() {
@@ -68,6 +74,7 @@ class _HomePageState extends State<HomePage>
     // tabBody = MyDiaryScreen(animationController: animationController);
     getStoragePreferTypes();
     super.initState();
+
     initData();
 
     // _refreshController.requestRefresh();
@@ -97,6 +104,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void initData() async {
+    // _refreshController.requestRefresh();
     List<BaseTweet> temp = await getData(1);
     _homeTweets.clear();
     _homeTweets.addAll(temp);
@@ -227,7 +235,7 @@ class _HomePageState extends State<HomePage>
             builder: (context) => TweetTypeSelect(
                   title: "过滤内容类型",
                   multi: true,
-                  backText: "取消",
+                  backText: "编辑",
                   finishText: "完成",
                   initNames: selTypes,
                   callback: (typeNames) => setPreferTypes(typeNames),
@@ -264,11 +272,11 @@ class _HomePageState extends State<HomePage>
                 Scaffold(
                     appBar: PreferredSize(
                         child: AppBar(
-                          elevation: 0.3,
+                          elevation: 0,
                           title: Text(
                             "南京工程学院",
                           ),
-                          backgroundColor: ColorConstant.MAIN_BAR_COLOR,
+                          backgroundColor: Color(0xfff9f9f9),
                           centerTitle: true,
                           actions: <Widget>[
                             IconButton(
@@ -280,18 +288,18 @@ class _HomePageState extends State<HomePage>
                               icon: Icon(
                                 Icons.add,
                               ),
-                              color: ColorConstant.QQ_BLUE,
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => CreatePage())),
+                              color: ColorConstant.TWEET_NICK_COLOR,
+                              onPressed: () {
+                                Application.router.navigateTo(
+                                    context, Routes.create,
+                                    transition: TransitionType.fadeIn);
+                              },
                             ),
                           ],
                         ),
                         preferredSize: Size.fromHeight(
                             MediaQuery.of(context).size.height * 0.05)),
 
-                    // headerSliverBuilder: (context, innerBoxIsScrolled) =>
                     //     <Widget>[],
 
                     body: Scrollbar(
@@ -326,7 +334,10 @@ class _HomePageState extends State<HomePage>
                           onLoading: _onLoading,
                           child: Recommendation(
                             key: recomKey,
-                            callback: (a, b, c) => showReplyContainer(a, b, c),
+                            callback: (a, b, c, d) {
+                              showReplyContainer(a, b, c);
+                              sendCallback = d;
+                            },
                             callback2: () => hideReplyContainer(),
                           )),
                     )),
@@ -434,25 +445,27 @@ class _HomePageState extends State<HomePage>
       return "";
     }
     curReply.body = value;
-    Account acc = Account.fromId("eec6a9c3f57045b7b2b9ed255cb4e273");
+    Account acc = Account.fromId("e5e5d7e2006c4788b6b24509dfe481b3");
     curReply.account = acc;
     print(curReply.toJson());
-    TweetApi.pushReply(curReply).then((result) {
+    TweetApi.pushReply(curReply, curReply.tweetId).then((result) {
       print(result.data);
-      TweetReply newReply = TweetReply.fromJson(result.data);
       if (result.isSuccess) {
+        TweetReply newReply = TweetReply.fromJson(result.data);
         _controller.clear();
         hideReplyContainer();
-        // setState(() {
-        //   tweet.replyCount++;
-        //   if (CollectionUtil.isListEmpty(widget.tweet.dirReplies)) {
-        //     widget.tweet.dirReplies = new List();
-        //   }
-        //   widget.tweet.dirReplies.add(newReply);
-        // });
+        sendCallback(newReply);
+        setState(() {
+          //   tweet.replyCount++;
+          //   if (CollectionUtil.isListEmpty(widget.tweet.dirReplies)) {
+          //     widget.tweet.dirReplies = new List();
+          //   }
+          //   widget.tweet.dirReplies.add(newReply);
+        });
       } else {
         _controller.clear();
-        _hintText = "评论失败";
+        _hintText = "评论";
+        sendCallback(null);
       }
       // widget.callback(tr, destAccountId);
     });

@@ -1,9 +1,11 @@
 import 'dart:ui';
 
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/shared_data.dart';
+import 'package:iap_app/config/routes.dart';
 import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/index/index.dart';
 import 'package:iap_app/page/login_page.dart';
@@ -41,7 +43,11 @@ class AlmondDonuts extends StatefulWidget {
 class AlmondDonutsState extends State<AlmondDonuts> {
   var loginState;
 
-  AlmondDonutsState();
+  AlmondDonutsState() {
+    final Router router = Router();
+    Routes.configureRoutes(router);
+    Application.router = router;
+  }
 
   @override
   void initState() {
@@ -66,6 +72,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       title: 'iap',
       theme: ThemeConstant.lightTheme,
       home: loginState == 1 ? Login() : Index(),
+      onGenerateRoute: Application.router.generator,
     );
   }
 

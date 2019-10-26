@@ -7,7 +7,11 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - image_picker_saver (0.0.1):
+    - Flutter
   - path_provider (0.0.1):
+    - Flutter
+  - photo_manager (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
     - Flutter
@@ -19,7 +23,9 @@ DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - fluwx (from `.symlinks/plugins/fluwx/ios`)
+  - image_picker_saver (from `.symlinks/plugins/image_picker_saver/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
 
@@ -34,8 +40,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/fluttertoast/ios"
   fluwx:
     :path: ".symlinks/plugins/fluwx/ios"
+  image_picker_saver:
+    :path: ".symlinks/plugins/image_picker_saver/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  photo_manager:
+    :path: ".symlinks/plugins/photo_manager/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sqflite:
@@ -46,7 +56,9 @@ SPEC CHECKSUMS:
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
   fluwx: 765c6052398eaf6fe13c73409488b0d0b9d00fd6
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  image_picker_saver: 4f28bd70e1efdca68ad88beab0f11d22cffe04f6
   path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
+  photo_manager: 47ca9adddeea702246c96c6f67769f03907cd953
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
 

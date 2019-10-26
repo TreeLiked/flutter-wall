@@ -42,11 +42,11 @@ class TweetApi {
     return Result();
   }
 
-  static Future<Result> pushReply(TweetReply reply) async {
+  static Future<Result> pushReply(TweetReply reply, int tweetId) async {
     print(Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE);
 
     Response response = await httpUtil.dio.post(
-        Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE,
+        Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId',
         data: reply.toJson());
     print('----------------------------------------------${response.data}');
     String jsonTemp = prefix0.json.encode(response.data);
@@ -70,6 +70,15 @@ class TweetApi {
     print(Api.API_BASE_URL + Api.API_TWEET_HOT_QUERYY);
     Response response = await httpUtil.dio
         .get(Api.API_BASE_URL + Api.API_TWEET_HOT_QUERYY + '?orgId=$hot');
+    String jsonTemp = prefix0.json.encode(response.data);
+    Map<String, dynamic> json = prefix0.json.decode(jsonTemp);
+    return HotTweet.fromJson(json);
+  }
+
+  static Future<HotTweet> queryPraise(int tweetId) async {
+    print(Api.API_BASE_URL + Api.API_TWEET_HOT_QUERYY);
+    Response response = await httpUtil.dio
+        .get(Api.API_BASE_URL + Api.API_TWEET_HOT_QUERYY + '?tId=$tweetId');
     String jsonTemp = prefix0.json.encode(response.data);
     Map<String, dynamic> json = prefix0.json.decode(jsonTemp);
     return HotTweet.fromJson(json);

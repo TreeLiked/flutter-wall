@@ -1,8 +1,16 @@
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
+import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/toast_util.dart';
+import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -52,7 +60,35 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     double sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Container(
+        body: GestureDetector(
+      onLongPress: () {
+        BottomSheetUtil.showBottmSheetView(context, [
+          BottomSheetItem(
+              Icon(
+                Icons.file_download,
+                color: Colors.lightBlue,
+              ),
+              '保存到本地', () async {
+            var response = await Dio().get(
+                widget.galleryItems[currentIndex].url,
+                options: Options(responseType: ResponseType.bytes));
+            ImagePickerSaver.saveFile(
+                fileData: Uint8List.fromList(response.data));
+            ToastUtil.showToast('已保存到手机相册');
+            Navigator.pop(context);
+          }),
+          BottomSheetItem(
+              Icon(
+                Icons.warning,
+                color: Colors.grey,
+              ),
+              '举报', () {
+            ToastUtil.showToast('举报成功');
+            Navigator.pop(context);
+          }),
+        ]);
+      },
+      child: Container(
           decoration: widget.backgroundDecoration,
           constraints: BoxConstraints.expand(
             height: MediaQuery.of(context).size.height,
@@ -94,7 +130,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                             child: Text(
                                 '${currentIndex + 1} / ${widget.galleryItems.length}',
                                 style: TextStyle(color: Colors.black)),
-                          )
+                          ),
                         ]),
                   )),
               // widget.usePageViewWrapper
@@ -113,13 +149,13 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               //       )
             ],
           )),
-    );
+    ));
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     final PhotoWrapItem item = widget.galleryItems[index];
     return PhotoViewGalleryPageOptions(
-      imageProvider: NetworkImage(item.url),
+      imageProvider: CachedNetworkImageProvider(item.url),
       initialScale: PhotoViewComputedScale.contained,
       // minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
       minScale: PhotoViewComputedScale.contained,

@@ -1,23 +1,22 @@
 import 'dart:core';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/component/InputSelect.dart';
+import 'package:iap_app/common-widget/asset_image.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
-import 'package:iap_app/util/api.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:image_picker_saver/image_picker_saver.dart';
+import 'package:photo/photo.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class CreatePage extends StatefulWidget {
   final String title = "发布内容";
@@ -27,7 +26,8 @@ class CreatePage extends StatefulWidget {
   }
 }
 
-class _CreatePageState extends State<CreatePage> {
+class _CreatePageState extends State<CreatePage>
+    with AutomaticKeepAliveClientMixin {
   TextEditingController _controller = TextEditingController();
   FocusNode _focusNode = FocusNode();
 
@@ -36,13 +36,25 @@ class _CreatePageState extends State<CreatePage> {
   // 是否匿名
   bool _anonymous = false;
 
-  String _typeText = "选择内容标签";
+  String _typeText = "选择标签";
   String _typeName = "";
 
   int _textCountText = 0;
 
   // 是否禁用发布按钮
   bool _isPushBtnEnabled = false;
+
+  // 选中的图片
+  List<AssetEntity> pics = List();
+
+  List<AssetPathEntity> paths = List();
+
+  // 屏幕宽度
+  double sw;
+  // 去除边距剩余宽度
+  double remain;
+
+  double spacing = 2;
 
   void _updateTypeText(String text, String typeName) {
     setState(() {
@@ -202,56 +214,76 @@ class _CreatePageState extends State<CreatePage> {
     //     });
   }
 
-  InkWell _rowItem(IconData iconData, String text, Function callback, bool show,
-      IconData defaultIcon) {
-    return InkWell(
-      onTap: () {
-        callback();
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 13, horizontal: 30),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Icon(
-              iconData,
-              size: GlobalConfig.CREATE_ICON_SIZE,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text(
-                text,
-                style: TextStyle(fontSize: GlobalConfig.CREATE_ICON_FONT_SIZE),
-              ),
-            ),
-            Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: Text(
-                        defaultIcon == null ? "" : this._typeText,
-                        style: TextStyle(color: Colors.blue, fontSize: 14),
-                      ),
-                    ),
-                    Icon(
-                      defaultIcon == null ? Icons.done : defaultIcon,
-                      color: defaultIcon != null
-                          ? (this._typeText == ""
-                              ? GlobalConfig.tweetTimeColor
-                              : Colors.blue)
-                          : Colors.blue,
-                      size: show ? 23 : 0,
-                    ),
-                  ],
-                )),
-          ],
-        ),
+  void pickImage(PickType type) async {
+    var assetPathList = await PhotoManager.getImageAsset();
+
+    List<AssetEntity> imgList = await PhotoPicker.pickAsset(
+      // BuildContext required
+      context: context,
+
+      /// The following are optional parameters.
+      themeColor: Color(0xffF0F8FF),
+      // the title color and bottom color
+
+      textColor: Color(0xff696969),
+
+      // text color
+      padding: 1.0,
+      // item padding
+      dividerColor: Colors.grey,
+      // divider color
+      disableColor: Colors.grey.shade300,
+      // the check box disable color
+      itemRadio: 0.88,
+      // the content item radio
+      maxSelected: 9,
+      // max picker image count
+      // provider: I18nProvider.english,
+      provider: I18nProvider.chinese,
+      // i18n provider ,default is chinese. , you can custom I18nProvider or use ENProvider()
+      rowCount: 4,
+      // item row count
+
+      thumbSize: 150,
+      // preview thumb size , default is 64
+      sortDelegate: SortDelegate.common,
+      // default is common ,or you make custom delegate to sort your gallery
+      checkBoxBuilderDelegate: DefaultCheckBoxBuilderDelegate(
+        activeColor: Colors.white,
+        unselectedColor: Colors.white,
+        checkColor: Colors.green,
       ),
+      // default is DefaultCheckBoxBuilderDelegate ,or you make custom delegate to create checkbox
+
+      // loadingDelegate: this,
+      // if you want to build custom loading widget,extends LoadingDelegate, [see example/lib/main.dart]
+
+      badgeDelegate: const DurationBadgeDelegate(),
+      // badgeDelegate to show badge widget
+
+      pickType: type,
+      // photoPathList: assetPathList
     );
+
+    if (!CollectionUtil.isListEmpty(imgList)) {
+      // List<String> r = [];
+      // for (var e in imgList) {
+      //   var file = await e.file;
+      //   r.add(file.absolute.path);
+      // }
+      // currentSelected = r.join("\n\n");
+
+      List<AssetEntity> preview = [];
+      preview.addAll(imgList);
+
+      setState(() {
+        this.pics.clear();
+        this.pics.addAll(imgList);
+      });
+
+      // Navigator.push(context,
+      //     MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
+    }
   }
 
   void showSnackBarText(BuildContext context, String text, bool white) =>
@@ -270,6 +302,8 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   Widget build(BuildContext context) {
+    sw = MediaQuery.of(context).size.width;
+
     return new Scaffold(
         resizeToAvoidBottomPadding: true,
         appBar: new AppBar(
@@ -312,6 +346,7 @@ class _CreatePageState extends State<CreatePage> {
                   color: Colors.white,
                   padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
                   child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       // Container(
                       //   height: 10,
@@ -348,120 +383,112 @@ class _CreatePageState extends State<CreatePage> {
                           },
                         ),
                       ),
-                      Row(
+
+                      Wrap(
+                        alignment: WrapAlignment.start,
                         children: <Widget>[
-                          Container(
-                            child: Image.asset(
-                              "assets/images/pic_select.png",
-                              width: 140,
-                              height: 140,
-                            ),
-                          )
+                          Wrap(
+                            runSpacing: spacing,
+                            spacing: spacing,
+                            alignment: WrapAlignment.start,
+                            children: CollectionUtil.isListEmpty(pics)
+                                ? <Widget>[getIamgeSelWidget()]
+                                : getPicList(),
+                          ),
                         ],
                       ),
+
                       Container(
                         margin: EdgeInsets.only(top: 20),
-                        child: Wrap(
+                        child: Row(
                           children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () => _reverseEnableReply(),
-                                  child: Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xffF5F5F5),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20))),
-                                    child: Wrap(
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: <Widget>[
-                                        Icon(
-                                          _enbaleReply
-                                              ? Icons.lock_open
-                                              : Icons.lock,
-                                          color: _enbaleReply
-                                              ? Color(0xff87CEEB)
-                                              : Colors.grey,
-                                          size: 16,
-                                        ),
-                                        Text(
-                                          " " +
-                                              (_enbaleReply
-                                                  ? "允许评论 "
-                                                  : "禁止评论 "),
-                                          style: TextStyle(
-                                              fontSize: 12, color: Colors.grey),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () => _reverseAnonymous(),
-                                  child: Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xffF5F5F5),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20))),
-                                    child: Wrap(
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: <Widget>[
-                                        Icon(
-                                          _anonymous
-                                              ? Icons.visibility_off
-                                              : Icons.visibility,
-                                          color: _anonymous
-                                              ? Color(0xff87CEEB)
-                                              : Colors.grey,
-                                          size: 16,
-                                        ),
-                                        Text(
-                                          " " + (_anonymous ? "开启匿名" : "公开"),
-                                          style: TextStyle(
-                                              fontSize: 12, color: Colors.grey),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                    child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                            GestureDetector(
+                              onTap: () => _reverseEnableReply(),
+                              child: Container(
+                                margin: EdgeInsets.only(right: 10),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                    color: Color(0xffF5F5F5),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () => _forwardSelPage(),
-                                      child: Container(
-                                        margin: EdgeInsets.only(right: 10),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffF5F5F5),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20))),
-                                        child: Text(
-                                          "# " + _typeText,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color:
-                                                  !StringUtil.isEmpty(_typeName)
-                                                      ? Colors.blue
-                                                      : Colors.grey),
-                                        ),
-                                      ),
+                                    Icon(
+                                      _enbaleReply
+                                          ? Icons.lock_open
+                                          : Icons.lock,
+                                      color: _enbaleReply
+                                          ? Color(0xff87CEEB)
+                                          : Colors.grey,
+                                      size: 16,
+                                    ),
+                                    Text(
+                                      " " + (_enbaleReply ? "允许评论 " : "禁止评论 "),
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.grey),
                                     ),
                                   ],
-                                ))
-                              ],
+                                ),
+                              ),
                             ),
+                            GestureDetector(
+                              onTap: () => _reverseAnonymous(),
+                              child: Container(
+                                margin: EdgeInsets.only(right: 10),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                    color: Color(0xffF5F5F5),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: <Widget>[
+                                    Icon(
+                                      _anonymous
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: _anonymous
+                                          ? Color(0xff87CEEB)
+                                          : Colors.grey,
+                                      size: 16,
+                                    ),
+                                    Text(
+                                      " " + (_anonymous ? "开启匿名" : "公开"),
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                                child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () => _forwardSelPage(),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffF5F5F5),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20))),
+                                    child: Text(
+                                      "# " + _typeText,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: !StringUtil.isEmpty(_typeName)
+                                              ? Colors.blue
+                                              : Colors.grey),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )),
                             Divider(
                               height: 1.0,
                               indent: 0.0,
@@ -483,5 +510,37 @@ class _CreatePageState extends State<CreatePage> {
     setState(() {
       _focusNode.unfocus();
     });
+  }
+
+  Widget getIamgeSelWidget() {
+    double width = (sw - 25 - spacing * 2) / 3;
+
+    return GestureDetector(
+        onTap: () {
+          pickImage(PickType.onlyImage);
+        },
+        child: Container(
+          height: width,
+          child: Image.asset("assets/images/pic_select.png", width: width),
+        ));
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  List<Widget> getPicList() {
+    double width = (sw - 25 - spacing * 3) / 3;
+    List<Widget> widgets = List();
+
+    pics
+        .map((f) => AssetImageWidget(
+              assetEntity: f,
+              width: width,
+              height: width,
+              boxFit: BoxFit.cover,
+            ))
+        .forEach((imageWidget) => widgets.add(imageWidget));
+    widgets.add(getIamgeSelWidget());
+    return widgets;
   }
 }

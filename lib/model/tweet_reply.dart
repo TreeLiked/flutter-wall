@@ -7,6 +7,8 @@ part 'tweet_reply.g.dart';
 class TweetReply {
   int id;
 
+  int tweetId;
+
   int parentId;
 
   int type;

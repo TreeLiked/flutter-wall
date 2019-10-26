@@ -2,8 +2,11 @@ import 'dart:ui';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/util/common_util.dart';
 
+import 'circle_header.dart';
 import 'flexible_detail_bar.dart';
 
 class HotAppBarWidget extends StatelessWidget {
@@ -14,12 +17,14 @@ class HotAppBarWidget extends StatelessWidget {
   final double sigma;
   final VoidCallback playOnTap;
   final int count;
+  final LinkHeaderNotifier headerNotifier;
 
   HotAppBarWidget({
     @required this.expandedHeight,
     @required this.content,
     @required this.title,
     @required this.backgroundImg,
+    @required this.headerNotifier,
     this.sigma = 5,
     this.playOnTap,
     this.count,
@@ -28,6 +33,11 @@ class HotAppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      actions: <Widget>[
+        CircleHeader(
+          headerNotifier,
+        ),
+      ],
       centerTitle: true,
       expandedHeight: expandedHeight,
       pinned: true,

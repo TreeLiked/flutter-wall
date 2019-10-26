@@ -50,7 +50,7 @@ class TweetTypeEntity {
       name: "ASK_FOR_MARRIAGE",
       zhTag: "征婚",
       intro: "我想早恋，但已经晚了",
-      color: Colors.red,
+      color: Color(0xffFA8072),
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_marriage.png");
   static const SOMEONE_FIND = const TweetTypeEntity(
@@ -83,7 +83,7 @@ class TweetTypeEntity {
       iconColor: Color(0xffF08080),
       intro: "多说话，多喝热水",
       name: "GOSSIP",
-      color: Color(0xffF08080),
+      color: Color(0xffFFFC0CB),
       coverUrl:
           'https://tva1.sinaimg.cn/large/006y8mN6ly1g870g0gah7j30qo0xbwl7.jpg',
       zhTag: "闲聊");

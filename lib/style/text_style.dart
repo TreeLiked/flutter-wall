@@ -40,6 +40,13 @@ class MyDefaultTextStyle {
     );
   }
 
+  static TextStyle getTweetReplyOtherStyle(double fontSize) {
+    return TextStyle(
+      color: Colors.black87,
+      fontSize: fontSize,
+    );
+  }
+
   static Text getBottomNavTextItem(String text) {
     return Text(text, style: TextStyle(fontSize: 12));
   }

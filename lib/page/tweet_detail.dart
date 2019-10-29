@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,9 @@ import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
+import 'package:iap_app/util/widget_util.dart';
+
+import '../application.dart';
 
 class TweetDetail extends StatefulWidget {
   final BaseTweet _tweet;
@@ -158,22 +162,6 @@ class TweetDetailState extends State<TweetDetail>
     );
   }
 
-  Widget _loveContainer() {
-    return Container(
-      padding: EdgeInsets.only(top: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(
-            "assets/images/heart.png",
-            width: 66,
-            height: 66,
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _bodyContainer() {
     return Container(
       padding: EdgeInsets.only(top: 5),
@@ -246,57 +234,49 @@ class TweetDetailState extends State<TweetDetail>
     return list;
   }
 
-  List<Widget> _getPraiseList(List<Account> data) {
-    List<Widget> items = List();
-    items.add(GestureDetector(
-        onTap: () {
-          // updatePraise();
-        },
-        child: Padding(
-          padding: EdgeInsets.only(right: 2),
-          child: Image.asset(
-            // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-            widget._tweet.loved
-                ? PathConstant.ICON_PRAISE_ICON_PRAISE
-                : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-            width: 18,
-            height: 18,
-          ),
-        )));
+  Widget _getPraiseList(List<Account> data) {
+    List<InlineSpan> spans = List();
+    spans.add(WidgetSpan(
+        child: GestureDetector(
+            onTap: () {
+              updatePraise(widget._tweet);
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 2),
+              child: Image.asset(
+                // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+                widget._tweet.loved
+                    ? PathConstant.ICON_PRAISE_ICON_PRAISE
+                    : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+                width: 18,
+                height: 18,
+              ),
+            ))));
 
     if (!CollectionUtil.isListEmpty(data)) {
-      for (int i = 0; i < data.length; i++) {
+      for (int i = 0;
+          i < data.length && i < GlobalConfig.MAX_DISPLAY_PRAISE;
+          i++) {
         Account account = data[i];
-        items.add(GestureDetector(
-          child: Padding(
-            padding: EdgeInsets.only(left: 5),
-            child: Text(
-              "${account.nick}" + (i != data.length - 1 ? '、' : ' '),
-              softWrap: true,
-              style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
-            ),
-          ),
-        ));
+        spans.add(TextSpan(
+            text: "${account.nick}" + (i != data.length - 1 ? '、' : ' '),
+            style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                // goAccountDetail();
+              }));
       }
+
       if (data.length > GlobalConfig.MAX_DISPLAY_PRAISE_DETAIL) {
         int diff = data.length - GlobalConfig.MAX_DISPLAY_PRAISE;
-        items.add(Text(
-          " 等共$diff人觉得很赞",
+        spans.add(TextSpan(
+          text: " 等共$diff人觉得很赞",
           style: TextStyle(fontSize: 13),
         ));
       }
     }
-    return items;
 
-    // return GestureDetector(
-    //     onTap: () => _forwardDetail(),
-    //     child: Container(
-    //       margin: EdgeInsets.only(top: 10),
-    //       child: Wrap(
-    //           alignment: WrapAlignment.start,
-    //           crossAxisAlignment: WrapCrossAlignment.center,
-    //           children: items),
-    //     ));
+    return RichText(text: TextSpan(children: spans), softWrap: true);
   }
 
   Widget _textTitleRow(String title, {String subTitle = '', Widget tail}) {
@@ -335,26 +315,36 @@ class TweetDetailState extends State<TweetDetail>
   }
 
   Widget _replyTitleContainer() {
+    Widget reply = Icon(
+      Icons.message,
+      size: 20,
+      color: Colors.grey,
+    );
     if (!widget._tweet.enableReply) {
       return _textTitleRow('评论关闭');
     }
     if (CollectionUtil.isListEmpty(widget._tweet.dirReplies)) {
-      return _textTitleRow('暂无评论');
+      return _textTitleRow('暂无评论', tail: reply);
     } else {
-      return _textTitleRow('评论', subTitle: '${widget._tweet.replyCount}');
+      return _textTitleRow('评论',
+          subTitle: '${widget._tweet.replyCount}', tail: reply);
     }
   }
 
   Widget _praiseTitleContainer() {
-    Widget praise = Icon(
-      Icons.touch_app,
-      size: 20,
-    );
+    Widget wgt = WidgetUtil.getAsset(
+        widget._tweet.loved
+            ? PathConstant.ICON_PRAISE_ICON_PRAISE
+            : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+        click: true, callback: () {
+      updatePraise(widget._tweet);
+    });
+
     if (widget._tweet.replyCount <= 0) {
-      return _textTitleRow('快来第一个点赞吧');
+      return _textTitleRow('快来第一个点赞吧', tail: wgt);
     } else {
       return _textTitleRow('点赞',
-          subTitle: '${widget._tweet.praise}', tail: praise);
+          subTitle: '${widget._tweet.praise}', tail: wgt);
     }
   }
 
@@ -383,11 +373,11 @@ class TweetDetailState extends State<TweetDetail>
                 List<Account> list = async.data;
                 return Wrap(
                   alignment: WrapAlignment.start,
-                  children: _getPraiseList(list),
+                  children: [_getPraiseList(list)],
                 );
               }
-              return Container();
             }
+            return Container();
           },
           future: _getPraiseTask),
     );
@@ -429,6 +419,24 @@ class TweetDetailState extends State<TweetDetail>
     // list.addAll(_getReplyList());
   }
 
+  void updatePraise(BaseTweet tweet) {
+    if (tweet.latestPraise == null) {
+      tweet.latestPraise = List();
+    }
+    setState(() {
+      tweet.loved = !tweet.loved;
+      if (tweet.loved) {
+        tweet.praise++;
+        tweet.latestPraise.insert(0, Application.getAccount);
+      } else {
+        tweet.praise--;
+        tweet.latestPraise
+            .removeWhere((account) => account.id == Application.getAccount.id);
+      }
+      TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
+    });
+  }
+
   Widget _leftContainer(String headUrl, bool sub) {
     return Container(
       padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
@@ -458,7 +466,8 @@ class TweetDetailState extends State<TweetDetail>
             TextSpan(
                 text: nick,
                 style: MyDefaultTextStyle.getTweetNickStyle(
-                    SizeConstant.TWEET_FONT_SIZE - 2)),
+                    SizeConstant.TWEET_FONT_SIZE - 2,
+                    bold: false)),
             TextSpan(
                 text: StringUtil.isEmpty(tarNick) ? '' : ' 回复 ',
                 style: MyDefaultTextStyle.getTweetTimeStyle(
@@ -466,7 +475,8 @@ class TweetDetailState extends State<TweetDetail>
             TextSpan(
                 text: StringUtil.isEmpty(tarNick) ? '' : tarNick,
                 style: MyDefaultTextStyle.getTweetNickStyle(
-                    SizeConstant.TWEET_FONT_SIZE - 2))
+                    SizeConstant.TWEET_FONT_SIZE - 2,
+                    bold: false))
           ]),
         ),
         // Expanded(

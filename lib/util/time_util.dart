@@ -22,7 +22,10 @@ class TimeUtil {
           return "$diffHour小时前";
         }
         // 同一天显示上午下午
-        return timeInDay(dt.hour) + "${dt.hour}:${dt.minute}";
+        return timeInDay(dt.hour) +
+            (dt.minute >= 10
+                ? "${dt.hour}:${dt.minute}"
+                : "${dt.hour}:0${dt.minute}");
       } else {
         if (DateUtil.isYesterdayByMillis(tarMs, nowMs)) {
           // 如果小于24小时，显示昨天

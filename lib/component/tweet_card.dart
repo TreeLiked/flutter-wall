@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:fluttertoast/fluttertoast.dart';
@@ -329,12 +330,16 @@ class TweetCardState extends State<TweetCard> {
 
   Widget _signatureContainer(String sig) {
     return Container(
-      child: Text(!tweet.anonymous ? sig : TextConstant.TWEET_ANONYMOUS_SIG,
-          style: TextStyle(
-            fontSize: SizeConstant.TWEET_TIME_SIZE,
-            color: ColorConstant.TWEET_TIME_COLOR,
-          )),
-    );
+        child: Text(
+      !tweet.anonymous ? sig : TextConstant.TWEET_ANONYMOUS_SIG,
+      style: TextStyle(
+        fontSize: SizeConstant.TWEET_TIME_SIZE,
+        color: ColorConstant.TWEET_TIME_COLOR,
+      ),
+      overflow: TextOverflow.ellipsis,
+      softWrap: true,
+      maxLines: 2,
+    ));
   }
 
   Widget _typeContainer() {
@@ -454,38 +459,39 @@ class TweetCardState extends State<TweetCard> {
   Widget _praiseContainer() {
     // 最近点赞的人数
     List<Widget> items = List();
-    items.add(GestureDetector(
-        onTap: () {
-          updatePraise();
-        },
-        child: Padding(
-          padding: EdgeInsets.only(right: 2),
-          child: Image.asset(
-            // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-            tweet.loved
-                ? PathConstant.ICON_PRAISE_ICON_PRAISE
-                : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-            width: 18,
-            height: 18,
-          ),
-        )));
+
+    List<InlineSpan> spans = List();
+    spans.add(WidgetSpan(
+        child: GestureDetector(
+            onTap: () {
+              updatePraise();
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 2),
+              child: Image.asset(
+                // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+                tweet.loved
+                    ? PathConstant.ICON_PRAISE_ICON_PRAISE
+                    : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+                width: 18,
+                height: 18,
+              ),
+            ))));
     List<Account> praiseList = tweet.latestPraise;
     if (!CollectionUtil.isListEmpty(praiseList)) {
       for (int i = 0;
           i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE;
           i++) {
         Account account = praiseList[i];
-        items.add(GestureDetector(
-          child: Padding(
-            padding: EdgeInsets.only(left: 5),
-            child: Text(
-              "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
-              softWrap: true,
-              style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
-            ),
-          ),
-        ));
+        spans.add(TextSpan(
+            text: "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
+            style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                goAccountDetail();
+              }));
       }
+
       if (praiseList.length > GlobalConfig.MAX_DISPLAY_PRAISE) {
         int diff = praiseList.length - GlobalConfig.MAX_DISPLAY_PRAISE;
         items.add(Text(
@@ -494,6 +500,11 @@ class TweetCardState extends State<TweetCard> {
         ));
       }
     }
+    Widget widget = RichText(
+      text: TextSpan(children: spans),
+      softWrap: true,
+    );
+    items.add(widget);
 
     return GestureDetector(
         onTap: () => _forwardDetail(),
@@ -505,6 +516,8 @@ class TweetCardState extends State<TweetCard> {
               children: items),
         ));
   }
+
+  void goAccountDetail() {}
 
   Widget _commentContainer() {
     if (tweet.enableReply) {
@@ -653,7 +666,7 @@ class TweetCardState extends State<TweetCard> {
                           : MyDefaultTextStyle.getTweetReplyNickStyle(14)),
                   TextSpan(
                     text: reply.type == 2 ? ' 回复 ' : '',
-                    style: TextStyle(color: Colors.black87, fontSize: 14),
+                    style: MyDefaultTextStyle.getTweetReplyOtherStyle(13),
                   ),
                   TextSpan(
                       text: reply.type == 2 ? tarNick : '',
@@ -750,7 +763,7 @@ class TweetCardState extends State<TweetCard> {
                                           )
                                         ],
                                       ),
-                                      Row(
+                                      Wrap(
                                         children: <Widget>[
                                           _signatureContainer(
                                               tweet.account.signature),

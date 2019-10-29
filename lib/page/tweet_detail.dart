@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
@@ -17,8 +21,9 @@ import 'package:iap_app/util/time_util.dart';
 
 class TweetDetail extends StatefulWidget {
   final BaseTweet _tweet;
+  final int hotRank;
 
-  TweetDetail(this._tweet);
+  TweetDetail(this._tweet, {this.hotRank = -1});
   @override
   State<StatefulWidget> createState() {
     print('TweetDetail create state');
@@ -28,12 +33,10 @@ class TweetDetail extends StatefulWidget {
 
 class TweetDetailState extends State<TweetDetail>
     with AutomaticKeepAliveClientMixin {
-  //获取实例
-  OverlayState overlayState;
-//创建OverlayEntry
-  OverlayEntry overlayEntry;
-
   double sw;
+
+  Future _getPraiseTask;
+  Future _getReplyTask;
 
   TweetDetailState() {
     print('TweetDETAIL state construct');
@@ -41,6 +44,22 @@ class TweetDetailState extends State<TweetDetail>
   @override
   void initState() {
     super.initState();
+    _getReplyTask = getTweetReply();
+    _getPraiseTask = getTweetPraises();
+  }
+
+  Future<List<TweetReply>> getTweetReply() async {
+    return await TweetApi.quertTweetReply(widget._tweet.id, true);
+  }
+
+  Future<List<Account>> getTweetPraises() async {
+    return await TweetApi.quertTweetPraise(widget._tweet.id);
+  }
+
+  Future refresh() async {
+    setState(() {
+      _getReplyTask = getTweetReply();
+    });
   }
 
   Widget _spaceRow() {
@@ -74,15 +93,14 @@ class TweetDetailState extends State<TweetDetail>
                       TextSpan(
                         text: widget._tweet.account.nick,
                         style: TextStyle(
-                            fontSize: SizeConstant.TWEET_FONT_SIZE + 1,
-                            fontWeight: FontWeight.bold,
+                            fontSize: SizeConstant.TWEET_FONT_SIZE,
                             color: ColorConstant.TWEET_NICK_COLOR),
                       ),
                       TextSpan(
-                          text: " 发表于" +
+                          text: " 发表于 " +
                               TimeUtil.getShortTime(widget._tweet.gmtCreated),
                           style: TextStyle(
-                              fontSize: SizeConstant.TWEET_TIME_SIZE + 1,
+                              fontSize: SizeConstant.TWEET_TIME_SIZE,
                               color: Colors.grey))
                     ]),
                   ),
@@ -96,13 +114,44 @@ class TweetDetailState extends State<TweetDetail>
   }
 
   Widget _viewContainer() {
+    const Radius temp = Radius.circular(8);
     return Container(
-      padding: EdgeInsets.only(top: 5),
+      padding: EdgeInsets.only(top: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text(
-            "${widget._tweet.views} 次浏览",
-            style: MyDefaultTextStyle.getTweetTimeStyle(13),
+          Container(
+            child: Row(
+              children: <Widget>[
+                Text(
+                  "${widget._tweet.views} 次浏览",
+                  style: MyDefaultTextStyle.getTweetTimeStyle(13),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 7),
+                  decoration: BoxDecoration(
+                      color: tweetTypeMap[widget._tweet.type].color,
+                      borderRadius: BorderRadius.only(
+                        topLeft: temp,
+                        topRight: temp,
+                        bottomLeft: temp,
+                        // bottomRight: temp,
+                      )),
+                  child: Text(
+                    '# ' + tweetTypeMap[widget._tweet.type].zhTag,
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
           )
         ],
       ),
@@ -175,14 +224,10 @@ class TweetDetailState extends State<TweetDetail>
     );
   }
 
-  List<Widget> _getReplyList() {
-    if (CollectionUtil.isListEmpty(widget._tweet.dirReplies)) {
-      return [];
-    }
+  List<Widget> _getReplyList(List<TweetReply> data) {
     List<Widget> list = new List();
 
-    List<TweetReply> originReversed =
-        widget._tweet.dirReplies.reversed.toList();
+    List<TweetReply> originReversed = data.reversed.toList();
     int displayCnt = 0;
     for (var dirTr in originReversed) {
       if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY) {
@@ -197,113 +242,191 @@ class TweetDetailState extends State<TweetDetail>
         });
       }
     }
-    // if (widget._tweet.replyCount > GlobalConfig.MAX_DISPLAY_REPLY) {
-    //   list.add(_singleReplyContainer(
-    //       "",
-    //       "",
-    //       "查看更多 ${widget._tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复...",
-    //       false,
-    //       true));
-    // }
 
     return list;
   }
 
-  String _getNickFromAccount(Account account) {
-    if (account != null) {
-      if (!StringUtil.isEmpty(account.nick)) {
-        return account.nick;
+  List<Widget> _getPraiseList(List<Account> data) {
+    List<Widget> items = List();
+    items.add(GestureDetector(
+        onTap: () {
+          // updatePraise();
+        },
+        child: Padding(
+          padding: EdgeInsets.only(right: 2),
+          child: Image.asset(
+            // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+            widget._tweet.loved
+                ? PathConstant.ICON_PRAISE_ICON_PRAISE
+                : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+            width: 18,
+            height: 18,
+          ),
+        )));
+
+    if (!CollectionUtil.isListEmpty(data)) {
+      for (int i = 0; i < data.length; i++) {
+        Account account = data[i];
+        items.add(GestureDetector(
+          child: Padding(
+            padding: EdgeInsets.only(left: 5),
+            child: Text(
+              "${account.nick}" + (i != data.length - 1 ? '、' : ' '),
+              softWrap: true,
+              style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
+            ),
+          ),
+        ));
+      }
+      if (data.length > GlobalConfig.MAX_DISPLAY_PRAISE_DETAIL) {
+        int diff = data.length - GlobalConfig.MAX_DISPLAY_PRAISE;
+        items.add(Text(
+          " 等共$diff人觉得很赞",
+          style: TextStyle(fontSize: 13),
+        ));
       }
     }
-    return '';
+    return items;
+
+    // return GestureDetector(
+    //     onTap: () => _forwardDetail(),
+    //     child: Container(
+    //       margin: EdgeInsets.only(top: 10),
+    //       child: Wrap(
+    //           alignment: WrapAlignment.start,
+    //           crossAxisAlignment: WrapCrossAlignment.center,
+    //           children: items),
+    //     ));
   }
 
-  Widget _textTitleRow(String title) {
-    return Row(
-      children: <Widget>[Text(title)],
-    );
-  }
-
-  Widget _praiseContainer() {
-    List<Widget> list = new List();
-    list.add(_textTitleRow('点赞'));
+  Widget _textTitleRow(String title, {String subTitle = '', Widget tail}) {
     return Container(
-      padding: EdgeInsets.only(top: 15),
+      margin: EdgeInsets.only(top: 15),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, children: list),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _replyContainer() {
-    List<Widget> list = new List();
-    list.add(_textTitleRow('评论'));
-    list.addAll(_getReplyList());
-    return Container(
-      padding: EdgeInsets.only(top: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, children: list),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _singleReplyContainer(
-      String user, String destUser, String body, bool isSub, bool bottom) {
-    if (bottom) {
-      return Padding(
-        padding: EdgeInsets.only(top: 5),
-        child: Text(
-          body,
-          style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
-        ),
-      );
-    }
-    return Container(
-      padding: EdgeInsets.only(bottom: 5, left: isSub ? 10 : 0),
-      child: Wrap(
-        // mainAxisAlignment: MainAxisAlignment.start,
-
         children: <Widget>[
           RichText(
-            maxLines: 10,
-            overflow: TextOverflow.fade,
-            softWrap: true,
             text: TextSpan(children: [
               TextSpan(
-                  text: user,
-                  style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR)),
+                  text: title + '  ',
+                  style: TextStyle(color: Colors.grey, fontSize: 14)),
               TextSpan(
-                text: !StringUtil.isEmpty(destUser) ? ' 回复 ' : '',
-                style: TextStyle(color: Colors.grey),
-              ),
-              TextSpan(
-                  text: destUser,
-                  style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR)),
-              TextSpan(
-                text: !StringUtil.isEmpty(destUser) ? ' ���：' : '：',
-                style: TextStyle(color: Colors.grey),
-              ),
-              TextSpan(
-                text: body,
-                style: TextStyle(color: Colors.grey),
-              ),
+                  text: subTitle,
+                  style: TextStyle(color: Colors.lightGreen, fontSize: 13)),
             ]),
           ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(padding: EdgeInsets.only(right: 10), child: tail)
+              ],
+            ),
+          )
         ],
       ),
     );
+  }
+
+  Widget _templateWidget(Widget titleWidget, Widget bodyWidget) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[titleWidget, bodyWidget],
+    );
+  }
+
+  Widget _replyTitleContainer() {
+    if (!widget._tweet.enableReply) {
+      return _textTitleRow('评论关闭');
+    }
+    if (CollectionUtil.isListEmpty(widget._tweet.dirReplies)) {
+      return _textTitleRow('暂无评论');
+    } else {
+      return _textTitleRow('评论', subTitle: '${widget._tweet.replyCount}');
+    }
+  }
+
+  Widget _praiseTitleContainer() {
+    Widget praise = Icon(
+      Icons.touch_app,
+      size: 20,
+    );
+    if (widget._tweet.replyCount <= 0) {
+      return _textTitleRow('快来第一个点赞吧');
+    } else {
+      return _textTitleRow('点赞',
+          subTitle: '${widget._tweet.praise}', tail: praise);
+    }
+  }
+
+  Widget _praiseFutureContainer() {
+    return Container(
+      margin: EdgeInsets.only(top: 5),
+      child: FutureBuilder<List<Account>>(
+          builder: (context, AsyncSnapshot<List<Account>> async) {
+            //在这里根据快照的状态，返回相应的widget
+            if (async.connectionState == ConnectionState.active ||
+                async.connectionState == ConnectionState.waiting) {
+              return new Center(
+                child: new SpinKitThreeBounce(
+                  color: Colors.lightGreen,
+                  size: 18,
+                ),
+              );
+            }
+            if (async.connectionState == ConnectionState.done) {
+              debugPrint("done");
+              if (async.hasError) {
+                return new Center(
+                  child: new Text("${async.error}"),
+                );
+              } else if (async.hasData) {
+                List<Account> list = async.data;
+                return Wrap(
+                  alignment: WrapAlignment.start,
+                  children: _getPraiseList(list),
+                );
+              }
+              return Container();
+            }
+          },
+          future: _getPraiseTask),
+    );
+    // list.addAll(_getReplyList());
+  }
+
+  Widget _replyFutureContainer() {
+    if (!widget._tweet.enableReply) {
+      return Container(height: 0);
+    }
+    return Container(
+      child: FutureBuilder<List<TweetReply>>(
+          builder: (context, AsyncSnapshot<List<TweetReply>> async) {
+            //在这里根据快照的状态，返回相应的widget
+            if (async.connectionState == ConnectionState.active ||
+                async.connectionState == ConnectionState.waiting) {
+              return new Center(
+                child: new SpinKitThreeBounce(
+                  color: Colors.lightGreen,
+                  size: 18,
+                ),
+              );
+            }
+            if (async.connectionState == ConnectionState.done) {
+              debugPrint("done");
+              if (async.hasError) {
+                return _textTitleRow('拉取回复失败');
+              } else if (async.hasData) {
+                List<TweetReply> list = async.data;
+                return Column(
+                  children: _getReplyList(list),
+                );
+              }
+            }
+            return Container();
+          },
+          future: _getReplyTask),
+    );
+    // list.addAll(_getReplyList());
   }
 
   Widget _leftContainer(String headUrl, bool sub) {
@@ -346,18 +469,18 @@ class TweetDetailState extends State<TweetDetail>
                     SizeConstant.TWEET_FONT_SIZE - 2))
           ]),
         ),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Text(time,
-                  style: TextStyle(
-                    fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
-                    color: GlobalConfig.tweetTimeColor,
-                  ))
-            ],
-          ),
-        )
+        // Expanded(
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.end,
+        //     children: <Widget>[
+        //       Text(time,
+        //           style: TextStyle(
+        //             fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
+        //             color: GlobalConfig.tweetTimeColor,
+        //           ))
+        //     ],
+        //   ),
+        // )
       ],
     );
   }
@@ -477,7 +600,8 @@ class TweetDetailState extends State<TweetDetail>
     sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: ColorConstant.DEFAULT_BAR_BACK_COLOR,
+      backgroundColor: widget.hotRank != -1 ? Color(0xff4f4f4f) : Colors.white,
+      // backgroundColor: Colors.white,
       body: NestedScrollView(
         // headerSliverBuilder: null,
         headerSliverBuilder: (context, innerBoxIsScrolled) =>
@@ -489,14 +613,22 @@ class TweetDetailState extends State<TweetDetail>
               borderRadius: BorderRadius.all(Radius.circular(15))),
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _spaceRow(),
               _bodyContainer(),
               _picContainer(),
               _viewContainer(),
+              Divider(),
               // _loveContainer(),
-              _praiseContainer(),
-              _replyContainer(),
+              _templateWidget(
+                  _praiseTitleContainer(), _praiseFutureContainer()),
+              _templateWidget(_replyTitleContainer(), _replyFutureContainer()),
+
+              // _praiseContainer(),
+
+              // _replyFutureContainer(),
+              // Container(height: ScreenUtil.screenWidthDp)
             ],
           ),
         )),
@@ -507,27 +639,79 @@ class TweetDetailState extends State<TweetDetail>
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
+          backgroundColor:
+              widget.hotRank != -1 ? Color(0xff4f4f4f) : Colors.white,
           centerTitle: true, //标题居中
-          title: Text('详情'),
+          title: Text('详情',
+              style: TextStyle(
+                  color: widget.hotRank != -1 ? Colors.white : Colors.black)),
           elevation: 0.5,
-          expandedHeight: 120,
+          expandedHeight: widget.hotRank != -1 ? 110 : 0,
           floating: true,
           pinned: true,
           snap: false,
-          flexibleSpace: Container(
-            margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 60),
-            padding: EdgeInsets.only(left: 20),
-            decoration: BoxDecoration(color: Colors.white),
-            child: Row(
-              children: <Widget>[
-                Text(
-                  '今日热门',
-                  style: TextStyle(color: Colors.black),
+          leading: null,
+          flexibleSpace: widget.hotRank != -1
+              ? Container(
+                  margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 60),
+                  // padding: EdgeInsets.only(left: 20),
+                  // decoration: BoxDecoration(color: Colors.white),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RichText(
+                          text: TextSpan(children: [
+                        TextSpan(
+                            text: '当前热门榜：',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 15)),
+                        TextSpan(
+                            text: 'No. ',
+                            style:
+                                TextStyle(fontSize: 15, color: Colors.white)),
+                        TextSpan(
+                            text: '${widget.hotRank} ',
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.redAccent))
+                      ])),
+                      getFires(widget.hotRank),
+                      // Text(
+                      //   '当前热门榜单: No' + widget.hotRank.toString(),
+                      //   style: TextStyle(color: Colors.white70),
+                      // )
+                    ],
+                  ),
                 )
-              ],
-            ),
-          )),
+              : Container(
+                  height: 0,
+                )),
     ];
+  }
+
+  Widget getFires(int rank) {
+    List<Widget> list = List();
+    if (rank == 1) {
+      list.add(Image.asset(
+        PathConstant.ICON_CHAMPIN,
+        width: 18,
+        height: 18,
+      ));
+    } else {
+      int count = 5 - rank;
+      if (count >= 0) {
+        for (int i = 0; i < count; i++) {
+          list.add(Image.asset(
+            PathConstant.ICON_FIRE,
+            width: 18,
+            height: 18,
+          ));
+        }
+      }
+    }
+
+    return Row(
+      children: list,
+    );
   }
 
   @override

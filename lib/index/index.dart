@@ -10,6 +10,7 @@ import 'package:iap_app/page/home_page.dart';
 import 'package:iap_app/page/hot_page.dart';
 import 'package:iap_app/part/bottomBarView.dart';
 import 'package:iap_app/part/hot_today.dart';
+import 'package:iap_app/style/text_style.dart';
 
 class Index extends StatefulWidget {
   @override
@@ -33,28 +34,28 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     super.initState();
     _navigationViews = <NavigationIconView>[
       NavigationIconView(
-          icon: Icon(Icons.home),
+          icon: Icon(Icons.home, size: 20),
           title: Container(
-            child: Text('推荐'),
+            child: MyDefaultTextStyle.getBottomNavTextItem('推荐'),
             // height: 0.0,
           ),
           vsync: this),
       NavigationIconView(
-          icon: Icon(Icons.room),
+          icon: Icon(Icons.room, size: 20),
           title: Container(
-            child: Text('热门'),
+            child: MyDefaultTextStyle.getBottomNavTextItem('热门'),
           ),
           vsync: this),
       NavigationIconView(
-          icon: Icon(Icons.notifications),
+          icon: Icon(Icons.notifications, size: 20),
           title: Container(
-            child: Text('通知'),
+            child: MyDefaultTextStyle.getBottomNavTextItem('通知'),
           ),
           vsync: this),
       NavigationIconView(
-          icon: Icon(Icons.person),
+          icon: Icon(Icons.person, size: 20),
           title: Container(
-            child: Text('我的'),
+            child: MyDefaultTextStyle.getBottomNavTextItem('我的'),
           ),
           vsync: this),
     ];
@@ -139,7 +140,10 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     //     body: IndexedStack(index: _currentIndex, children: _pageList),
     //     bottomNavigationBar: bottomNavigationBar);
     return Scaffold(
-        bottomNavigationBar: bottomNavigationBar,
+        bottomNavigationBar: PreferredSize(
+            child: bottomNavigationBar,
+            preferredSize:
+                Size.fromHeight(MediaQuery.of(context).size.height * 0.04)),
         // body: bodyList[currentIndex],
         body: PageView(
           controller: pageController,

@@ -6,6 +6,9 @@ class PathConstant {
   static const String ICON_CHECKBOX_SEL = "assets/icons/cbx_ck.png";
   static const String ICON_CHECKBOX_UNSEL = "assets/icons/cbx_uck.png";
 
+  static const String ICON_PRAISE_ICON_UNPRAISE = "assets/icons/thumb_up.png";
+  static const String ICON_PRAISE_ICON_PRAISE = "assets/icons/thumb_up_2.png";
+
   static const String ICON_SEL = "assets/icons/sel.png";
 
   static const String ICON_TICK = "assets/icons/tick.png";
@@ -17,4 +20,7 @@ class PathConstant {
 
   static const String ANONYMOUS_PROFILE =
       "https://tva1.sinaimg.cn/large/006y8mN6ly1g8bkrnj4l5j30b40b4wew.jpg";
+
+  static const String ICON_FIRE = "assets/icons/fire.png";
+  static const String ICON_CHAMPIN = "assets/icons/champin.png";
 }

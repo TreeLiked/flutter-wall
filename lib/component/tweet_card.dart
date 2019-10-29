@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/component/divider.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -21,6 +22,7 @@ import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
@@ -299,6 +301,9 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _nickContainer(String nickName) {
+    if (tweet.anonymous) {
+      tweet.account.nick = TextConstant.TWEET_ANONYMOUS_NICK;
+    }
     return tweet.anonymous
         ? Container(
             child: Text(
@@ -352,7 +357,7 @@ class TweetCardState extends State<TweetCard> {
 
   Widget _extraContainer() {
     return Container(
-      padding: EdgeInsets.only(top: 15),
+      padding: EdgeInsets.only(top: 10),
       child: GestureDetector(
         onTap: () => _forwardDetail(),
         child: Row(
@@ -428,36 +433,77 @@ class TweetCardState extends State<TweetCard> {
     );
   }
 
+  void updatePraise() {
+    if (tweet.latestPraise == null) {
+      tweet.latestPraise = List();
+    }
+    setState(() {
+      tweet.loved = !tweet.loved;
+      if (tweet.loved) {
+        tweet.praise++;
+        tweet.latestPraise.insert(0, Application.getAccount);
+      } else {
+        tweet.praise--;
+        tweet.latestPraise
+            .removeWhere((account) => account.id == Application.getAccount.id);
+      }
+      TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
+    });
+  }
+
   Widget _praiseContainer() {
+    // 最近点赞的人数
+    List<Widget> items = List();
+    items.add(GestureDetector(
+        onTap: () {
+          updatePraise();
+        },
+        child: Padding(
+          padding: EdgeInsets.only(right: 2),
+          child: Image.asset(
+            // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+            tweet.loved
+                ? PathConstant.ICON_PRAISE_ICON_PRAISE
+                : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+            width: 18,
+            height: 18,
+          ),
+        )));
+    List<Account> praiseList = tweet.latestPraise;
+    if (!CollectionUtil.isListEmpty(praiseList)) {
+      for (int i = 0;
+          i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE;
+          i++) {
+        Account account = praiseList[i];
+        items.add(GestureDetector(
+          child: Padding(
+            padding: EdgeInsets.only(left: 5),
+            child: Text(
+              "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
+              softWrap: true,
+              style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
+            ),
+          ),
+        ));
+      }
+      if (praiseList.length > GlobalConfig.MAX_DISPLAY_PRAISE) {
+        int diff = praiseList.length - GlobalConfig.MAX_DISPLAY_PRAISE;
+        items.add(Text(
+          " 等共$diff人刚刚赞过",
+          style: TextStyle(fontSize: 13),
+        ));
+      }
+    }
+
     return GestureDetector(
-      onTap: () => _forwardDetail(),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 10),
-            child: Wrap(
+        onTap: () => _forwardDetail(),
+        child: Container(
+          margin: EdgeInsets.only(top: 10),
+          child: Wrap(
               alignment: WrapAlignment.start,
               crossAxisAlignment: WrapCrossAlignment.center,
-              children: <Widget>[
-                Image.asset(
-                  "assets/icons/thumb_up.png",
-                  width: 15,
-                  height: 15,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 5),
-                  child: Text(
-                    '愿为东南风刚刚赞过,愿为东南风刚刚赞过',
-                    softWrap: true,
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+              children: items),
+        ));
   }
 
   Widget _commentContainer() {
@@ -501,18 +547,6 @@ class TweetCardState extends State<TweetCard> {
     }
   }
 
-  String _getNickFromAccount(Account account, {bool anonymous = false}) {
-    if (account != null) {
-      if (anonymous) {
-        return TextConstant.TWEET_ANONYMOUS_NICK;
-      }
-      if (!StringUtil.isEmpty(account.nick)) {
-        return account.nick;
-      }
-    }
-    return '';
-  }
-
   List<Widget> _getReplyList() {
     if (CollectionUtil.isListEmpty(tweet.dirReplies)) {
       return [];
@@ -540,22 +574,32 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _replyContainer() {
-    if (tweet.enableReply && !CollectionUtil.isListEmpty(tweet.dirReplies)) {
-      return Container(
-        padding: EdgeInsets.only(top: 15),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _getReplyList()),
-            )
-          ],
-        ),
-      );
+    if (tweet.enableReply) {
+      if (!CollectionUtil.isListEmpty(tweet.dirReplies)) {
+        return GestureDetector(
+          onTap: () => _forwardDetail(),
+          child: Container(
+            padding: EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _getReplyList()),
+                )
+              ],
+            ),
+          ),
+        );
+      } else {
+        return Container(height: 0.0);
+      }
     } else {
-      return Container(height: 0.0);
+      // 评论关闭
+      return Container(
+          padding: EdgeInsets.only(top: 10),
+          child: Text('评论关闭', style: MyDefaultTextStyle.getTweetTimeStyle(12)));
     }
   }
 
@@ -571,17 +615,19 @@ class TweetCardState extends State<TweetCard> {
       );
     }
     bool authorAnonymous = widget.tweet.anonymous;
-    String accNick = _getNickFromAccount(reply.account);
+    String accNick = AccountUtil.getNickFromAccount(reply.account, false);
     bool isAuthorReply = (tweet.account.id == reply.account.id);
     if (isAuthorReply && authorAnonymous) {
       accNick = "作者";
+      reply.account.nick = "作者";
     }
 
     bool replyAuthor =
         reply.tarAccount == null || (tweet.account.id == reply.tarAccount.id);
-    String tarNick = _getNickFromAccount(reply.tarAccount);
+    String tarNick = AccountUtil.getNickFromAccount(reply.tarAccount, false);
     if (replyAuthor && authorAnonymous) {
       tarNick = "作者";
+      reply.tarAccount.nick = "作者";
     }
     // if (!replyAuthor) {
 
@@ -673,6 +719,7 @@ class TweetCardState extends State<TweetCard> {
                       //       topRight: Radius.circular(10)),
                       // ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
@@ -726,9 +773,9 @@ class TweetCardState extends State<TweetCard> {
                           _bodyContainer(tweet.body),
                           _picContainer(),
                           _extraContainer(),
-                          // _praiseContainer(),
+                          _praiseContainer(),
                           _replyContainer(),
-                          divider,
+                          // divider,
                           _commentContainer()
                         ],
                       ),

@@ -38,4 +38,8 @@ class GlobalConfig {
   static const double TEXT_TITLE_SIZE = 17;
 
   static const int MAX_DISPLAY_REPLY = 6;
+
+  static const int MAX_DISPLAY_PRAISE = 30;
+
+  static const int MAX_DISPLAY_PRAISE_DETAIL = 100;
 }

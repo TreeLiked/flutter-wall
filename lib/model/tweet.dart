@@ -32,8 +32,16 @@ class BaseTweet {
    */
   List<TweetReply> dirReplies;
 
+  /*
+   * 最近指定时间点赞的账户 
+   */
+  List<Account> latestPraise;
+
   DateTime gmtModified;
   DateTime gmtCreated;
+
+  // 是否点赞
+  bool loved;
 
   BaseTweet();
 

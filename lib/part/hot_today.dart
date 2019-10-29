@@ -72,6 +72,23 @@ class _HotTodayState extends State<HotToday>
     });
   }
 
+  get getBackgroundUrl {
+    String baseUrl =
+        "https://tva1.sinaimg.cn/large/006y8mN6ly1g8dw00yhe7j30u011i0vj.jpg";
+    if (hotTweet == null) {
+      return baseUrl;
+    }
+    List<BaseTweet> bts = hotTweet.tweets;
+    if (CollectionUtil.isListEmpty(bts)) {
+      return baseUrl;
+    }
+    List<String> s = bts[0].picUrls;
+    if (CollectionUtil.isListEmpty(s)) {
+      return baseUrl;
+    }
+    return s[0];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,8 +104,7 @@ class _HotTodayState extends State<HotToday>
           slivers: <Widget>[
             HotAppBarWidget(
               headerNotifier: _headerNotifier,
-              backgroundImg:
-                  'https://tva1.sinaimg.cn/large/006y8mN6ly1g85zrskzlrj30zk0pzjx8.jpg',
+              backgroundImg: getBackgroundUrl,
               count: 10,
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,10 +180,10 @@ class _HotTodayState extends State<HotToday>
     }
   }
 
-  _forwardDetail(BaseTweet bt) {
+  _forwardDetail(BaseTweet bt, int rank) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TweetDetail(bt)),
+      MaterialPageRoute(builder: (context) => TweetDetail(bt, hotRank: rank)),
     );
   }
 
@@ -178,7 +194,7 @@ class _HotTodayState extends State<HotToday>
       idxStr = '0$index';
     }
     return GestureDetector(
-        onTap: () => _forwardDetail(bt),
+        onTap: () => _forwardDetail(bt, index),
         child: Column(
           children: <Widget>[
             Container(

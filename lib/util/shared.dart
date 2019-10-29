@@ -8,6 +8,11 @@ class SharedPreferenceUtil {
     return s;
   }
 
+  static Future<bool> setStringValue(String key, String value) async {
+    await initInstance();
+    return sp.setString(key, value);
+  }
+
   static Future<List<String>> readListStringValue(String key) async {
     await initInstance();
     List<String> s = sp.getStringList(key);

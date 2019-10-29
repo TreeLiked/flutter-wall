@@ -15,7 +15,7 @@ class ColorConstant {
 
   static const Color DEFAULT_BACK_COLOR = Color(0xffeef2f6);
 
-  static const Color DEFAULT_BAR_BACK_COLOR = Color(0xfff9f9f9);
+  static const Color DEFAULT_BAR_BACK_COLOR = Color(0xffE7E8EA);
 
   static const Color QQ_BLUE = Color(0xff19a9fc);
 

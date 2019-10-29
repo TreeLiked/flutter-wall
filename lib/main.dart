@@ -8,6 +8,7 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/config/routes.dart';
 import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/index/index.dart';
+import 'package:iap_app/model/account.dart';
 import 'package:iap_app/page/login_page.dart';
 import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/string.dart';
@@ -47,17 +48,17 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     final Router router = Router();
     Routes.configureRoutes(router);
     Application.router = router;
+    _validateLogin();
   }
 
   @override
   void initState() {
     super.initState();
-    _validateLogin();
     // SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     //     statusBarColor: Color(0xff000000),
     //     statusBarIconBrightness: Brightness.dark));
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   }
 
   @override
@@ -71,24 +72,33 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       debugShowCheckedModeBanner: false,
       title: 'iap',
       theme: ThemeConstant.lightTheme,
-      home: loginState == 1 ? Login() : Index(),
+      home: Index(),
       onGenerateRoute: Application.router.generator,
     );
   }
 
   Future _validateLogin() async {
-    String s = await SharedPreferenceUtil.readStringValue(
-            SharedConstant.LOCAL_ACCOUNT_ID)
-        .catchError((onError) => print(onError));
-    if (!StringUtil.isEmpty(s)) {
-      setState(() {
-        loginState = 1;
-      });
-    } else {
-      setState(() {
-        loginState = 0;
-      });
-    }
+    Account acc = new Account();
+    acc.id = "e5e5d7e2006c4788b6b24509dfe481b3";
+    acc.nick = "长安归故里";
+    acc.avatarUrl =
+        "https://tva1.sinaimg.cn/large/006y8mN6ly1g8dw00yhe7j30u011i0vj.jpg";
+    Application.setAccount(acc);
+    // String s = await SharedPreferenceUtil.readStringValue(
+    //         SharedConstant.LOCAL_ACCOUNT_ID)
+    //     .catchError((onError) => print(onError));
+    // if (!StringUtil.isEmpty(s)) {
+    //   setState(() {
+    //     loginState = 1;
+    //   });
+    // } else {
+    //   setState(() {
+    //     loginState = 0;
+    //   });
+
+    //   SharedPreferenceUtil.setStringValue(
+    //       SharedConstant.LOCAL_ACCOUNT_ID, 'e5e5d7e2006c4788b6b24509dfe481b3');
+    // }
     // Future<dynamic> future = Future(() async {
     //   SharedPreferences prefs = await SharedPreferences.getInstance();
     //   return prefs.getString("loginToken");

@@ -155,6 +155,7 @@ class _CreatePageState extends State<CreatePage>
                   title: "选择内容类型",
                   multi: false,
                   finishText: "完成",
+                  needVisible: false,
                   initNames:
                       !StringUtil.isEmpty(_typeName) ? [_typeName] : null,
                   callback: (typeNames) => _selectTypeCallback(typeNames),

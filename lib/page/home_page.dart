@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +9,16 @@ import 'package:iap_app/config/routes.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
-import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/models/tabIconData.dart';
-import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/part/bottomBarView.dart';
 import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/string.dart';
@@ -62,6 +59,8 @@ class _HomePageState extends State<HomePage>
 
   Function sendCallback;
 
+  String accountId;
+
   @override
   void initState() {
     tabIconsList.forEach((tab) {
@@ -72,9 +71,9 @@ class _HomePageState extends State<HomePage>
     // animationController =
     //     AnimationController(duration: Duration(milliseconds: 600), vsync: this);
     // tabBody = MyDiaryScreen(animationController: animationController);
+
     getStoragePreferTypes();
     super.initState();
-
     initData();
 
     // _refreshController.requestRefresh();
@@ -98,8 +97,6 @@ class _HomePageState extends State<HomePage>
     } else {
       _refreshController.refreshCompleted();
       recomKey.currentState.updateTweetList(null, add: true);
-
-      _refreshController.resetNoData();
     }
   }
 
@@ -113,20 +110,22 @@ class _HomePageState extends State<HomePage>
 
   void _onLoading() async {
     // monitor network fetch
-    print(_currentPage.toString() + 'sdsaddasd;');
+
     List<BaseTweet> temp = await getData(++_currentPage);
     if (CollectionUtil.isListEmpty(temp)) {
       _currentPage--;
-      _refreshController.loadNoData();
-      return;
+    } else {
+      _homeTweets.addAll(temp);
+      recomKey.currentState.updateTweetList(temp, add: true, start: false);
     }
-    _homeTweets.addAll(temp);
-    recomKey.currentState.updateTweetList(temp, add: true, start: false);
 
     _refreshController.loadComplete();
   }
 
   Future getData(int page) async {
+    if (StringUtil.isEmpty(accountId)) {
+      this.accountId = await AccountUtil.getStorageAccountId();
+    }
     bool notAll = false;
     if (!CollectionUtil.isListEmpty(tweetQueryTypes)) {
       List<String> allTypes = tweetTypeMap.values.map((f) => f.name).toList();
@@ -140,11 +139,13 @@ class _HomePageState extends State<HomePage>
       }
     }
 
-    List<BaseTweet> pbt = await (TweetApi.queryTweets(PageParam(page,
-        pageSize: 5,
-        types: (CollectionUtil.isListEmpty(tweetQueryTypes) || !notAll)
-            ? null
-            : tweetQueryTypes)));
+    List<BaseTweet> pbt = await (TweetApi.queryTweets(
+        PageParam(page,
+            pageSize: 5,
+            types: (CollectionUtil.isListEmpty(tweetQueryTypes) || !notAll)
+                ? null
+                : tweetQueryTypes),
+        Application.getAccount.id));
     // _updateTWeetList(pbt);
     return pbt;
   }
@@ -280,15 +281,15 @@ class _HomePageState extends State<HomePage>
                           centerTitle: true,
                           actions: <Widget>[
                             IconButton(
-                              icon: Icon(Icons.filter_list,
-                                  color: ColorConstant.TWEET_NICK_COLOR),
+                              icon:
+                                  Icon(Icons.filter_list, color: Colors.black),
                               onPressed: () => _forwardFilterPage(),
                             ),
                             IconButton(
                               icon: Icon(
                                 Icons.add,
                               ),
-                              color: ColorConstant.TWEET_NICK_COLOR,
+                              color: Colors.black,
                               onPressed: () {
                                 Application.router.navigateTo(
                                     context, Routes.create,
@@ -298,7 +299,7 @@ class _HomePageState extends State<HomePage>
                           ],
                         ),
                         preferredSize: Size.fromHeight(
-                            MediaQuery.of(context).size.height * 0.05)),
+                            MediaQuery.of(context).size.height * 0.06)),
 
                     //     <Widget>[],
 

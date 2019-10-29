@@ -14,7 +14,8 @@ final tweetTypeMap = {
   "LOST_AND_FOUND": TweetTypeEntity.LOST_AND_FOUND,
   "HELP_AND_REWARD": TweetTypeEntity.HELP_AND_REWARD,
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
-  "OTHER": TweetTypeEntity.OTHER
+  "OTHER": TweetTypeEntity.OTHER,
+  "OFFICAL": TweetTypeEntity.OFFICAL,
 };
 
 class TweetTypeEntity {
@@ -25,6 +26,8 @@ class TweetTypeEntity {
   final IconData iconData;
   final Color iconColor;
   final String intro;
+  // 是否可见
+  final bool visible;
 
   const TweetTypeEntity(
       {this.iconData,
@@ -33,7 +36,8 @@ class TweetTypeEntity {
       this.zhTag,
       this.color,
       this.coverUrl,
-      this.intro = "暂无介绍喔～"});
+      this.intro = "暂无介绍喔～",
+      this.visible = true});
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
       iconData: Icons.favorite,
@@ -127,4 +131,12 @@ class TweetTypeEntity {
       name: "OTHER",
       color: Colors.black,
       zhTag: "其他");
+
+  static const OFFICAL = const TweetTypeEntity(
+      iconData: Icons.local_offer,
+      iconColor: Colors.black,
+      name: "OTHER",
+      color: Colors.black,
+      zhTag: "官方认证",
+      visible: false);
 }

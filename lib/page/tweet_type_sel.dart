@@ -18,6 +18,7 @@ class TweetTypeSelect extends StatefulWidget {
   List<String> initNames;
 
   bool editState = false;
+  bool needVisible;
 
   TweetTypeSelect(
       {this.title,
@@ -25,7 +26,8 @@ class TweetTypeSelect extends StatefulWidget {
       this.finishText,
       this.backText = "返回",
       this.callback,
-      this.initNames})
+      this.initNames,
+      this.needVisible = true})
       : super();
 
   @override

@@ -9,7 +9,7 @@ part of 'tweet.dart';
 BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
   return BaseTweet()
     ..id = json['id'] as int
-    ..unId = json['unId'] as int
+    ..orgId = json['orgId'] as int
     ..body = json['body'] as String
     ..type = json['type'] as String
     ..anonymous = json['anonymous'] as bool
@@ -42,7 +42,7 @@ BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$BaseTweetToJson(BaseTweet instance) => <String, dynamic>{
       'id': instance.id,
-      'unId': instance.unId,
+      'orgId': instance.orgId,
       'body': instance.body,
       'type': instance.type,
       'anonymous': instance.anonymous,

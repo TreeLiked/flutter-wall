@@ -4,9 +4,10 @@ import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 
 class MyDefaultTextStyle {
-  static TextStyle getTweetNickStyle(double fontSize, {bool bold = true}) {
+  static TextStyle getTweetNickStyle(double fontSize,
+      {bool bold = true, bool anonymous = false}) {
     return TextStyle(
-        color: ColorConstant.TWEET_NICK_COLOR,
+        color: !anonymous ? ColorConstant.TWEET_NICK_COLOR : Colors.grey,
         fontSize: fontSize,
         fontWeight: bold ? FontWeight.bold : FontWeight.normal);
   }
@@ -20,7 +21,7 @@ class MyDefaultTextStyle {
 
   static TextStyle getTweetReplyAnonymousNickStyle(double fontSize) {
     return TextStyle(
-        color: Color(0xff8B7355),
+        color: Color(0xff363636),
         fontSize: fontSize,
         fontWeight: FontWeight.w400);
   }

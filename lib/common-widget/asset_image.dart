@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-class AssetImageWidget extends StatelessWidget {
+class AssetImageWidget extends StatefulWidget {
   final AssetEntity assetEntity;
   final double width;
   final double height;
@@ -18,13 +18,31 @@ class AssetImageWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<StatefulWidget> createState() {
+    return AssetImageWidgetState(assetEntity, width, height, boxFit);
+  }
+}
+
+class AssetImageWidgetState extends State<AssetImageWidget> {
+  final AssetEntity assetEntity;
+  final double width;
+  final double height;
+  final BoxFit boxFit;
+
+  AssetImageWidgetState(this.assetEntity, this.width, this.height, this.boxFit);
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (assetEntity == null) {
+    if (widget.assetEntity == null) {
       return _buildContainer();
     }
 
     print(
-        "assetEntity.width = ${assetEntity.width} , assetEntity.height = ${assetEntity.height}");
+        "assetEntity.width = ${widget.assetEntity.width} , assetEntity.height = ${widget.assetEntity.height}");
 
     return FutureBuilder<Uint8List>(
       builder: (BuildContext context, snapshot) {
@@ -32,18 +50,18 @@ class AssetImageWidget extends StatelessWidget {
           return _buildContainer(
             child: Image.memory(
               snapshot.data,
-              width: width,
-              height: height,
-              fit: boxFit,
+              width: widget.width,
+              height: widget.height,
+              fit: widget.boxFit,
             ),
           );
         } else {
           return _buildContainer();
         }
       },
-      future: assetEntity.thumbDataWithSize(
-        width.toInt(),
-        height.toInt(),
+      future: widget.assetEntity.thumbDataWithSize(
+        widget.width.toInt(),
+        widget.height.toInt(),
       ),
     );
   }
@@ -51,8 +69,8 @@ class AssetImageWidget extends StatelessWidget {
   Widget _buildContainer({Widget child}) {
     child ??= Container();
     return Container(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       child: child,
     );
   }

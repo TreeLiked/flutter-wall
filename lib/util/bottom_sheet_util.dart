@@ -17,27 +17,32 @@ class BottomSheetUtil {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Container(
-                color: Color(0xfff4f5f7),
+                decoration: BoxDecoration(
+                    color: Color(0xfff4f5f7),
+                    borderRadius: BorderRadius.all(Radius.circular(30))),
                 padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                child: Row(children: _renderItems(items)),
+                child: Row(children: _renderItems(context, items)),
               )
             ],
           );
         });
   }
 
-  static List<Widget> _renderItems(List<BottomSheetItem> items) {
-    return items.map((f) => _renderSingleItem(f)).toList();
+  static List<Widget> _renderItems(
+      BuildContext context, List<BottomSheetItem> items) {
+    return items.map((f) => _renderSingleItem(context, f)).toList();
   }
 
-  static Widget _renderSingleItem(BottomSheetItem item) {
+  static Widget _renderSingleItem(BuildContext context, BottomSheetItem item) {
     return Container(
         margin: EdgeInsets.only(right: 15),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-              onTap: item.callback,
+              onTap: () {
+                item.callback();
+              },
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,

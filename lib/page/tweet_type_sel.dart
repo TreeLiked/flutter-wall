@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/theme_utils.dart';
 
 class TweetTypeSelect extends StatefulWidget {
   String title;
@@ -68,7 +70,10 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
               });
             }
           },
-          icon: Text(widget.backText),
+          icon: Text(
+            widget.backText,
+            style: TextStyle(color: Theme.of(context).textTheme.title.color),
+          ),
         ),
         actions: <Widget>[
           IconButton(
@@ -83,14 +88,16 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
               Navigator.pop(context);
             },
             icon: Padding(
-              padding: EdgeInsets.only(right: 0),
-              child: Text(widget.finishText),
+              padding: EdgeInsets.only(right: 3),
+              child: Text(widget.finishText,
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.title.color)),
             ),
           )
         ],
       ),
       body: ListView.separated(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 5),
         separatorBuilder: (BuildContext context, int index) {
           return Align(
             alignment: Alignment.centerRight,
@@ -107,10 +114,14 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
               selects[typeKeysList[index]];
           return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              color: sel && !widget.multi ? Color(0xff87CEEB) : Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+              color: sel && !widget.multi
+                  ? (!ThemeUtils.isDark(context)
+                      ? Color(0xff87CEEB)
+                      : Theme.of(context).backgroundColor)
+                  : Theme.of(context).appBarTheme.color,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: ListTile(
               leading: Icon(tweetTypeMap[typeKeysList[index]].iconData,
                   size: 35, color: tweetTypeMap[typeKeysList[index]].iconColor),
@@ -118,14 +129,18 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
               title: Text(
                 tweetTypeMap[typeKeysList[index]].zhTag,
                 style: TextStyle(
-                  color: sel && !widget.multi ? Colors.white : Colors.black,
+                  color: sel && !widget.multi
+                      ? Colors.white
+                      : Theme.of(context).textTheme.title.color,
                 ),
               ),
               subtitle: Text(
                 tweetTypeMap[typeKeysList[index]].intro,
                 style: TextStyle(
                   fontSize: 13,
-                  color: sel && !widget.multi ? Colors.white : Colors.black,
+                  color: sel && !widget.multi
+                      ? Colors.white
+                      : Theme.of(context).textTheme.title.color,
                 ),
               ),
               trailing: sel && widget.multi

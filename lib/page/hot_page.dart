@@ -1,27 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/common-widget/v_empty_view.dart';
-import 'package:iap_app/component/hot_app_bar.dart';
-import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/global_config.dart';
-import 'package:iap_app/global/size_constant.dart';
-import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/model/tweet_type.dart';
-import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/part/recom.dart';
-import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/string.dart';
-import 'package:iap_app/util/time_util.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HotPage extends StatefulWidget {
   HotPage();
@@ -50,6 +30,8 @@ class HotPageState extends State<HotPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     sw = MediaQuery.of(context).size.width;
 
     // return Scaffold(
@@ -123,6 +105,5 @@ class HotPageState extends State<HotPage>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

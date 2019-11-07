@@ -9,11 +9,14 @@
 import 'package:flutter/painting.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/index/index.dart';
-import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/home_page.dart';
+import 'package:iap_app/page/input_text_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
+import 'package:iap_app/util/fluro_convert_utils.dart';
 
 var indexHander = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -33,6 +36,37 @@ var tweetDetailHandler = Handler(
 var createHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return CreatePage();
+});
+
+var inputPageHander = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  String title = params['title'] == null
+      ? ""
+      : FluroConvertUtils.fluroCnParamsDecode(params['title'].first);
+  String hintText = params['hintText'] == null
+      ? ""
+      : FluroConvertUtils.fluroCnParamsDecode(params['hintText'].first);
+  return InputTextPage(
+    title: title,
+    hintText: hintText,
+  );
+});
+
+var galleryViewHandler = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  List<String> picUrls = params['urls'];
+  int index = int.parse(params['index'].first);
+  List<PhotoWrapItem> items = picUrls
+      .map((f) => PhotoWrapItem(index: index, url: Uri.decodeComponent(f)))
+      .toList();
+  return GalleryPhotoViewWrapper(
+    usePageViewWrapper: true,
+    galleryItems: items,
+    backgroundDecoration: const BoxDecoration(
+      color: Colors.black,
+    ),
+    initialIndex: index,
+  );
 });
 
 // var demoRouteHandler = Handler(

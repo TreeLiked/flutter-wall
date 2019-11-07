@@ -1,16 +1,11 @@
-import 'dart:math';
-
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/component/tweet_card.dart';
 import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class Recommendation extends StatefulWidget {
   Recommendation({Key key, this.callback, this.callback2}) : super(key: key);
@@ -81,7 +76,8 @@ class RecommendationState extends State<Recommendation>
 
   @override
   Widget build(BuildContext context) {
-    print('recom buildd');
+    super.build(context);
+    print('recom build');
     List<Widget> widgets = [];
     if (!CollectionUtil.isListEmpty(children)) {
       widgets = children
@@ -115,18 +111,7 @@ class RecommendationState extends State<Recommendation>
             child: children == null
                 ? (Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                          height: 46,
-                          width: 46,
-                          margin:
-                              EdgeInsets.only(top: ScreenUtil().setHeight(60)),
-                          child: FlareActor(
-                            PathConstant.FLARE_LOADING_ROUND,
-                            fit: BoxFit.cover,
-                            animation: 'anime',
-                          ))
-                    ],
+                    children: <Widget>[WidgetUtil.getLoadingAnimiation()],
                   ))
                 : (children.length != 0
                     ? Column(
@@ -164,6 +149,5 @@ class RecommendationState extends State<Recommendation>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

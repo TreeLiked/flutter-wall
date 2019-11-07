@@ -10,13 +10,19 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/component/circle_header.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
+import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class HotToday extends StatefulWidget {
   @override
@@ -39,7 +45,6 @@ class _HotTodayState extends State<HotToday>
 
   Future<void> _onRefresh() async {
     print('On refresh');
-
     getData();
   }
 
@@ -63,12 +68,8 @@ class _HotTodayState extends State<HotToday>
       setState(() {
         this.hotTweet = result;
       });
-      Fluttertoast.showToast(
-          msg: '    更新完成    ',
-          fontSize: 13,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: ColorConstant.DEFAULT_BAR_BACK_COLOR,
-          textColor: Colors.black87);
+
+      ToastUtil.showToast('更新完成');
     });
   }
 
@@ -91,6 +92,7 @@ class _HotTodayState extends State<HotToday>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: EasyRefresh.custom(
           header: LinkHeader(
@@ -169,7 +171,9 @@ class _HotTodayState extends State<HotToday>
   }
 
   List<Widget> _getRenderList(HotTweet ht) {
+    print('hot card render .................................');
     if (hotTweet != null && hotTweet.tweets.length > 0) {
+      print(ht.toJson());
       List<Widget> list = new List();
       for (int i = 0; i < hotTweet.tweets.length; i++) {
         list.add(_buldHotTweetCard(ht.tweets[i], i));
@@ -193,13 +197,16 @@ class _HotTodayState extends State<HotToday>
     if (index < 10) {
       idxStr = '0$index';
     }
+    if (bt.anonymous) {
+      bt.account.nick = TextConstant.TWEET_ANONYMOUS_NICK;
+    }
     return GestureDetector(
         onTap: () => _forwardDetail(bt, index),
         child: Column(
           children: <Widget>[
             Container(
-              color: Colors.white,
-              padding: EdgeInsets.only(top: 10),
+              margin: EdgeInsets.only(top: index == 0 ? 0 : 10),
+              padding: EdgeInsets.only(top: 5, bottom: 15),
               // constraints: BoxConstraints(maxHeight: 150),
 
               // margin: EdgeInsets.only(bottom: 10),
@@ -224,7 +231,10 @@ class _HotTodayState extends State<HotToday>
                                             ? Colors.red
                                             : (index <= 6
                                                 ? Color(0xffEEE685)
-                                                : Colors.black45)),
+                                                : Theme.of(context)
+                                                    .textTheme
+                                                    .title
+                                                    .color)),
                                   ),
                                 ),
                                 Container(
@@ -254,19 +264,19 @@ class _HotTodayState extends State<HotToday>
                             Expanded(
                               flex: 3,
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Wrap(children: <Widget>[
-                                    Text(
-                                      bt.body,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          color: Colors.black87, fontSize: 15),
-                                    ),
-                                  ]),
+                                  StringUtil.isEmpty(bt.body)
+                                      ? WidgetUtil.getEmptyContainer()
+                                      : Wrap(children: <Widget>[
+                                          Text(
+                                            bt.body,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                        ]),
                                   Container(
                                       padding: EdgeInsets.only(top: 10),
                                       child: Wrap(
@@ -274,11 +284,15 @@ class _HotTodayState extends State<HotToday>
                                           RichText(
                                             text: TextSpan(children: [
                                               TextSpan(
-                                                  text: bt.account.nick,
-                                                  style: TextStyle(
-                                                      color: ColorConstant
-                                                          .TWEET_NICK_COLOR,
-                                                      fontSize: 14)),
+                                                  text: !bt.anonymous
+                                                      ? bt.account.nick
+                                                      : TextConstant
+                                                          .TWEET_ANONYMOUS_NICK,
+                                                  style: MyDefaultTextStyle
+                                                      .getTweetNickStyle(14,
+                                                          bold: false,
+                                                          anonymous:
+                                                              bt.anonymous)),
                                               TextSpan(
                                                   text: ' 发表于',
                                                   style: TextStyle(
@@ -343,8 +357,10 @@ class _HotTodayState extends State<HotToday>
                             aspectRatio: 1,
                             child: CachedNetworkImage(
                               imageUrl: CollectionUtil.isListEmpty(bt.picUrls)
-                                  ? tweetTypeMap[bt.type].coverUrl
-                                  : bt.picUrls[0],
+                                  ? 'https://tva1.sinaimg.cn/large/006y8mN6ly1g8oaz0rsjrj30u011ijvq.jpg'
+                                  // ? tweetTypeMap[bt.type].coverUrl
+                                  : bt.picUrls[0] +
+                                      OssConstant.THUMBNAIL_SUFFIX,
                               placeholder: (context, url) => Container(
                                   padding: EdgeInsets.all(20),
                                   child: Image.asset(PathConstant.LOADING_GIF)),

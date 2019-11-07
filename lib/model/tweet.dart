@@ -8,7 +8,7 @@ part 'tweet.g.dart';
 @JsonSerializable()
 class BaseTweet {
   int id;
-  int unId;
+  int orgId;
   String body;
   String type;
   bool anonymous;

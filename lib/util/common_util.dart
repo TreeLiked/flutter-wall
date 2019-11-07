@@ -1,6 +1,13 @@
 import 'package:extended_image/extended_image.dart';
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
+import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/model/dialog_rertun.dart';
+import 'package:iap_app/model/photo_wrap_item.dart';
+import 'package:iap_app/util/collection.dart';
 
 class Utils {
   static void showToast(String msg) {
@@ -56,5 +63,40 @@ class Utils {
         }
       },
     );
+  }
+
+  static void openPhotoView(
+    BuildContext context,
+    List<String> urls,
+    int initialIndex,
+  ) {
+    if (CollectionUtil.isListEmpty(urls)) {
+      return;
+    }
+
+    // StringBuffer buffer = StringBuffer();
+    // urls.forEach((f) => buffer.write("&urls=${Uri.encodeComponent(f)}"));
+
+    List<PhotoWrapItem> items = urls
+        .map((f) =>
+            PhotoWrapItem(index: initialIndex, url: Uri.decodeComponent(f)))
+        .toList();
+    Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => new GalleryPhotoViewWrapper(
+                  usePageViewWrapper: true,
+                  galleryItems: items,
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  initialIndex: initialIndex,
+                ),
+            maintainState: true));
+    // Application.router.navigateTo(
+    //   context,
+    //   Routes.cardToGallery + "?index=$initialIndex" + buffer.toString(),
+    //   transition: TransitionType.fadeIn,
+    // );
   }
 }

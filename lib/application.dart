@@ -12,10 +12,21 @@ class Application {
   static double screenHeight;
   // static GetIt getIt = GetIt.instance;
 
+  static int _ordId;
+  static String _orgName;
+
   static Account _account;
 
   static Account get getAccount {
     return _account;
+  }
+
+  static int get getOrgId {
+    return _ordId;
+  }
+
+  static String get getOrgName {
+    return _orgName;
   }
 
   static initSp() async {
@@ -28,5 +39,13 @@ class Application {
 
   static void setAccount(Account acc) {
     _account = acc;
+  }
+
+  static void setOrgId(int orgId) {
+    _ordId = orgId;
+  }
+
+  static void setOrgName(String name) {
+    _orgName = name;
   }
 }

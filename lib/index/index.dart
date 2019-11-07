@@ -1,14 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/index/navigation_icon_view.dart';
-import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/home_page.dart';
-import 'package:iap_app/page/hot_page.dart';
-import 'package:iap_app/part/bottomBarView.dart';
+import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/style/text_style.dart';
 
@@ -17,7 +15,8 @@ class Index extends StatefulWidget {
   State<StatefulWidget> createState() => _IndexState();
 }
 
-class _IndexState extends State<Index> with TickerProviderStateMixin {
+class _IndexState extends State<Index>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   // 当前选中的索引
   int _currentIndex = 0;
   // 底部导航视图
@@ -69,7 +68,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
       new HotToday(),
       // new CreatePage(),
       new CreatePage(),
-      new CreatePage(),
+      new PersonalCenter(),
     ];
 
     _currentPage = _pageList[_currentIndex];
@@ -85,54 +84,55 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     pageController.jumpToPage(index);
   }
 
-  void _rebuild() {
-    setState(() {});
-  }
+  // Widget bottomBar() {
+  //   return Column(
+  //     children: <Widget>[
+  //       Expanded(
+  //         child: SizedBox(),
+  //       ),
+  //       BottomBarView(
+  //         tabIconsList: TabIconData.tabIconsList,
 
-  Widget bottomBar() {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: SizedBox(),
-        ),
-        BottomBarView(
-          tabIconsList: TabIconData.tabIconsList,
-          addClick: () {},
-          changeIndex: (index) {
-            if (index == 0 || index == 2) {
-              // animationController.reverse().then((data) {
-              //   if (!mounted) return;
-              //   setState(() {
-              //     tabBody =
-              //         MyDiaryScreen(animationController: animationController);
-              //   });
-              // });
-            } else if (index == 1 || index == 3) {
-              // animationController.reverse().then((data) {
-              //   if (!mounted) return;
-              //   setState(() {
-              //     tabBody =
-              //         TrainingScreen(animationController: animationController);
-              //   });
-              // });
-            }
-          },
-        ),
-      ],
-    );
-  }
+  //         addClick: () {},
+  //         changeIndex: (index) {
+  //           if (index == 0 || index == 2) {
+  //             // animationController.reverse().then((data) {
+  //             //   if (!mounted) return;
+  //             //   setState(() {
+  //             //     tabBody =
+  //             //         MyDiaryScreen(animationController: animationController);
+  //             //   });
+  //             // });
+  //           } else if (index == 1 || index == 3) {
+  //             // animationController.reverse().then((data) {
+  //             //   if (!mounted) return;
+  //             //   setState(() {
+  //             //     tabBody =
+  //             //         TrainingScreen(animationController: animationController);
+  //             //   });
+  //             // });
+  //           }
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
 
     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
-        backgroundColor: Color(0xffffffff),
         elevation: 0,
         items: _navigationViews.map((navIconView) => navIconView.item).toList(),
         currentIndex: _currentIndex,
-        fixedColor: ColorConstant.QQ_BLUE,
-        // unselectedItemColor: Colors.black87,
+        fixedColor: Color(0xff1E90FF),
+        // unselectedItemColor: Colors.black38,
+        // selectedIconTheme: IconThemeData(opacity: 0.9),
+        // unselectedIconTheme: IconThemeData(opacity: 0.3),
+        showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
         onTap: (index) => pageOnTap(index));
 
@@ -152,4 +152,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
         ));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

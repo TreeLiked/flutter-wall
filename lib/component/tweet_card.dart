@@ -1,17 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
-import 'package:iap_app/component/divider.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/shared_data.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
@@ -19,18 +15,17 @@ import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
-import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
-import 'package:provider/provider.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class TweetCard extends StatefulWidget {
   final recomKey = GlobalKey<RecommendationState>();
@@ -43,17 +38,13 @@ class TweetCard extends StatefulWidget {
 
   TweetCard(BaseTweet tweet, {this.callback}) {
     this.tweet = tweet;
-    print('tc construct' + this.tweet.toJson().toString());
+    print('tc construct');
   }
 
   @override
   State<StatefulWidget> createState() {
     s = TweetCardState();
     return s;
-  }
-
-  refresh() {
-    s.refresh();
   }
 }
 
@@ -62,23 +53,12 @@ class TweetCardState extends State<TweetCard> {
 
   double sw;
   double sh;
-  double max_width_single_pic;
-
-  refresh() {
-    setState(() {});
-  }
+  double maxWidthSinglePic;
 
   @override
   void initState() {
     super.initState();
   }
-
-  String _aniName = "like";
-
-  String _likeAssetPath = "assets/images/unlike.png";
-
-  String _likeAnimationName = "like";
-  String _unlikeAnimationName = "unlike";
 
   Widget _imgContainer(String url, int index, int totalSize) {
     // 40 最外层container左右padding,
@@ -91,7 +71,6 @@ class TweetCardState extends State<TweetCard> {
     } else {
       perw = left / 3.1;
     }
-
     return Container(
         // %2 因为索引从0开始，3的倍数右边距设为0
         padding: EdgeInsets.only(
@@ -103,14 +82,11 @@ class TweetCardState extends State<TweetCard> {
           child: CachedNetworkImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              width: 30,
-              height: 30,
-              padding: EdgeInsets.all(20),
-              child: Image.asset(PathConstant.IAMGE_HOLDER),
-            ),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            placeholder: (context, url) => WidgetUtil.getLoadingGif(),
+            errorWidget: (context, url, error) =>
+                WidgetUtil.getAsset(PathConstant.IAMGE_FAILED, size: 10),
           ),
+          // child: Image.network(url),
         ));
   }
 
@@ -123,34 +99,22 @@ class TweetCardState extends State<TweetCard> {
           onTap: () => open(context, 0),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-                maxWidth: max_width_single_pic, maxHeight: sh * 0.45),
+                maxWidth: maxWidthSinglePic, maxHeight: sh * 0.45),
             child: CachedNetworkImage(
               imageUrl: url,
               placeholder: (context, url) => GlowingOverscrollIndicator(
                 color: Colors.white,
                 axisDirection: AxisDirection.left,
               ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              errorWidget: (context, url, error) =>
+                  WidgetUtil.getAsset(PathConstant.IAMGE_FAILED),
             ),
           ),
         ));
   }
 
   void open(BuildContext context, final int index) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GalleryPhotoViewWrapper(
-            usePageViewWrapper: true,
-            galleryItems: widget.tweet.picUrls
-                .map((f) => PhotoWrapItem(index: index, url: f))
-                .toList(),
-            backgroundDecoration: const BoxDecoration(
-              color: Colors.white70,
-            ),
-            initialIndex: index,
-          ),
-        ));
+    Utils.openPhotoView(context, widget.tweet.picUrls, index);
   }
 
   Widget _bodyContainer(String body) {
@@ -169,7 +133,7 @@ class TweetCardState extends State<TweetCard> {
                   maxLines: 10,
                   style: TextStyle(
                       fontSize: GlobalConfig.TWEET_FONT_SIZE,
-                      color: GlobalConfig.tweetBodyColor,
+                      // color: GlobalConfig.tweetBodyColor,
                       height: 1.5),
                 ),
               )
@@ -178,18 +142,6 @@ class TweetCardState extends State<TweetCard> {
         ],
       ),
     );
-  }
-
-  void _showAni() {
-    setState(() {
-      if (_aniName == "like") {
-        this.tweet.praise -= 1;
-        this._aniName = "unlike";
-      } else {
-        this._aniName = "like";
-        this.tweet.praise += 1;
-      }
-    });
   }
 
   Widget _extraSingleContainer(String iconPath, String text,
@@ -233,7 +185,8 @@ class TweetCardState extends State<TweetCard> {
                         ((!CollectionUtil.isListEmpty(widget.tweet.picUrls))
                             ? (widget.tweet.picUrls.length == 1
                                 ? <Widget>[
-                                    _imgContainerSingle(widget.tweet.picUrls[0])
+                                    _imgContainerSingle(
+                                        "${widget.tweet.picUrls[0]}?x-oss-process=style/image_thumbnail")
                                   ]
                                 : _handleMultiPics())
                             : <Widget>[])),
@@ -246,7 +199,9 @@ class TweetCardState extends State<TweetCard> {
   }
 
   List<Widget> _handleMultiPics() {
-    List<String> picUrls = widget.tweet.picUrls;
+    List<String> picUrls = widget.tweet.picUrls
+        .map((f) => "$f?x-oss-process=style/image_thumbnail")
+        .toList();
     List<Widget> list = new List(picUrls.length);
     for (int i = 0; i < picUrls.length; i++) {
       list[i] = _imgContainer(picUrls[i], i, picUrls.length);
@@ -254,35 +209,6 @@ class TweetCardState extends State<TweetCard> {
     return list;
   }
 
-  void _updateLikeOrUnlikd() {
-    setState(() {
-      if (_likeAssetPath == "assets/images/like.png") {
-        _likeAssetPath = "assets/images/unlike.png";
-        tweet.praise--;
-      } else {
-        _likeAssetPath = "assets/images/like.png";
-        tweet.praise++;
-      }
-    });
-  }
-
-  Widget _coverWidget(String url) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-        child: Image.network(
-          url,
-          height: 200,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  // Widget _headContainer() {}
-
-  Widget _mainContainer() {}
   Widget _profileContainer(String profileUrl) {
     return Container(
       margin: EdgeInsets.only(right: 10),
@@ -309,13 +235,15 @@ class TweetCardState extends State<TweetCard> {
         ? Container(
             child: Text(
             TextConstant.TWEET_ANONYMOUS_NICK,
-            style:
-                MyDefaultTextStyle.getTweetHeadNickStyle(14, anonymous: true),
+            style: MyDefaultTextStyle.getTweetHeadNickStyle(
+                SizeConstant.TWEET_NICK_SIZE,
+                anonymous: true),
           ))
         : Container(
             child: Text(
               nickName,
-              style: MyDefaultTextStyle.getTweetHeadNickStyle(14),
+              style: MyDefaultTextStyle.getTweetHeadNickStyle(
+                  SizeConstant.TWEET_NICK_SIZE),
             ),
           );
   }
@@ -338,7 +266,7 @@ class TweetCardState extends State<TweetCard> {
       ),
       overflow: TextOverflow.ellipsis,
       softWrap: true,
-      maxLines: 2,
+      maxLines: 1,
     ));
   }
 
@@ -388,50 +316,6 @@ class TweetCardState extends State<TweetCard> {
                     )),
               ],
             )
-            // Container(
-            //     child: GestureDetector(
-            //   onTap: () {
-            //     setState(() {
-            //       if (this._aniName == "like") {
-            //         this._aniName = "unlike";
-            //       } else {
-            //         this._aniName = "like";
-            //       }
-            //     });
-            //   },
-            //   child: Row(
-            //     mainAxisSize: MainAxisSize.min,
-            //     mainAxisAlignment: MainAxisAlignment.start,
-            //     crossAxisAlignment: CrossAxisAlignment.center,
-            //     children: <Widget>[
-            //       Container(
-            //         height: 50,
-            //         width: 50,
-            //         child: FlareActor(
-            //           'assets/flrs/thumb_up.flr',
-            //           animation: _aniName,
-            //         ),
-            //       ),
-            //       Padding(
-            //         padding: EdgeInsets.only(right: 10, left: 5),
-            //         child: Text(
-            //           tweet.praise.toString(),
-            //           style: TextStyle(color: GlobalConfig.tweetTimeColor),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // )),
-
-            // _extraSingleContainer('assets/images/people.png',
-            //     tweet.views > 999 ? '999+' : tweet.views.toString(),
-            //     size: 16),
-            // _extraSingleContainer(
-            //     tweet.enableReply
-            //         ? "assets/images/chat.png"
-            //         : "assets/icons/warning.png",
-            //     tweet.enableReply ? tweet.replyCount.toString() : '评论关闭',
-            //     size: 18),
           ],
         ),
       ),
@@ -521,40 +405,41 @@ class TweetCardState extends State<TweetCard> {
 
   Widget _commentContainer() {
     if (tweet.enableReply) {
-      return Container(
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => _sendReply(1, tweet.id, tweet.account.id),
+        child: Container(
           margin: EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
-              color: Color(0xfff2f2f2),
+              color: ThemeUtils.isDark(context)
+                  ? Color(0xff363636)
+                  : Color(0xfff2f2f2),
               borderRadius: BorderRadius.all(Radius.circular(10))),
           padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-          child: GestureDetector(
-            onTap: () {
-              // 点击回复框，直接回复推文
-              _sendReply(1, tweet.id, tweet.account.id);
-            },
-            child: Row(
-              children: <Widget>[
-                ClipOval(
-                  child: Image.network(
-                    tweet.account.avatarUrl,
-                    width: 30,
-                    height: 30,
-                    fit: BoxFit.cover,
-                  ),
+          child: Row(
+            children: <Widget>[
+              ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: Application.getAccount.avatarUrl,
+                  width: 35,
+                  height: 35,
+                  fit: BoxFit.cover,
                 ),
-                Expanded(
-                  child: Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text(
-                        TextConstant.TWEET_CARD_REPLY_HINT,
-                        style: TextStyle(
-                            fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
-                            color: ColorConstant.TWEET_TIME_COLOR),
-                      )),
-                ),
-              ],
-            ),
-          ));
+              ),
+              Expanded(
+                child: Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text(
+                      TextConstant.TWEET_CARD_REPLY_HINT,
+                      style: TextStyle(
+                          fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
+                          color: ColorConstant.TWEET_TIME_COLOR),
+                    )),
+              ),
+            ],
+          ),
+        ),
+      );
     } else {
       return Container();
     }
@@ -640,13 +525,16 @@ class TweetCardState extends State<TweetCard> {
     String tarNick = AccountUtil.getNickFromAccount(reply.tarAccount, false);
     if (replyAuthor && authorAnonymous) {
       tarNick = "作者";
-      reply.tarAccount.nick = "作者";
+      if (reply.tarAccount != null) {
+        reply.tarAccount.nick = "作者";
+      }
     }
     // if (!replyAuthor) {
 
     return Container(
         padding: EdgeInsets.only(bottom: 5),
         child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
           onTap: () {
             // 只要点击评论中的某一行，都是它的子回复
             _sendReply(2, parentId, reply.account.id, tarAccNick: accNick);
@@ -676,12 +564,14 @@ class TweetCardState extends State<TweetCard> {
                           : MyDefaultTextStyle.getTweetReplyNickStyle(14)),
                   TextSpan(
                     text: '：',
-                    style: TextStyle(color: Colors.black87, fontSize: 14),
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.subtitle.color,
+                        fontSize: Dimens.font_sp14),
                   ),
                   TextSpan(
                     text: reply.body,
                     style: TextStyle(
-                        color: ColorConstant.TWEET_REPLY_FONT_COLOR,
+                        color: Theme.of(context).textTheme.subtitle.color,
                         fontWeight: FontWeight.w400),
                   ),
                 ]),
@@ -705,15 +595,16 @@ class TweetCardState extends State<TweetCard> {
           child: Container(
               padding: EdgeInsets.only(bottom: 30),
               decoration: BoxDecoration(
-                // borderRadius: BorderRadius.only(
-                //     // topLeft: Radius.circular(20),
-                //     topRight: Radius.circular(30),
-                //     bottomLeft: Radius.circular(20),
-                //     bottomRight: Radius.circular(20)),
-                color: Colors.white,
-              ),
+                  // borderRadius: BorderRadius.only(
+                  //     // topLeft: Radius.circular(20),
+                  //     topRight: Radius.circular(30),
+                  //     bottomLeft: Radius.circular(20),
+                  //     bottomRight: Radius.circular(20)),
+                  // color: Colors.white,
+                  ),
               child: GestureDetector(
                 onTap: _forwardDetail,
+                behavior: HitTestBehavior.translucent,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
@@ -808,7 +699,7 @@ class TweetCardState extends State<TweetCard> {
     sw = MediaQuery.of(context).size.width;
     sh = MediaQuery.of(context).size.height;
 
-    max_width_single_pic = (sw - 40);
+    maxWidthSinglePic = (sw - 40);
 
     setState(() {
       this.tweet = widget.tweet;
@@ -826,11 +717,11 @@ class TweetCardState extends State<TweetCard> {
   }
 
   /*
-   * tarAccNick 显示在输入框中的回复， tarAccId 移动推送
+   * tarAccNick 显示在输入框中的回复， tarAccId ������推送
    * type 1=> 评论， 2=> 子回复 
    */
   _sendReply(int type, int parentId, String tarAccId, {String tarAccNick}) {
-    // TODO 检查本地account是否存在
+    // TODO 本地account是否存在
     TweetReply tr = new TweetReply();
     tr.tweetId = tweet.id;
     tr.type = type;
@@ -852,11 +743,20 @@ class TweetCardState extends State<TweetCard> {
       if (tr.type == 1) {
         // 设置到直接回复
         setState(() {
+          if (tweet.dirReplies == null) {
+            tweet.dirReplies = List();
+          }
           tweet.dirReplies.add(tr);
         });
       } else {
         // 子回复
         int parentId = tr.parentId;
+        TweetReply tr2 =
+            tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
+        if (tr2.children == null) {
+          tr2.children = List();
+        }
+        tr2.children.add(tr);
       }
     }
   }

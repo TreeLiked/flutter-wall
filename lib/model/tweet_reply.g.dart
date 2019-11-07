@@ -41,11 +41,8 @@ Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
       'parentId': instance.parentId,
       'type': instance.type,
       'body': instance.body,
-      'account':
-          instance.account == null ? 'account null' : instance.account.toJson(),
-      'tarAccount': instance.tarAccount == null
-          ? 'tar account null'
-          : instance.tarAccount.toJson(),
+      'account': instance.account,
+      'tarAccount': instance.tarAccount,
       'children': instance.children,
       'hot': instance.hot,
       'praise': instance.praise,

@@ -27,13 +27,14 @@ class HttpUtil {
       baseUrl: baseUrl,
       //连接服务器超时时间，单位是毫秒.
       connectTimeout: 10000,
+
       //[如果返回数据是json(content-type)，dio默认会自动将数据转为json，无需再手动转](https://github.com/flutterchina/dio/issues/30)
       // responseType: ResponseType.plain,
 
       ///  响应流上前后两次接受到数据的间隔，单位为毫秒。如果两次间隔超过[receiveTimeout]，
       ///  [Dio] 将会抛出一个[DioErrorType.RECEIVE_TIMEOUT]的异常.
       ///  注意: 这并不是接收数据的总时限.
-      receiveTimeout: 3000,
+      receiveTimeout: 5000,
       headers: header,
     );
 

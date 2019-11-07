@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/config/routes.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
@@ -18,10 +20,12 @@ import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/part/bottomBarView.dart';
 import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
@@ -253,6 +257,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     print('home page state');
 
     return isIniting
@@ -260,7 +266,7 @@ class _HomePageState extends State<HomePage>
         : GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
-              // 触摸收起键盘
+              // 触摸����起键盘
               _focusNode.unfocus();
             },
             // onTapDown: (details) =>
@@ -273,23 +279,21 @@ class _HomePageState extends State<HomePage>
                 Scaffold(
                     appBar: PreferredSize(
                         child: AppBar(
-                          elevation: 0,
+                          elevation: 0.3,
                           title: Text(
                             "南京工程学院",
                           ),
-                          backgroundColor: Color(0xfff9f9f9),
+                          // backgroundColor: Color(0xfff9f9f9),
                           centerTitle: true,
                           actions: <Widget>[
                             IconButton(
-                              icon:
-                                  Icon(Icons.filter_list, color: Colors.black),
+                              icon: Icon(Icons.filter_list),
                               onPressed: () => _forwardFilterPage(),
                             ),
                             IconButton(
                               icon: Icon(
                                 Icons.add,
                               ),
-                              color: Colors.black,
                               onPressed: () {
                                 Application.router.navigateTo(
                                     context, Routes.create,
@@ -349,7 +353,9 @@ class _HomePageState extends State<HomePage>
                       // height: ,
                       width: _replyContainerHeight,
                       decoration: BoxDecoration(
-                        color: Color(0xfff2f2f2),
+                        color: ThemeUtils.isDark(context)
+                            ? Color(0xff363636)
+                            : Color(0xfff2f2f2),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(15),
                           topRight: Radius.circular(15),
@@ -359,8 +365,8 @@ class _HomePageState extends State<HomePage>
                       child: Row(
                         children: <Widget>[
                           ClipOval(
-                            child: Image.network(
-                              'https://tva1.sinaimg.cn/large/006y8mN6ly1g81f2ri7dqj30xc0m840w.jpg',
+                            child: CachedNetworkImage(
+                              imageUrl: Application.getAccount.avatarUrl,
                               width: 35,
                               height: 35,
                               fit: BoxFit.cover,
@@ -407,37 +413,50 @@ class _HomePageState extends State<HomePage>
       //     style: TextStyle(fontSize: GlobalConfig.TEXT_TITLE_SIZE),
       //   ),
       // )
-      SliverAppBar(
-        centerTitle: true, //标题居中
-        title: Text(
-          '南京工程学院',
-          style: TextStyle(color: Colors.white),
-        ),
-        elevation: 0,
+      Stack(
+        children: <Widget>[
+          SliverAppBar(
+            centerTitle: true, //标题居中
+            title: Text(
+              '南京工程学院',
+              style: TextStyle(color: Colors.white),
+            ),
+            elevation: 0,
 
-        // iconTheme: IconThemeData(size: 5),
-        actions: <Widget>[
-          new IconButton(
-            icon: Icon(Icons.filter_list, color: Colors.black),
-            onPressed: () {
-              // _select(choices[0]);
-            },
+            // iconTheme: IconThemeData(size: 5),
+            actions: <Widget>[
+              new IconButton(
+                icon: Icon(Icons.filter_list),
+                onPressed: () {
+                  // _select(choices[0]);
+                },
+              ),
+            ],
+
+            expandedHeight: SizeConstant.HP_COVER_HEIGHT,
+            // backgroundColor: GlobalConfig.DEFAULT_BAR_BACK_COLOR,
+            backgroundColor: Colors.transparent,
+            floating: false,
+            pinned: true,
+            snap: false,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              background: Image.network(
+                "https://tva1.sinaimg.cn/large/006y8mN6gy1g81jr0a8t8j30dj0a5405.jpg",
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
+          // BackdropFilter(
+          //   filter: new ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          //   child: new Container(
+          //     color: Colors.white.withOpacity(0.1),
+          //     width: 300,
+          //     height: 300,
+          //   ),
+          // )
         ],
-
-        expandedHeight: SizeConstant.HP_COVER_HEIGHT,
-        backgroundColor: GlobalConfig.DEFAULT_BAR_BACK_COLOR,
-        floating: false,
-        pinned: true,
-        snap: false,
-        flexibleSpace: FlexibleSpaceBar(
-          centerTitle: true,
-          background: Image.network(
-            "https://tva1.sinaimg.cn/large/006y8mN6gy1g81jr0a8t8j30dj0a5405.jpg",
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
+      )
     ];
   }
 
@@ -456,13 +475,6 @@ class _HomePageState extends State<HomePage>
         _controller.clear();
         hideReplyContainer();
         sendCallback(newReply);
-        setState(() {
-          //   tweet.replyCount++;
-          //   if (CollectionUtil.isListEmpty(widget.tweet.dirReplies)) {
-          //     widget.tweet.dirReplies = new List();
-          //   }
-          //   widget.tweet.dirReplies.add(newReply);
-        });
       } else {
         _controller.clear();
         _hintText = "评论";
@@ -473,6 +485,5 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

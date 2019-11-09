@@ -3,11 +3,8 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/component/circle_header.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
@@ -19,6 +16,7 @@ import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -44,8 +42,7 @@ class _HotTodayState extends State<HotToday>
   LinkHeaderNotifier _headerNotifier;
 
   Future<void> _onRefresh() async {
-    print('On refresh');
-    getData();
+    await getData();
   }
 
   @override
@@ -61,16 +58,12 @@ class _HotTodayState extends State<HotToday>
     super.dispose();
   }
 
-  void getData() async {
-    // _refreshController.requestLoading();
-
-    TweetApi.queryOrghHotTweets(orgId).then((result) {
-      setState(() {
-        this.hotTweet = result;
-      });
-
-      ToastUtil.showToast('更新完成');
+  Future<void> getData() async {
+    HotTweet ht = await TweetApi.queryOrghHotTweets(orgId);
+    setState(() {
+      this.hotTweet = ht;
     });
+    ToastUtil.showToast('更新完成');
   }
 
   get getBackgroundUrl {
@@ -97,9 +90,9 @@ class _HotTodayState extends State<HotToday>
       body: EasyRefresh.custom(
           header: LinkHeader(
             _headerNotifier,
-            extent: 50.0,
+            extent: 70.0,
             triggerDistance: 70.0,
-            completeDuration: Duration(milliseconds: 0),
+            // completeDuration: Duration(milliseconds: 5000),
             enableHapticFeedback: true,
           ),
           firstRefresh: true,
@@ -172,14 +165,35 @@ class _HotTodayState extends State<HotToday>
 
   List<Widget> _getRenderList(HotTweet ht) {
     print('hot card render .................................');
-    if (hotTweet != null && hotTweet.tweets.length > 0) {
+    if (hotTweet != null && !CollectionUtil.isListEmpty(hotTweet.tweets)) {
       print(ht.toJson());
       List<Widget> list = new List();
       for (int i = 0; i < hotTweet.tweets.length; i++) {
         list.add(_buldHotTweetCard(ht.tweets[i], i));
       }
       return list;
+    } else if (hotTweet != null) {
+      // 加载完成无数据
+      return <Widget>[
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              height: ScreenUtil().setHeight(100),
+            ),
+            SizedBox(
+                width: 100.0,
+                height: 100.0,
+                child: Image.asset(
+                    ImageUtils.getImgPath("no_data", format: 'png'))),
+            Text('暂无数据', style: Theme.of(context).textTheme.subhead),
+          ],
+        ),
+      ];
     } else {
+      // 正在加载过程
       return <Widget>[];
     }
   }
@@ -233,7 +247,7 @@ class _HotTodayState extends State<HotToday>
                                                 ? Color(0xffEEE685)
                                                 : Theme.of(context)
                                                     .textTheme
-                                                    .title
+                                                    .overline
                                                     .color)),
                                   ),
                                 ),

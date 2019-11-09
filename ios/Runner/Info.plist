@@ -28,6 +28,12 @@
 	<string>“甜甜圈”请求在您使用期间获取您的相册权限</string>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	<key>MOBAppkey</key>
+	<string>2cff181741564</string>
+	<key>MOBAppSecret</key>
+	<string>ffb43a335bbf8c05197d2aad6fb2fbc1</string>
+
+
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

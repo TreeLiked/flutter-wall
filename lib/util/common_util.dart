@@ -8,10 +8,24 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/dialog_rertun.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/fluro_convert_utils.dart';
 
 class Utils {
   static void showToast(String msg) {
     Fluttertoast.showToast(msg: msg, gravity: ToastGravity.CENTER);
+  }
+
+  static String packConvertArgs(Map<String, String> args) {
+    if (CollectionUtil.isMapEmpty(args)) {
+      return "";
+    }
+    StringBuffer buffer = new StringBuffer("?");
+    args.forEach((k, v) =>
+        buffer.write(k + "=" + FluroConvertUtils.fluroCnParamsEncode(v) + "&"));
+    String str = buffer.toString();
+    str = str.substring(0, str.length - 1);
+
+    return str;
   }
 
   static Widget showNetImage(String url,

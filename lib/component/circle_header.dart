@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:iap_app/res/colors.dart';
 
 class CircleHeader extends StatefulWidget {
   final LinkHeaderNotifier linkNotifier;
@@ -28,6 +29,7 @@ class CircleHeaderState extends State<CircleHeader> {
 
   void onLinkNotify() {
     setState(() {
+      _indicatorValue = null;
       if (_refreshState == RefreshMode.armed ||
           _refreshState == RefreshMode.refresh) {
         _indicatorValue = null;
@@ -57,7 +59,7 @@ class CircleHeaderState extends State<CircleHeader> {
         height: 24.0,
         child: CircularProgressIndicator(
           value: _indicatorValue,
-          valueColor: AlwaysStoppedAnimation(Colors.white70),
+          valueColor: AlwaysStoppedAnimation(Colours.app_main),
           strokeWidth: 2.4,
         ),
       ),

@@ -1,7 +1,12 @@
 import 'dart:convert';
 
+import 'package:iap_app/util/string.dart';
+
 class FluroConvertUtils {
   static String fluroCnParamsEncode(String originalCn) {
+    if (StringUtil.isEmpty(originalCn)) {
+      return "";
+    }
     StringBuffer sb = StringBuffer();
     var encoded = Utf8Encoder().convert(originalCn);
     encoded.forEach((val) => sb.write('$val,'));
@@ -10,6 +15,9 @@ class FluroConvertUtils {
 
   /// fluro 传递后取出参数，解析
   static String fluroCnParamsDecode(String encodedCn) {
+    if (StringUtil.isEmpty(encodedCn)) {
+      return "";
+    }
     var decoded = encodedCn.split('[').last.split(']').first.split(',');
     var list = <int>[];
     decoded.forEach((s) => list.add(int.parse(s.trim())));

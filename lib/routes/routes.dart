@@ -8,6 +8,7 @@
  */
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/common-widget/widget_not_found.dart';
 import 'package:iap_app/page/webview_page.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/routes/setting_router.dart';
@@ -28,12 +29,15 @@ class Routes {
   static String cardToGallery = "/home/cardTogallery";
   static String detailToGallery = "/home/card/detailTogallery";
 
+  static String orgChoose = "/foo/orgChoose";
+
   static List<IRouterProvider> _listRouter = [];
 
   static void configureRoutes(Router router) {
     router.notFoundHandler = Handler(
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {
       print("ROUTE HANDLER WAS NOT FOUND !!!");
+      return WidgetNotFound();
     });
 
     router.define(webViewPage, handler: Handler(handlerFunc: (_, params) {

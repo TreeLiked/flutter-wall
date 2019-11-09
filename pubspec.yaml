@@ -40,7 +40,7 @@ dependencies:
   shared_preferences: ^0.5.3+4
 
   # 微信登录
-  fluwx: ^1.1.1
+  # fluwx: ^1.1.1
   
   # 网络图片缓存
   cached_network_image: ^1.1.2+1
@@ -84,7 +84,7 @@ dependencies:
 
 
   # social 
-  sharesdk: ^1.1.8
+  # sharesdk: ^1.1.8
 
 
   # #oss

@@ -15,6 +15,7 @@ import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
@@ -207,7 +208,15 @@ class PersonCenterState extends State<PersonalCenter>
                           ClickItem(
                             title: '我的组织',
                             content: '南京工程学院',
-                            onTap: () {},
+                            onTap: () {
+                              NavigatorUtils.push(
+                                  context,
+                                  SettingRouter.orgChoosePage +
+                                      Utils.packConvertArgs({
+                                        'title': '选择组织',
+                                        'hintText': '点击搜索'
+                                      }));
+                            },
                           ),
                           ClickItem(
                             title: '我的身份',

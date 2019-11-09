@@ -17,12 +17,13 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  var _pageList;
+
   // 当前选中的索引
   int _currentIndex = 0;
   // 底部导航视图
   List<NavigationIconView> _navigationViews;
   // 所有页面
-  List<StatefulWidget> _pageList;
   // 当前页面
   StatefulWidget _currentPage;
 
@@ -31,6 +32,10 @@ class _IndexState extends State<Index>
   @override
   void initState() {
     super.initState();
+    initPageData();
+  }
+
+  void initPageData() {
     _navigationViews = <NavigationIconView>[
       NavigationIconView(
           icon: Icon(Icons.home, size: 20),
@@ -64,11 +69,10 @@ class _IndexState extends State<Index>
     //     });
 
     _pageList = <StatefulWidget>[
-      new HomePage(),
-      new HotToday(),
-      // new CreatePage(),
-      new CreatePage(),
-      new PersonalCenter(),
+      HomePage(),
+      HotToday(),
+      CreatePage(),
+      PersonalCenter(),
     ];
 
     _currentPage = _pageList[_currentIndex];
@@ -149,7 +153,7 @@ class _IndexState extends State<Index>
           controller: pageController,
           onPageChanged: onPageChanged,
           children: _pageList,
-          physics: NeverScrollableScrollPhysics(), // 禁止滑动
+          // physics: NeverScrollableScrollPhysics(), // 禁止滑动
         ));
   }
 

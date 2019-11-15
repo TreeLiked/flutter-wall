@@ -83,7 +83,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
                   options: Options(responseType: ResponseType.bytes));
               ImagePickerSaver.saveFile(
                   fileData: Uint8List.fromList(response.data));
-              ToastUtil.showToast('已保存到手机相册');
+              ToastUtil.showToast(context, '已保存到手机相册');
               Navigator.pop(context);
             }),
             BottomSheetItem(
@@ -92,7 +92,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
                   color: Colors.grey,
                 ),
                 '举报', () {
-              ToastUtil.showToast('举报成功');
+              ToastUtil.showToast(context, '举报成功');
               Navigator.pop(context);
             }),
           ]);
@@ -114,7 +114,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
                   color: Colors.grey,
                 ),
                 '举报', () {
-              ToastUtil.showToast('举报成功');
+              ToastUtil.showToast(context, '举报成功');
               Navigator.pop(context);
             }),
           ]);

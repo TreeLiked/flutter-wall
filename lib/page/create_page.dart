@@ -7,13 +7,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/asset_image.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
-import 'package:iap_app/provider.dart/theme_provider.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/oss_util.dart';
@@ -127,14 +126,19 @@ class _CreatePageState extends State<CreatePage>
       _baseTweet.account = Application.getAccount;
       _baseTweet.enableReply = _enbaleReply;
       _baseTweet.anonymous = _anonymous;
-      _baseTweet.orgId = Application.getOrgId;
+      _baseTweet.orgId = 1;
       print(_baseTweet.toJson());
       TweetApi.pushTweet(_baseTweet).then((result) {
-        print(result.toString());
-        Navigator.pop(context);
+        // print(result.toString());
+        Result r = Result.fromJson(result);
+        if (r.isSuccess) {
+          Navigator.pop(context);
+        } else {
+          ToastUtil.showToast(context, r.message);
+        }
       });
     } else {
-      ToastUtil.showToast('发布出错，请稍后重试');
+      ToastUtil.showToast(context, '发布出错，请稍后重试');
     }
     _updatePushBtnState();
     setState(() {
@@ -285,10 +289,10 @@ class _CreatePageState extends State<CreatePage>
       context: context,
 
       /// The following are optional parameters.
-      themeColor: Color(0xffF0F8FF),
+      themeColor: Theme.of(context).scaffoldBackgroundColor,
       // the title color and bottom color
 
-      textColor: Color(0xff696969),
+      textColor: Theme.of(context).textTheme.subhead.color,
 
       // text color
       padding: 1.0,
@@ -361,11 +365,12 @@ class _CreatePageState extends State<CreatePage>
         resizeToAvoidBottomPadding: true,
         appBar: new AppBar(
           title: Text(widget.title),
+          centerTitle: true,
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
             icon: Text("取消",
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.title.color,
+                  color: Theme.of(context).textTheme.subhead.color,
                 )),
           ),
           elevation: 0,
@@ -391,10 +396,11 @@ class _CreatePageState extends State<CreatePage>
             )
           ],
         ),
-        backgroundColor: ColorConstant.DEFAULT_BAR_BACK_COLOR,
+        backgroundColor: Color(0xfff5f6f7),
         body: ModalProgressHUD(
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 GestureDetector(
                   onTap: () => _hideKeyB(),
@@ -559,12 +565,29 @@ class _CreatePageState extends State<CreatePage>
                       ],
                     ),
                   ),
-                )
+                ),
+                // Container(
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.end,
+                //     mainAxisSize: MainAxisSize.max,
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: <Widget>[
+                //       Padding(
+                //         padding: EdgeInsets.only(top: 2, left: 4),
+                //         child: Text(
+                //           '请勿发布广告等标签无关内容，\n否则您的账号可能会被永久封禁',
+                //           style: TextStyles.textGray12,
+                //           softWrap: true,
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // )
               ],
             ),
           ),
           inAsyncCall: _publishing,
-          opacity: 0.15,
+          opacity: 0.4,
         ));
   }
 

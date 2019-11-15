@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
@@ -30,6 +31,9 @@ dependencies:
   flustars: ^0.2.6+1
   # 下拉刷新
   pull_to_refresh: ^1.5.6
+
+  # 响应式编程 https://github.com/ReactiveX/rxdart
+  rxdart: ^0.22.4
 
   # 下拉刷新2
   flutter_easyrefresh: ^2.0.4
@@ -49,11 +53,18 @@ dependencies:
   # 
   flutter_screenutil: ^0.6.0
 
+  # 权限管理
+  permission_handler: ^4.0.0
+
   # 图片选择与下载
   image_picker_saver: ^0.3.0
+  # 单图选择
+  image_picker: ^0.6.1+11
 
   # 扩展图片预览
   extended_image: ^0.6.4
+  # 图片裁剪
+  image_crop: ^0.3.1
 
   # toast
   fluttertoast: ^3.1.3

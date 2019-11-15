@@ -14,6 +14,17 @@ class Account {
   int regType;
   String openId;
 
+  DateTime birthDay;
+
+  String gender;
+
+  String province;
+  String city;
+  String districtl;
+
+  String qq;
+  String weixin;
+
   Account();
 
   Account.fromId(String id) {

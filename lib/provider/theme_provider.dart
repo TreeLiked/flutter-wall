@@ -52,7 +52,9 @@ class ThemeProvider extends ChangeNotifier {
         scaffoldBackgroundColor:
             isDarkMode ? Colours.dark_bg_color : Colors.white,
         // 主要用于Material背景色
-        canvasColor: isDarkMode ? Colours.dark_material_bg : Colors.white,
+        // canvasColor: Colors.transparent,
+        canvasColor: isDarkMode ? Colours.dark_material_bg : Color(0xfff7f8fa),
+
         // 文字选择色（输入框复制粘贴菜单）
         textSelectionColor: Colours.app_main.withAlpha(70),
         textSelectionHandleColor: Colours.app_main,
@@ -70,7 +72,7 @@ class ThemeProvider extends ChangeNotifier {
         ),
         appBarTheme: AppBarTheme(
           elevation: 0.0,
-          color: isDarkMode ? Colours.dark_bg_color : Colors.white,
+          color: isDarkMode ? Color(0xff303233) : Color(0xfffbfbfb),
           brightness: isDarkMode ? Brightness.dark : Brightness.light,
         ),
         primaryTextTheme: TextTheme(

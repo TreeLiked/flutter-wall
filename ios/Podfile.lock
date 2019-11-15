@@ -5,9 +5,15 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - image_crop (0.0.1):
+    - Flutter
+  - image_picker (0.0.1):
+    - Flutter
   - image_picker_saver (0.0.1):
     - Flutter
   - path_provider (0.0.1):
+    - Flutter
+  - permission_handler (4.0.0):
     - Flutter
   - photo_manager (0.0.1):
     - Flutter
@@ -22,8 +28,11 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - image_crop (from `.symlinks/plugins/image_crop/ios`)
+  - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - image_picker_saver (from `.symlinks/plugins/image_picker_saver/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -38,10 +47,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/flutter/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
+  image_crop:
+    :path: ".symlinks/plugins/image_crop/ios"
+  image_picker:
+    :path: ".symlinks/plugins/image_picker/ios"
   image_picker_saver:
     :path: ".symlinks/plugins/image_picker_saver/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
   shared_preferences:
@@ -55,8 +70,11 @@ SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  image_crop: e0a67085d3ebf3cf46ca46d61c53a082507b0bc3
+  image_picker: e3eacd46b94694dde7cf2705955cece853aa1a8f
   image_picker_saver: 4f28bd70e1efdca68ad88beab0f11d22cffe04f6
   path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
+  permission_handler: 0fb88b8a3c23e31e5de45b8f1bb8b7de28cf8941
   photo_manager: 47ca9adddeea702246c96c6f67769f03907cd953
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a

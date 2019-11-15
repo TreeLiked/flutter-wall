@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class GlobalConfig {
+  static const bool inProduction =
+      const bool.fromEnvironment("dart.vm.product");
+
   static bool dark = false;
   static ThemeData td = ThemeData(
     primaryColor: Colors.white,

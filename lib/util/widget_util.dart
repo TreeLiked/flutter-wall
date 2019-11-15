@@ -44,15 +44,15 @@ class WidgetUtil {
     }
   }
 
-  static Widget getLoadingAnimiation({double size = 60}) {
+  static Widget getLoadingAnimiation({double size = 140}) {
     return Container(
         height: size,
         width: size,
-        margin: EdgeInsets.only(top: ScreenUtil().setHeight(70)),
+        margin: EdgeInsets.only(top: ScreenUtil().setHeight(50)),
         child: FlareActor(
           PathConstant.FLARE_LOADING_ROUND,
           fit: BoxFit.cover,
-          animation: 'Loading',
+          animation: 'idle',
         ));
   }
 

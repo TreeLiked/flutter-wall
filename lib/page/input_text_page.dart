@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
-/// design/7店铺-店铺配置/index.html#artboard13
 class InputTextPage extends StatefulWidget {
   InputTextPage({
     Key key,
     @required this.title,
     this.content,
     this.hintText,
+    this.limit = 16,
     this.keyboardType: TextInputType.text,
   }) : super(key: key);
 
   final String title;
   final String content;
   final String hintText;
+  final int limit;
   final TextInputType keyboardType;
 
   @override
@@ -44,7 +45,7 @@ class _InputTextPageState extends State<InputTextPage> {
         padding: const EdgeInsets.only(
             top: 21.0, left: 16.0, right: 16.0, bottom: 16.0),
         child: TextField(
-            maxLength: 30,
+            maxLength: widget.limit,
             maxLines: 5,
             autofocus: true,
             controller: _controller,

@@ -11,17 +11,13 @@ import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
 
 class Utils {
-  static void showToast(String msg) {
-    Fluttertoast.showToast(msg: msg, gravity: ToastGravity.CENTER);
-  }
-
-  static String packConvertArgs(Map<String, String> args) {
+  static String packConvertArgs(Map<String, Object> args) {
     if (CollectionUtil.isMapEmpty(args)) {
       return "";
     }
     StringBuffer buffer = new StringBuffer("?");
-    args.forEach((k, v) =>
-        buffer.write(k + "=" + FluroConvertUtils.fluroCnParamsEncode(v) + "&"));
+    args.forEach((k, v) => buffer.write(
+        k + "=" + FluroConvertUtils.fluroCnParamsEncode(v.toString()) + "&"));
     String str = buffer.toString();
     str = str.substring(0, str.length - 1);
 

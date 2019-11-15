@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/util/theme_utils.dart';
 
 class ToastUtil {
-  static void showToast(String text,
-      {bool white = true, ToastGravity gravity = ToastGravity.CENTER}) {
+  static void showToast(BuildContext context, String text,
+      {ToastGravity gravity = ToastGravity.CENTER}) {
+    bool dark = false;
+    if (context != null) {
+      dark = ThemeUtils.isDark(context);
+    }
     Fluttertoast.showToast(
       msg: '    $text    ',
       fontSize: 13,
       gravity: gravity,
-      backgroundColor:
-          white ? ColorConstant.DEFAULT_BAR_BACK_COLOR : Colors.black,
-      textColor: !white ? Colors.white : Colors.black87,
+      backgroundColor: dark ? Colors.grey : Color(0xfff5f6f7),
+      textColor: dark ? Color(0xfff5f6f7) : Color(0xff1C1C1C),
     );
   }
 }

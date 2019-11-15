@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
+import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
@@ -22,6 +26,7 @@ import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -211,20 +216,13 @@ class TweetCardState extends State<TweetCard> {
 
   Widget _profileContainer(String profileUrl) {
     return Container(
-      margin: EdgeInsets.only(right: 10),
-      child: Column(
-        children: <Widget>[
-          ClipOval(
-            child: Image.network(
-              !tweet.anonymous ? profileUrl : PathConstant.ANONYMOUS_PROFILE,
-              width: SizeConstant.TWEET_PROFILE_SIZE,
-              height: SizeConstant.TWEET_PROFILE_SIZE,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ],
-      ),
-    );
+        margin: EdgeInsets.only(right: 10),
+        child: AccountAvatar(
+          avatarUrl: !tweet.anonymous
+              ? (profileUrl ?? PathConstant.ANONYMOUS_PROFILE)
+              : PathConstant.ANONYMOUS_PROFILE,
+          size: SizeConstant.TWEET_PROFILE_SIZE,
+        ));
   }
 
   Widget _nickContainer(String nickName) {
@@ -241,7 +239,7 @@ class TweetCardState extends State<TweetCard> {
           ))
         : Container(
             child: Text(
-              nickName,
+              nickName ?? "",
               style: MyDefaultTextStyle.getTweetHeadNickStyle(
                   SizeConstant.TWEET_NICK_SIZE),
             ),
@@ -249,6 +247,9 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _timeContainer(DateTime dt) {
+    if (dt == null) {
+      return VEmptyView(0);
+    }
     return Text(TimeUtil.getShortTime(dt),
         style: TextStyle(
           fontSize: SizeConstant.TWEET_TIME_SIZE,
@@ -257,17 +258,21 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _signatureContainer(String sig) {
+    if (StringUtil.isEmpty(sig)) {
+      return VEmptyView(0);
+    }
     return Container(
+        margin: EdgeInsets.only(right: ScreenUtil.screenWidthDp * 0.15),
         child: Text(
-      !tweet.anonymous ? sig : TextConstant.TWEET_ANONYMOUS_SIG,
-      style: TextStyle(
-        fontSize: SizeConstant.TWEET_TIME_SIZE,
-        color: ColorConstant.TWEET_TIME_COLOR,
-      ),
-      overflow: TextOverflow.ellipsis,
-      softWrap: true,
-      maxLines: 1,
-    ));
+          !tweet.anonymous ? sig : TextConstant.TWEET_ANONYMOUS_SIG,
+          style: TextStyle(
+            fontSize: SizeConstant.TWEET_TIME_SIZE,
+            color: ColorConstant.TWEET_TIME_COLOR,
+          ),
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+          maxLines: 2,
+        ));
   }
 
   Widget _typeContainer() {
@@ -330,11 +335,12 @@ class TweetCardState extends State<TweetCard> {
       tweet.loved = !tweet.loved;
       if (tweet.loved) {
         tweet.praise++;
+
         tweet.latestPraise.insert(0, Application.getAccount);
       } else {
         tweet.praise--;
         tweet.latestPraise
-            .removeWhere((account) => account.id == Application.getAccount.id);
+            .removeWhere((account) => account.id == Application.getAccountId);
       }
       TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
     });
@@ -415,17 +421,12 @@ class TweetCardState extends State<TweetCard> {
                   ? Color(0xff363636)
                   : Color(0xfff2f2f2),
               borderRadius: BorderRadius.all(Radius.circular(10))),
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          padding: EdgeInsets.all(9),
           child: Row(
             children: <Widget>[
-              ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: Application.getAccount.avatarUrl,
-                  width: 35,
-                  height: 35,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              AccountAvatar(
+                  avatarUrl: Application.getAccount.avatarUrl,
+                  size: SizeConstant.TWEET_PROFILE_SIZE * 0.8),
               Expanded(
                 child: Padding(
                     padding: EdgeInsets.only(left: 10),
@@ -507,7 +508,7 @@ class TweetCardState extends State<TweetCard> {
       return Padding(
         padding: EdgeInsets.only(top: 5),
         child: Text(
-          "查看更多 ${tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复 ..",
+          "查���更多 ${tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复 ..",
           style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
         ),
       );
@@ -550,17 +551,17 @@ class TweetCardState extends State<TweetCard> {
                       text: accNick,
                       style: isAuthorReply && authorAnonymous
                           ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                              14)
+                              context, 14)
                           : MyDefaultTextStyle.getTweetReplyNickStyle(14)),
                   TextSpan(
-                    text: reply.type == 2 ? ' 回复 ' : '',
-                    style: MyDefaultTextStyle.getTweetReplyOtherStyle(13),
-                  ),
+                      text: reply.type == 2 ? ' 回复 ' : '',
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.subtitle.color)),
                   TextSpan(
                       text: reply.type == 2 ? tarNick : '',
                       style: replyAuthor && authorAnonymous
                           ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                              14)
+                              context, 14)
                           : MyDefaultTextStyle.getTweetReplyNickStyle(14)),
                   TextSpan(
                     text: '：',
@@ -571,7 +572,7 @@ class TweetCardState extends State<TweetCard> {
                   TextSpan(
                     text: reply.body,
                     style: TextStyle(
-                        color: Theme.of(context).textTheme.subtitle.color,
+                        color: Theme.of(context).textTheme.subhead.color,
                         fontWeight: FontWeight.w400),
                   ),
                 ]),
@@ -626,6 +627,7 @@ class TweetCardState extends State<TweetCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               _profileContainer(tweet.account.avatarUrl),
                               Expanded(
@@ -704,16 +706,18 @@ class TweetCardState extends State<TweetCard> {
     setState(() {
       this.tweet = widget.tweet;
     });
-    return new Container(
-      child: Column(
-        children: <Widget>[
-          // cardContainer(),
-          cardContainer2(),
-          Divider(height: 1)
-        ],
-      ),
-      // margin: EdgeInsets.only(bottom: 10),
-    );
+    return tweet != null && tweet.account != null
+        ? Container(
+            child: Column(
+              children: <Widget>[
+                // cardContainer(),
+                cardContainer2(),
+                Divider(height: 1)
+              ],
+            ),
+            // margin: EdgeInsets.only(bottom: 10),
+          )
+        : VEmptyView(0);
   }
 
   /*
@@ -736,6 +740,7 @@ class TweetCardState extends State<TweetCard> {
     print(tr.toJson());
     if (tr == null) {
       ToastUtil.showToast(
+        context,
         '回复失败，请稍后重试',
         gravity: ToastGravity.TOP,
       );

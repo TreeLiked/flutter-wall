@@ -20,4 +20,7 @@ class SizeConstant {
   static const double HP_COVER_HEIGHT = 150;
 
   static const double TWEET_MAX_SINGLE_PIC_HIEGHT = 180;
+
+  // hot tweet range icon size =
+  static const double TWEET_HOT_RANK_ICON_SIZE = 19;
 }

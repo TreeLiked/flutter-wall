@@ -60,15 +60,20 @@ class _HotTodayState extends State<HotToday>
 
   Future<void> getData() async {
     HotTweet ht = await TweetApi.queryOrghHotTweets(orgId);
+
+    if (ht == null) {
+      ToastUtil.showToast(context, '数据加载错误');
+      return;
+    }
     setState(() {
       this.hotTweet = ht;
     });
-    ToastUtil.showToast('更新完成');
+    ToastUtil.showToast(context, '更新完成');
   }
 
   get getBackgroundUrl {
     String baseUrl =
-        "https://tva1.sinaimg.cn/large/006y8mN6ly1g8dw00yhe7j30u011i0vj.jpg";
+        "https://tva1.sinaimg.cn/large/006y8mN6gy1g8rj5nshozj30gm0jqmzf.jpg";
     if (hotTweet == null) {
       return baseUrl;
     }
@@ -216,6 +221,7 @@ class _HotTodayState extends State<HotToday>
     }
     return GestureDetector(
         onTap: () => _forwardDetail(bt, index),
+        behavior: HitTestBehavior.translucent,
         child: Column(
           children: <Widget>[
             Container(

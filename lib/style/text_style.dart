@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/util/theme_utils.dart';
 
 class MyDefaultTextStyle {
   static TextStyle getTweetNickStyle(double fontSize,
@@ -19,9 +20,10 @@ class MyDefaultTextStyle {
         fontWeight: FontWeight.w400);
   }
 
-  static TextStyle getTweetReplyAnonymousNickStyle(double fontSize) {
+  static TextStyle getTweetReplyAnonymousNickStyle(
+      BuildContext context, double fontSize) {
     return TextStyle(
-        color: Color(0xff363636),
+        color: ThemeUtils.isDark(context) ? Colors.grey : Color(0xff363636),
         fontSize: fontSize,
         fontWeight: FontWeight.w400);
   }

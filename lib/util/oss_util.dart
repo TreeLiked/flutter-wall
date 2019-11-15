@@ -8,12 +8,13 @@ import 'dart:io';
 import 'package:common_utils/common_utils.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/model/result.dart';
-import 'package:iap_app/util/api.dart';
 import 'package:iap_app/util/http_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:uuid/uuid.dart';
 
 class OssUtil {
@@ -35,21 +36,35 @@ class OssUtil {
 
   static Future<Result> requestPostUrls(int count) async {
     String requestUrl =
-        "${Api.API_BASE_URL}/?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
-            Application.getAccount.id;
+        "${Api.API_BASE_INF_URL}/?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
+            Application.getAccountId;
     Response response = await httpUtil.dio.post(requestUrl);
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return Result.fromJson(json);
   }
 
-  static Future<String> uploadImage(String fileName, File object) async {
+  static Future<String> uploadImage(String fileName, File object,
+      {bool toTweet = true, String fixName}) async {
     //构建policy, `expriation`设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了, `content-length-range`设置上传文件的大小限制
-    String date = DateUtil.formatDate(DateTime.now(), format: "yyyy-MM-dd");
-    String newFileName = Application.getAccount.id +
-        "-" +
-        Uuid().v1().substring(0, 8) +
-        fileName.substring(fileName.lastIndexOf("."));
-    String nameKey = "almond-donuts/image/tweet/$date/" + newFileName;
+    String newFileName;
+
+    if (StringUtil.isEmpty(fixName)) {
+      newFileName = Application.getAccountId +
+          "-" +
+          Uuid().v1().substring(0, 8) +
+          fileName.substring(fileName.lastIndexOf("."));
+    } else {
+      newFileName = fixName;
+    }
+
+    String nameKey;
+
+    if (!toTweet) {
+      nameKey = "almond-donuts/image/avatar/" + newFileName;
+    } else {
+      String date = DateUtil.formatDate(DateTime.now(), format: "yyyy-MM-dd");
+      nameKey = "almond-donuts/image/tweet/$date/" + newFileName;
+    }
     String policyText =
         '{"expiration": "2050-01-01T12:00:00.000Z","conditions": [["content-length-range", 0, 1048576000]]}';
     List<int> policyTextUtf8 = utf8.encode(policyText);
@@ -78,9 +93,7 @@ class OssUtil {
     try {
       print(object.lengthSync() / 1024 / 1024);
       Response response = await dio.post(OssConstant.POST_URL, data: data);
-      print("headers");
       print(response.headers);
-      print("data-----------------------------");
       print(response.data);
       return OssConstant.POST_URL + "/" + nameKey;
     } on DioError catch (e) {

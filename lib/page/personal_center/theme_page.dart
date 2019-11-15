@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flustars/flustars.dart' as flutter_stars;
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/provider.dart/theme_provider.dart';
+import 'package:iap_app/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class ThemePage extends StatefulWidget {

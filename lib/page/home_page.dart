@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/page_param.dart';
@@ -18,14 +18,14 @@ import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
-import 'package:iap_app/part/bottomBarView.dart';
 import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,7 +36,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin<HomePage> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage>
 
   Function sendCallback;
 
-  String accountId;
+  AccountLocalProvider accountLocalProvider;
 
   @override
   void initState() {
@@ -108,8 +108,10 @@ class _HomePageState extends State<HomePage>
     // _refreshController.requestRefresh();
     List<BaseTweet> temp = await getData(1);
     _homeTweets.clear();
-    _homeTweets.addAll(temp);
-    recomKey.currentState.updateTweetList(temp, add: false);
+    if (!CollectionUtil.isListEmpty(temp)) {
+      _homeTweets.addAll(temp);
+      recomKey.currentState.updateTweetList(temp, add: false);
+    }
   }
 
   void _onLoading() async {
@@ -127,9 +129,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getData(int page) async {
-    if (StringUtil.isEmpty(accountId)) {
-      this.accountId = await AccountUtil.getStorageAccountId();
-    }
+    print('get data ---------------------');
     bool notAll = false;
     if (!CollectionUtil.isListEmpty(tweetQueryTypes)) {
       List<String> allTypes = tweetTypeMap.values.map((f) => f.name).toList();
@@ -149,42 +149,9 @@ class _HomePageState extends State<HomePage>
             types: (CollectionUtil.isListEmpty(tweetQueryTypes) || !notAll)
                 ? null
                 : tweetQueryTypes),
-        Application.getAccount.id));
+        Application.getAccountId));
     // _updateTWeetList(pbt);
     return pbt;
-  }
-
-  Widget bottomBar() {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: SizedBox(),
-        ),
-        BottomBarView(
-          tabIconsList: tabIconsList,
-          addClick: () {},
-          changeIndex: (index) {
-            if (index == 0 || index == 2) {
-              animationController.reverse().then((data) {
-                if (!mounted) return;
-                setState(() {
-                  // tabBody =
-                  //     MyDiaryScreen(animationController: animationController);
-                });
-              });
-            } else if (index == 1 || index == 3) {
-              animationController.reverse().then((data) {
-                if (!mounted) return;
-                setState(() {
-                  // tabBody =
-                  //     TrainingScreen(animationController: animationController);
-                });
-              });
-            }
-          },
-        ),
-      ],
-    );
   }
 
   void getStoragePreferTypes() async {
@@ -259,14 +226,13 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    print('home page state');
+    accountLocalProvider = Provider.of<AccountLocalProvider>(context);
 
     return isIniting
         ? CircularProgressIndicator()
         : GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
-              // 触摸����起键盘
               _focusNode.unfocus();
             },
             // onTapDown: (details) =>
@@ -287,7 +253,7 @@ class _HomePageState extends State<HomePage>
                           centerTitle: true,
                           actions: <Widget>[
                             IconButton(
-                              icon: Icon(Icons.filter_list),
+                              icon: Icon(Icons.remove),
                               onPressed: () => _forwardFilterPage(),
                             ),
                             IconButton(
@@ -361,16 +327,12 @@ class _HomePageState extends State<HomePage>
                           topRight: Radius.circular(15),
                         ),
                       ),
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
+                      padding: EdgeInsets.fromLTRB(11, 7, 15, 7),
                       child: Row(
                         children: <Widget>[
-                          ClipOval(
-                            child: CachedNetworkImage(
-                              imageUrl: Application.getAccount.avatarUrl,
-                              width: 35,
-                              height: 35,
-                              fit: BoxFit.cover,
-                            ),
+                          AccountAvatar(
+                            avatarUrl: accountLocalProvider.account.avatarUrl,
+                            size: SizeConstant.TWEET_PROFILE_SIZE * 0.85,
                           ),
                           Expanded(
                             child: Padding(
@@ -465,7 +427,7 @@ class _HomePageState extends State<HomePage>
       return "";
     }
     curReply.body = value;
-    Account acc = Account.fromId("e5e5d7e2006c4788b6b24509dfe481b3");
+    Account acc = Account.fromId(accountLocalProvider.accountId);
     curReply.account = acc;
     print(curReply.toJson());
     TweetApi.pushReply(curReply, curReply.tweetId).then((result) {

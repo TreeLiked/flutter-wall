@@ -5,6 +5,7 @@ import 'dart:ffi';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
@@ -13,33 +14,40 @@ import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/util/api.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class TweetApi {
   // TODO 401 未认证检测
+
   static Future<List<BaseTweet>> queryTweets(
       PageParam param, String accountId) async {
-    print(Api.API_BASE_URL + Api.API_TWEET_QUERYY);
+    print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY);
 
-    Response response = await httpUtil.dio.post(
-        Api.API_BASE_URL + Api.API_TWEET_QUERYY + '?acId=$accountId',
-        data: param.toJson());
-    Map<String, dynamic> json = Api.convertResponse(response.data);
-    List<dynamic> jsonData = json["data"];
-    if (CollectionUtil.isListEmpty(jsonData)) {
-      return new List<BaseTweet>();
+    Response response;
+    try {
+      response = await httpUtil.dio.post(
+          Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY + '?acId=$accountId',
+          data: param.toJson());
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      List<dynamic> jsonData = json["data"];
+      if (CollectionUtil.isListEmpty(jsonData)) {
+        return new List<BaseTweet>();
+      }
+      List<BaseTweet> tweetList =
+          jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+      return tweetList;
+    } on DioError catch (e) {
+      Api.formatError(e);
     }
-    List<BaseTweet> tweetList =
-        jsonData.map((m) => BaseTweet.fromJson(m)).toList();
-    return tweetList;
+    return null;
   }
 
   static Future<Map<String, dynamic>> pushTweet(BaseTweet tweet) async {
-    print(Api.API_BASE_URL + Api.API_TWEET_QUERYY);
-    Response response = await httpUtil.dio
-        .post(Api.API_BASE_URL + Api.API_TWEET_CREATE, data: tweet.toJson());
+    print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY);
+    Response response = await httpUtil.dio.post(
+        Api.API_BASE_INF_URL + Api.API_TWEET_CREATE,
+        data: tweet.toJson());
 
     return Api.convertResponse(response.data);
   }
@@ -49,10 +57,10 @@ class TweetApi {
     StringBuffer buffer = new StringBuffer();
     fileSuffixes.forEach((f) => buffer.write("&suffix=$f"));
 
-    String url = Api.API_BASE_URL +
+    String url = Api.API_BASE_INF_URL +
         Api.API_TWEET_MEDIA_UPLOAD_REQUEST +
         "?type=$type&${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
-        Application.getAccount.id +
+        Application.getAccountId +
         buffer.toString();
 
     print(url);
@@ -62,10 +70,10 @@ class TweetApi {
   }
 
   static Future<Result> pushReply(TweetReply reply, int tweetId) async {
-    print(Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE);
+    print(Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE);
 
     Response response = await httpUtil.dio.post(
-        Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId',
+        Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId',
         data: reply.toJson());
     print('----------------------------------------------${response.data}');
     Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -76,21 +84,21 @@ class TweetApi {
       int tweetId, String type, bool positive) async {
     var param = {
       'tweetId': tweetId,
-      'accountId': Application.getAccount.id,
+      'accountId': Application.getAccountId,
       'type': type,
       'valid': positive
     };
-    String url = Api.API_BASE_URL +
+    String url = Api.API_BASE_INF_URL +
         Api.API_TWEET_OPERATION +
         '?acId=' +
-        Application.getAccount.id;
+        Application.getAccountId;
     print(url);
     httpUtil.dio.post(url, data: param);
   }
 
   static Future<List<TweetReply>> quertTweetReply(
       int tweetId, bool needSub) async {
-    String url = Api.API_BASE_URL +
+    String url = Api.API_BASE_INF_URL +
         Api.API_TWEET_REPLY_QUERY +
         '?id=$tweetId&needSub=$needSub';
     print(url);
@@ -110,10 +118,10 @@ class TweetApi {
       'tweetIds': [tweetId],
       'type': 'PRAISE'
     };
-    String url = Api.API_BASE_URL +
+    String url = Api.API_BASE_INF_URL +
         Api.API_TWEET_QUERY_SINGLE +
         '?acId=' +
-        Application.getAccount.id;
+        Application.getAccountId;
     print(url);
     Response response = await httpUtil.dio.post(url, data: param);
     Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -138,20 +146,24 @@ class TweetApi {
   // }
 
   static Future<HotTweet> queryOrghHotTweets(int orgId) async {
-    String url = Api.API_BASE_URL +
-        Api.API_TWEET_HOT_QUERYY +
-        '?orgId=$orgId&acId=' +
-        Application.getAccount.id;
-    print(url + '----------------------------------');
-    Response response = await httpUtil.dio.get(url);
-    Map<String, dynamic> json = Api.convertResponse(response.data);
-    return HotTweet.fromJson(json);
+    try {
+      String url = Api.API_BASE_INF_URL +
+          Api.API_TWEET_HOT_QUERYY +
+          '?orgId=$orgId&acId=' +
+          Application.getAccountId;
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return HotTweet.fromJson(json);
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
   }
 
   static Future<HotTweet> queryPraise(int tweetId) async {
-    print(Api.API_BASE_URL + Api.API_TWEET_HOT_QUERYY);
+    print(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERYY);
     Response response = await httpUtil.dio
-        .get(Api.API_BASE_URL + Api.API_TWEET_HOT_QUERYY + '?tId=$tweetId');
+        .get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERYY + '?tId=$tweetId');
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return HotTweet.fromJson(json);
   }

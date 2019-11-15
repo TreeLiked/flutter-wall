@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -11,7 +12,10 @@ class BaseDialog extends StatelessWidget {
   const BaseDialog(
       {Key key,
       this.title,
+      this.leftText = "取消",
+      this.rightText = "确认",
       this.onPressed,
+      this.showCancel = true,
       this.hiddenTitle: false,
       @required this.child})
       : super(key: key);
@@ -20,7 +24,9 @@ class BaseDialog extends StatelessWidget {
   final Function onPressed;
   final Widget child;
   final bool hiddenTitle;
-
+  final bool showCancel;
+  final String leftText;
+  final String rightText;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,21 +65,23 @@ class BaseDialog extends StatelessWidget {
                 Gaps.line,
                 Row(
                   children: <Widget>[
-                    Expanded(
-                      child: SizedBox(
-                        height: 48.0,
-                        child: FlatButton(
-                          child: const Text(
-                            "取消",
-                            style: TextStyle(fontSize: Dimens.font_sp18),
-                          ),
-                          textColor: Colours.text_gray,
-                          onPressed: () {
-                            NavigatorUtils.goBack(context);
-                          },
-                        ),
-                      ),
-                    ),
+                    showCancel
+                        ? Expanded(
+                            child: SizedBox(
+                              height: 48.0,
+                              child: FlatButton(
+                                child: Text(
+                                  leftText,
+                                  style: TextStyle(fontSize: Dimens.font_sp18),
+                                ),
+                                textColor: Colours.text_gray,
+                                onPressed: () {
+                                  NavigatorUtils.goBack(context);
+                                },
+                              ),
+                            ),
+                          )
+                        : VEmptyView(0),
                     const SizedBox(
                       height: 48.0,
                       width: 0.6,
@@ -83,8 +91,8 @@ class BaseDialog extends StatelessWidget {
                       child: SizedBox(
                         height: 48.0,
                         child: FlatButton(
-                          child: const Text(
-                            "确定",
+                          child: Text(
+                            rightText,
                             style: TextStyle(fontSize: Dimens.font_sp18),
                           ),
                           textColor: Theme.of(context).primaryColor,

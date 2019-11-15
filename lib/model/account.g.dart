@@ -14,7 +14,16 @@ Account _$AccountFromJson(Map<String, dynamic> json) {
     ..avatarUrl = json['avatarUrl'] as String
     ..mobile = json['mobile'] as String
     ..regType = json['regType'] as int
-    ..openId = json['openId'] as String;
+    ..openId = json['openId'] as String
+    ..birthDay = json['birthDay'] == null
+        ? null
+        : DateTime.parse(json['birthDay'] as String)
+    ..gender = json['gender'] as String
+    ..province = json['province'] as String
+    ..city = json['city'] as String
+    ..districtl = json['districtl'] as String
+    ..qq = json['qq'] as String
+    ..weixin = json['weixin'] as String;
 }
 
 Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
@@ -24,5 +33,12 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
       'avatarUrl': instance.avatarUrl,
       'mobile': instance.mobile,
       'regType': instance.regType,
-      'openId': instance.openId
+      'openId': instance.openId,
+      'birthDay': instance.birthDay?.toIso8601String(),
+      'gender': instance.gender,
+      'province': instance.province,
+      'city': instance.city,
+      'districtl': instance.districtl,
+      'qq': instance.qq,
+      'weixin': instance.weixin
     };

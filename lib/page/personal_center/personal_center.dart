@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/exit_dialog.dart';
@@ -12,13 +11,14 @@ import 'package:iap_app/common-widget/update_dialog.dart';
 import 'package:iap_app/component/up_down_item.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
-import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
-import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/fluro_convert_utils.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
+import 'package:provider/provider.dart';
 
 class PersonalCenter extends StatefulWidget {
   @override
@@ -28,285 +28,260 @@ class PersonalCenter extends StatefulWidget {
 }
 
 class PersonCenterState extends State<PersonalCenter>
-    with AutomaticKeepAliveClientMixin {
-  String _accSig = "不是所有的存在，都留下看得见的痕迹";
+    with AutomaticKeepAliveClientMixin<PersonalCenter> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    // showOverlayProfile(context);
-
-    return new Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-              pinned: false,
-              snap: false,
-              expandedHeight: ScreenUtil().setHeight(200),
-              elevation: 0.5,
-              floating: false,
-              leading: Icon(Icons.notifications),
-              bottom: PreferredSize(
-                // Add this code
-                preferredSize: Size.fromHeight(
-                    ScreenUtil().setHeight(200)), // Add this code
-                child: Text(''), // Add this code
-              ),
-              flexibleSpace: Container(
-                padding: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 10),
-                // margin: EdgeInsets.only(bottom: 40),
-                decoration: BoxDecoration(
-                  // color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20)),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //       color: Colors.white,
-                  //       blurRadius: 10.0,
-                  //       spreadRadius: 5.0),
-                  // ],
-                  gradient: new LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: ThemeUtils.isDark(context)
-                          ? [
-                              Color(0xff363636),
-                              Theme.of(context).backgroundColor
-                            ]
-                          : [
-                              Color(0xfffdfcfb),
-                              Color(0xffe2d1c3),
-                            ]),
+    AccountLocalProvider accountLocalProvider =
+        Provider.of<AccountLocalProvider>(context);
+    return Consumer<AccountLocalProvider>(builder: (_, provider, __) {
+      return Scaffold(
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+                pinned: false,
+                snap: false,
+                expandedHeight: ScreenUtil().setHeight(250),
+                elevation: 0.5,
+                floating: false,
+                leading: Icon(Icons.notifications),
+                bottom: PreferredSize(
+                  // Add this code
+                  preferredSize: Size.fromHeight(
+                      ScreenUtil().setHeight(250)), // Add this code
+                  child: Text(''), // Add this code
                 ),
+                flexibleSpace: Container(
+                  padding:
+                      EdgeInsets.only(top: ScreenUtil.statusBarHeight + 10),
+                  // margin: EdgeInsets.only(bottom: 40),
+                  decoration: BoxDecoration(
+                    // color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20)),
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //       color: Colors.white,
+                    //       blurRadius: 10.0,
+                    //       spreadRadius: 5.0),
+                    // ],
+                    gradient: new LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomCenter,
+                        colors: ThemeUtils.isDark(context)
+                            ? [
+                                Theme.of(context).backgroundColor,
+                                Color(0xff363636),
+                              ]
+                            : [
+                                Color(0xffc4c5c7),
+                                Color(0xffebebeb),
+                              ]),
+                  ),
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                        padding: const EdgeInsets.only(top: 50),
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 15,
-                        ),
-                        // width: double.infinity,
-                        // height: 160,
-                        decoration: BoxDecoration(
-                            // color: Colors.white,
-                            // borderRadius: BorderRadius.all(Radius.circular(5)),
-                            // boxShadow: [
-                            //   BoxShadow(
-                            //       color: Colors.white10,
-                            //       blurRadius: 1.0,
-                            //       spreadRadius: 1.0)
-                            // ],
-                            // border: Border.all(width: 0.5, color: Colors.white),
-                            ),
-                        child: Column(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                          padding: const EdgeInsets.only(top: 10),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 15,
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              AccountAvatar(
+                                avatarUrl: Application.getAccount.avatarUrl,
+                                size: SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
+                                whitePadding: true,
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(
+                                    top: ScreenUtil().setHeight(20)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Container(
+                                        child: MediaQuery.removePadding(
+                                      context: context,
+                                      child: Text(
+                                          accountLocalProvider.account.nick,
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                    )),
+                                  ],
+                                ),
+                              ),
+                              // Container(
+                              //   margin: EdgeInsets.only(top: 5),
+                              //   child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.start,
+                              //     crossAxisAlignment: CrossAxisAlignment.center,
+                              //     children: <Widget>[
+                              //       Text('���京工程学院',
+                              //           style: TextStyle(
+                              //               fontSize: 17,
+                              //               color: Colors.black,
+                              //               fontWeight: FontWeight.w400)),
+                              //     ],
+                              //   ),
+                              // )
+                            ],
+                          )),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             Container(
+                              margin: EdgeInsets.only(
+                                  right: 15, top: ScreenUtil().setHeight(20)),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                               decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 2, color: Colors.white),
-                                borderRadius:
-                                    BorderRadius.all((Radius.circular(50))),
+                                  gradient: new LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        Color(0xffe2d1c3),
+                                        Color(0xfffdfcfb),
+                                      ]),
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Text(
+                                '高级认证',
+                                style: TextStyles.textHint14,
                               ),
-                              child: ClipOval(
-                                  child: CachedNetworkImage(
-                                imageUrl: Application.getAccount.avatarUrl,
-                                width:
-                                    SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
-                                height:
-                                    SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
-                                fit: BoxFit.cover,
-                              )),
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Text('长安归故里',
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w500)),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 10),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 0),
-                                    decoration: BoxDecoration(
-                                        color: Colors.yellowAccent,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(5),
-                                          topRight: Radius.circular(5),
-                                          bottomLeft: Radius.circular(5),
-                                          bottomRight: Radius.circular(5),
-                                        )),
-                                    child: Text('高级认证'),
-                                  )
-                                ],
-                              ),
-                            ),
-                            // Container(
-                            //   margin: EdgeInsets.only(top: 5),
-                            //   child: Row(
-                            //     mainAxisAlignment: MainAxisAlignment.start,
-                            //     crossAxisAlignment: CrossAxisAlignment.center,
-                            //     children: <Widget>[
-                            //       Text('南京工程学院',
-                            //           style: TextStyle(
-                            //               fontSize: 17,
-                            //               color: Colors.black,
-                            //               fontWeight: FontWeight.w400)),
-                            //     ],
-                            //   ),
-                            // )
+                            )
                           ],
-                        )),
-                  ],
-                ),
-                // title: Text('Demo'),
-                // collapseMode: CollapseMode.pin,
-              )),
-          SliverToBoxAdapter(
-            child: Container(
-              margin: EdgeInsets.only(top: 5),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        UpDownItem(
-                            WidgetUtil.getAsset(PathConstant.ICON_ARTICLE,
-                                size: 25),
-                            Text('我的发布'),
-                            null),
-                        UpDownItem(
-                            WidgetUtil.getAsset(PathConstant.ICON_LOVE_PLUS,
-                                size: 25),
-                            Text('我点赞的'),
-                            null),
-                        UpDownItem(
-                            WidgetUtil.getAsset(PathConstant.ICON_STAR,
-                                size: 25),
-                            Text('我的收藏'),
-                            () => Fluttertoast.showToast(
-                                msg: '收藏功能暂未开放',
-                                gravity: ToastGravity.CENTER,
-                                backgroundColor: Colors.black54)),
-                      ],
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    // color: Colors.white,
+                  // title: Text('Demo'),
+                  // collapseMode: CollapseMode.pin,
+                )),
+            SliverToBoxAdapter(
+              child: Container(
+                margin: EdgeInsets.only(top: 5),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      // color: Theme.of(context).scaffoldBackgroundColor,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          UpDownItem(
+                              WidgetUtil.getAsset(PathConstant.ICON_ARTICLE,
+                                  size: 25),
+                              Text('我的发布'),
+                              null),
+                          UpDownItem(
+                              WidgetUtil.getAsset(PathConstant.ICON_LOVE_PLUS,
+                                  size: 25),
+                              Text('我点赞的'),
+                              null),
+                          UpDownItem(
+                              WidgetUtil.getAsset(PathConstant.ICON_STAR,
+                                  size: 25),
+                              Text('我的收藏'),
+                              () => ToastUtil.showToast(context, '收藏功能暂未开放')),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      // color: Colors.white,
 
-                    child: Column(
-                      children: <Widget>[
-                        _getGroupSetting([
-                          ClickItem(
-                            title: '我的组织',
-                            content: '南京工程学院',
-                            onTap: () {
-                              NavigatorUtils.push(
-                                  context,
-                                  SettingRouter.orgChoosePage +
-                                      Utils.packConvertArgs({
-                                        'title': '选择组织',
-                                        'hintText': '点击搜索'
-                                      }));
-                            },
-                          ),
-                          ClickItem(
-                            title: '我的身份',
-                            content: '普通用户',
-                          )
-                        ]),
-                        _getGroupSetting([
-                          ClickItem(
-                            title: '我的签名',
-                            maxLines: 2,
-                            content: _accSig,
-                            onTap: () {
-                              NavigatorUtils.pushResult(
-                                  context,
-                                  Routes.inputTextPage +
-                                      "?title=" +
-                                      FluroConvertUtils.fluroCnParamsEncode(
-                                          '修改签名') +
-                                      "&hintText=" +
-                                      FluroConvertUtils.fluroCnParamsEncode(
-                                          _accSig), (res) {
-                                setState(() {
-                                  this._accSig = res;
-                                });
-                              });
-                            },
-                          ),
-                        ]),
-                        _getGroupSetting([
-                          ClickItem(
-                            title: '隐私设置',
-                            onTap: () {
-                              NavigatorUtils.push(
-                                  context, SettingRouter.privateSettingPage);
-                            },
-                          ),
-                          ClickItem(
-                            title: '其他设置',
-                            onTap: () {
-                              NavigatorUtils.push(
-                                  context, SettingRouter.otherSettingPage);
-                            },
-                          )
-                        ]),
-                        _getGroupSetting([
-                          ClickItem(
-                            title: '绑定手机号',
-                            content: '17601508663',
-                            onTap: () {},
-                          )
-                        ]),
-                        _getGroupSetting([
-                          ClickItem(
-                            title: '检查更新',
-                            onTap: () {
-                              _showUpdateDialog();
-                            },
-                          ),
-                          ClickItem(
-                            title: '关于我们',
-                            onTap: () => NavigatorUtils.push(
-                                context, SettingRouter.aboutPage),
-                          )
-                        ]),
-                        _getGroupSetting([
-                          _getSettingItem(
-                            ListTile(
-                              title: Text(
-                                "注销登录",
-                                style: TextStyle(color: Colors.redAccent),
-                              ),
+                      child: Column(
+                        children: <Widget>[
+                          _getGroupSetting([
+                            ClickItem(
+                              title: '我的组织',
+                              content: '南京工程学院',
                               onTap: () {
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (_) => ExitDialog());
+                                ToastUtil.showToast(context, '组织切换功能暂无开放');
+                                // NavigatorUtils.push(
+                                //     context,
+                                //     SettingRouter.orgChoosePage +
+                                //         Utils.packConvertArgs({
+                                //           'title': '更换组织',
+                                //           'hintText': '点击搜索'
+                                //         }));
                               },
                             ),
-                          ),
-                        ])
-                      ],
+                            ClickItem(
+                              title: '我的身份',
+                              content: '普通用户',
+                            )
+                          ]),
+                          _getGroupSetting([
+                            ClickItem(
+                              title: '我的信息',
+                              onTap: () {
+                                NavigatorUtils.push(
+                                    context, SettingRouter.accountInfoPage);
+                              },
+                            ),
+                            ClickItem(
+                              title: '隐私设置',
+                              onTap: () {
+                                NavigatorUtils.push(
+                                    context, SettingRouter.privateSettingPage);
+                              },
+                            )
+                          ]),
+                          _getGroupSetting([
+                            ClickItem(
+                              title: '其他设置',
+                              onTap: () {
+                                NavigatorUtils.push(
+                                    context, SettingRouter.otherSettingPage);
+                              },
+                            )
+                          ]),
+                          _getGroupSetting([
+                            ClickItem(
+                              title: '检查更新',
+                              onTap: () {
+                                _showUpdateDialog();
+                              },
+                            ),
+                            ClickItem(
+                              title: '关于我们',
+                              onTap: () => NavigatorUtils.push(
+                                  context, SettingRouter.aboutPage),
+                            )
+                          ]),
+                          _getGroupSetting([
+                            _getSettingItem(
+                              ListTile(
+                                title: Text(
+                                  "退出登录",
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (_) => ExitDialog());
+                                },
+                              ),
+                            ),
+                          ])
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
-      ),
-    );
+            )
+          ],
+        ),
+      );
+    });
   }
 
   // void showOverlayProfile(BuildContext context) {
@@ -340,8 +315,10 @@ class PersonCenterState extends State<PersonalCenter>
 
   Widget _getSettingItem(ListTile lst) {
     return Container(
-      margin: EdgeInsets.only(top: 3),
+      margin: EdgeInsets.all(0),
+      // padding: EdgeInsets.only(top: 3),
       child: Material(
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: InkWell(
           child: lst,
         ),
@@ -351,7 +328,7 @@ class PersonCenterState extends State<PersonalCenter>
 
   Widget _getGroupSetting(List<Widget> lsts) {
     return Container(
-      margin: EdgeInsets.only(top: 6),
+      margin: EdgeInsets.only(top: 5),
       child: Column(children: lsts),
     );
   }

@@ -15,7 +15,12 @@ class Application {
   static int _ordId;
   static String _orgName;
 
+  static String _accountId;
   static Account _account;
+
+  static String get getAccountId {
+    return _accountId;
+  }
 
   static Account get getAccount {
     return _account;
@@ -37,8 +42,12 @@ class Application {
     // getIt.registerSingleton(NavigateService());
   }
 
-  static void setAccount(Account acc) {
-    _account = acc;
+  static void setAccountId(String accountId) {
+    _accountId = accountId;
+  }
+
+  static void setAccount(Account account) {
+    _account = account;
   }
 
   static void setOrgId(int orgId) {

@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
@@ -13,15 +12,17 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
@@ -45,8 +46,7 @@ class TweetDetail extends StatefulWidget {
   }
 }
 
-class TweetDetailState extends State<TweetDetail>
-    with AutomaticKeepAliveClientMixin {
+class TweetDetailState extends State<TweetDetail> {
   double sw;
 
   Future _getPraiseTask;
@@ -212,9 +212,7 @@ class TweetDetailState extends State<TweetDetail>
                   softWrap: true,
                   textAlign: TextAlign.left,
                   style: TextStyle(
-                      fontSize: GlobalConfig.TWEET_FONT_SIZE,
-                      color: GlobalConfig.tweetBodyColor,
-                      height: 1.5),
+                      fontSize: GlobalConfig.TWEET_FONT_SIZE, height: 1.5),
                 ),
               )
             ],
@@ -237,9 +235,7 @@ class TweetDetailState extends State<TweetDetail>
                   softWrap: true,
                   textAlign: TextAlign.left,
                   style: TextStyle(
-                      fontSize: GlobalConfig.TWEET_FONT_SIZE - 2,
-                      color: GlobalConfig.tweetBodyColor,
-                      height: 1.5),
+                      fontSize: GlobalConfig.TWEET_FONT_SIZE - 2, height: 1.5),
                 ),
               )
             ],
@@ -475,10 +471,10 @@ class TweetDetailState extends State<TweetDetail>
       } else {
         tweet.praise--;
         tweet.latestPraise
-            .removeWhere((account) => account.id == Application.getAccount.id);
+            .removeWhere((account) => account.id == Application.getAccountId);
         if (!CollectionUtil.isListEmpty(praiseAccounts)) {
-          praiseAccounts.removeWhere(
-              (account) => account.id == Application.getAccount.id);
+          praiseAccounts
+              .removeWhere((account) => account.id == Application.getAccountId);
         }
       }
       TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
@@ -527,7 +523,7 @@ class TweetDetailState extends State<TweetDetail>
                     : reply.account.nick,
                 style: authorReplyWithAnonymous
                     ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                        SizeConstant.TWEET_FONT_SIZE - 2)
+                        context, SizeConstant.TWEET_FONT_SIZE - 2)
                     : MyDefaultTextStyle.getTweetNickStyle(
                         SizeConstant.TWEET_FONT_SIZE - 2,
                         bold: false)),
@@ -543,7 +539,7 @@ class TweetDetailState extends State<TweetDetail>
                         : reply.tarAccount.nick),
                 style: replyAuthorWithAnonymous
                     ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                        SizeConstant.TWEET_FONT_SIZE - 2)
+                        context, SizeConstant.TWEET_FONT_SIZE - 2)
                     : MyDefaultTextStyle.getTweetNickStyle(
                         SizeConstant.TWEET_FONT_SIZE - 2,
                         bold: false))
@@ -693,6 +689,7 @@ class TweetDetailState extends State<TweetDetail>
                             style: MyDefaultTextStyle.getTweetTimeStyle(12),
                           )),
                     ]),
+                    Gaps.vGap4,
                     Divider()
                   ]),
                 )),
@@ -703,7 +700,7 @@ class TweetDetailState extends State<TweetDetail>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // super.build(context);
     sw = MediaQuery.of(context).size.width;
 
     return GestureDetector(
@@ -712,8 +709,9 @@ class TweetDetailState extends State<TweetDetail>
           hideReplyContainer();
         },
         child: Scaffold(
-            backgroundColor:
-                widget.hotRank != -1 ? Color(0xffF5F5F5) : Colors.white,
+            backgroundColor: !ThemeUtils.isDark(context)
+                ? (widget._fromhot ? Color(0xffe9e9e9) : null)
+                : (widget._fromhot ? Color(0xff2c2c2c) : Color(0xff303030)),
             // backgroundColor: Colors.white,
             body: Stack(
               children: <Widget>[
@@ -725,8 +723,10 @@ class TweetDetailState extends State<TweetDetail>
                   body: SingleChildScrollView(
                       child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                        color: ThemeUtils.isDark(context)
+                            ? Color(0xff303030)
+                            : widget._fromhot ? Color(0xfff0f0f0) : null,
+                        borderRadius: BorderRadius.all(Radius.circular(18))),
                     padding: EdgeInsets.only(
                         top: 10, left: 15, right: 15, bottom: 30),
                     child: Column(
@@ -737,6 +737,7 @@ class TweetDetailState extends State<TweetDetail>
                         _bodyContainer(),
                         _picContainer(),
                         _viewContainer(),
+                        Gaps.vGap15,
                         Divider(),
                         // _loveContainer(),
                         _templateWidget(
@@ -818,64 +819,120 @@ class TweetDetailState extends State<TweetDetail>
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
-          backgroundColor: widget._fromhot ? Color(0xffCD5555) : Colors.white,
-          centerTitle: true, //标题居中
-          title: Text('详情',
-              style: TextStyle(
-                  color: widget._fromhot ? Colors.white : Colors.black)),
-          elevation: 0.5,
-          expandedHeight: widget._fromhot
-              ? ScreenUtil().setHeight(180) + ScreenUtil.statusBarHeight
-              : 0,
-          floating: true,
-          pinned: true,
-          snap: false,
-          leading: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Icon(
-                Icons.arrow_back,
-                color: widget._fromhot ? Colors.white : Colors.black,
-              )),
-          flexibleSpace: widget.hotRank != -1
-              ? Container(
-                  height: 100,
-                  margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 50),
-                  padding: EdgeInsets.only(bottom: 20),
-                  // padding: EdgeInsets.only(left: 20),
-                  // decoration: BoxDecoration(color: Colors.white),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      RichText(
-                          text: TextSpan(children: [
-                        TextSpan(
-                            text: '当前热门榜：',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 15)),
-                        TextSpan(
-                            text: 'No. ',
-                            style:
-                                TextStyle(fontSize: 15, color: Colors.white)),
-                        TextSpan(
-                            text: '${widget.hotRank} ',
-                            style: TextStyle(
-                                fontSize: 17,
-                                color: widget.hotRank < 5
-                                    ? Colors.redAccent
-                                    : Colors.white))
-                      ])),
-                      getFires(widget.hotRank),
-                      // Text(
-                      //   '当前热门榜单: No' + widget.hotRank.toString(),
-                      //   style: TextStyle(color: Colors.white70),
-                      // )
-                    ],
-                  ),
-                )
-              : Container(
-                  height: 0,
-                )),
+        backgroundColor: widget._fromhot
+            ? (ThemeUtils.isDark(context)
+                ? Color(0xff292929)
+                : Color(0xfff0f0f0))
+            : (ThemeUtils.isDark(context) ? Color(0xff303030) : null),
+        centerTitle: true, //标题居中
+        title: Text(
+          '详情',
+          // style: TextStyle(color: widget._fromhot ? Colors.white : null),
+        ),
+        elevation: 0.5,
+        floating: true,
+        pinned: !widget._fromhot,
+        snap: false,
+        leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Icon(
+              Icons.arrow_back,
+              // color: widget._fromhot ? Colors.white : null,
+            )),
+        bottom: widget._fromhot
+            ? PreferredSize(
+                preferredSize: Size.fromHeight(100),
+                child: Container(
+                    height: 100,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                                text: '当前热门榜：',
+                                style: TextStyle(
+                                    fontSize: Dimens.font_sp16,
+                                    color: ThemeUtils.isDark(context)
+                                        ? Colors.grey
+                                        : Colors.black)),
+                            TextSpan(
+                                text: 'No. ',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: ThemeUtils.isDark(context)
+                                        ? Colors.grey
+                                        : Colors.black)),
+                            TextSpan(
+                                text: '${widget.hotRank}  ',
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    color: widget.hotRank < 5
+                                        ? Colors.redAccent
+                                        : Colors.white))
+                          ])),
+                          getFires(widget.hotRank),
+                          // Text(
+                          //   '当前热门榜单: No' + widget.hotRank.toString(),
+                          //   style: TextStyle(color: Colors.white70),
+                          // )
+                        ],
+                      ),
+                    )),
+              )
+            : null,
+        // flexibleSpace: widget._fromhot
+        //     ? Container(
+        //         height: 100,
+        //         margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 30),
+        //         padding: EdgeInsets.only(bottom: 10),
+        //         // padding: EdgeInsets.only(left: 20),
+        //         // decoration: BoxDecoration(color: Colors.white),
+        //         child: Align(
+        //           alignment: Alignment.center,
+        //           child: Row(
+        //             mainAxisAlignment: MainAxisAlignment.center,
+        //             crossAxisAlignment: CrossAxisAlignment.center,
+        //             children: <Widget>[
+        //               RichText(
+        //                   text: TextSpan(children: [
+        //                 TextSpan(
+        //                     text: '当前热门榜：',
+        //                     style: TextStyle(
+        //                         fontSize: Dimens.font_sp16,
+        //                         color: ThemeUtils.isDark(context)
+        //                             ? Colors.grey
+        //                             : Colors.black)),
+        //                 TextSpan(
+        //                     text: 'No. ',
+        //                     style: TextStyle(
+        //                         fontSize: 15,
+        //                         color: ThemeUtils.isDark(context)
+        //                             ? Colors.grey
+        //                             : Colors.black)),
+        //                 TextSpan(
+        //                     text: '${widget.hotRank} ',
+        //                     style: TextStyle(
+        //                         fontSize: 17,
+        //                         color: widget.hotRank < 5
+        //                             ? Colors.redAccent
+        //                             : Colors.white))
+        //               ])),
+        //               getFires(widget.hotRank),
+        //               // Text(
+        //               //   '当前热门榜单: No' + widget.hotRank.toString(),
+        //               //   style: TextStyle(color: Colors.white70),
+        //               // )
+        //             ],
+        //           ),
+        //         ))
+        //     : Container(
+        //         height: 0,
+        //       )),
+      )
     ];
   }
 
@@ -884,8 +941,8 @@ class TweetDetailState extends State<TweetDetail>
     if (rank == 1) {
       list.add(Image.asset(
         PathConstant.ICON_CHAMPIN,
-        width: 18,
-        height: 18,
+        width: SizeConstant.TWEET_HOT_RANK_ICON_SIZE,
+        height: SizeConstant.TWEET_HOT_RANK_ICON_SIZE,
       ));
     } else {
       int count = 5 - rank;
@@ -893,8 +950,8 @@ class TweetDetailState extends State<TweetDetail>
         for (int i = 0; i < count; i++) {
           list.add(Image.asset(
             PathConstant.ICON_FIRE,
-            width: 18,
-            height: 18,
+            width: SizeConstant.TWEET_HOT_RANK_ICON_SIZE,
+            height: SizeConstant.TWEET_HOT_RANK_ICON_SIZE,
           ));
         }
       }
@@ -979,6 +1036,7 @@ class TweetDetailState extends State<TweetDetail>
             }
           } else {
             ToastUtil.showToast(
+              context,
               '回复失败，请稍后重试',
               gravity: ToastGravity.CENTER,
             );
@@ -986,6 +1044,7 @@ class TweetDetailState extends State<TweetDetail>
         }
       } else {
         ToastUtil.showToast(
+          context,
           '回复失败，请稍后重试',
           gravity: ToastGravity.CENTER,
         );

@@ -46,9 +46,15 @@ var inputPageHander = Handler(
   String hintText = params['hintText'] == null
       ? ""
       : FluroConvertUtils.fluroCnParamsDecode(params['hintText'].first);
+
+  int limit = params['limit'] == null
+      ? 16
+      : int.parse(FluroConvertUtils.fluroCnParamsDecode(params['limit'].first));
+
   return InputTextPage(
     title: title,
     hintText: hintText,
+    limit: limit,
   );
 });
 

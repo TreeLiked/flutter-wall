@@ -9,6 +9,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/widget_not_found.dart';
+import 'package:iap_app/page/login_page.dart';
 import 'package:iap_app/page/webview_page.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/routes/setting_router.dart';
@@ -16,6 +17,8 @@ import './route_handlers.dart';
 
 class Routes {
   static String index = "/";
+
+  static String loginPage = "lgin";
   static String home = "/home";
 
   static String webViewPage = "/webview";
@@ -44,6 +47,10 @@ class Routes {
       String title = params['title']?.first;
       String url = params['url']?.first;
       return WebViewPage(title: title, url: url);
+    }));
+
+    router.define(loginPage, handler: Handler(handlerFunc: (_, params) {
+      return Login();
     }));
 
     router.define(index, handler: indexHander);

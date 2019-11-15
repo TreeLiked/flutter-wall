@@ -13,3 +13,17 @@ class VEmptyView extends StatelessWidget {
     );
   }
 }
+
+class VEmptyViewWithBg extends StatelessWidget {
+  final double height;
+
+  VEmptyViewWithBg(this.height);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      color: Color(0xffe7e8ea),
+    );
+  }
+}

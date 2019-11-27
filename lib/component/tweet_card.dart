@@ -96,6 +96,9 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _imgContainerSingle(String url) {
+    // return Container(
+    //   height: 10,
+    // );
     return Container(
         padding: EdgeInsets.only(right: 5, bottom: 5),
         // width: 100,
@@ -105,15 +108,22 @@ class TweetCardState extends State<TweetCard> {
           child: ConstrainedBox(
             constraints: BoxConstraints(
                 maxWidth: maxWidthSinglePic, maxHeight: sh * 0.45),
-            child: CachedNetworkImage(
-              imageUrl: url,
-              placeholder: (context, url) => GlowingOverscrollIndicator(
-                color: Colors.white,
-                axisDirection: AxisDirection.left,
-              ),
-              errorWidget: (context, url, error) =>
-                  WidgetUtil.getAsset(PathConstant.IAMGE_FAILED),
+            child: FadeInImage.assetNetwork(
+              image: url,
+              placeholder: PathConstant.IAMGE_HOLDER,
+              // placeholderScale: 0,
+              fit: BoxFit.cover,
             ),
+            // child: CachedNetworkImage(
+            //   filterQuality: FilterQuality.medium,
+            //   imageUrl: url,
+            //   placeholder: (context, url) => GlowingOverscrollIndicator(
+            //     color: Colors.white,
+            //     axisDirection: AxisDirection.left,
+            //   ),
+            //   errorWidget: (context, url, error) =>
+            //       WidgetUtil.getAsset(PathConstant.IAMGE_FAILED),
+            // ),
           ),
         ));
   }
@@ -235,13 +245,15 @@ class TweetCardState extends State<TweetCard> {
             TextConstant.TWEET_ANONYMOUS_NICK,
             style: MyDefaultTextStyle.getTweetHeadNickStyle(
                 SizeConstant.TWEET_NICK_SIZE,
-                anonymous: true),
+                anonymous: true,
+                bold: true),
           ))
         : Container(
             child: Text(
               nickName ?? "",
               style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                  SizeConstant.TWEET_NICK_SIZE),
+                  SizeConstant.TWEET_NICK_SIZE,
+                  bold: true),
             ),
           );
   }
@@ -353,11 +365,12 @@ class TweetCardState extends State<TweetCard> {
     List<InlineSpan> spans = List();
     spans.add(WidgetSpan(
         child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
             onTap: () {
               updatePraise();
             },
             child: Padding(
-              padding: EdgeInsets.only(right: 2),
+              padding: EdgeInsets.only(right: 5),
               child: Image.asset(
                 // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
                 tweet.loved
@@ -373,9 +386,10 @@ class TweetCardState extends State<TweetCard> {
           i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE;
           i++) {
         Account account = praiseList[i];
+        print(account);
         spans.add(TextSpan(
             text: "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
-            style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
+            style: MyDefaultTextStyle.getTweetNickStyle(13, bold: true),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 goAccountDetail();
@@ -425,6 +439,7 @@ class TweetCardState extends State<TweetCard> {
           child: Row(
             children: <Widget>[
               AccountAvatar(
+                  cache: true,
                   avatarUrl: Application.getAccount.avatarUrl,
                   size: SizeConstant.TWEET_PROFILE_SIZE * 0.8),
               Expanded(
@@ -508,7 +523,7 @@ class TweetCardState extends State<TweetCard> {
       return Padding(
         padding: EdgeInsets.only(top: 5),
         child: Text(
-          "查���更多 ${tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复 ..",
+          "查看更多 ${tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复 ..",
           style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
         ),
       );
@@ -530,16 +545,27 @@ class TweetCardState extends State<TweetCard> {
         reply.tarAccount.nick = "作者";
       }
     }
+
+    bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
+    if (dirReplyAnonymous) {
+      // 直接回复匿名
+      reply.account.nick = TextConstant.TWEET_ANONYMOUS_REPLY_NICK;
+    }
     // if (!replyAuthor) {
 
     return Container(
         padding: EdgeInsets.only(bottom: 5),
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () {
-            // 只要点击评论中的某一行，都是它的子回复
-            _sendReply(2, parentId, reply.account.id, tarAccNick: accNick);
-          },
+          onTap: !dirReplyAnonymous
+              ? () {
+                  // 只要点击评论中的某一行，都是它的子回复
+                  _sendReply(2, parentId, reply.account.id,
+                      tarAccNick: accNick);
+                }
+              : () {
+                  ToastUtil.showToast(context, '匿名评论不可回复');
+                },
           child: Wrap(
             children: <Widget>[
               RichText(
@@ -548,7 +574,9 @@ class TweetCardState extends State<TweetCard> {
                 softWrap: true,
                 text: TextSpan(children: [
                   TextSpan(
-                      text: accNick,
+                      text: dirReplyAnonymous
+                          ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK
+                          : accNick,
                       style: isAuthorReply && authorAnonymous
                           ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
                               context, 14)
@@ -556,7 +584,7 @@ class TweetCardState extends State<TweetCard> {
                   TextSpan(
                       text: reply.type == 2 ? ' 回复 ' : '',
                       style: TextStyle(
-                          color: Theme.of(context).textTheme.subtitle.color)),
+                          color: Theme.of(context).textTheme.title.color)),
                   TextSpan(
                       text: reply.type == 2 ? tarNick : '',
                       style: replyAuthor && authorAnonymous
@@ -721,15 +749,15 @@ class TweetCardState extends State<TweetCard> {
   }
 
   /*
-   * tarAccNick 显示在输入框中的回复， tarAccId ������推送
+   * tarAccNick 显示在输入框中的回复， tarAccId 目标账户推送
    * type 1=> 评论， 2=> 子回复 
    */
   _sendReply(int type, int parentId, String tarAccId, {String tarAccNick}) {
-    // TODO 本地account是否存在
     TweetReply tr = new TweetReply();
     tr.tweetId = tweet.id;
     tr.type = type;
     tr.parentId = parentId;
+    tr.anonymous = false;
     tr.tarAccount = Account.fromId(tarAccId);
 
     widget.callback(tr, tarAccNick, tarAccId, _sendReplyCallback);
@@ -756,12 +784,15 @@ class TweetCardState extends State<TweetCard> {
       } else {
         // 子回复
         int parentId = tr.parentId;
-        TweetReply tr2 =
-            tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
-        if (tr2.children == null) {
-          tr2.children = List();
-        }
-        tr2.children.add(tr);
+        setState(() {
+          TweetReply tr2 = tweet.dirReplies
+              .where((dirReply) => dirReply.id == parentId)
+              .first;
+          if (tr2.children == null) {
+            tr2.children = List();
+          }
+          tr2.children.add(tr);
+        });
       }
     }
   }

@@ -1,15 +1,21 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:iap_app/global/global_config.dart';
 
 class Api {
-  static const String API_BASE_URL = "http://192.168.0.101";
-  // static const String API_BASE = "http://192.168.1.199";
-  // static const String API_BASE2 = "http://treeliked.com";
-  static const String API_BASE2 = "http://192.168.0.101";
+  static const String API_BASE = "http://treeliked.com";
 
-  static const String API_BASE_INF_URL = API_BASE_URL + ":8088/iap/api";
-  static const String API_BASE_MEMBER_URL = API_BASE2 + ":9001/trms/api";
+  //  static const String API_BASE =
+  // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
+
+  // static const String API_BASE_URL = "http://127.0.0.1";
+  // static const String API_BASE = "http://192.168.1.199";
+  // static const String API_BASE2 = "http://127.0.0.1";
+  // static const String API_BASE2 = "http://192.168.10.63";
+
+  static const String API_BASE_INF_URL = API_BASE + ":8088/iap/api";
+  static const String API_BASE_MEMBER_URL = API_BASE + ":9001/trms/api";
 
   // tweet
   static const String API_TWEET_CREATE = "/tweet/add.do";
@@ -29,12 +35,30 @@ class Api {
   static const String API_TWEET_REPLY_CREATE = "/tweet/reply/add.do";
   static const String API_TWEET_REPLY_QUERY = "/tweet/reply/list.json";
 
+  // sms
+  static const String API_SEND_VERIFICATION_CODE =
+      API_BASE_INF_URL + "/sms/send.do";
+  static const String API_CHECK_VERIFICATION_CODE =
+      API_BASE_INF_URL + "/sms/check.do";
+
   // member start --------
   static const String API_QUERY_ACCOUNT =
       API_BASE_MEMBER_URL + "/account/getAccInfo.json";
 
   static const String API_ACCOUNT_MOD_BASIC =
       API_BASE_MEMBER_URL + "/account/edit/basic.do";
+
+  static const String API_CHECK_NICK_REPEAT =
+      API_BASE_MEMBER_URL + "/account/nickCheck.do";
+
+  static const String API_REGISTER_BY_PHONE =
+      API_BASE_MEMBER_URL + "/auth/rbp.do";
+
+  static const String API_LOGIN_BY_PHONE = API_BASE_MEMBER_URL + "/auth/lbp.do";
+
+  // university
+  static const String API_BLUR_QUERY_UNIVERSITY =
+      API_BASE_INF_URL + "/un/blurQuery.json";
 
   static Map<String, dynamic> convertResponse(Object reponseData) {
     String jsonTemp = json.encode(reponseData);

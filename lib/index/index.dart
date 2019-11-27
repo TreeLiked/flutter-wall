@@ -29,6 +29,8 @@ class _IndexState extends State<Index>
 
   final pageController = PageController();
 
+  bool _showBottomNavBar = true;
+
   @override
   void initState() {
     super.initState();
@@ -69,13 +71,32 @@ class _IndexState extends State<Index>
     //     });
 
     _pageList = <StatefulWidget>[
-      HomePage(),
+      HomePage(pullDownCallBack: (_) => updateBottombar(_)),
       HotToday(),
       CreatePage(),
       PersonalCenter(),
     ];
 
     _currentPage = _pageList[_currentIndex];
+  }
+
+  // 是否向下滑动
+  void updateBottombar(bool pullDown) {
+    if (pullDown) {
+      // 向下滑动，显示
+      if (!_showBottomNavBar) {
+        setState(() {
+          _showBottomNavBar = true;
+        });
+      }
+    } else {
+      // 隐藏
+      if (_showBottomNavBar) {
+        setState(() {
+          _showBottomNavBar = false;
+        });
+      }
+    }
   }
 
   void onPageChanged(int index) {
@@ -88,46 +109,11 @@ class _IndexState extends State<Index>
     pageController.jumpToPage(index);
   }
 
-  // Widget bottomBar() {
-  //   return Column(
-  //     children: <Widget>[
-  //       Expanded(
-  //         child: SizedBox(),
-  //       ),
-  //       BottomBarView(
-  //         tabIconsList: TabIconData.tabIconsList,
-
-  //         addClick: () {},
-  //         changeIndex: (index) {
-  //           if (index == 0 || index == 2) {
-  //             // animationController.reverse().then((data) {
-  //             //   if (!mounted) return;
-  //             //   setState(() {
-  //             //     tabBody =
-  //             //         MyDiaryScreen(animationController: animationController);
-  //             //   });
-  //             // });
-  //           } else if (index == 1 || index == 3) {
-  //             // animationController.reverse().then((data) {
-  //             //   if (!mounted) return;
-  //             //   setState(() {
-  //             //     tabBody =
-  //             //         TrainingScreen(animationController: animationController);
-  //             //   });
-  //             // });
-  //           }
-  //         },
-  //       ),
-  //     ],
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
+    print('index_build');
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
-
     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
         elevation: 0,
         items: _navigationViews.map((navIconView) => navIconView.item).toList(),
@@ -144,16 +130,22 @@ class _IndexState extends State<Index>
     //     body: IndexedStack(index: _currentIndex, children: _pageList),
     //     bottomNavigationBar: bottomNavigationBar);
     return Scaffold(
-        bottomNavigationBar: PreferredSize(
-            child: bottomNavigationBar,
-            preferredSize:
-                Size.fromHeight(MediaQuery.of(context).size.height * 0.04)),
+        bottomNavigationBar: Offstage(
+            offstage: !_showBottomNavBar,
+            child: AnimatedOpacity(
+              opacity: _showBottomNavBar ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 700),
+              child: PreferredSize(
+                  child: bottomNavigationBar,
+                  preferredSize: Size.fromHeight(
+                      MediaQuery.of(context).size.height * 0.04)),
+            )),
         // body: bodyList[currentIndex],
         body: PageView(
           controller: pageController,
           onPageChanged: onPageChanged,
           children: _pageList,
-          // physics: NeverScrollableScrollPhysics(), // 禁止滑动
+          physics: NeverScrollableScrollPhysics(), // 禁止滑动
         ));
   }
 

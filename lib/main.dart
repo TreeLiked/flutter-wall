@@ -4,13 +4,14 @@ import 'dart:ui';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/index/index.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
+import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +53,10 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     final Router router = Router();
     Routes.configureRoutes(router);
     Application.router = router;
+
+    PaintingBinding.instance.imageCache.clear();
+//   DefaultCacheManger manager = new DefaultCacheManager();
+// manager.emtyCache();
   }
 
   @override
@@ -73,6 +78,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(builder: (_) => AccountLocalProvider()),
+          ChangeNotifierProvider(builder: (_) => TweetTypesFilterProvider()),
           ChangeNotifierProvider(builder: (_) => ThemeProvider()),
         ],
         child: Consumer<ThemeProvider>(builder: (_, provider, __) {

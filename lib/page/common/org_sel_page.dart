@@ -1,9 +1,7 @@
-import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';

@@ -20,6 +20,8 @@ class TweetReply {
 
   List<TweetReply> children;
 
+  bool anonymous;
+
   int hot;
   int praise;
   int replyCount;

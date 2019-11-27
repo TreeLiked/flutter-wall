@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/index/index.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
+import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/image_utils.dart';
@@ -50,33 +53,41 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _initSplash() {
-    _subscription =
-        Observable.just(1).delay(Duration(milliseconds: 1500)).listen((_) {
+    _subscription = Observable.just(1)
+        .delay(Duration(milliseconds: 1500))
+        .listen((_) async {
       String storageToken =
           SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
+      print(storageToken);
       if (storageToken == '') {
-        // SpUtil.putBool(Constant.keyGuide, false);
-        // _initGuide();
-        // 没有登录
-        SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN,
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50SWQiOiJlNWU1ZDdlMjAwNmM0Nzg4YjZiMjQ1MDlkZmU0ODFiMyIsImlzcyI6ImF1dGgwIiwiZXhwIjoxNTc2MjI2MTY5fQ.47TZJ2819wsOAFEgDK_2nzDgvCAmTWpW8eVvUuqlCJU");
         _goLogin();
       } else {
         // SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, "");
+
         MemberApi.getMyAccount(storageToken).then((acc) {
-          AccountLocalProvider accountLocalProvider =
-              Provider.of<AccountLocalProvider>(context);
-          accountLocalProvider.setAccount(acc);
-          print('----------========-----------========---------------');
-          print(accountLocalProvider.account.toJson());
-          Application.setAccount(acc);
-          Application.setAccountId(acc.id);
-          setState(() {
-            _status = 1;
-          });
+          if (acc == null) {
+            _goLogin();
+          } else {
+            AccountLocalProvider accountLocalProvider =
+                Provider.of<AccountLocalProvider>(context);
+            accountLocalProvider.setAccount(acc);
+            print(accountLocalProvider.account.toJson());
+            Application.setAccount(acc);
+            Application.setAccountId(acc.id);
+            setState(() {
+              _status = 1;
+            });
+            _loadStorageTweetTypes();
+          }
         });
       }
     });
+  }
+
+  Future<void> _loadStorageTweetTypes() async {
+    TweetTypesFilterProvider tweetTypesFilterProvider =
+        Provider.of<TweetTypesFilterProvider>(context);
+    tweetTypesFilterProvider.updateTypeNames();
   }
 
   _goLogin() {
@@ -85,6 +96,8 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)
+      ..init(context);
     return Material(
         child: _status == 0
             ? Image.asset(

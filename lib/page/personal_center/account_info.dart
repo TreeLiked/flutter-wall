@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
@@ -19,10 +20,12 @@ import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/oss_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,7 +43,6 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
     super.dispose();
   }
 
-  String filePath = "";
   @override
   Widget build(BuildContext context) {
     return Consumer<AccountLocalProvider>(builder: (_, provider, __) {
@@ -95,23 +97,47 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                             'hintText': provider.account.nick,
                             'limit': 16
                           }), (res) {
-                    provider.account.nick = res.toString();
+                    if (!StringUtil.isEmpty(res.toString())) {
+                      String content = res.toString();
+                      if (content.trim().isNotEmpty) {
+                        _updateSomething(
+                            AccountEditParam(AccountEditParam.NICK, content),
+                            (success) {
+                          setState(() {
+                            provider.account.nick = content;
+                          });
+                        });
+                      } else {
+                        ToastUtil.showToast(context, '昵称不能为全部为空字符');
+                      }
+                    } else {
+                      ToastUtil.showToast(context, '昵称不能为空，修改失败');
+                    }
                   });
                 }),
             ClickItem(
               title: '签名',
               maxLines: 2,
-              content: provider.account.signature,
+              content: provider.account.signature ?? '',
               onTap: () {
                 NavigatorUtils.pushResult(
                     context,
                     Routes.inputTextPage +
                         Utils.packConvertArgs({
                           'title': '修改签名',
-                          'hintText': provider.account.signature,
+                          'hintText': provider.account.signature ?? '',
                           'limit': 32
                         }), (res) {
-                  provider.account.signature = res.toString();
+                  if (!StringUtil.isEmpty(res.toString())) {
+                    _updateSomething(
+                        AccountEditParam(
+                            AccountEditParam.SIGNATURE, res.toString()),
+                        (success) {
+                      setState(() {
+                        provider.account.signature = res.toString();
+                      });
+                    });
+                  }
                 });
               },
             ),
@@ -193,10 +219,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       File file = await Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>
               ImageCropContainer(cropKey: cropKey, file: image)));
-      if (file == null) {
-        return;
-      } else {
-        this.filePath = file.path;
+      if (file != null) {
+        Utils.showDefaultLoading(context);
         String resultUrl =
             await OssUtil.uploadImage(file.path, file, toTweet: false);
         if (resultUrl != "-1") {
@@ -206,14 +230,27 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
             setState(() {
               provider.account.avatarUrl = resultUrl;
             });
-            file?.delete();
-            return;
+          } else {
+            ToastUtil.showToast(context, '上传失败，请稍候重试');
           }
+        } else {
+          ToastUtil.showToast(context, '上传失败，请稍候重试');
         }
-        file?.delete();
-        ToastUtil.showToast(context, '上传失败，请稍候重试');
+        Navigator.pop(context);
       }
+      file?.delete();
     }
+  }
+
+  Future<void> _updateSomething(AccountEditParam param, final callback) async {
+    Utils.showDefaultLoading(context);
+    Result r = await MemberApi.modAccount(param);
+    if (r != null && r.isSuccess) {
+      callback(true);
+    } else {
+      ToastUtil.showToast(context, '修改失败，请稍候重试');
+    }
+    Navigator.pop(context);
   }
 
   void _showCupertinoDatePicker(

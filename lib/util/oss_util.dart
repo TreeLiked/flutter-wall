@@ -49,7 +49,10 @@ class OssUtil {
     String newFileName;
 
     if (StringUtil.isEmpty(fixName)) {
-      newFileName = Application.getAccountId +
+      String prifex = !StringUtil.isEmpty(Application.getAccountId)
+          ? Application.getAccountId
+          : Uuid().v1().toString();
+      newFileName = prifex +
           "-" +
           Uuid().v1().substring(0, 8) +
           fileName.substring(fileName.lastIndexOf("."));

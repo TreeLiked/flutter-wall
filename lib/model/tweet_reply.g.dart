@@ -23,6 +23,7 @@ TweetReply _$TweetReplyFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : TweetReply.fromJson(e as Map<String, dynamic>))
         ?.toList()
+    ..anonymous = json['anonymous'] as bool
     ..hot = json['hot'] as int
     ..praise = json['praise'] as int
     ..replyCount = json['replyCount'] as int
@@ -44,6 +45,7 @@ Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
       'account': instance.account,
       'tarAccount': instance.tarAccount,
       'children': instance.children,
+      'anonymous': instance.anonymous,
       'hot': instance.hot,
       'praise': instance.praise,
       'replyCount': instance.replyCount,

@@ -17,7 +17,7 @@ class MyDefaultTextStyle {
     return TextStyle(
         color: ColorConstant.TWEET_REPLY_NICK_COLOR,
         fontSize: fontSize,
-        fontWeight: FontWeight.w400);
+        fontWeight: FontWeight.w500);
   }
 
   static TextStyle getTweetReplyAnonymousNickStyle(
@@ -25,14 +25,14 @@ class MyDefaultTextStyle {
     return TextStyle(
         color: ThemeUtils.isDark(context) ? Colors.grey : Color(0xff363636),
         fontSize: fontSize,
-        fontWeight: FontWeight.w400);
+        fontWeight: FontWeight.w500);
   }
 
   static TextStyle getTweetHeadNickStyle(double fontSize,
       {bool anonymous = false, bool bold = false}) {
     return TextStyle(
         fontSize: SizeConstant.TWEET_FONT_SIZE,
-        fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+        fontWeight: bold ? FontWeight.w500 : FontWeight.normal,
         color: !anonymous ? ColorConstant.TWEET_NICK_COLOR : Color(0xff828282));
   }
 

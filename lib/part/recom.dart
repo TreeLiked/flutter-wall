@@ -5,6 +5,7 @@ import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 
 class Recommendation extends StatefulWidget {
@@ -32,8 +33,6 @@ class RecommendationState extends State<Recommendation>
    */
   void showReplyContainer(TweetReply tr, String destAccountNick,
       String destAccountId, sendCallback) {
-    // print('键盘弹出啦。。。------------------------------------------');
-    // _focusNode.requestFocus();
     widget.callback(tr, destAccountNick, destAccountId, sendCallback);
   }
 
@@ -91,61 +90,45 @@ class RecommendationState extends State<Recommendation>
           .toList();
     }
 
-    return Scrollbar(
-        child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onPanDown: (_) {
-        // setState(() {
-        //   if (!CollectionUtil.isListEmpty(widgets)) {
-        //     widgets.forEach((f) => FocusScope.of(context).unfocus());
-        //   }
-        // });
-        widget.callback2();
-        // FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-            // color: Color(0xfff7f7f7),
-            // padding: EdgeInsets.only(top: 5),
-            child: children == null
-                ? (Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[WidgetUtil.getLoadingAnimiation()],
-                  ))
-                : (children.length != 0
-                    ? Column(
-                        // children: children,
-                        children: widgets)
-                    : Container(
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height * 0.15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              color: Colors.transparent,
-                              child: Image.network(
-                                'https://tva1.sinaimg.cn/large/006y8mN6ly1g884iiahnjj30e80e8wf1.jpg',
-                                fit: BoxFit.cover,
-                                width: MediaQuery.of(context).size.width * 0.25,
-                              ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+          child: children == null
+              ? (Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[WidgetUtil.getLoadingAnimiation()],
+                ))
+              : (widgets.length != 0
+                  ? Column(
+                      // children: children,
+                      children: widgets)
+                  : Container(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.25),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            color: Colors.transparent,
+                            child: Image.asset(
+                              ImageUtils.getImgPath("no_data", format: "png"),
+                              fit: BoxFit.cover,
+                              width: MediaQuery.of(context).size.width * 0.25,
                             ),
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: Text(
-                                '没有更多数据了',
-                                style: TextStyle(
-                                    color:
-                                        ColorConstant.TWEET_REPLY_FONT_COLOR),
-                              ),
-                            )
-                          ],
-                        ),
-                      ))),
-      ),
-    ));
+                          ),
+                          // Container(
+                          //   margin: EdgeInsets.only(top: 10),
+                          //   child: Text(
+                          //     '没有更多数据了',
+                          //     style: TextStyle(
+                          //         color: ColorConstant.TWEET_REPLY_FONT_COLOR),
+                          //   ),
+                          // )
+                        ],
+                      ),
+                    ))),
+    );
   }
 
   @override

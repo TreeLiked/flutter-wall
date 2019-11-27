@@ -5,6 +5,8 @@ class TextConstant {
   static const String TWEET_CARD_REPLY_HINT = "评论";
 
   static const String TWEET_ANONYMOUS_NICK = "匿名用户";
+  static const String TWEET_ANONYMOUS_REPLY_NICK = "匿名回复";
+
   static const String TWEET_ANONYMOUS_SIG = "";
 
   static const String TWEET_AUTHOR_TEXT = "作者";

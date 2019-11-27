@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 
 class ColorConstant {
-  static const Color TWEET_NICK_COLOR = Color(0xff686F8F);
+  static const Color TWEET_NICK_COLOR = Color(0xff696d6d);
 
-  static const Color TWEET_REPLY_NICK_COLOR = Color(0xff686F8F);
+  static const Color TWEET_REPLY_NICK_COLOR = Color(0xff696d7d);
 
   static const Color TWEET_TIME_COLOR = Color(0xffBEBEBE);
 

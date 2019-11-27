@@ -63,6 +63,9 @@ class _HotTodayState extends State<HotToday>
 
     if (ht == null) {
       ToastUtil.showToast(context, '数据加载错误');
+      setState(() {
+        this.hotTweet = null;
+      });
       return;
     }
     setState(() {
@@ -72,8 +75,7 @@ class _HotTodayState extends State<HotToday>
   }
 
   get getBackgroundUrl {
-    String baseUrl =
-        "https://tva1.sinaimg.cn/large/006y8mN6gy1g8rj5nshozj30gm0jqmzf.jpg";
+    String baseUrl = PathConstant.HOT_COVER_URL;
     if (hotTweet == null) {
       return baseUrl;
     }
@@ -193,7 +195,7 @@ class _HotTodayState extends State<HotToday>
                 height: 100.0,
                 child: Image.asset(
                     ImageUtils.getImgPath("no_data", format: 'png'))),
-            Text('暂无数据', style: Theme.of(context).textTheme.subhead),
+            // Text('暂无数据', style: Theme.of(context).textTheme.subhead),
           ],
         ),
       ];

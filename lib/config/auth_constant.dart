@@ -3,6 +3,9 @@ class SharedConstant {
 
   static const String LOCAL_ACCOUNT_TOKEN = "ACCOUNT_TOKEN";
 
+  static const String LOCAL_ORG_ID = "ORGANIZATION_ID";
+  static const String LOCAL_ORG_NAME = "ORGANIZATION_NAME";
+
   static const String LOCAL_USER_ID = "USER_ID";
 
   static const String LOCAL_FILTER_TYPES = "USER_PREFER_TYPES";

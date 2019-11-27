@@ -9,8 +9,10 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/widget_not_found.dart';
+import 'package:iap_app/page/login/sms_login_page.dart';
 import 'package:iap_app/page/login_page.dart';
 import 'package:iap_app/page/webview_page.dart';
+import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import './route_handlers.dart';
@@ -18,7 +20,7 @@ import './route_handlers.dart';
 class Routes {
   static String index = "/";
 
-  static String loginPage = "lgin";
+  static String loginPage = "login";
   static String home = "/home";
 
   static String webViewPage = "/webview";
@@ -50,7 +52,7 @@ class Routes {
     }));
 
     router.define(loginPage, handler: Handler(handlerFunc: (_, params) {
-      return Login();
+      return LoginPage();
     }));
 
     router.define(index, handler: indexHander);
@@ -72,6 +74,7 @@ class Routes {
     /// 各自路由由各自模块管理，统一在此添加初始化
 
     _listRouter.add(SettingRouter());
+    _listRouter.add(LoginRouter());
 
     /// 初始化路由
     _listRouter.forEach((routerProvider) {

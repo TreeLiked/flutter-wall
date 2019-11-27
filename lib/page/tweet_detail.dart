@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
@@ -63,6 +64,7 @@ class TweetDetailState extends State<TweetDetail> {
   String _hintText = "评论";
 
   TweetDetailState() {
+    curReply.anonymous = false;
     print('TweetDETAIL state construct');
   }
   @override
@@ -352,7 +354,8 @@ class TweetDetailState extends State<TweetDetail> {
       curReply.parentId = widget._tweet.id;
       curReply.type = 1;
       curReply.tarAccount = widget._tweet.account;
-      showReplyContainer("", widget._tweet.account.id);
+      curReply.anonymous = false;
+      showReplyContainer("", widget._tweet.account.id, false);
     });
     if (!widget._tweet.enableReply) {
       return _textTitleRow('评论关闭');
@@ -481,25 +484,33 @@ class TweetDetailState extends State<TweetDetail> {
     });
   }
 
-  Widget _leftContainer(String headUrl, bool sub, {bool isAuthor = false}) {
+  Widget _leftContainer(String headUrl, bool sub, bool anonymous,
+      {bool isAuthor = false}) {
     double size = SizeConstant.TWEET_PROFILE_SIZE - (sub ? 7 : 5);
     return Container(
       padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
-      child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ClipOval(
-            child: Image.network(
-              widget._tweet.anonymous && isAuthor
-                  ? PathConstant.ANONYMOUS_PROFILE
-                  : headUrl,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-            ),
-          )
-        ],
+
+      child: AccountAvatar(
+        avatarUrl: (widget._tweet.anonymous && isAuthor || anonymous)
+            ? PathConstant.ANONYMOUS_PROFILE
+            : headUrl,
+        size: size,
       ),
+      // child: Column(
+      //   // crossAxisAlignment: CrossAxisAlignment.start,
+      //   children: <Widget>[
+      //     ClipOval(
+      //       child: Image.network(
+      //         (widget._tweet.anonymous && isAuthor || anonymous)
+      //             ? PathConstant.ANONYMOUS_PROFILE
+      //             : headUrl,
+      //         width: size,
+      //         height: size,
+      //         fit: BoxFit.cover,
+      //       ),
+      //     )
+      //   ],
+      // ),
     );
   }
 
@@ -511,6 +522,7 @@ class TweetDetailState extends State<TweetDetail> {
         (reply.tarAccount.id == bt.account.id) &&
         bt.anonymous;
 
+    bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -520,7 +532,9 @@ class TweetDetailState extends State<TweetDetail> {
             TextSpan(
                 text: authorReplyWithAnonymous
                     ? TextConstant.TWEET_AUTHOR_TEXT
-                    : reply.account.nick,
+                    : dirReplyAnonymous
+                        ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK
+                        : reply.account.nick,
                 style: authorReplyWithAnonymous
                     ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
                         context, SizeConstant.TWEET_FONT_SIZE - 2)
@@ -648,22 +662,28 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget replyWrapContainer(TweetReply reply, bool subDir, int parentId) {
+    bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
     Widget wd = GestureDetector(
-        onTap: () {
-          curReply.parentId = parentId;
-          curReply.type = 2;
-          curReply.tarAccount = Account.fromId(reply.account.id);
-          if (widget._tweet.anonymous &&
-              widget._tweet.account.id == reply.account.id) {
-            // 推文匿名 && 回复的是推文作者
-            showReplyContainer(
-                TextConstant.TWEET_AUTHOR_TEXT, reply.account.id);
-          } else {
-            showReplyContainer(
-                AccountUtil.getNickFromAccount(reply.account, false),
-                reply.account.id);
-          }
-        },
+        onTap: !dirReplyAnonymous
+            ? () {
+                curReply.parentId = parentId;
+                curReply.type = 2;
+                curReply.tarAccount = Account.fromId(reply.account.id);
+                if (widget._tweet.anonymous &&
+                    widget._tweet.account.id == reply.account.id) {
+                  // 推文匿名 && 回复的是推文作者
+                  showReplyContainer(
+                      TextConstant.TWEET_AUTHOR_TEXT, reply.account.id, false);
+                } else {
+                  showReplyContainer(
+                      AccountUtil.getNickFromAccount(reply.account, false),
+                      reply.account.id,
+                      false);
+                }
+              }
+            : () {
+                ToastUtil.showToast(context, '匿名评论不可回复');
+              },
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,7 +691,7 @@ class TweetDetailState extends State<TweetDetail> {
             Padding(
               padding: EdgeInsets.only(left: subDir ? 15 : 0),
             ),
-            _leftContainer(reply.account.avatarUrl, subDir,
+            _leftContainer(reply.account.avatarUrl, subDir, dirReplyAnonymous,
                 isAuthor: reply.account.id == widget._tweet.account.id),
             Flexible(
                 fit: FlexFit.tight,
@@ -703,117 +723,140 @@ class TweetDetailState extends State<TweetDetail> {
     // super.build(context);
     sw = MediaQuery.of(context).size.width;
 
-    return GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onPanDown: (_) {
-          hideReplyContainer();
-        },
-        child: Scaffold(
-            backgroundColor: !ThemeUtils.isDark(context)
-                ? (widget._fromhot ? Color(0xffe9e9e9) : null)
-                : (widget._fromhot ? Color(0xff2c2c2c) : Color(0xff303030)),
-            // backgroundColor: Colors.white,
-            body: Stack(
-              children: <Widget>[
-                NestedScrollView(
-                  // headerSliverBuilder: null,
-                  headerSliverBuilder: (context, innerBoxIsScrolled) =>
-                      _sliverBuilder(context, innerBoxIsScrolled),
+    return Scaffold(
+        backgroundColor: !ThemeUtils.isDark(context)
+            ? (widget._fromhot ? Color(0xffe9e9e9) : null)
+            : (widget._fromhot ? Color(0xff2c2c2c) : Color(0xff303030)),
+        // backgroundColor: Colors.white,
+        body: Stack(
+          children: <Widget>[
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onPanDown: (_) {
+                hideReplyContainer();
+              },
+              child: NestedScrollView(
+                // headerSliverBuilder: null,
+                headerSliverBuilder: (context, innerBoxIsScrolled) =>
+                    _sliverBuilder(context, innerBoxIsScrolled),
 
-                  body: SingleChildScrollView(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        color: ThemeUtils.isDark(context)
-                            ? Color(0xff303030)
-                            : widget._fromhot ? Color(0xfff0f0f0) : null,
-                        borderRadius: BorderRadius.all(Radius.circular(18))),
-                    padding: EdgeInsets.only(
-                        top: 10, left: 15, right: 15, bottom: 30),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _spaceRow(),
-                        _bodyContainer(),
-                        _picContainer(),
-                        _viewContainer(),
-                        Gaps.vGap15,
-                        Divider(),
-                        // _loveContainer(),
-                        _templateWidget(
-                            _praiseTitleContainer(), _praiseFutureContainer()),
-                        _templateWidget(
-                            _replyTitleContainer(), _replyFutureContainer()),
-                        // Divider(),
+                body: SingleChildScrollView(
+                    child: Container(
+                  decoration: BoxDecoration(
+                      color: ThemeUtils.isDark(context)
+                          ? Color(0xff303030)
+                          : widget._fromhot ? Color(0xfff0f0f0) : null,
+                      borderRadius: BorderRadius.all(Radius.circular(18))),
+                  padding:
+                      EdgeInsets.only(top: 10, left: 10, right: 15, bottom: 50),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _spaceRow(),
+                      _bodyContainer(),
+                      _picContainer(),
+                      _viewContainer(),
+                      Gaps.vGap15,
+                      Divider(),
+                      // _loveContainer(),
+                      _templateWidget(
+                          _praiseTitleContainer(), _praiseFutureContainer()),
+                      _templateWidget(
+                          _replyTitleContainer(), _replyFutureContainer()),
+                      // Divider(),
 
-                        // _praiseContainer(),
+                      // _praiseContainer(),
 
-                        // _replyFutureContainer(),
-                        // Container(
-                        //     height: widget.hotRank > 0
-                        //         ? widget._tweet.dirReplies == null
-                        //             ? 200
-                        //             : (6 - widget._tweet.dirReplies.length * 60)
-                        //         : 0)
-                      ],
+                      // _replyFutureContainer(),
+                      // Container(
+                      //     height: widget.hotRank > 0
+                      //         ? widget._tweet.dirReplies == null
+                      //             ? 200
+                      //             : (6 - widget._tweet.dirReplies.length * 60)
+                      //         : 0)
+                    ],
+                  ),
+                )),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              bottom: 0,
+              child: Container(
+                  // height: ,
+                  width: _replyContainerHeight,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).appBarTheme.color,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
                     ),
-                  )),
-                ),
-                Positioned(
-                  left: 0,
-                  bottom: 0,
-                  child: Container(
-                      // height: ,
-                      width: _replyContainerHeight,
-                      decoration: BoxDecoration(
-                        color: Color(0xfff2f2f2),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
+                  ),
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
+                  child: Row(
+                    children: <Widget>[
+                      ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: Application.getAccount.avatarUrl,
+                          width: 35,
+                          height: 35,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
-                      child: Row(
-                        children: <Widget>[
-                          ClipOval(
-                            child: CachedNetworkImage(
-                              imageUrl: Application.getAccount.avatarUrl,
-                              width: 35,
-                              height: 35,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: TextField(
-                                  controller: _controller,
-                                  focusNode: _focusNode,
-                                  decoration: InputDecoration(
-                                      hintText: _hintText,
-                                      border: InputBorder.none,
-                                      hintStyle: TextStyle(
-                                        color: ColorConstant.TWEET_TIME_COLOR,
-                                        fontSize:
-                                            SizeConstant.TWEET_TIME_SIZE - 1,
-                                      )),
-                                  textInputAction: TextInputAction.send,
-                                  cursorColor: Colors.grey,
-                                  style: TextStyle(
-                                      fontSize:
-                                          SizeConstant.TWEET_FONT_SIZE - 1,
-                                      color:
-                                          ColorConstant.TWEET_REPLY_FONT_COLOR),
-                                  onSubmitted: (value) {
-                                    _sendReply(value);
-                                  },
-                                )),
-                          ),
-                        ],
-                      )),
-                )
-              ],
-            )));
+                      Expanded(
+                        child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: TextField(
+                              controller: _controller,
+                              focusNode: _focusNode,
+                              decoration: InputDecoration(
+                                hintText: _hintText,
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                  color: ColorConstant.TWEET_TIME_COLOR,
+                                  fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
+                                ),
+                                suffixIcon: curReply != null &&
+                                        curReply.type == 1
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            curReply.anonymous =
+                                                !curReply.anonymous;
+                                            if (curReply.anonymous) {
+                                              ToastUtil.showToast(
+                                                  context, '此条评论将匿名回复');
+                                            }
+                                          });
+                                        },
+                                        child: Icon(
+                                          curReply.anonymous
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          size:
+                                              SizeConstant.TWEET_PROFILE_SIZE *
+                                                  0.5,
+                                          color: Colors.grey,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              textInputAction: TextInputAction.send,
+                              cursorColor: Colors.grey,
+                              style: TextStyle(
+                                  fontSize: SizeConstant.TWEET_FONT_SIZE - 1,
+                                  color: ColorConstant.TWEET_REPLY_FONT_COLOR),
+                              onSubmitted: (value) {
+                                _sendReply(value);
+                              },
+                            )),
+                      ),
+                    ],
+                  )),
+            )
+          ],
+        ));
   }
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
@@ -829,6 +872,32 @@ class TweetDetailState extends State<TweetDetail> {
           '详情',
           // style: TextStyle(color: widget._fromhot ? Colors.white : null),
         ),
+        // title: InkWell(
+        //     child: Row(
+        //   children: <Widget>[
+        //     Padding(
+        //         padding: EdgeInsets.only(left: 0.0, right: 10.0),
+        //         child: AccountAvatar(
+        //           avatarUrl: widget._tweet.account.avatarUrl,
+        //           size: SizeConstant.TWEET_PROFILE_SIZE - 5,
+        //         )),
+        //     Expanded(
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: <Widget>[
+        //           SizedBox(height: 15.0),
+        //           Text(
+        //             widget._tweet.account.nick,
+        //             style: TextStyle(
+        //               fontWeight: FontWeight.bold,
+        //               fontSize: 14,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ],
+        // )),
         elevation: 0.5,
         floating: true,
         pinned: !widget._fromhot,
@@ -841,9 +910,9 @@ class TweetDetailState extends State<TweetDetail> {
             )),
         bottom: widget._fromhot
             ? PreferredSize(
-                preferredSize: Size.fromHeight(100),
+                preferredSize: Size.fromHeight(60),
                 child: Container(
-                    height: 100,
+                    height: 60,
                     child: Align(
                       alignment: Alignment.center,
                       child: Row(
@@ -965,22 +1034,24 @@ class TweetDetailState extends State<TweetDetail> {
   @override
   bool get wantKeepAlive => true;
 
-  void showReplyContainer(String destAccountNick, String destAccountId) {
+  void showReplyContainer(
+      String destAccountNick, String destAccountId, bool dirAno) {
     print('show reply container');
     if (StringUtil.isEmpty(destAccountNick)) {
       setState(() {
         _hintText = "评论";
+        _replyContainerHeight = MediaQuery.of(context).size.width;
       });
     } else {
       setState(() {
         _hintText = "回复 $destAccountNick";
+        _replyContainerHeight = MediaQuery.of(context).size.width;
       });
     }
-    setState(() {
-      // curReply = tr;
-      _replyContainerHeight = MediaQuery.of(context).size.width;
-      // this.destAccountId = destAccountId;
-    });
+    // setState(() {
+    //   // curReply = tr;
+    //   // this.destAccountId = destAccountId;
+    // });
     _focusNode.requestFocus();
   }
 

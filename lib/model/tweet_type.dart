@@ -18,6 +18,19 @@ final tweetTypeMap = {
   "OFFICAL": TweetTypeEntity.OFFICAL,
 };
 
+class TweetTypeUtil {
+  static Map getVisibleTweetTypeMap() {
+    final filteredMap = new Map.fromIterable(
+        tweetTypeMap.keys.where((k) => tweetTypeMap[k].visible),
+        value: (k) => tweetTypeMap[k]);
+    return filteredMap;
+  }
+
+  static Map getAllTweetTypeMap() {
+    return Map.from(tweetTypeMap);
+  }
+}
+
 class TweetTypeEntity {
   final String name;
   final String zhTag;
@@ -133,10 +146,10 @@ class TweetTypeEntity {
       zhTag: "其他");
 
   static const OFFICAL = const TweetTypeEntity(
-      iconData: Icons.local_offer,
-      iconColor: Colors.black,
+      iconData: Icons.check_circle,
+      iconColor: Color(0xff000080),
       name: "OTHER",
-      color: Colors.black,
+      color: Color(0xff000080),
       zhTag: "官方认证",
       visible: false);
 }

@@ -7,18 +7,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/asset_image.dart';
+import 'package:iap_app/common-widget/simple_confirm.dart';
+import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -88,6 +93,7 @@ class _CreatePageState extends State<CreatePage>
   }
 
   void _assembleAndPushTweet() async {
+    Utils.showDefaultLoading(context);
     _focusNode.unfocus();
     setState(() {
       this._isPushBtnEnabled = false;
@@ -130,20 +136,20 @@ class _CreatePageState extends State<CreatePage>
       print(_baseTweet.toJson());
       TweetApi.pushTweet(_baseTweet).then((result) {
         // print(result.toString());
+        Navigator.of(context).pop();
         Result r = Result.fromJson(result);
+        print(r.isSuccess);
         if (r.isSuccess) {
-          Navigator.pop(context);
+          NavigatorUtils.goBack(context);
         } else {
           ToastUtil.showToast(context, r.message);
         }
       });
     } else {
+      Navigator.pop(context);
       ToastUtil.showToast(context, '发布出错，请稍后重试');
     }
     _updatePushBtnState();
-    setState(() {
-      this._publishing = false;
-    });
   }
 
   // Widget _bottomSheetItem(IconData leftIcon, String text) {
@@ -282,7 +288,8 @@ class _CreatePageState extends State<CreatePage>
     // setState(() {
     //   this.file = image;
     // });
-    var assetPathList = await PhotoManager.getImageAsset();
+    await Utils.checkPhotoPermission(context);
+    // var assetPathList = await PhotoManager.getImageAsset();
 
     List<AssetEntity> imgList = await PhotoPicker.pickAsset(
       // BuildContext required
@@ -362,233 +369,224 @@ class _CreatePageState extends State<CreatePage>
     sw = ScreenUtil.screenWidthDp;
 
     return new Scaffold(
-        resizeToAvoidBottomPadding: true,
-        appBar: new AppBar(
-          title: Text(widget.title),
-          centerTitle: true,
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Text("取消",
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.subhead.color,
-                )),
-          ),
-          elevation: 0,
-          toolbarOpacity: 0.8,
-          actions: <Widget>[
-            Container(
-              height: 10,
-              child: FlatButton(
-                onPressed: _isPushBtnEnabled
-                    ? () {
-                        this._assembleAndPushTweet();
-                      }
-                    : null,
-                child: Text(
-                  '发表',
-                  style: TextStyle(
-                    color: _isPushBtnEnabled ? Colors.blue : Colors.grey,
-                  ),
-                ),
-                disabledTextColor: Colors.grey,
-                textColor: Colors.blue,
-              ),
-            )
-          ],
+      resizeToAvoidBottomPadding: true,
+      appBar: new AppBar(
+        title: Text(widget.title),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Text("取消",
+              style: TextStyle(
+                color: Theme.of(context).textTheme.subhead.color,
+              )),
         ),
-        backgroundColor: Color(0xfff5f6f7),
-        body: ModalProgressHUD(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () => _hideKeyB(),
-                  onPanDown: (_) => _hideKeyB(),
-                  child: new Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                    child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 0,
+        toolbarOpacity: 0.8,
+        actions: <Widget>[
+          Container(
+            height: 10,
+            child: FlatButton(
+              onPressed: _isPushBtnEnabled
+                  ? () {
+                      this._assembleAndPushTweet();
+                    }
+                  : null,
+              child: Text(
+                '发表',
+                style: TextStyle(
+                  color: _isPushBtnEnabled ? Colors.blue : Colors.grey,
+                ),
+              ),
+              disabledTextColor: Colors.grey,
+              textColor: Colors.blue,
+            ),
+          )
+        ],
+      ),
+      backgroundColor: Color(0xfff5f6f7),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            GestureDetector(
+              onTap: () => _hideKeyB(),
+              onPanDown: (_) => _hideKeyB(),
+              child: new Container(
+                color: Colors.white,
+                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                child: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    // Container(
+                    //   height: 10,
+                    //   color: Colors.grey,
+                    // ),
+                    Container(
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        cursorColor: Colors.blue,
+                        maxLengthEnforced: true,
+                        maxLength: GlobalConfig.TWEET_MAX_LENGTH,
+                        keyboardType: TextInputType.multiline,
+                        autocorrect: false,
+                        maxLines: 8,
+                        style: TextStyle(
+                            fontSize: SizeConstant.TWEET_FONT_SIZE,
+                            color: Colors.black),
+                        decoration: new InputDecoration(
+                            hintText: '分享新鲜事',
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(5),
+                            counter: Text(
+                              _textCountText < GlobalConfig.TWEET_MAX_LENGTH
+                                  ? ""
+                                  : "最大长度 ${GlobalConfig.TWEET_MAX_LENGTH}",
+                              style: TextStyle(color: Color(0xffb22222)),
+                            )),
+                        onChanged: (val) {
+                          setState(() {
+                            this._textCountText = val.length;
+                          });
+                          _updatePushBtnState();
+                        },
+                      ),
+                    ),
+
+                    Wrap(
+                      alignment: WrapAlignment.start,
                       children: <Widget>[
-                        // Container(
-                        //   height: 10,
-                        //   color: Colors.grey,
-                        // ),
-                        Container(
-                          child: TextField(
-                            controller: _controller,
-                            focusNode: _focusNode,
-                            cursorColor: Colors.blue,
-                            maxLengthEnforced: true,
-                            maxLength: GlobalConfig.TWEET_MAX_LENGTH,
-                            keyboardType: TextInputType.multiline,
-                            autocorrect: false,
-                            maxLines: 8,
-                            style: TextStyle(
-                                fontSize: SizeConstant.TWEET_FONT_SIZE,
-                                color: Colors.black),
-                            decoration: new InputDecoration(
-                                hintText: '分享新鲜事',
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.all(5),
-                                counter: Text(
-                                  _textCountText < GlobalConfig.TWEET_MAX_LENGTH
-                                      ? ""
-                                      : "最大长度 ${GlobalConfig.TWEET_MAX_LENGTH}",
-                                  style: TextStyle(color: Color(0xffb22222)),
-                                )),
-                            onChanged: (val) {
-                              setState(() {
-                                this._textCountText = val.length;
-                              });
-                              // _updatePushBtnState();
-                            },
-                          ),
-                        ),
-
                         Wrap(
+                          runSpacing: spacing,
+                          spacing: spacing,
                           alignment: WrapAlignment.start,
-                          children: <Widget>[
-                            Wrap(
-                              runSpacing: spacing,
-                              spacing: spacing,
-                              alignment: WrapAlignment.start,
-                              children: getPicList(),
-                            ),
-                          ],
+                          children: getPicList(),
                         ),
-
-                        Container(
-                          margin: EdgeInsets.only(top: 20),
-                          child: Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () => _reverseEnableReply(),
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                      color: Color(0xffF5F5F5),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
-                                  child: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                        _enbaleReply
-                                            ? Icons.lock_open
-                                            : Icons.lock,
-                                        color: _enbaleReply
-                                            ? Color(0xff87CEEB)
-                                            : Colors.grey,
-                                        size: 16,
-                                      ),
-                                      Text(
-                                        " " +
-                                            (_enbaleReply ? "允许评论 " : "禁止评论 "),
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => _reverseAnonymous(),
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                      color: Color(0xffF5F5F5),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
-                                  child: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                        _anonymous
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                        color: _anonymous
-                                            ? Color(0xff87CEEB)
-                                            : Colors.grey,
-                                        size: 16,
-                                      ),
-                                      Text(
-                                        " " + (_anonymous ? "开启匿名" : "公开"),
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () => _forwardSelPage(),
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                          color: Color(0xffF5F5F5),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(20))),
-                                      child: Text(
-                                        "# " + _typeText,
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            color:
-                                                !StringUtil.isEmpty(_typeName)
-                                                    ? Colors.blue
-                                                    : Colors.grey),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )),
-                              Divider(
-                                height: 1.0,
-                                indent: 0.0,
-                                color: Color(0xffF5F5F5),
-                              ),
-                            ],
-                          ),
-                        )
                       ],
                     ),
-                  ),
+
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () => _reverseEnableReply(),
+                            child: Container(
+                              margin: EdgeInsets.only(right: 10),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                  color: Color(0xffF5F5F5),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    _enbaleReply ? Icons.lock_open : Icons.lock,
+                                    color: _enbaleReply
+                                        ? Color(0xff87CEEB)
+                                        : Colors.grey,
+                                    size: 16,
+                                  ),
+                                  Text(
+                                    " " + (_enbaleReply ? "允许评论 " : "禁止评论 "),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => _reverseAnonymous(),
+                            child: Container(
+                              margin: EdgeInsets.only(right: 10),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                  color: Color(0xffF5F5F5),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    _anonymous
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: _anonymous
+                                        ? Color(0xff87CEEB)
+                                        : Colors.grey,
+                                    size: 16,
+                                  ),
+                                  Text(
+                                    " " + (_anonymous ? "匿名" : "公开"),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () => _forwardSelPage(),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffF5F5F5),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20))),
+                                  child: Text(
+                                    "# " + _typeText,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: !StringUtil.isEmpty(_typeName)
+                                            ? Colors.blue
+                                            : Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
+                          Divider(
+                            height: 1.0,
+                            indent: 0.0,
+                            color: Color(0xffF5F5F5),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-                // Container(
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.end,
-                //     mainAxisSize: MainAxisSize.max,
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: <Widget>[
-                //       Padding(
-                //         padding: EdgeInsets.only(top: 2, left: 4),
-                //         child: Text(
-                //           '请勿发布广告等标签无关内容，\n否则您的账号可能会被永久封禁',
-                //           style: TextStyles.textGray12,
-                //           softWrap: true,
-                //         ),
-                //       )
-                //     ],
-                //   ),
-                // )
-              ],
+              ),
             ),
-          ),
-          inAsyncCall: _publishing,
-          opacity: 0.4,
-        ));
+            // Container(
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.end,
+            //     mainAxisSize: MainAxisSize.max,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: <Widget>[
+            //       Padding(
+            //         padding: EdgeInsets.only(top: 2, left: 4),
+            //         child: Text(
+            //           '请勿发布广告等标签无关内容，\n否则您的账号可能会被永久封禁',
+            //           style: TextStyles.textGray12,
+            //           softWrap: true,
+            //         ),
+            //       )
+            //     ],
+            //   ),
+            // )
+          ],
+        ),
+      ),
+    );
   }
 
   void _hideKeyB() {

@@ -37,6 +37,7 @@ class _ImageCropContainerState extends State<ImageCropContainer> {
             final area = widget.cropKey.currentState.area;
             if (area == null) {
               // cannot crop, widget is not setup
+              NavigatorUtils.goBack(context);
               return;
             }
 
@@ -64,7 +65,7 @@ class _ImageCropContainerState extends State<ImageCropContainer> {
           child: Crop(
               key: widget.cropKey,
               image: FileImage(widget.file),
-              aspectRatio: 1),
+              aspectRatio: 1 / 1),
         ));
   }
 }

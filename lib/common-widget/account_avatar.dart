@@ -1,18 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class AccountAvatar extends StatelessWidget {
   final double size;
   final bool whitePadding;
   final String avatarUrl;
   final GestureTapCallback onTap;
+  final bool cache;
 
   AccountAvatar(
       {Key key,
       this.avatarUrl,
       this.size = SizeConstant.TWEET_PROFILE_SIZE,
       this.onTap,
+      this.cache = false,
       this.whitePadding = false})
       : super(key: key);
 
@@ -29,12 +33,23 @@ class AccountAvatar extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: ClipOval(
-              child: CachedNetworkImage(
-            imageUrl: avatarUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          )),
+              child: cache
+                  ? FadeInImage.assetNetwork(
+                      image: avatarUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: PathConstant.AVATAR_HOLDER,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: avatarUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => WidgetUtil.getAsset(
+                          PathConstant.AVATAR_FAILED,
+                          size: SizeConstant.TWEET_PROFILE_SIZE + 1),
+                    )),
         )
         // child: GestureDetector(
         //   onTap: onTap,

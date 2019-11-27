@@ -1,12 +1,15 @@
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/global/color_constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
-import 'package:iap_app/res/styles.dart';
+import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:provider/provider.dart';
 
 class TweetTypeSelect extends StatefulWidget {
   String title;
@@ -45,6 +48,8 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
 
   Map<String, bool> selects = Map();
 
+  TweetTypesFilterProvider filterProvider;
+
   @override
   void initState() {
     if (!CollectionUtil.isListEmpty(widget.initNames)) {
@@ -57,6 +62,7 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
 
   @override
   Widget build(BuildContext context) {
+    filterProvider = Provider.of<TweetTypesFilterProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -77,15 +83,18 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               List<String> list = new List();
               selects.forEach((k, v) {
-                if (v) {
+                if (v != null && v == true) {
                   list.add(k);
                 }
               });
-              widget.callback(list);
+              await SpUtil.putStringList(
+                  SharedConstant.LOCAL_FILTER_TYPES, list);
+              filterProvider.updateTypeNames();
               Navigator.pop(context);
+              widget.callback();
             },
             icon: Padding(
               padding: EdgeInsets.only(right: 3),
@@ -183,7 +192,7 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
     return Image.asset(
       path,
       fit: BoxFit.scaleDown,
-      width: ScreenUtil().setWidth(40),
+      width: prefix0.ScreenUtil().setWidth(40),
     );
   }
 }

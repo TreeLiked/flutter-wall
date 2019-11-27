@@ -25,7 +25,7 @@ class HotAppBarWidget extends StatelessWidget {
     @required this.title,
     @required this.backgroundImg,
     @required this.headerNotifier,
-    this.sigma = 5,
+    this.sigma = 3,
     this.playOnTap,
     this.count,
   });

@@ -1,17 +1,24 @@
 import 'dart:io';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
+import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
+import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -30,6 +37,17 @@ class Utils {
     return str;
   }
 
+  static void displayDialog(
+    BuildContext context,
+    Widget dialog, {
+    bool barrierDismissible = false,
+  }) {
+    showDialog(
+        context: context,
+        barrierDismissible: barrierDismissible,
+        builder: (_) => dialog);
+  }
+
   static void showDefaultLoading(BuildContext context, {double size = 30}) {
     showDialog(
         context: context,
@@ -40,22 +58,69 @@ class Utils {
   }
 
   static void showDefaultLoadingWithBonuds(BuildContext context,
-      {double size = 30}) {
+      {double size = 30, String text = ""}) {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return Center(
-            child: Container(
-              width: ScreenUtil().setHeight(200),
-              height: ScreenUtil().setHeight(200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.black38,
-              ),
-              alignment: Alignment.center,
-              child: SpinKitChasingDots(color: Color(0xff3489ff), size: size),
-            ),
+          return Material(
+            type: MaterialType.transparency,
+            child: Center(
+                child: SizedBox(
+              width: ScreenUtil().setWidth(200),
+              height: ScreenUtil().setWidth(200),
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(11),
+                    color: ThemeUtils.isDark(context)
+                        ? Colors.black87
+                        : Colors.white70,
+                  ),
+                  alignment: Alignment.center,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: _renderLoadingList(size, text))),
+            )),
+          );
+        });
+  }
+
+  static List<Widget> _renderLoadingList(double size, String text) {
+    List<Widget> list = new List();
+    list.add(
+      SpinKitChasingDots(color: Color(0xff00BFFF), size: size),
+    );
+    if (!StringUtil.isEmpty(text)) {
+      list.add(Padding(
+          padding: EdgeInsets.only(top: 0),
+          child: Text(
+            text,
+            style: TextStyles.textBold14,
+          )));
+    }
+    return list;
+  }
+
+  static void showFavoriteAnimation(BuildContext context, {double size = 30}) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Material(
+            type: MaterialType.transparency,
+            child: Center(
+                child: SizedBox(
+                    width: ScreenUtil().setWidth(200),
+                    height: ScreenUtil().setWidth(200),
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: FlareActor(
+                        "assets/flrs/favorite.flr",
+                        alignment: Alignment.center,
+                        animation: "favorite",
+                        fit: BoxFit.cover,
+                      ),
+                    ))),
           );
         });
   }
@@ -159,6 +224,10 @@ class Utils {
     }
   }
 
+  static void copyTextToClipBoard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+  }
+
   static void openPhotoView(
     BuildContext context,
     List<String> urls,
@@ -168,17 +237,14 @@ class Utils {
       return;
     }
 
-    // StringBuffer buffer = StringBuffer();
-    // urls.forEach((f) => buffer.write("&urls=${Uri.encodeComponent(f)}"));
-
     List<PhotoWrapItem> items = urls
         .map((f) =>
             PhotoWrapItem(index: initialIndex, url: Uri.decodeComponent(f)))
         .toList();
     Navigator.push(
         context,
-        new MaterialPageRoute(
-            builder: (context) => new GalleryPhotoViewWrapper(
+        MaterialPageRoute(
+            builder: (context) => GalleryPhotoViewWrapper(
                   usePageViewWrapper: true,
                   galleryItems: items,
                   backgroundDecoration: const BoxDecoration(
@@ -193,4 +259,54 @@ class Utils {
     //   transition: TransitionType.fadeIn,
     // );
   }
+}
+
+Future<T> showElasticDialog<T>({
+  @required BuildContext context,
+  bool barrierDismissible = true,
+  WidgetBuilder builder,
+}) {
+  final ThemeData theme = Theme.of(context, shadowThemeOnly: true);
+  return showGeneralDialog(
+    context: context,
+    pageBuilder: (BuildContext buildContext, Animation<double> animation,
+        Animation<double> secondaryAnimation) {
+      final Widget pageChild = Builder(builder: builder);
+      return SafeArea(
+        child: Builder(builder: (BuildContext context) {
+          return theme != null
+              ? Theme(data: theme, child: pageChild)
+              : pageChild;
+        }),
+      );
+    },
+    barrierDismissible: barrierDismissible,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 550),
+    transitionBuilder: _buildDialogTransitions,
+  );
+}
+
+Widget _buildDialogTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child) {
+  return FadeTransition(
+    opacity: CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOut,
+    ),
+    child: SlideTransition(
+      position: Tween<Offset>(begin: const Offset(0.0, 0.3), end: Offset.zero)
+          .animate(CurvedAnimation(
+        parent: animation,
+        curve: animation.status != AnimationStatus.forward
+            ? Curves.easeOutBack
+            : ElasticOutCurve(0.85),
+      )),
+      child: child,
+    ),
+  );
 }

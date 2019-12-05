@@ -2,8 +2,6 @@ import 'dart:core';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
-import 'package:iap_app/model/account/account_edit_param.dart';
-import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
@@ -21,6 +19,27 @@ class UniversityApi {
         return [];
       }
       return temp.map((f) => University.fromJson(f)).toList();
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<University> queryUnis(String accountToken) async {
+    Response response;
+    String url = Api.API_QUERY_ORG;
+    print(url);
+    try {
+      if (httpUtil2.options.headers.containsKey("Authorization")) {
+        httpUtil2.options.headers.update('Authorization', (_) => accountToken);
+      } else {
+        httpUtil2.options.headers
+            .putIfAbsent('Authorization', () => accountToken);
+      }
+      response = await httpUtil2.dio.post(url);
+      print(response.data);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return University.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
     }

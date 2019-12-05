@@ -1,18 +1,12 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:iap_app/global/global_config.dart';
 
 class Api {
   static const String API_BASE = "http://treeliked.com";
 
   //  static const String API_BASE =
   // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
-
-  // static const String API_BASE_URL = "http://127.0.0.1";
-  // static const String API_BASE = "http://192.168.1.199";
-  // static const String API_BASE2 = "http://127.0.0.1";
-  // static const String API_BASE2 = "http://192.168.10.63";
 
   static const String API_BASE_INF_URL = API_BASE + ":8088/iap/api";
   static const String API_BASE_MEMBER_URL = API_BASE + ":9001/trms/api";
@@ -44,6 +38,8 @@ class Api {
   // member start --------
   static const String API_QUERY_ACCOUNT =
       API_BASE_MEMBER_URL + "/account/getAccInfo.json";
+  static const String API_QUERY_ACCOUNT_PROFILE =
+      API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
 
   static const String API_ACCOUNT_MOD_BASIC =
       API_BASE_MEMBER_URL + "/account/edit/basic.do";
@@ -59,6 +55,9 @@ class Api {
   // university
   static const String API_BLUR_QUERY_UNIVERSITY =
       API_BASE_INF_URL + "/un/blurQuery.json";
+
+  static const String API_QUERY_ORG =
+      API_BASE_MEMBER_URL + "/org/getAccUniversity.json";
 
   static Map<String, dynamic> convertResponse(Object reponseData) {
     String jsonTemp = json.encode(reponseData);

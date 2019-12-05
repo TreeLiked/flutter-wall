@@ -75,7 +75,7 @@ class _HotTodayState extends State<HotToday>
   }
 
   get getBackgroundUrl {
-    String baseUrl = PathConstant.HOT_COVER_URL;
+    String baseUrl = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
     if (hotTweet == null) {
       return baseUrl;
     }
@@ -87,7 +87,7 @@ class _HotTodayState extends State<HotToday>
     if (CollectionUtil.isListEmpty(s)) {
       return baseUrl;
     }
-    return s[0];
+    return s[0] + OssConstant.THUMBNAIL_SUFFIX;
   }
 
   @override
@@ -155,7 +155,7 @@ class _HotTodayState extends State<HotToday>
                 ],
               ),
               expandedHeight: _expandedHeight,
-              title: '今日热门',
+              title: '校园热门',
             ),
             MediaQuery.removePadding(
               context: context,
@@ -311,7 +311,8 @@ class _HotTodayState extends State<HotToday>
                                                       : TextConstant
                                                           .TWEET_ANONYMOUS_NICK,
                                                   style: MyDefaultTextStyle
-                                                      .getTweetNickStyle(14,
+                                                      .getTweetNickStyle(
+                                                          context, 14,
                                                           bold: false,
                                                           anonymous:
                                                               bt.anonymous)),
@@ -379,12 +380,12 @@ class _HotTodayState extends State<HotToday>
                             aspectRatio: 1,
                             child: CachedNetworkImage(
                               imageUrl: CollectionUtil.isListEmpty(bt.picUrls)
-                                  ? 'https://tva1.sinaimg.cn/large/006y8mN6ly1g8oaz0rsjrj30u011ijvq.jpg'
-                                  // ? tweetTypeMap[bt.type].coverUrl
+                                  ? (tweetTypeMap[bt.type].coverUrl ??
+                                      PathConstant.HOT_COVER_URL)
                                   : bt.picUrls[0] +
                                       OssConstant.THUMBNAIL_SUFFIX,
                               placeholder: (context, url) => Container(
-                                  padding: EdgeInsets.all(20),
+                                  padding: EdgeInsets.all(10),
                                   child: Image.asset(PathConstant.LOADING_GIF)),
                               fit: BoxFit.cover,
                               errorWidget: (context, url, error) =>

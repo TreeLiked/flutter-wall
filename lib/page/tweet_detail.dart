@@ -9,6 +9,7 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
@@ -105,14 +106,13 @@ class TweetDetailState extends State<TweetDetail> {
   Widget _spaceRow() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         // 头像
         Container(
           margin: EdgeInsets.only(right: 5),
           child: ClipOval(
             child: Image.network(
-              // imageUrl:
               !widget._tweet.anonymous
                   ? widget._tweet.account.avatarUrl
                   : PathConstant.ANONYMOUS_PROFILE,
@@ -137,7 +137,7 @@ class TweetDetailState extends State<TweetDetail> {
                       TextSpan(
                           text: widget._tweet.account.nick,
                           style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                              SizeConstant.TWEET_NICK_SIZE,
+                              context, SizeConstant.TWEET_NICK_SIZE,
                               anonymous: widget._tweet.anonymous)),
                       TextSpan(
                           text: " 发表于 " +
@@ -268,22 +268,22 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget _getPraiseList() {
     List<InlineSpan> spans = List();
-    spans.add(WidgetSpan(
-        child: GestureDetector(
-            onTap: () {
-              updatePraise(widget._tweet);
-            },
-            child: Padding(
-              padding: EdgeInsets.only(right: 2),
-              child: Image.asset(
-                // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-                widget._tweet.loved
-                    ? PathConstant.ICON_PRAISE_ICON_PRAISE
-                    : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-                width: 18,
-                height: 18,
-              ),
-            ))));
+    // spans.add(WidgetSpan(
+    //     child: GestureDetector(
+    //         onTap: () {
+    //           updatePraise(widget._tweet);
+    //         },
+    //         child: Padding(
+    //           padding: EdgeInsets.only(right: 5),
+    //           child: Image.asset(
+    //             // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+    //             widget._tweet.loved
+    //                 ? PathConstant.ICON_PRAISE_ICON_PRAISE
+    //                 : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+    //             width: 18,
+    //             height: 18,
+    //           ),
+    //         ))));
 
     if (!CollectionUtil.isListEmpty(praiseAccounts)) {
       for (int i = 0;
@@ -293,7 +293,8 @@ class TweetDetailState extends State<TweetDetail> {
         spans.add(TextSpan(
             text: "${account.nick}" +
                 (i != praiseAccounts.length - 1 ? '、' : ' '),
-            style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false),
+            style:
+                MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 // goAccountDetail();
@@ -401,12 +402,12 @@ class TweetDetailState extends State<TweetDetail> {
               );
             }
             if (async.connectionState == ConnectionState.done) {
-              debugPrint("done-praise");
               if (async.hasError) {
                 return new Center(
                   child: new Text("${async.error}"),
                 );
               } else if (async.hasData) {
+                print('update --------');
                 List<Account> list = async.data;
                 updateListData(list, 1);
                 return Wrap(
@@ -465,6 +466,9 @@ class TweetDetailState extends State<TweetDetail> {
     setState(() {
       tweet.loved = !tweet.loved;
       if (tweet.loved) {
+        Utils.showFavoriteAnimation(context);
+        Future.delayed(Duration(seconds: 2))
+            .then((_) => Navigator.pop(context));
         tweet.praise++;
         tweet.latestPraise.insert(0, Application.getAccount);
         if (praiseAccounts == null) {
@@ -539,7 +543,7 @@ class TweetDetailState extends State<TweetDetail> {
                     ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
                         context, SizeConstant.TWEET_FONT_SIZE - 2)
                     : MyDefaultTextStyle.getTweetNickStyle(
-                        SizeConstant.TWEET_FONT_SIZE - 2,
+                        context, SizeConstant.TWEET_FONT_SIZE - 2,
                         bold: false)),
             TextSpan(
                 text: reply.type == 1 || reply.tarAccount == null ? '' : ' 回复 ',
@@ -555,7 +559,7 @@ class TweetDetailState extends State<TweetDetail> {
                     ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
                         context, SizeConstant.TWEET_FONT_SIZE - 2)
                     : MyDefaultTextStyle.getTweetNickStyle(
-                        SizeConstant.TWEET_FONT_SIZE - 2,
+                        context, SizeConstant.TWEET_FONT_SIZE - 2,
                         bold: false))
           ]),
         ),
@@ -611,7 +615,7 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget _imgContainer(String url, int index, int totalSize) {
     // 减去空白边距
-    double left = (sw - 30 - totalSize * 1);
+    double left = (sw - 20 - totalSize);
     double perw;
     if (totalSize == 2 || totalSize == 4) {
       perw = left / 2;
@@ -626,18 +630,16 @@ class TweetDetailState extends State<TweetDetail> {
         height: perw,
         child: GestureDetector(
           onTap: () {
-            // List<PhotoWrapItem> items = widget._tweet.picUrls
-            //     .map((f) => PhotoWrapItem(index: index, url: f))
-            //     .toList();
             Utils.openPhotoView(context, widget._tweet.picUrls, index);
           },
           child: CachedNetworkImage(
-            imageUrl: url + "?x-oss-process=style/image_thumbnail",
+            filterQuality: FilterQuality.high,
+            imageUrl: "$url${OssConstant.THUMBNAIL_SUFFIX}",
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              padding: EdgeInsets.all(20),
-              child: Image.asset(PathConstant.LOADING_GIF),
-            ),
+            placeholder: (context, url) => SizedBox(
+                height: Application.screenWidth * 0.25,
+                width: Application.screenWidth * 0.25,
+                child: Image.asset(PathConstant.IAMGE_HOLDER)),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         ));
@@ -650,12 +652,13 @@ class TweetDetailState extends State<TweetDetail> {
             child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: (sw - 30) * 0.9),
           child: CachedNetworkImage(
-            imageUrl: url + "?x-oss-process=style/image_thumbnail",
+            filterQuality: FilterQuality.high,
+            imageUrl: url + OssConstant.THUMBNAIL_SUFFIX,
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              padding: EdgeInsets.all(20),
-              child: Image.asset(PathConstant.LOADING_GIF),
-            ),
+            placeholder: (context, url) => SizedBox(
+                height: Application.screenWidth * 0.25,
+                width: Application.screenWidth * 0.25,
+                child: Image.asset(PathConstant.IAMGE_HOLDER)),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         )));
@@ -689,7 +692,7 @@ class TweetDetailState extends State<TweetDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(left: subDir ? 15 : 0),
+              padding: EdgeInsets.only(left: subDir ? 10 : 0),
             ),
             _leftContainer(reply.account.avatarUrl, subDir, dirReplyAnonymous,
                 isAuthor: reply.account.id == widget._tweet.account.id),
@@ -720,14 +723,11 @@ class TweetDetailState extends State<TweetDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // super.build(context);
-    sw = MediaQuery.of(context).size.width;
-
+    sw = Application.screenWidth;
     return Scaffold(
         backgroundColor: !ThemeUtils.isDark(context)
             ? (widget._fromhot ? Color(0xffe9e9e9) : null)
             : (widget._fromhot ? Color(0xff2c2c2c) : Color(0xff303030)),
-        // backgroundColor: Colors.white,
         body: Stack(
           children: <Widget>[
             GestureDetector(
@@ -748,7 +748,7 @@ class TweetDetailState extends State<TweetDetail> {
                           : widget._fromhot ? Color(0xfff0f0f0) : null,
                       borderRadius: BorderRadius.all(Radius.circular(18))),
                   padding:
-                      EdgeInsets.only(top: 10, left: 10, right: 15, bottom: 50),
+                      EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 50),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -796,25 +796,31 @@ class TweetDetailState extends State<TweetDetail> {
                   padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
                   child: Row(
                     children: <Widget>[
-                      ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: Application.getAccount.avatarUrl,
-                          width: 35,
-                          height: 35,
-                          fit: BoxFit.cover,
-                        ),
+                      AccountAvatar(
+                        avatarUrl: Application.getAccount.avatarUrl,
+                        cache: true,
+                        size: 35,
                       ),
+                      // ClipOval(
+                      //   child: CachedNetworkImage(
+                      //     imageUrl: Application.getAccount.avatarUrl,
+                      //     width: 35,
+                      //     height: 35,
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
                       Expanded(
                         child: Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: TextField(
+                              keyboardAppearance: Theme.of(context).brightness,
                               controller: _controller,
                               focusNode: _focusNode,
                               decoration: InputDecoration(
                                 hintText: _hintText,
                                 border: InputBorder.none,
                                 hintStyle: TextStyle(
-                                  color: ColorConstant.TWEET_TIME_COLOR,
+                                  // color: ColorConstant.TWEET_TIME_COLOR,
                                   fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
                                 ),
                                 suffixIcon: curReply != null &&
@@ -845,8 +851,8 @@ class TweetDetailState extends State<TweetDetail> {
                               textInputAction: TextInputAction.send,
                               cursorColor: Colors.grey,
                               style: TextStyle(
-                                  fontSize: SizeConstant.TWEET_FONT_SIZE - 1,
-                                  color: ColorConstant.TWEET_REPLY_FONT_COLOR),
+                                fontSize: SizeConstant.TWEET_FONT_SIZE - 1,
+                              ),
                               onSubmitted: (value) {
                                 _sendReply(value);
                               },
@@ -1056,11 +1062,13 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   void hideReplyContainer() {
-    setState(() {
-      _replyContainerHeight = 0;
-      _controller.clear();
-      _focusNode.unfocus();
-    });
+    if (_replyContainerHeight != 0) {
+      setState(() {
+        _replyContainerHeight = 0;
+        _controller.clear();
+        _focusNode.unfocus();
+      });
+    }
   }
 
   _sendReply(String value) {

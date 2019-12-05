@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
+import 'package:iap_app/common-widget/exit_dialog.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/component/bottom_sheet_choic_item.dart';
@@ -19,11 +19,9 @@ import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/fluro_convert_utils.dart';
-import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -84,7 +82,6 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                 _cropAndUpload(provider);
               },
             ),
-
             ClickItem(
                 title: "昵称",
                 content: provider.account.nick,
@@ -101,7 +98,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                       String content = res.toString();
                       if (content.trim().isNotEmpty) {
                         _updateSomething(
-                            AccountEditParam(AccountEditParam.NICK, content),
+                            AccountEditParam(AccountEditKey.NICK, content),
                             (success) {
                           setState(() {
                             provider.account.nick = content;
@@ -126,12 +123,12 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                         Utils.packConvertArgs({
                           'title': '修改签名',
                           'hintText': provider.account.signature ?? '',
-                          'limit': 32
+                          'limit': 64
                         }), (res) {
                   if (!StringUtil.isEmpty(res.toString())) {
                     _updateSomething(
                         AccountEditParam(
-                            AccountEditParam.SIGNATURE, res.toString()),
+                            AccountEditKey.SIGNATURE, res.toString()),
                         (success) {
                       setState(() {
                         provider.account.signature = res.toString();
@@ -142,51 +139,34 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
               },
             ),
             ClickItem(
-              title: '性别',
-              content: provider.account.gender == null
-                  ? Gender.UNKNOWN.zhTag
-                  : genderMap[provider.account.gender].zhTag,
+                title: "公开信息",
+                onTap: () {
+                  NavigatorUtils.push(
+                      context, SettingRouter.accountPrivateInfoPage);
+                }),
+            ClickItem(
+                title: "绑定信息",
+                onTap: () {
+                  NavigatorUtils.push(
+                      context, SettingRouter.accountBindInfoPage);
+                }),
+            InkWell(
               onTap: () {
-                _showAgeChooise();
+                showElasticDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => ExitDialog());
               },
+              child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 20),
+                  width: double.infinity,
+                  child: Center(
+                    child: Text(
+                      "退出登录",
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                  )),
             ),
-            ClickItem(
-              title: '生日',
-              maxLines: 1,
-              content: provider.account.birthDay == null ? "未知" : "",
-              onTap: () {
-                _showCupertinoDatePicker(context, provider);
-
-                // NavigatorUtils.pushResult(
-                //     context,
-                //     Routes.inputTextPage +
-                //         Utils.packConvertArgs({
-                //           'title': '修改签名',
-                //           'hintText': provider.account.signature,
-                //           'limit': 32
-                //         }), (res) {
-                //   provider.account.signature = res.toString();
-                // });
-              },
-            ),
-            ClickItem(
-              title: '年龄',
-              maxLines: 1,
-              content: provider.account.birthDay == null ? "未知" : "",
-              // content: _g,
-            ),
-            ClickItem(
-              title: '地区',
-              maxLines: 1,
-              content: provider.account.birthDay == null ? "未知" : "",
-              // content: _g,
-            ),
-            // ClickItem(
-            //   title: 'QQ',
-            //   maxLines: 1,
-            //   content: provider.account.birthDay == null ? "未绑定" : "",
-            //   // content: _g,
-            // ),
           ],
         ),
       );
@@ -225,7 +205,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
             await OssUtil.uploadImage(file.path, file, toTweet: false);
         if (resultUrl != "-1") {
           Result r = await MemberApi.modAccount(
-              AccountEditParam(AccountEditParam.AVATAR, resultUrl));
+              AccountEditParam(AccountEditKey.AVATAR, resultUrl));
           if (r != null && r.isSuccess) {
             setState(() {
               provider.account.avatarUrl = resultUrl;
@@ -243,7 +223,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   }
 
   Future<void> _updateSomething(AccountEditParam param, final callback) async {
-    Utils.showDefaultLoading(context);
+    Utils.showDefaultLoadingWithBonuds(context, text: "正在更新");
     Result r = await MemberApi.modAccount(param);
     if (r != null && r.isSuccess) {
       callback(true);

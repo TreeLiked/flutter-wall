@@ -10,11 +10,20 @@ class AccountEditParam {
   const AccountEditParam(this.key, this.value);
 
   Map<String, dynamic> toJson() => _$AccountEditParamToJson(this);
+}
 
-  static const String SIGNATURE = "SIGNATURE";
-  static const String NICK = "NICK";
+class AccountEditKey {
   static const String AVATAR = "AVATAR";
+  static const String NICK = "NICK";
+  static const String SIGNATURE = "SIGNATURE";
   static const String NAME = "NAME";
   static const String MOBILE = "MOBILE";
   static const String EMAIL = "EMAIL";
+  static const String GENDER = "GENDER";
+  static const String PROVINCE = "PROVINCE";
+  static const String CITY = "CITY";
+  static const String DISTRICT = "DISTRICT";
+  static const String QQ = "QQ";
+  static const String WECHAT = "WECHAT";
+  static const String BIRTHDAY = "BIRTHDAY";
 }

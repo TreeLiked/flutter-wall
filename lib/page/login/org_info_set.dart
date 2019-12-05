@@ -21,6 +21,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +56,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   }
 
   _finishAll() async {
-    Utils.showDefaultLoadingWithBonuds(context);
+    Utils.showDefaultLoadingWithBonuds(context, text: '正在加载');
     RegTemp.regTemp.orgId = _cId;
     RegTemp rt = RegTemp.regTemp;
     Result res =
@@ -63,6 +64,9 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
     if (res != null && res.isSuccess && res.code == "1") {
       String token = res.message;
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
+      await prefix0.SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, _cId);
+      await prefix0.SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, _cName);
+
       Account acc = await MemberApi.getMyAccount(token);
       AccountLocalProvider accountLocalProvider =
           Provider.of<AccountLocalProvider>(context);
@@ -70,6 +74,8 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
       _loadStorageTweetTypes();
       Application.setAccount(acc);
       Application.setAccountId(acc.id);
+      Application.setOrgId(_cId);
+      Application.setOrgName(_cName);
       NavigatorUtils.goBack(context);
       NavigatorUtils.push(context, Routes.index, clearStack: true);
     } else {
@@ -100,6 +106,9 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                 children: <Widget>[
                   Gaps.vGap16,
                   Container(
+                    color: ThemeUtils.isDark(context)
+                        ? Color(0xff363636)
+                        : Color(0xfff2f2f2),
                     height: ScreenUtil().setHeight(80),
                     margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
                     child: TextField(
@@ -126,8 +135,6 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                           ),
                           filled: true,
                           fillColor: Color(0xfff5f6f7),
-
-                          // enabledBorder: InputBorder(),
                           border: OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 0.0, style: BorderStyle.none),

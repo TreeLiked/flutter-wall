@@ -6,6 +6,7 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/setting_router.dart';
+import 'package:iap_app/util/toast_util.dart';
 
 /// design/8设置/index.html
 class OtherSetting extends StatefulWidget {
@@ -42,6 +43,12 @@ class _OtherSettingState extends State<OtherSetting> {
               content: themeMode,
               onTap: () {
                 NavigatorUtils.push(context, SettingRouter.themePage);
+              }),
+          ClickItem(
+              title: "清除缓存",
+              onTap: () {
+                imageCache.clear();
+                ToastUtil.showToast(context, '清除成功');
               })
         ],
       ),

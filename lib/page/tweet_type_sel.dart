@@ -7,7 +7,6 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -90,18 +89,18 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
                   list.add(k);
                 }
               });
-              await SpUtil.putStringList(
-                  SharedConstant.LOCAL_FILTER_TYPES, list);
-              filterProvider.updateTypeNames();
+              if (widget.multi) {
+                await SpUtil.putStringList(
+                    SharedConstant.LOCAL_FILTER_TYPES, list);
+                filterProvider.updateTypeNames();
+              }
+
               Navigator.pop(context);
-              widget.callback();
+              widget.callback(list);
             },
-            icon: Padding(
-              padding: EdgeInsets.only(right: 3),
-              child: Text(widget.finishText,
-                  style: TextStyle(
-                      color: Theme.of(context).textTheme.title.color)),
-            ),
+            icon: Text(widget.finishText,
+                style:
+                    TextStyle(color: Theme.of(context).textTheme.title.color)),
           )
         ],
       ),

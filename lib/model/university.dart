@@ -7,6 +7,7 @@ class University {
   int id;
   String name;
   String enAbbr;
+  int orgId;
 
   University();
 

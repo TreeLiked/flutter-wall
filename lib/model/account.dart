@@ -1,3 +1,4 @@
+import 'package:iap_app/model/account/account_profile.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'account.g.dart';
 
@@ -24,6 +25,8 @@ class Account {
 
   String qq;
   String weixin;
+
+  AccountProfile profile;
 
   Account();
 

@@ -43,7 +43,7 @@ class GalleryPhotoViewWrapper extends StatefulWidget {
 }
 
 class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin<GalleryPhotoViewWrapper> {
   int currentIndex;
 
   @override
@@ -159,7 +159,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
                               ),
                             ),
                             child: Text(
-                                '${currentIndex + 1} / ${widget.galleryItems.length}',
+                                widget.galleryItems.length != 1
+                                    ? '${currentIndex + 1} / ${widget.galleryItems.length}'
+                                    : '',
                                 style: TextStyle(
                                     color: Colors.white70, fontSize: 16)),
                           ),

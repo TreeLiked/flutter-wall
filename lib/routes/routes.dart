@@ -59,6 +59,8 @@ class Routes {
     router.define(home, handler: homeHandler);
 
     router.define(create, handler: createHandler);
+    // router.define(filter, handler: fi);
+
     router.define(inputTextPage, handler: inputPageHander);
 
     router.define(cardToGallery, handler: galleryViewHandler);

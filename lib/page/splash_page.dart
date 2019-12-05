@@ -2,17 +2,19 @@ import 'dart:async';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
 import 'package:iap_app/api/member.dart';
+import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/index/index.dart';
+import 'package:iap_app/model/university.dart';
+import 'package:iap_app/page/index/index.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/log_utils.dart';
 import 'package:provider/provider.dart';
@@ -62,18 +64,39 @@ class _SplashPageState extends State<SplashPage> {
       if (storageToken == '') {
         _goLogin();
       } else {
-        // SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, "");
-
-        MemberApi.getMyAccount(storageToken).then((acc) {
+        await MemberApi.getMyAccount(storageToken).then((acc) async {
           if (acc == null) {
             _goLogin();
           } else {
             AccountLocalProvider accountLocalProvider =
                 Provider.of<AccountLocalProvider>(context);
             accountLocalProvider.setAccount(acc);
+
             print(accountLocalProvider.account.toJson());
             Application.setAccount(acc);
             Application.setAccountId(acc.id);
+
+            int orgId =
+                SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
+            String orgName =
+                SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
+            if (orgId == -1 || orgName == "") {
+              University university =
+                  await UniversityApi.queryUnis(storageToken);
+              if (university == null) {
+                // 错误，有账户无组织
+                print("ERROR , ------------");
+              } else {
+                SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
+                SpUtil.putString(
+                    SharedConstant.LOCAL_ORG_NAME, university.name);
+                Application.setOrgName(university.name);
+                Application.setOrgId(university.id);
+              }
+            } else {
+              Application.setOrgId(orgId);
+              Application.setOrgName(orgName);
+            }
             setState(() {
               _status = 1;
             });
@@ -98,6 +121,9 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)
       ..init(context);
+    Application.screenWidth = prefix0.ScreenUtil.screenWidthDp;
+    Application.screenHeight = prefix0.ScreenUtil.screenHeightDp;
+
     return Material(
         child: _status == 0
             ? Image.asset(

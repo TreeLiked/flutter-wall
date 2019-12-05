@@ -9,14 +9,16 @@ class InputTextPage extends StatefulWidget {
     this.content,
     this.hintText,
     this.limit = 16,
-    this.keyboardType: TextInputType.text,
+    this.showLimit = true,
+    this.keyboardType = 0,
   }) : super(key: key);
 
   final String title;
   final String content;
   final String hintText;
   final int limit;
-  final TextInputType keyboardType;
+  final bool showLimit;
+  final int keyboardType;
 
   @override
   _InputTextPageState createState() => _InputTextPageState();
@@ -46,11 +48,17 @@ class _InputTextPageState extends State<InputTextPage> {
             top: 21.0, left: 16.0, right: 16.0, bottom: 16.0),
         child: TextField(
             maxLength: widget.limit,
+            maxLengthEnforced: widget.showLimit,
             maxLines: 5,
             autofocus: true,
             controller: _controller,
-            keyboardType: widget.keyboardType,
+            keyboardType: widget.keyboardType == 0
+                ? TextInputType.text
+                : TextInputType.phone,
+            keyboardAppearance: Theme.of(context).brightness,
+
             //style: TextStyles.textDark14,
+
             decoration: InputDecoration(
               hintText: widget.hintText,
               border: InputBorder.none,

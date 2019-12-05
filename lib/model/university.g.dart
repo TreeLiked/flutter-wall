@@ -10,12 +10,14 @@ University _$UniversityFromJson(Map<String, dynamic> json) {
   return University()
     ..id = json['id'] as int
     ..name = json['name'] as String
-    ..enAbbr = json['enAbbr'] as String;
+    ..enAbbr = json['enAbbr'] as String
+    ..orgId = json['orgId'] as int;
 }
 
 Map<String, dynamic> _$UniversityToJson(University instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'enAbbr': instance.enAbbr
+      'enAbbr': instance.enAbbr,
+      'orgId': instance.orgId
     };

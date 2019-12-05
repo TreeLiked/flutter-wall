@@ -101,8 +101,7 @@ class ClickItemCommon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: InkWell(
+    return InkWell(
       onTap: onTap,
       child: Container(
         // margin: const EdgeInsets.only(left: 15.0),
@@ -114,7 +113,7 @@ class ClickItemCommon extends StatelessWidget {
           border: Border(
             bottom: Divider.createBorderSide(context, width: 0.6),
           ),
-          color: Theme.of(context).scaffoldBackgroundColor,
+          // color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: Row(
           //为了数字类文字居中
@@ -146,6 +145,6 @@ class ClickItemCommon extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    );
   }
 }

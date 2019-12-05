@@ -18,8 +18,6 @@ import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class TweetApi {
-  // TODO 401 未认证检测
-
   static Future<List<BaseTweet>> queryTweets(
       PageParam param, String accountId) async {
     print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY);

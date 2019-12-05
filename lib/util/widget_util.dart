@@ -15,13 +15,20 @@ class WidgetUtil {
         height: size,
       );
     } else {
-      return GestureDetector(
-          onTap: () => callback(),
-          child: Image.asset(
-            path,
-            width: size,
-            height: size,
-          ));
+      return Container(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            child: GestureDetector(
+                onTap: () => callback(),
+                child: Image.asset(
+                  path,
+                  width: size,
+                  height: size,
+                )),
+          ),
+        ),
+      );
     }
   }
 
@@ -89,6 +96,35 @@ class LoadAssetImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.asset(
       ImageUtils.getImgPath(image, format: format),
+      height: height,
+      width: width,
+      fit: fit,
+      color: color,
+    );
+  }
+}
+
+class LoadAssetIcon extends StatelessWidget {
+  const LoadAssetIcon(this.image,
+      {Key key,
+      this.width,
+      this.height,
+      this.fit,
+      this.format: 'png',
+      this.color})
+      : super(key: key);
+
+  final String image;
+  final double width;
+  final double height;
+  final BoxFit fit;
+  final String format;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      ImageUtils.getIconPath(image, format: format),
       height: height,
       width: width,
       fit: fit,

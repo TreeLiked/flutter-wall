@@ -15,7 +15,7 @@ final tweetTypeMap = {
   "HELP_AND_REWARD": TweetTypeEntity.HELP_AND_REWARD,
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
   "OTHER": TweetTypeEntity.OTHER,
-  "OFFICAL": TweetTypeEntity.OFFICAL,
+  "OFFICAL": TweetTypeEntity.OFFICIAL,
 };
 
 class TweetTypeUtil {
@@ -138,14 +138,14 @@ class TweetTypeEntity {
       zhTag: "二手交易");
 
   static const OTHER = const TweetTypeEntity(
-      iconData: Icons.local_offer,
+      iconData: Icons.face,
       iconColor: Colors.black,
       intro: "没有别的就选这个吧！",
       name: "OTHER",
       color: Colors.black,
       zhTag: "其他");
 
-  static const OFFICAL = const TweetTypeEntity(
+  static const OFFICIAL = const TweetTypeEntity(
       iconData: Icons.check_circle,
       iconColor: Color(0xff000080),
       name: "OTHER",

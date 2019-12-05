@@ -93,7 +93,7 @@ class _CreatePageState extends State<CreatePage>
   }
 
   void _assembleAndPushTweet() async {
-    Utils.showDefaultLoading(context);
+    Utils.showDefaultLoadingWithBonuds(context, text: '正在发布');
     _focusNode.unfocus();
     setState(() {
       this._isPushBtnEnabled = false;
@@ -423,6 +423,7 @@ class _CreatePageState extends State<CreatePage>
                     // ),
                     Container(
                       child: TextField(
+                        keyboardAppearance: Theme.of(context).brightness,
                         controller: _controller,
                         focusNode: _focusNode,
                         cursorColor: Colors.blue,

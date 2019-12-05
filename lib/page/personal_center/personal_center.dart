@@ -255,22 +255,22 @@ class PersonCenterState extends State<PersonalCenter>
                                   context, SettingRouter.aboutPage),
                             )
                           ]),
-                          _getGroupSetting([
-                            _getSettingItem(
-                              ListTile(
-                                title: Text(
-                                  "退出登录",
-                                  style: TextStyle(color: Colors.redAccent),
-                                ),
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (_) => ExitDialog());
-                                },
-                              ),
-                            ),
-                          ])
+                          // _getGroupSetting([
+                          //   _getSettingItem(
+                          //     ListTile(
+                          //       title: Text(
+                          //         "退出登录",
+                          //         style: TextStyle(color: Colors.redAccent),
+                          //       ),
+                          //       onTap: () {
+                          //         showDialog(
+                          //             context: context,
+                          //             barrierDismissible: false,
+                          //             builder: (_) => ExitDialog());
+                          //       },
+                          //     ),
+                          //   ),
+                          // ])
                         ],
                       ),
                     ),
@@ -344,49 +344,4 @@ class PersonCenterState extends State<PersonalCenter>
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class PrivateSetting extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return PrivateSettingState();
-  }
-}
-
-class PrivateSettingState extends State<PrivateSetting> {
-  bool _displayTwwet = false;
-  bool _displayGender;
-  bool _displayLoc;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyAppBar(
-        title: '隐私设置',
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            SwitchItem(
-              title: '展示历史推文',
-              initBool: _displayTwwet,
-              onTap: (val) {
-                setState(() {
-                  this._displayTwwet = val;
-                });
-              },
-            ),
-            SwitchItem(
-              title: '展示我的社交联系方式',
-              initBool: _displayTwwet,
-            ),
-            SwitchItem(
-              title: '展示我的地区',
-              initBool: _displayTwwet,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

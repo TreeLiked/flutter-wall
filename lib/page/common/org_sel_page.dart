@@ -133,6 +133,7 @@ class _OrgChoosePageState extends State<OrgChoosePage> {
               height: ScreenUtil().setHeight(80),
               margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
               child: TextField(
+                keyboardAppearance: Theme.of(context).brightness,
                 controller: _controller,
                 decoration: InputDecoration(
                     hintText: widget._hintText,

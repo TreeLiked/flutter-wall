@@ -6,6 +6,7 @@ import 'package:iap_app/api/api.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
+import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 
@@ -34,8 +35,33 @@ class MemberApi {
     return null;
   }
 
+  static Future<Account> getAccountProfile(String accountId) async {
+    print(Api.API_QUERY_ACCOUNT_PROFILE + '-------------------');
+    String token = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+    Response response;
+    try {
+      if (httpUtil2.options.headers.containsKey("Authorization")) {
+        httpUtil2.options.headers.update('Authorization', (_) => token);
+      } else {
+        httpUtil2.options.headers.putIfAbsent('Authorization', () => token);
+      }
+      response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_PROFILE);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
+      dynamic json2 = json["data"];
+      if (json2 == null) {
+        return null;
+      }
+      Account account = Account.fromJson(json2);
+      return account;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
   static Future<Result> modAccount(AccountEditParam param) async {
-    String token = await SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+    String token = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
     Response response;
     try {
       if (httpUtil2.options.headers.containsKey("Authorization")) {

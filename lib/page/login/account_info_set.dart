@@ -143,6 +143,11 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Gaps.vGap16,
 
           Center(
+              child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 2, color: Colors.white),
+              borderRadius: BorderRadius.all((Radius.circular(50))),
+            ),
             child: ClipOval(
               child: GestureDetector(
                 onTap: _goChoiceAvatar,
@@ -164,16 +169,14 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                 ),
               ),
             ),
-          ),
-
-          Gaps.vGap16,
-          Gaps.vGap16,
-
+          )),
+          Gaps.vGap30,
           MyTextField(
             focusNode: _nodeText1,
             config: Utils.getKeyboardActionsConfig(context, [
               _nodeText1,
             ]),
+
             controller: _nickController,
             maxLength: 15,
             keyboardType: TextInputType.text,

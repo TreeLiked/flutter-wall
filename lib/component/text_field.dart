@@ -110,6 +110,7 @@ class _MyTextFieldState extends State<MyTextField> {
       alignment: Alignment.centerRight,
       children: <Widget>[
         TextField(
+          keyboardAppearance: Theme.of(context).brightness,
           focusNode: widget.focusNode,
           maxLength: widget.maxLength,
           obscureText: widget.isInputPwd ? !_isShowPwd : false,
@@ -144,7 +145,7 @@ class _MyTextFieldState extends State<MyTextField> {
                 ? Gaps.empty
                 : GestureDetector(
                     child: LoadAssetImage(
-                      "login/qyg_shop_icon_delete",
+                      "icon_delete",
                       key: Key('${widget.keyName}_delete'),
                       width: 18.0,
                       height: 18.0,

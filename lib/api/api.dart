@@ -41,6 +41,12 @@ class Api {
   static const String API_QUERY_ACCOUNT_PROFILE =
       API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
 
+  static const String API_QUERY_ACCOUNT_SETTING =
+      API_BASE_MEMBER_URL + "/account/getSettings.json";
+
+  static const String API_UPDATE_ACCOUNT_SETTING =
+      API_BASE_MEMBER_URL + "/account/edit/setting.do";
+
   static const String API_ACCOUNT_MOD_BASIC =
       API_BASE_MEMBER_URL + "/account/edit/basic.do";
 

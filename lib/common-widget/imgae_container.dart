@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class ImageCoatainer extends StatelessWidget {
   final String url;
@@ -33,10 +35,16 @@ class ImageCoatainer extends StatelessWidget {
           child: CachedNetworkImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-                padding: EdgeInsets.all(10),
-                child: Image.asset(PathConstant.IAMGE_HOLDER)),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            placeholder: (context, url) => LoadAssetImage(
+              PathConstant.IAMGE_HOLDER,
+              width: Application.screenWidth * 0.25,
+              height: Application.screenWidth * 0.25,
+            ),
+            errorWidget: (context, url, error) => LoadAssetImage(
+              PathConstant.IAMGE_FAILED,
+              width: Application.screenWidth * 0.25,
+              height: Application.screenWidth * 0.25,
+            ),
           ),
         ));
   }

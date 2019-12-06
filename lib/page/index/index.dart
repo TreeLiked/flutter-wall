@@ -83,7 +83,7 @@ class _IndexState extends State<Index>
           icon: Icon(Icons.notifications, size: 20, color: Colors.grey),
           title: Container(
             child: MyDefaultTextStyle.getBottomNavTextItem(
-                '通知', Colors.yellow.shade900),
+                '消息', Colors.yellow.shade900),
           ),
           selColor: Colors.yellow.shade900,
           vsync: this),

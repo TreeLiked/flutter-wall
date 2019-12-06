@@ -13,7 +13,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        centerTitle: '通知',
+        centerTitle: '消息',
         isBack: false,
       ),
     );

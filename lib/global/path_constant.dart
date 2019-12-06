@@ -1,11 +1,11 @@
 class PathConstant {
   static const String LOADING_GIF = "assets/gifs/loading.gif";
 
-  static const String IAMGE_HOLDER = "assets/images/img_holder.png";
+  static const String IAMGE_HOLDER = "img_holder";
   static const String AVATAR_HOLDER = "assets/images/avatar_holder.png";
 
-  static const String IAMGE_FAILED = "assets/images/img_failed.png";
-  static const String AVATAR_FAILED = "assets/images/avatar_failed.png";
+  static const String IAMGE_FAILED = "img_failed";
+  static const String AVATAR_FAILED = "avatar_failed";
 
   static const String ICON_CHECKBOX_SEL = "assets/icons/cbx_ck.png";
   static const String ICON_CHECKBOX_UNSEL = "assets/icons/cbx_uck.png";

@@ -636,10 +636,10 @@ class TweetDetailState extends State<TweetDetail> {
             filterQuality: FilterQuality.high,
             imageUrl: "$url${OssConstant.THUMBNAIL_SUFFIX}",
             fit: BoxFit.cover,
-            placeholder: (context, url) => SizedBox(
-                height: Application.screenWidth * 0.25,
+            placeholder: (context, url) => LoadAssetImage(
+                PathConstant.IAMGE_HOLDER,
                 width: Application.screenWidth * 0.25,
-                child: Image.asset(PathConstant.IAMGE_HOLDER)),
+                height: Application.screenWidth * 0.25),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         ));
@@ -655,10 +655,10 @@ class TweetDetailState extends State<TweetDetail> {
             filterQuality: FilterQuality.high,
             imageUrl: url + OssConstant.THUMBNAIL_SUFFIX,
             fit: BoxFit.cover,
-            placeholder: (context, url) => SizedBox(
-                height: Application.screenWidth * 0.25,
+            placeholder: (context, url) => LoadAssetImage(
+                PathConstant.IAMGE_HOLDER,
                 width: Application.screenWidth * 0.25,
-                child: Image.asset(PathConstant.IAMGE_HOLDER)),
+                height: Application.screenWidth * 0.25),
             errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         )));

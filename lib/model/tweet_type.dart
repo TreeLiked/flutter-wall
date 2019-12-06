@@ -15,7 +15,7 @@ final tweetTypeMap = {
   "HELP_AND_REWARD": TweetTypeEntity.HELP_AND_REWARD,
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
   "OTHER": TweetTypeEntity.OTHER,
-  "OFFICAL": TweetTypeEntity.OFFICIAL,
+  "OFFICIAL": TweetTypeEntity.OFFICIAL,
 };
 
 class TweetTypeUtil {

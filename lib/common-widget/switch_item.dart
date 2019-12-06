@@ -41,6 +41,7 @@ class SwitchItem extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Switch.adaptive(
                 value: this.initBool,
+                activeColor: Theme.of(context).primaryColor,
                 onChanged: (bool val) {
                   onTap(val);
                 },

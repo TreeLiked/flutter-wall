@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/component/tweet_card.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/util/collection.dart';
@@ -25,9 +24,10 @@ class Recommendation extends StatefulWidget {
 }
 
 class RecommendationState extends State<Recommendation>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin<Recommendation> {
   List<BaseTweet> children;
 
+  List<Widget> widgets;
   /*
    * 中转回调
    */
@@ -54,6 +54,7 @@ class RecommendationState extends State<Recommendation>
           } else {
             children.addAll(tweets);
           }
+          _buildWidgets();
         });
       } else {
         if (children != null) {
@@ -61,6 +62,7 @@ class RecommendationState extends State<Recommendation>
         }
         setState(() {
           this.children = tweets;
+          _buildWidgets();
         });
       }
     } else {
@@ -69,17 +71,15 @@ class RecommendationState extends State<Recommendation>
       }
       setState(() {
         this.children = List();
+        _buildWidgets();
       });
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    print('recom build');
-    List<Widget> widgets = [];
+  _buildWidgets() {
+    List<Widget> temp = List();
     if (!CollectionUtil.isListEmpty(children)) {
-      widgets = children
+      temp = children
           .map((f) => TweetCard(
                 f,
                 callback: (TweetReply tr, String destAccountNick,
@@ -88,12 +88,19 @@ class RecommendationState extends State<Recommendation>
                         tr, destAccountNick, destAccountId, callback),
               ))
           .toList();
+      widgets = temp;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    print('recom build');
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
-          child: children == null
+          child: widgets == null
               ? (Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[WidgetUtil.getLoadingAnimiation()],
@@ -117,14 +124,15 @@ class RecommendationState extends State<Recommendation>
                               width: MediaQuery.of(context).size.width * 0.25,
                             ),
                           ),
-                          // Container(
-                          //   margin: EdgeInsets.only(top: 10),
-                          //   child: Text(
-                          //     '没有更多数据了',
-                          //     style: TextStyle(
-                          //         color: ColorConstant.TWEET_REPLY_FONT_COLOR),
-                          //   ),
-                          // )
+                          Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Text(
+                                  '点击重新加载',
+                                  style: TextStyle(color: Colors.blueAccent),
+                                ),
+                              ))
                         ],
                       ),
                     ))),

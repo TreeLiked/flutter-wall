@@ -11,6 +11,8 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class MemberApi {
+  static String localAccountToken =
+      SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
   static Future<Account> getMyAccount(String token) async {
     print(Api.API_QUERY_ACCOUNT + '-------------------');
     Response response;
@@ -163,5 +165,59 @@ class MemberApi {
       Api.formatError(e);
     }
     return null;
+  }
+
+  static Future<Map<String, dynamic>> getAccountSetting() async {
+    print(Api.API_QUERY_ACCOUNT_SETTING + '-------------------');
+    checkAuthorizationHeaders();
+    Response response;
+    try {
+      response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_SETTING);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      dynamic json2 = json["data"];
+      if (json2 == null || json['isSuccess'] == false) {
+        return null;
+      }
+      Map<String, dynamic> settingMap = Api.convertResponse(json2);
+      print(settingMap);
+      return settingMap;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<Result> updateAccountSetting(String key, String value) async {
+    Response response;
+    checkAuthorizationHeaders();
+    print(Api.API_UPDATE_ACCOUNT_SETTING + "-------------------");
+    try {
+      var data = {"key": key, "value": value};
+      response =
+          await httpUtil2.dio.post(Api.API_UPDATE_ACCOUNT_SETTING, data: data);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static void checkAuthorizationHeaders() {
+    bool update = false;
+    if (localAccountToken == null || localAccountToken == "") {
+      update = true;
+      localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+    }
+    if (httpUtil2.options.headers.containsKey("Authorization")) {
+      if (update) {
+        httpUtil2.options.headers
+            .update('Authorization', (_) => localAccountToken);
+      }
+    } else {
+      httpUtil2.options.headers
+          .putIfAbsent('Authorization', () => localAccountToken);
+    }
   }
 }

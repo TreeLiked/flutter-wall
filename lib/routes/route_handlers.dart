@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
+import 'package:iap_app/page/account_profile.dart';
 import 'package:iap_app/page/create_page.dart';
 import 'package:iap_app/page/home_page.dart';
 import 'package:iap_app/page/index/index.dart';
@@ -73,6 +74,18 @@ var inputPageHander = Handler(
     showLimit: showLimit,
     keyboardType: keyboardType,
   );
+});
+
+var accountProfileHander = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  String nick = params['nick'] == null
+      ? ""
+      : FluroConvertUtils.fluroCnParamsDecode(params['nick'].first);
+  String accountId = params['accId'] == null
+      ? ""
+      : FluroConvertUtils.fluroCnParamsDecode(params['accId'].first);
+
+  return AccountProfilePage(accountId, nick);
 });
 
 var galleryViewHandler = Handler(

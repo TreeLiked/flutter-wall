@@ -46,10 +46,12 @@ class AccountAvatar extends StatelessWidget {
                       width: double.infinity,
                       height: double.infinity,
                       fit: BoxFit.cover,
-                      errorWidget: (context, url, error) => WidgetUtil.getAsset(
-                          PathConstant.AVATAR_FAILED,
-                          size: SizeConstant.TWEET_PROFILE_SIZE + 1),
-                    )),
+                      errorWidget: (context, url, error) => LoadAssetImage(
+                            PathConstant.IAMGE_FAILED,
+                            width: SizeConstant.TWEET_PROFILE_SIZE,
+                            height: SizeConstant.TWEET_PROFILE_SIZE,
+                            fit: BoxFit.fitHeight,
+                          ))),
         )
         // child: GestureDetector(
         //   onTap: onTap,

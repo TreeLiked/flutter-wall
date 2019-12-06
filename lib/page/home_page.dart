@@ -520,8 +520,8 @@ class _HomePageState extends State<HomePage>
                   textColor: Theme.of(context).textTheme.body1.color,
                   onPressed: () {
                     NavigatorUtils.goBack(context);
-                    Application.router.navigateTo(context, Routes.create,
-                        transition: TransitionType.fadeIn);
+                    NavigatorUtils.push(context, Routes.create,
+                        transitionType: TransitionType.fadeIn);
                   },
                   color: backgroundColor,
                   shape: RoundedRectangleBorder(

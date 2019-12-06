@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
-import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -17,13 +15,14 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
@@ -39,8 +38,6 @@ class TweetCard extends StatefulWidget {
 
   BaseTweet tweet;
 
-  TweetCardState s;
-
   final callback;
 
   TweetCard(BaseTweet tweet, {this.callback}) {
@@ -50,20 +47,22 @@ class TweetCard extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    s = TweetCardState();
-    return s;
+    return _TweetCardState(tweet);
   }
 }
 
-class TweetCardState extends State<TweetCard> {
+class _TweetCardState extends State<TweetCard>
+    with AutomaticKeepAliveClientMixin<TweetCard> {
   BaseTweet tweet;
 
   double sw;
   double sh;
   double maxWidthSinglePic;
-
   double _imgRightPadding = 1.5;
 
+  _TweetCardState(BaseTweet tweet) {
+    this.tweet = tweet;
+  }
   @override
   void initState() {
     super.initState();
@@ -132,23 +131,26 @@ class TweetCardState extends State<TweetCard> {
         child: CachedNetworkImage(
           filterQuality: FilterQuality.medium,
           imageUrl: url,
-          placeholder: (context, url) => SizedBox(
-              // padding: EdgeInsets.all(50),
-              height: Application.screenWidth * 0.25,
+          placeholder: (context, url) => LoadAssetImage(
+              PathConstant.IAMGE_HOLDER,
               width: Application.screenWidth * 0.25,
-              child: Image.asset(PathConstant.IAMGE_HOLDER)),
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => Icon(Icons.error),
+              height: Application.screenWidth * 0.25),
+          errorWidget: (context, url, error) => LoadAssetImage(
+              PathConstant.IAMGE_FAILED,
+              width: Application.screenWidth * 0.25,
+              height: Application.screenWidth * 0.25),
         ),
       ),
     );
   }
 
   void open(BuildContext context, final int index) {
+    // print('===========');
     Utils.openPhotoView(context, widget.tweet.picUrls, index);
   }
 
-  Widget _bodyContainer(String body) {
+  Widget _bodyContainer(BaseTweet tweet) {
+    String body = tweet.body;
     return !StringUtil.isEmpty(body)
         ? Container(
             padding: EdgeInsets.only(top: 10),
@@ -243,14 +245,18 @@ class TweetCardState extends State<TweetCard> {
   }
 
   Widget _profileContainer(String profileUrl) {
-    return Container(
-        margin: EdgeInsets.only(right: 10),
-        child: AccountAvatar(
-          avatarUrl: !tweet.anonymous
-              ? (profileUrl ?? PathConstant.ANONYMOUS_PROFILE)
-              : PathConstant.ANONYMOUS_PROFILE,
-          size: SizeConstant.TWEET_PROFILE_SIZE,
-        ));
+    return GestureDetector(
+        onTap: () => tweet.anonymous
+            ? null
+            : goAccountDetail(tweet.account.id, tweet.account.nick),
+        child: Container(
+            margin: EdgeInsets.only(right: 10),
+            child: AccountAvatar(
+              avatarUrl: !tweet.anonymous
+                  ? (profileUrl ?? '')
+                  : PathConstant.ANONYMOUS_PROFILE,
+              size: SizeConstant.TWEET_PROFILE_SIZE,
+            )));
   }
 
   Widget _nickContainer(String nickName) {
@@ -265,14 +271,18 @@ class TweetCardState extends State<TweetCard> {
                 context, SizeConstant.TWEET_NICK_SIZE,
                 anonymous: true, bold: true),
           ))
-        : Container(
-            child: Text(
-              nickName ?? "",
-              style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                  context, SizeConstant.TWEET_NICK_SIZE,
-                  bold: true),
-            ),
-          );
+        : GestureDetector(
+            onTap: () => tweet.anonymous
+                ? null
+                : goAccountDetail(tweet.account.id, tweet.account.nick),
+            child: Container(
+              child: Text(
+                nickName ?? "",
+                style: MyDefaultTextStyle.getTweetHeadNickStyle(
+                    context, SizeConstant.TWEET_NICK_SIZE,
+                    bold: true),
+              ),
+            ));
   }
 
   Widget _timeContainer(DateTime dt) {
@@ -345,7 +355,7 @@ class TweetCardState extends State<TweetCard> {
                 Padding(
                     padding: EdgeInsets.only(right: 10),
                     child: Text(
-                      '${tweet.views}次浏览,  ${tweet.praise}人觉得很赞',
+                      '${tweet.views}次浏览 , ${tweet.praise}人觉得很赞',
                       style: TextStyle(
                           fontSize: SizeConstant.TWEET_EXTRA_SIZE,
                           color: ColorConstant.getTweetSigColor(context)),
@@ -415,7 +425,7 @@ class TweetCardState extends State<TweetCard> {
                 MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                goAccountDetail();
+                goAccountDetail(account.id, account.nick);
               }));
       }
 
@@ -444,7 +454,12 @@ class TweetCardState extends State<TweetCard> {
         ));
   }
 
-  void goAccountDetail() {}
+  void goAccountDetail(String accountId, String nick) {
+    NavigatorUtils.push(
+        context,
+        Routes.accountProfile +
+            Utils.packConvertArgs({'nick': nick, 'accId': accountId}));
+  }
 
   Widget _commentContainer() {
     if (tweet.enableReply) {
@@ -577,6 +592,7 @@ class TweetCardState extends State<TweetCard> {
     // if (!replyAuthor) {
 
     return Container(
+        width: double.infinity,
         padding: EdgeInsets.only(bottom: 5),
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -597,6 +613,13 @@ class TweetCardState extends State<TweetCard> {
                 softWrap: true,
                 text: TextSpan(children: [
                   TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          if (!dirReplyAnonymous) {
+                            goAccountDetail(
+                                reply.account.id, reply.account.nick);
+                          }
+                        },
                       text: dirReplyAnonymous
                           ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK
                           : accNick,
@@ -610,6 +633,13 @@ class TweetCardState extends State<TweetCard> {
                       style: TextStyle(
                           color: Theme.of(context).textTheme.subtitle.color)),
                   TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          if (replyAuthor && authorAnonymous) {
+                            goAccountDetail(
+                                reply.account.id, reply.account.nick);
+                          }
+                        },
                       text: reply.type == 2 ? tarNick : '',
                       style: replyAuthor && authorAnonymous
                           ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
@@ -623,18 +653,19 @@ class TweetCardState extends State<TweetCard> {
                         fontSize: Dimens.font_sp14),
                   ),
                   TextSpan(
-                      text: reply.body,
-                      style: TextStyle(
-                          color: !ThemeUtils.isDark(context)
-                              ? Theme.of(context).textTheme.subhead.color
-                              : ColorConstant.TWEET_TIME_COLOR_DARK,
-                          fontSize: Dimens.font_sp14,
-                          fontWeight: FontWeight.w400),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Utils.copyTextToClipBoard(reply.body);
-                          ToastUtil.showToast(context, '内容已复制到粘贴板');
-                        }),
+                    text: reply.body,
+                    style: TextStyle(
+                        color: !ThemeUtils.isDark(context)
+                            ? Theme.of(context).textTheme.subhead.color
+                            : ColorConstant.TWEET_TIME_COLOR_DARK,
+                        fontSize: Dimens.font_sp14,
+                        fontWeight: FontWeight.w400),
+                    // recognizer: MultiTapGestureRecognizer()
+                    //   ..onLongTapDown = (_, __) {
+                    //     Utils.copyTextToClipBoard(reply.body);
+                    //     ToastUtil.showToast(context, '内容已复制到粘贴板');
+                    // }
+                  ),
                 ]),
               ),
             ],
@@ -736,7 +767,7 @@ class TweetCardState extends State<TweetCard> {
                               ],
                             ),
                           ),
-                          _bodyContainer(tweet.body),
+                          _bodyContainer(tweet),
                           _picContainer(),
                           _extraContainer(),
                           _praiseContainer(),
@@ -757,16 +788,17 @@ class TweetCardState extends State<TweetCard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     print('tweet card build');
     sw = Application.screenWidth;
-    sh = MediaQuery.of(context).size.height;
+    sh = Application.screenHeight;
 
     maxWidthSinglePic = sw * 0.75;
 
     setState(() {
       this.tweet = widget.tweet;
     });
-    return tweet != null && tweet.account != null
+    return widget.tweet != null && widget.tweet.account != null
         ? Container(
             child: Column(
               children: <Widget>[
@@ -828,4 +860,7 @@ class TweetCardState extends State<TweetCard> {
       }
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

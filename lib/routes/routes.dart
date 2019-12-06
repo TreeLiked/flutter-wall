@@ -34,6 +34,8 @@ class Routes {
   static String cardToGallery = "/home/cardTogallery";
   static String detailToGallery = "/home/card/detailTogallery";
 
+  static String accountProfile = "/home/accountProfile";
+
   static String orgChoose = "/foo/orgChoose";
 
   static List<IRouterProvider> _listRouter = [];
@@ -59,7 +61,7 @@ class Routes {
     router.define(home, handler: homeHandler);
 
     router.define(create, handler: createHandler);
-    // router.define(filter, handler: fi);
+    router.define(accountProfile, handler: accountProfileHander);
 
     router.define(inputTextPage, handler: inputPageHander);
 

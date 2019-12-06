@@ -71,14 +71,14 @@ class Utils {
               height: ScreenUtil().setWidth(200),
               child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(11),
+                    borderRadius: BorderRadius.circular(8),
                     color: ThemeUtils.isDark(context)
                         ? Colors.black87
-                        : Colors.white70,
+                        : Colors.white,
                   ),
                   alignment: Alignment.center,
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: _renderLoadingList(size, text))),
             )),
           );
@@ -88,7 +88,8 @@ class Utils {
   static List<Widget> _renderLoadingList(double size, String text) {
     List<Widget> list = new List();
     list.add(
-      SpinKitChasingDots(color: Color(0xff00BFFF), size: size),
+      CupertinoActivityIndicator(),
+      // SpinKitChasingDots(color: Color(0xff00BFFF), size: size),
     );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(

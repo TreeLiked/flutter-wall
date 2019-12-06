@@ -53,14 +53,16 @@ class WidgetUtil {
 
   static Widget getLoadingAnimiation({double size = 140}) {
     return Container(
-        height: size,
-        width: size,
-        margin: EdgeInsets.only(top: ScreenUtil().setHeight(50)),
-        child: FlareActor(
-          PathConstant.FLARE_LOADING_ROUND,
-          fit: BoxFit.cover,
-          animation: 'idle',
-        ));
+      height: size,
+      width: size,
+      margin: EdgeInsets.only(top: ScreenUtil().setHeight(30)),
+      // child: FlareActor(
+      //   PathConstant.FLARE_LOADING_ROUND,
+      //   fit: BoxFit.cover,
+      //   animation: 'idle',
+      // )
+      child: CupertinoActivityIndicator(),
+    );
   }
 
   static Widget getLoadingGif({double size = 60}) {
@@ -80,7 +82,7 @@ class LoadAssetImage extends StatelessWidget {
       {Key key,
       this.width,
       this.height,
-      this.fit,
+      this.fit = BoxFit.cover,
       this.format: 'png',
       this.color})
       : super(key: key);

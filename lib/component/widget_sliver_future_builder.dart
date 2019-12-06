@@ -47,7 +47,7 @@ class _CustomFutureBuilderState<T> extends State<CustomSliverFutureBuilder<T>> {
   @override
   Widget build(BuildContext context) {
     return _future == null
-        ? SliverToBoxAdapter(
+        ? Align(
             child: Container(
               alignment: Alignment.center,
               height: ScreenUtil().setWidth(200),
@@ -61,7 +61,7 @@ class _CustomFutureBuilderState<T> extends State<CustomSliverFutureBuilder<T>> {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                 case ConnectionState.active:
-                  return SliverToBoxAdapter(
+                  return Align(
                     child: Container(
                       alignment: Alignment.center,
                       height: ScreenUtil().setWidth(200),

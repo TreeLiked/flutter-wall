@@ -55,7 +55,7 @@ class WidgetUtil {
     return Container(
       height: size,
       width: size,
-      margin: EdgeInsets.only(top: ScreenUtil().setHeight(30)),
+      margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(30)),
       // child: FlareActor(
       //   PathConstant.FLARE_LOADING_ROUND,
       //   fit: BoxFit.cover,

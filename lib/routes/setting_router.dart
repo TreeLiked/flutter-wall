@@ -4,6 +4,7 @@ import 'package:iap_app/page/personal_center/about_page.dart';
 import 'package:iap_app/page/personal_center/account_bind.dart';
 import 'package:iap_app/page/personal_center/account_info.dart';
 import 'package:iap_app/page/personal_center/account_public_info.dart';
+import 'package:iap_app/page/personal_center/history_push.dart';
 import 'package:iap_app/page/personal_center/other_setting.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/personal_center/private_setting.dart';
@@ -25,6 +26,8 @@ class SettingRouter implements IRouterProvider {
   static String themePage = "/pc/other/theme";
 
   static String orgChoosePage = "/pc/org";
+
+  static String historyPushPage = "/pc/history";
 
   @override
   void initRouter(Router router) {
@@ -49,6 +52,9 @@ class SettingRouter implements IRouterProvider {
 
     router.define(accountBindInfoPage,
         handler: Handler(handlerFunc: (_, params) => AccountBindPage()));
+
+    router.define(historyPushPage,
+        handler: Handler(handlerFunc: (_, params) => HistoryPushedPage()));
 
     router.define(orgChoosePage, handler: Handler(handlerFunc: (_, params) {
       String title = params['title'].first;

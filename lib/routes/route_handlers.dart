@@ -12,8 +12,8 @@ import 'package:flutter/painting.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/account_profile.dart';
-import 'package:iap_app/page/create_page.dart';
-import 'package:iap_app/page/home_page.dart';
+import 'package:iap_app/page/home/create_page.dart';
+import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/index.dart';
 import 'package:iap_app/page/input_text_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
@@ -85,7 +85,11 @@ var accountProfileHander = Handler(
       ? ""
       : FluroConvertUtils.fluroCnParamsDecode(params['accId'].first);
 
-  return AccountProfilePage(accountId, nick);
+  String avatarUrl = params['avatarUrl'] == null
+      ? ""
+      : FluroConvertUtils.fluroCnParamsDecode(params['avatarUrl'].first);
+
+  return AccountProfilePage(accountId, nick, avatarUrl);
 });
 
 var galleryViewHandler = Handler(

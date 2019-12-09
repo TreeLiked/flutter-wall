@@ -11,4 +11,10 @@ class Images {
     width: 16.0,
     height: 16.0,
   );
+
+  static const Widget copy = const LoadAssetIcon(
+    "/profile/copy",
+    width: 17.0,
+    height: 17.0,
+  );
 }

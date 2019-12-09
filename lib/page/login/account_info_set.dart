@@ -13,6 +13,7 @@ import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/page/login/reg_temp.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -145,30 +146,27 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Center(
               child: Container(
             decoration: BoxDecoration(
-              border: Border.all(width: 2, color: Colors.white),
-              borderRadius: BorderRadius.all((Radius.circular(50))),
-            ),
-            child: ClipOval(
-              child: GestureDetector(
-                onTap: _goChoiceAvatar,
-                child: ClipOval(
-                  child: _avatarFile == null
-                      ? LoadAssetImage(
-                          "avatar_c",
-                          format: 'png',
-                          width: SizeConstant.TWEET_PROFILE_SIZE * 1.3,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
-                          _avatarFile,
-                          width: SizeConstant.TWEET_PROFILE_SIZE * 1.3,
-                          height: SizeConstant.TWEET_PROFILE_SIZE * 1.3,
-                          fit: BoxFit.cover,
-                          repeat: ImageRepeat.noRepeat,
-                        ),
+                // border: Border.all(width: 0, color: Color(0xff8a8a8a)),
+                // borderRadius: BorderRadius.all((Radius.circular(10))),
                 ),
-              ),
-            ),
+            child: GestureDetector(
+                onTap: _goChoiceAvatar,
+                child: _avatarFile == null
+                    ? LoadAssetImage(
+                        "profile_sel",
+                        format: 'png',
+                        width: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
+                        fit: BoxFit.cover,
+                        color: Colors.grey,
+                      )
+                    : ClipOval(
+                        child: Image.file(
+                        _avatarFile,
+                        width: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
+                        height: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
+                        fit: BoxFit.cover,
+                        repeat: ImageRepeat.noRepeat,
+                      ))),
           )),
           Gaps.vGap30,
           MyTextField(
@@ -189,6 +187,11 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
             onPressed: _canGoNext ? _chooseOrg : null,
             text: "下一步",
           ),
+          Gaps.vGap15,
+          Gaps.line,
+          Gaps.vGap16,
+          Text('请选择一张图片作为您的头像并且起一个响亮的昵称吧～',
+              maxLines: 5, softWrap: true, style: TextStyles.textGray12)
           // Container(
           //   height: 40.0,
           //   alignment: Alignment.centerRight,

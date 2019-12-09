@@ -1,0 +1,174 @@
+import 'package:flutter/material.dart';
+import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/v_empty_view.dart';
+import 'package:iap_app/component/tweet/tweet_comment_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_extra_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_header_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_image_wrapper.dart';
+import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/page/tweet_detail.dart';
+import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
+
+class TweetCard2 extends StatelessWidget {
+  final recomKey = GlobalKey<RecommendationState>();
+
+  final BaseTweet tweet;
+
+  double sw;
+  double sh;
+  double maxWidthSinglePic;
+
+  // spach header 可点击
+  final bool upClickable;
+  // 点赞账户可点击
+  final bool downClickable;
+  // 点击回复框，回调home page textfield
+  final displayReplyContainerCallback;
+
+  final bool displayPraise;
+  final bool displayComment;
+  final bool displayExtra;
+  final Widget moreWidget;
+
+  TweetCard2(this.tweet,
+      {this.upClickable = true,
+      this.downClickable = true,
+      this.displayReplyContainerCallback,
+      this.displayPraise = true,
+      this.displayComment = true,
+      this.displayExtra = true,
+      this.moreWidget}) {
+    this.sw = Application.screenWidth;
+    this.sh = Application.screenHeight;
+    this.maxWidthSinglePic = sw * 0.75;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('-----------------------tweet card 2 buld');
+    return cardContainer2(context);
+  }
+
+  Widget cardContainer2(BuildContext context) {
+    Widget wd = new Row(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+              padding: EdgeInsets.only(bottom: 10),
+              child: GestureDetector(
+                onTap: () => _forwardDetail(context),
+                behavior: HitTestBehavior.translucent,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 5.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          TweetCardHeaderWrapper(
+                              tweet.account, tweet.anonymous, tweet.gmtCreated,
+                              canClick: upClickable),
+                          Gaps.vGap8,
+                          _typeContainer(context),
+                          Gaps.vGap5,
+                          _bodyContainer(),
+                          TweetImageWraper(
+                              picUrls: tweet.picUrls, sw: sw, sh: sh),
+                          Gaps.vGap8,
+                          displayPraise
+                              ? TweetCardExtraWrapper(
+                                  tweet: tweet,
+                                  displayReplyContainerCallback:
+                                      displayReplyContainerCallback)
+                              : VEmptyView(0),
+                          Gaps.vGap8,
+                          displayComment
+                              ? TweetCommentWrapper(tweet,
+                                  displayReplyContainerCallback:
+                                      displayReplyContainerCallback)
+                              : VEmptyView(0),
+                          displayComment ? Gaps.vGap30 : Gaps.vGap10,
+                          Gaps.line
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        )
+      ],
+    );
+    return wd;
+  }
+
+  void _forwardDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
+    );
+  }
+
+  void goAccountDetail(BuildContext context, Account account, bool up) {
+    if ((up && upClickable) || (!up && downClickable)) {
+      NavigatorUtils.push(
+          context,
+          Routes.accountProfile +
+              Utils.packConvertArgs({
+                'nick': account.nick,
+                'accId': account.id,
+                'avatarUrl': account.avatarUrl
+              }));
+    }
+  }
+
+  Widget _bodyContainer() {
+    String body = tweet.body;
+    return !StringUtil.isEmpty(body)
+        ? Container(
+            child: Wrap(children: <Widget>[
+            Row(children: <Widget>[
+              Expanded(
+                  child: Text(body.trim(),
+                      softWrap: true,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 10,
+                      style: TextStyle(
+                          fontSize: GlobalConfig.TWEET_FONT_SIZE, height: 1.6)))
+            ])
+          ]))
+        : Container(height: 0);
+  }
+
+  Widget _typeContainer(BuildContext context) {
+    const Radius temp = Radius.circular(7.5);
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        decoration: BoxDecoration(
+            color: tweetTypeMap[tweet.type].color ?? Colors.blueAccent,
+            borderRadius: BorderRadius.only(
+                topRight: temp, bottomLeft: temp, bottomRight: temp)),
+        child: Text(
+            ' # ' +
+                (tweetTypeMap[tweet.type].zhTag ??
+                    TextConstant.TEXT_UNCATCH_TWEET_TYPE),
+            style: TextStyle(
+                color: !ThemeUtils.isDark(context)
+                    ? Colors.white
+                    : ColorConstant.TWEET_TYPE_TEXT_DARK,
+                fontWeight: FontWeight.bold)));
+  }
+}

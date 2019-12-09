@@ -1,11 +1,9 @@
-import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flustars/flustars.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/app_bar.dart' as prefix1;
 import 'package:iap_app/common-widget/my_button.dart';
 import 'package:iap_app/component/text_field.dart';
@@ -45,6 +43,7 @@ class _SMSLoginPageState extends State<LoginPage> {
     super.initState();
     _phoneController.addListener(_verify);
     _vCodeController.addListener(_verifyCode);
+    _vCodeController.addListener(_verify);
   }
 
   void _verify() {
@@ -88,6 +87,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 设置token
         SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
         _loadStorageTweetTypes();
+        // 查询账户信息
         Account acc = await MemberApi.getMyAccount(token);
         AccountLocalProvider accountLocalProvider =
             Provider.of<AccountLocalProvider>(context);
@@ -96,24 +96,18 @@ class _SMSLoginPageState extends State<LoginPage> {
         Application.setAccount(acc);
         Application.setAccountId(acc.id);
 
-        int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
-        String orgName =
-            SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
-        if (orgId == -1 || orgName == "") {
-          University university = await UniversityApi.queryUnis(token);
-          if (university == null) {
-            // 错误，有账户无组织
-            print("ERROR , ------------");
-          } else {
-            SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
-            SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, university.name);
-            Application.setOrgName(university.name);
-            Application.setOrgId(university.id);
-          }
+        University university = await UniversityApi.queryUnis(token);
+        if (university == null) {
+          // 错误，有账户无组织
+          print("ERROR , ------------");
+          ToastUtil.showToast(context, '数据错误');
         } else {
-          Application.setOrgId(orgId);
-          Application.setOrgName(orgName);
+          SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
+          SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, university.name);
+          Application.setOrgName(university.name);
+          Application.setOrgId(university.id);
         }
+
         NavigatorUtils.goBack(context);
         NavigatorUtils.push(context, Routes.index, clearStack: true);
       } else {

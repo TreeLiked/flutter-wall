@@ -40,9 +40,13 @@ class TweetCard extends StatefulWidget {
 
   final callback;
 
-  TweetCard(BaseTweet tweet, {this.callback}) {
+  final bool upClickable;
+  final bool downClickable;
+
+  TweetCard(BaseTweet tweet,
+      {this.callback, this.upClickable = true, this.downClickable = true}) {
     this.tweet = tweet;
-    print('tc construct');
+    print('tc construct--------> tweetid = ${tweet.id}');
   }
 
   @override
@@ -54,11 +58,12 @@ class TweetCard extends StatefulWidget {
 class _TweetCardState extends State<TweetCard>
     with AutomaticKeepAliveClientMixin<TweetCard> {
   BaseTweet tweet;
-
   double sw;
   double sh;
   double maxWidthSinglePic;
   double _imgRightPadding = 1.5;
+
+  bool _changeState = false;
 
   _TweetCardState(BaseTweet tweet) {
     this.tweet = tweet;
@@ -93,28 +98,6 @@ class _TweetCardState extends State<TweetCard>
       padding: EdgeInsets.only(right: rp, bottom: 1.5),
       callback: () => open(context, index),
     );
-    // return Container(
-    //     // %2 因为索引从0开始，3的倍数右边距设为0
-    //     padding: EdgeInsets.only(
-    //         right: totalSize == 4 ? 1 : (index % 3 == 2 ? 0 : 1), bottom: 1),
-    //     width: perw,
-    //     height: perw,
-    //     child: GestureDetector(
-    //       onTap: () => open(context, index),
-    //       child: FadeInImage.assetNetwork(
-    //         image: url,
-    //         fit: BoxFit.cover,
-    //         placeholder: PathConstant.IAMGE_HOLDER,
-    //       ),
-    //       // child: CachedNetworkImage(
-    //       //   imageUrl: url,
-    //       //   fit: BoxFit.cover,
-    //       //   placeholder: (context, url) => WidgetUtil.getLoadingGif(),
-    //       //   errorWidget: (context, url, error) =>
-    //       //       WidgetUtil.getAsset(PathConstant.IAMGE_FAILED, size: 10),
-    //       // ),
-    //       // child: Image.network(url),
-    //     ));
   }
 
   Widget _imgContainerSingle(String url) {
@@ -160,7 +143,7 @@ class _TweetCardState extends State<TweetCard>
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        body,
+                        body.trim(),
                         softWrap: true,
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
@@ -177,34 +160,6 @@ class _TweetCardState extends State<TweetCard>
             ),
           )
         : Container(height: 0);
-  }
-
-  Widget _extraSingleContainer(String iconPath, String text,
-      {Function callback, double size = 20}) {
-    return Container(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () => callback(),
-            child: Container(
-              height: size,
-              width: size,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      fit: BoxFit.scaleDown, image: AssetImage(iconPath))),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 10, left: 5),
-            child: Text(
-              text,
-              style: TextStyle(color: GlobalConfig.tweetTimeColor),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _picContainer() {
@@ -246,9 +201,8 @@ class _TweetCardState extends State<TweetCard>
 
   Widget _profileContainer(String profileUrl) {
     return GestureDetector(
-        onTap: () => tweet.anonymous
-            ? null
-            : goAccountDetail(tweet.account.id, tweet.account.nick),
+        onTap: () =>
+            tweet.anonymous ? null : goAccountDetail(tweet.account, true),
         child: Container(
             margin: EdgeInsets.only(right: 10),
             child: AccountAvatar(
@@ -272,9 +226,8 @@ class _TweetCardState extends State<TweetCard>
                 anonymous: true, bold: true),
           ))
         : GestureDetector(
-            onTap: () => tweet.anonymous
-                ? null
-                : goAccountDetail(tweet.account.id, tweet.account.nick),
+            onTap: () =>
+                tweet.anonymous ? null : goAccountDetail(tweet.account, true),
             child: Container(
               child: Text(
                 nickName ?? "",
@@ -342,12 +295,6 @@ class _TweetCardState extends State<TweetCard>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            // _extraSingleContainer(
-            //   _likeAssetPath,
-            //   tweet.praise.toString(),
-            //   callback: this._updateLikeOrUnlikd,
-            // ),
-
             Row(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -374,6 +321,7 @@ class _TweetCardState extends State<TweetCard>
     }
 
     setState(() {
+      _changeState = true;
       tweet.loved = !tweet.loved;
       if (tweet.loved) {
         Utils.showFavoriteAnimation(context);
@@ -418,14 +366,13 @@ class _TweetCardState extends State<TweetCard>
           i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE;
           i++) {
         Account account = praiseList[i];
-        print(account);
         spans.add(TextSpan(
             text: "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
             style:
                 MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                goAccountDetail(account.id, account.nick);
+                goAccountDetail(account, false);
               }));
       }
 
@@ -454,15 +401,21 @@ class _TweetCardState extends State<TweetCard>
         ));
   }
 
-  void goAccountDetail(String accountId, String nick) {
-    NavigatorUtils.push(
-        context,
-        Routes.accountProfile +
-            Utils.packConvertArgs({'nick': nick, 'accId': accountId}));
+  void goAccountDetail(Account account, bool up) {
+    if ((up && widget.upClickable) || (!up && widget.downClickable)) {
+      NavigatorUtils.push(
+          context,
+          Routes.accountProfile +
+              Utils.packConvertArgs({
+                'nick': account.nick,
+                'accId': account.id,
+                'avatarUrl': account.avatarUrl
+              }));
+    }
   }
 
   Widget _commentContainer() {
-    if (tweet.enableReply) {
+    if (tweet.enableReply && widget.callback != null) {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => _sendReply(1, tweet.id, tweet.account.id),
@@ -616,8 +569,7 @@ class _TweetCardState extends State<TweetCard>
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           if (!dirReplyAnonymous) {
-                            goAccountDetail(
-                                reply.account.id, reply.account.nick);
+                            goAccountDetail(reply.account, false);
                           }
                         },
                       text: dirReplyAnonymous
@@ -636,8 +588,7 @@ class _TweetCardState extends State<TweetCard>
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           if (replyAuthor && authorAnonymous) {
-                            goAccountDetail(
-                                reply.account.id, reply.account.nick);
+                            goAccountDetail(reply.account, false);
                           }
                         },
                       text: reply.type == 2 ? tarNick : '',
@@ -768,7 +719,8 @@ class _TweetCardState extends State<TweetCard>
                             ),
                           ),
                           _bodyContainer(tweet),
-                          _picContainer(),
+                          // _picContainer(),
+                          // TweetImageWraper(picUrls: tweet.picUrls),
                           _extraContainer(),
                           _praiseContainer(),
                           _replyContainer(),
@@ -829,7 +781,6 @@ class _TweetCardState extends State<TweetCard>
 
   _sendReplyCallback(TweetReply tr) {
     print('评论回复结果回调 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！');
-    print(tr.toJson());
     if (tr == null) {
       ToastUtil.showToast(
         context,
@@ -863,4 +814,104 @@ class _TweetCardState extends State<TweetCard>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class TweetImageWraper extends StatelessWidget {
+  final double sw = Application.screenWidth;
+  final double sh = Application.screenHeight;
+  final double _imgRightPadding = 1.5;
+  final double maxWidthSinglePic = Application.screenWidth * 0.75;
+
+  final List<String> picUrls;
+
+  TweetImageWraper({this.picUrls});
+
+  Widget widget;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget != null) {
+      return widget;
+    }
+    print('tweeet card image wraper build--------------------------');
+    widget = CollectionUtil.isListEmpty(picUrls)
+        ? Container(height: 0)
+        : Container(
+            child: Wrap(
+            children: <Widget>[
+              Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                Expanded(
+                    child: Wrap(
+                        children: picUrls.length == 1
+                            ? <Widget>[_imgContainerSingle(context)]
+                            : _handleMultiPics(context)))
+              ]),
+            ],
+          ));
+    return widget;
+  }
+
+  Widget _imgContainerSingle(BuildContext context) {
+    return GestureDetector(
+      onTap: () => open(context, 0),
+      child: ConstrainedBox(
+        constraints:
+            BoxConstraints(maxWidth: maxWidthSinglePic, maxHeight: sh * 0.4),
+        child: CachedNetworkImage(
+          filterQuality: FilterQuality.medium,
+          imageUrl: "${picUrls[0]}${OssConstant.THUMBNAIL_SUFFIX}",
+          placeholder: (context, url) => LoadAssetImage(
+              PathConstant.IAMGE_HOLDER,
+              width: Application.screenWidth * 0.25,
+              height: Application.screenWidth * 0.25),
+          errorWidget: (context, url, error) => LoadAssetImage(
+              PathConstant.IAMGE_FAILED,
+              width: Application.screenWidth * 0.25,
+              height: Application.screenWidth * 0.25),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _handleMultiPics(BuildContext context) {
+    List<String> picUrls2 =
+        picUrls.map((f) => "$f${OssConstant.THUMBNAIL_SUFFIX}").toList();
+    List<Widget> list = new List(picUrls2.length);
+    for (int i = 0; i < picUrls2.length; i++) {
+      list[i] = _imgContainer(picUrls2[i], i, picUrls2.length, context);
+    }
+    return list;
+  }
+
+  Widget _imgContainer(
+      String url, int index, int totalSize, BuildContext context) {
+    // 40 最外层container左右padding,
+    double left = (sw - 20);
+    double perw;
+    double rp = 1.5;
+
+    if (totalSize == 2 || totalSize == 4) {
+      perw = (left - _imgRightPadding - 1) / 2;
+      if (index % 2 != 0) {
+        rp = 0;
+      }
+    } else {
+      perw = (left - _imgRightPadding * 2 - 1) / 3;
+      if (index % 3 == 2) {
+        rp = 0;
+      }
+    }
+
+    return ImageCoatainer(
+      url: url,
+      width: perw,
+      height: perw,
+      padding: EdgeInsets.only(right: rp, bottom: 1.5),
+      callback: () => open(context, index),
+    );
+  }
+
+  void open(BuildContext context, final int index) {
+    Utils.openPhotoView(context, picUrls, index);
+  }
 }

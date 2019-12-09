@@ -17,6 +17,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/log_utils.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -71,8 +72,6 @@ class _SplashPageState extends State<SplashPage> {
             AccountLocalProvider accountLocalProvider =
                 Provider.of<AccountLocalProvider>(context);
             accountLocalProvider.setAccount(acc);
-
-            print(accountLocalProvider.account.toJson());
             Application.setAccount(acc);
             Application.setAccountId(acc.id);
 
@@ -86,14 +85,24 @@ class _SplashPageState extends State<SplashPage> {
               if (university == null) {
                 // 错误，有账户无组织
                 print("ERROR , ------------");
+                ToastUtil.showToast(context, '数据错误');
               } else {
-                SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
-                SpUtil.putString(
+                if (university == null ||
+                    university.id == null ||
+                    university.name == null) {
+                  ToastUtil.showToast(context, '数据错误');
+                  return;
+                }
+                await SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
+                await SpUtil.putString(
                     SharedConstant.LOCAL_ORG_NAME, university.name);
                 Application.setOrgName(university.name);
                 Application.setOrgId(university.id);
               }
             } else {
+              print('$orgId---------------------orgId');
+              print('$orgName---------------------orgName');
+
               Application.setOrgId(orgId);
               Application.setOrgName(orgName);
             }

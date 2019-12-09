@@ -11,4 +11,7 @@ class TextConstant {
 
   static const String TWEET_AUTHOR_TEXT = "作者";
   static const String TWEET_AUTHOR_NICK = "佚名";
+
+  static const String TEXT_UNCATCH_ERROR = "未知错误";
+  static const String TEXT_UNCATCH_TWEET_TYPE = "未知类型";
 }

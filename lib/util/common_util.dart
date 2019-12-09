@@ -121,6 +121,12 @@ class Utils {
                         animation: "favorite",
                         fit: BoxFit.cover,
                       ),
+                      // child: FlareActor(
+                      //   "assets/flrs/favorite2.flr",
+                      //   alignment: Alignment.center,
+                      //   animation: "Animations",
+                      //   fit: BoxFit.cover,
+                      // ),
                     ))),
           );
         });

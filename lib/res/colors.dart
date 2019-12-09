@@ -5,7 +5,7 @@ class Colours {
   static const Color dark_app_main = Color(0xFF3F7AE0);
 
   static const Color bg_color = Color(0xfff1f1f1);
-  // static const Color dark_bg_color = Color(0xFF18191A);
+  static const Color dark_bg_color_darker = Color(0xFF18191A);
   static const Color dark_bg_color = Color(0xFF272829);
 
   static const Color material_bg = Color(0xFFFFFFFF);

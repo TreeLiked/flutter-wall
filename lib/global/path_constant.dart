@@ -10,8 +10,9 @@ class PathConstant {
   static const String ICON_CHECKBOX_SEL = "assets/icons/cbx_ck.png";
   static const String ICON_CHECKBOX_UNSEL = "assets/icons/cbx_uck.png";
 
-  static const String ICON_PRAISE_ICON_UNPRAISE = "assets/icons/thumb_up.png";
-  static const String ICON_PRAISE_ICON_PRAISE = "assets/icons/thumb_up_2.png";
+  static const String ICON_PRAISE_ICON_UNPRAISE = "thumb_up";
+  static const String ICON_PRAISE_ICON_PRAISE = "thumb_up_2";
+  static const String ICON_COMMENT_ICON = "comment";
 
   static const String ICON_SEL = "assets/icons/sel.png";
 

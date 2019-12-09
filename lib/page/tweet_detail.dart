@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +6,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/component/tweet/tweet_card2.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
-import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
@@ -21,6 +20,7 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
+import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
@@ -106,31 +106,23 @@ class TweetDetailState extends State<TweetDetail> {
   Widget _spaceRow() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         // 头像
-        Container(
-          margin: EdgeInsets.only(right: 5),
-          child: ClipOval(
-            child: Image.network(
-              !widget._tweet.anonymous
-                  ? widget._tweet.account.avatarUrl
-                  : PathConstant.ANONYMOUS_PROFILE,
-              width: SizeConstant.TWEET_PROFILE_SIZE - 1,
-              height: SizeConstant.TWEET_PROFILE_SIZE - 1,
-              fit: BoxFit.cover,
-              repeat: ImageRepeat.noRepeat,
-            ),
-          ),
-        ),
+        AccountAvatar(
+            avatarUrl: !widget._tweet.anonymous
+                ? widget._tweet.account.avatarUrl
+                : PathConstant.ANONYMOUS_PROFILE,
+            size: SizeConstant.TWEET_PROFILE_SIZE + 1,
+            whitePadding: false),
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(top: 10, left: 0),
+            margin: const EdgeInsets.only(left: 8.0),
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.end,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(bottom: 2),
+                  // padding: EdgeInsets.only(bottom: 2),
                   child: RichText(
                     softWrap: true,
                     text: TextSpan(children: [
@@ -157,9 +149,8 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _viewContainer() {
-    const Radius temp = Radius.circular(8);
+    const Radius temp = Radius.circular(7.0);
     return Container(
-      padding: EdgeInsets.only(top: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -178,7 +169,7 @@ class TweetDetailState extends State<TweetDetail> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 7),
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                   decoration: BoxDecoration(
                       color: tweetTypeMap[widget._tweet.type].color,
                       borderRadius: BorderRadius.only(
@@ -190,7 +181,10 @@ class TweetDetailState extends State<TweetDetail> {
                   child: Text(
                     '# ' + tweetTypeMap[widget._tweet.type].zhTag,
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                        color: !ThemeUtils.isDark(context)
+                            ? Colors.white
+                            : ColorConstant.TWEET_TYPE_TEXT_DARK,
+                        fontWeight: FontWeight.bold),
                   ),
                 )
               ],
@@ -202,25 +196,20 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _bodyContainer() {
-    return Container(
-      padding: EdgeInsets.only(top: 5),
-      child: Wrap(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  widget._tweet.body,
+    return Wrap(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(widget._tweet.body,
                   softWrap: true,
                   textAlign: TextAlign.left,
                   style: TextStyle(
-                      fontSize: GlobalConfig.TWEET_FONT_SIZE, height: 1.5),
-                ),
-              )
-            ],
-          )
-        ],
-      ),
+                      fontSize: GlobalConfig.TWEET_FONT_SIZE, height: 1.6)),
+            )
+          ],
+        )
+      ],
     );
   }
 
@@ -349,15 +338,18 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _replyTitleContainer() {
-    Widget reply = WidgetUtil.getIcon(Icons.message, Colors.grey, click: true,
-        callback: () {
-      // 直接回复
-      curReply.parentId = widget._tweet.id;
-      curReply.type = 1;
-      curReply.tarAccount = widget._tweet.account;
-      curReply.anonymous = false;
-      showReplyContainer("", widget._tweet.account.id, false);
-    });
+    Widget reply = GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        child: LoadAssetIcon(PathConstant.ICON_COMMENT_ICON,
+            width: 20, height: 20),
+        onTap: () {
+          curReply.parentId = widget._tweet.id;
+          curReply.type = 1;
+          curReply.tarAccount = widget._tweet.account;
+          curReply.anonymous = false;
+          showReplyContainer("", widget._tweet.account.id, false);
+        });
+
     if (!widget._tweet.enableReply) {
       return _textTitleRow('评论关闭');
     }
@@ -370,13 +362,19 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _praiseTitleContainer() {
-    Widget wgt = WidgetUtil.getAsset(
+    Widget wgt = GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      child: LoadAssetIcon(
         widget._tweet.loved
             ? PathConstant.ICON_PRAISE_ICON_PRAISE
             : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-        click: true, callback: () {
-      updatePraise(widget._tweet);
-    });
+        width: 20,
+        height: 20,
+      ),
+      onTap: () {
+        updatePraise(widget._tweet);
+      },
+    );
 
     if (widget._tweet.praise <= 0) {
       return _textTitleRow('快来第一个点赞吧', tail: wgt);
@@ -490,7 +488,7 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget _leftContainer(String headUrl, bool sub, bool anonymous,
       {bool isAuthor = false}) {
-    double size = SizeConstant.TWEET_PROFILE_SIZE - (sub ? 7 : 5);
+    double size = SizeConstant.TWEET_PROFILE_SIZE - 5;
     return Container(
       padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
 
@@ -577,91 +575,6 @@ class TweetDetailState extends State<TweetDetail> {
         // )
       ],
     );
-  }
-
-  Widget _picContainer() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-      child: Wrap(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Wrap(
-                    children: ((!CollectionUtil.isListEmpty(
-                            widget._tweet.picUrls))
-                        ? (widget._tweet.picUrls.length == 1
-                            ? <Widget>[
-                                _imgContainerSingle(widget._tweet.picUrls[0])
-                              ]
-                            : _handleMultiPics())
-                        : <Widget>[])),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _handleMultiPics() {
-    List<String> picUrls = widget._tweet.picUrls;
-    List<Widget> list = new List(picUrls.length);
-    for (int i = 0; i < picUrls.length; i++) {
-      list[i] = _imgContainer(picUrls[i], i, picUrls.length);
-    }
-    return list;
-  }
-
-  Widget _imgContainer(String url, int index, int totalSize) {
-    // 减去空白边距
-    double left = (sw - 20 - totalSize);
-    double perw;
-    if (totalSize == 2 || totalSize == 4) {
-      perw = left / 2;
-    } else {
-      perw = left / 3;
-    }
-
-    return Container(
-        // %2 因为索引从0开始，3的倍数右边距设为0
-        padding: EdgeInsets.only(right: 1, bottom: 1),
-        width: perw,
-        height: perw,
-        child: GestureDetector(
-          onTap: () {
-            Utils.openPhotoView(context, widget._tweet.picUrls, index);
-          },
-          child: CachedNetworkImage(
-            filterQuality: FilterQuality.high,
-            imageUrl: "$url${OssConstant.THUMBNAIL_SUFFIX}",
-            fit: BoxFit.cover,
-            placeholder: (context, url) => LoadAssetImage(
-                PathConstant.IAMGE_HOLDER,
-                width: Application.screenWidth * 0.25,
-                height: Application.screenWidth * 0.25),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),
-        ));
-  }
-
-  Widget _imgContainerSingle(String url) {
-    return GestureDetector(
-        onTap: () => Utils.openPhotoView(context, widget._tweet.picUrls, 0),
-        child: Container(
-            child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: (sw - 30) * 0.9),
-          child: CachedNetworkImage(
-            filterQuality: FilterQuality.high,
-            imageUrl: url + OssConstant.THUMBNAIL_SUFFIX,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => LoadAssetImage(
-                PathConstant.IAMGE_HOLDER,
-                width: Application.screenWidth * 0.25,
-                height: Application.screenWidth * 0.25),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-          ),
-        )));
   }
 
   Widget replyWrapContainer(TweetReply reply, bool subDir, int parentId) {
@@ -754,8 +667,12 @@ class TweetDetailState extends State<TweetDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       _spaceRow(),
+                      Gaps.vGap10,
                       _bodyContainer(),
-                      _picContainer(),
+                      // _picContainer(),
+                      Gaps.vGap8,
+                      TweetImageWraper(picUrls: widget._tweet.picUrls),
+                      Gaps.vGap8,
                       _viewContainer(),
                       Gaps.vGap15,
                       Divider(),
@@ -868,6 +785,33 @@ class TweetDetailState extends State<TweetDetail> {
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () {
+              BottomSheetUtil.showBottmSheetView(context, [
+                BottomSheetItem(
+                    Icon(
+                      Icons.star,
+                      color: Color(0xffEE9A49),
+                    ),
+                    '收藏', () {
+                  ToastUtil.showToast(context, '收藏功能暂未开放');
+                  Navigator.pop(context);
+                }),
+                BottomSheetItem(
+                    Icon(
+                      Icons.warning,
+                      color: Colors.grey,
+                    ),
+                    '举报', () {
+                  ToastUtil.showToast(context, '举报成功');
+                  Navigator.pop(context);
+                })
+              ]);
+            },
+          )
+        ],
         backgroundColor: widget._fromhot
             ? (ThemeUtils.isDark(context)
                 ? Color(0xff292929)
@@ -904,7 +848,7 @@ class TweetDetailState extends State<TweetDetail> {
         //     ),
         //   ],
         // )),
-        elevation: 0.5,
+        elevation: 0.4,
         floating: true,
         pinned: !widget._fromhot,
         snap: false,

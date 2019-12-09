@@ -110,6 +110,7 @@ class ClickItemCommon extends StatelessWidget {
             BoxConstraints(maxHeight: double.infinity, minHeight: 50.0),
         width: double.infinity,
         decoration: BoxDecoration(
+          // color: Colors.white,
           border: Border(
             bottom: Divider.createBorderSide(context, width: 0.6),
           ),

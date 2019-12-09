@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/bottom_bar_navigation_pattern/animated_bottom_bar.dart';
-import 'package:iap_app/page/create_page.dart';
-import 'package:iap_app/page/home_page.dart';
+import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/navigation_icon_view.dart';
 import 'package:iap_app/page/notification/index.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
@@ -27,7 +26,6 @@ class _IndexState extends State<Index>
   List<NavigationIconView> _navigationViews;
   // 所有页面
   // 当前页面
-  StatefulWidget _currentPage;
 
   final pageController = PageController();
 
@@ -106,8 +104,6 @@ class _IndexState extends State<Index>
       NotificationIndexPage(),
       PersonalCenter(),
     ];
-
-    _currentPage = _pageList[_currentIndex];
   }
 
   // 是否向下滑动

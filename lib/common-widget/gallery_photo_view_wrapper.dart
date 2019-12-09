@@ -42,8 +42,7 @@ class GalleryPhotoViewWrapper extends StatefulWidget {
   }
 }
 
-class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
-    with AutomaticKeepAliveClientMixin<GalleryPhotoViewWrapper> {
+class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
   int currentIndex;
 
   @override
@@ -60,8 +59,6 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     double sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -201,7 +198,4 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper>
       heroAttributes: PhotoViewHeroAttributes(tag: index),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

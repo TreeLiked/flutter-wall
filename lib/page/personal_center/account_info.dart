@@ -172,25 +172,6 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       );
     });
   }
-  // });
-
-  // Widget _getSettingItem(ListTile lst) {
-  //   return Container(
-  //     child: Material(
-  //       child: InkWell(
-  //         child: Column(
-  //           children: <Widget>[
-  //             lst,
-  //             Container(
-  //               margin: EdgeInsets.only(left: 15),
-  //               child: Divider(),
-  //             )
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   void _cropAndUpload(AccountLocalProvider provider) async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -200,7 +181,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
           builder: (context) =>
               ImageCropContainer(cropKey: cropKey, file: image)));
       if (file != null) {
-        Utils.showDefaultLoading(context);
+        Utils.showDefaultLoadingWithBonuds(context, text: '正在更新ß');
         String resultUrl =
             await OssUtil.uploadImage(file.path, file, toTweet: false);
         if (resultUrl != "-1") {
@@ -231,37 +212,5 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       ToastUtil.showToast(context, '修改失败，请稍候重试');
     }
     Navigator.pop(context);
-  }
-
-  void _showCupertinoDatePicker(
-      BuildContext cxt, AccountLocalProvider provider) {
-    final picker = CupertinoDatePicker(
-      mode: CupertinoDatePickerMode.date,
-      onDateTimeChanged: (date) {
-        print(date.toString() + "=======");
-        setState(() {
-          provider.account.signature = date.toString();
-        });
-      },
-      initialDateTime: DateTime(1995),
-    );
-
-    showCupertinoModalPopup(
-        context: cxt,
-        builder: (cxt) {
-          return Container(
-            height: ScreenUtil.screenHeightDp * 0.35,
-            child: picker,
-          );
-        });
-  }
-
-  void _showAgeChooise() {
-    List<BSChoiceItem> items = genderMap.keys
-        .map((k) => BSChoiceItem(name: k, text: genderMap[k].zhTag))
-        .toList();
-    BottomSheetUtil.shwoBottomChoise(context, items, (index) {
-      print(items[index].text + "-----" + items[index].name);
-    });
   }
 }

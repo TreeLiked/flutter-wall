@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/component/bottom_sheet_choic_item.dart';
-import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
@@ -91,7 +91,9 @@ class BottomSheetUtil {
                     // height: 350,
                     // constraints: BoxConstraints(maxHeight: 500),
                     decoration: BoxDecoration(
-                        color: Color(0xffEbEcEd),
+                        color: !ThemeUtils.isDark(context)
+                            ? Color(0xffEbEcEd)
+                            : Colours.dark_bg_color_darker,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(16))),
                     child: Container(
@@ -172,9 +174,11 @@ class BottomSheetUtil {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                padding: EdgeInsets.all(20),
+                    color: !ThemeUtils.isDark(context)
+                        ? Colors.white
+                        : Colours.dark_bg_color,
+                    borderRadius: const BorderRadius.all(Radius.circular(15))),
+                padding: const EdgeInsets.all(20),
                 child: item.icon,
               ),
             ),

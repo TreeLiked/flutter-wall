@@ -26,26 +26,24 @@ class ImageCoatainer extends StatelessWidget {
         width: width,
         height: height,
         child: GestureDetector(
-          onTap: callback,
-          // child: FadeInImage.assetNetwork(
-          //   image: url,
-          //   fit: BoxFit.cover,
-          //   placeholder: PathConstant.IAMGE_HOLDER,
-          // ),
-          child: CachedNetworkImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => LoadAssetImage(
-              PathConstant.IAMGE_HOLDER,
-              width: Application.screenWidth * 0.25,
-              height: Application.screenWidth * 0.25,
-            ),
-            errorWidget: (context, url, error) => LoadAssetImage(
-              PathConstant.IAMGE_FAILED,
-              width: Application.screenWidth * 0.25,
-              height: Application.screenWidth * 0.25,
-            ),
-          ),
-        ));
+            onTap: callback,
+            child: CachedNetworkImage(
+                filterQuality: FilterQuality.medium,
+                imageUrl: url,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                    margin: EdgeInsets.all(Application.screenWidth * 0.1),
+                    width: Application.screenWidth * 0.25,
+                    height: Application.screenWidth * 0.25,
+                    child: LoadAssetImage(
+                      PathConstant.IAMGE_HOLDER,
+                      width: 50,
+                      height: 50,
+                    )),
+                errorWidget: (context, url, error) => SizedBox(
+                      width: Application.screenWidth * 0.25,
+                      height: Application.screenWidth * 0.25,
+                      child: LoadAssetImage(PathConstant.IAMGE_FAILED),
+                    ))));
   }
 }

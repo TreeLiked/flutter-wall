@@ -104,7 +104,6 @@ dependencies:
   # 日期选择
   flutter_datetime_picker: ^1.2.8
 
-
   # social 
   # sharesdk: ^1.1.8
 
@@ -133,6 +132,7 @@ flutter:
     - assets/flrs/
     - assets/icons/
     - assets/icons/nav/
+    - assets/icons/profile/
     - assets/gifs/loading.gif
 
 

@@ -24,7 +24,6 @@ class MemberApi {
       }
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       dynamic json2 = json["data"];
       if (json2 == null) {
         return null;
@@ -39,14 +38,9 @@ class MemberApi {
 
   static Future<Account> getAccountProfile(String accountId) async {
     print(Api.API_QUERY_ACCOUNT_PROFILE + '-------------------');
-    String token = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+    checkAuthorizationHeaders();
     Response response;
     try {
-      if (httpUtil2.options.headers.containsKey("Authorization")) {
-        httpUtil2.options.headers.update('Authorization', (_) => token);
-      } else {
-        httpUtil2.options.headers.putIfAbsent('Authorization', () => token);
-      }
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_PROFILE);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       print(json);
@@ -62,15 +56,33 @@ class MemberApi {
     return null;
   }
 
-  static Future<Result> modAccount(AccountEditParam param) async {
-    String token = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+  static Future<Account> getAccountDisplayProfile(String accountId) async {
+    print(Api.API_QUERY_FILTERED_ACCOUNT_PROFILE + '-------------------');
+    checkAuthorizationHeaders();
     Response response;
     try {
-      if (httpUtil2.options.headers.containsKey("Authorization")) {
-        httpUtil2.options.headers.update('Authorization', (_) => token);
-      } else {
-        httpUtil2.options.headers.putIfAbsent('Authorization', () => token);
+      response = await httpUtil2.dio.get(
+          Api.API_QUERY_FILTERED_ACCOUNT_PROFILE +
+              "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
+              accountId);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
+      dynamic json2 = json["data"];
+      if (json2 == null) {
+        return null;
       }
+      Account account = Account.fromJson(json2);
+      return account;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<Result> modAccount(AccountEditParam param) async {
+    Response response;
+    try {
+      checkAuthorizationHeaders();
       response =
           await httpUtil2.dio.post(Api.API_ACCOUNT_MOD_BASIC, data: param);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -167,12 +179,16 @@ class MemberApi {
     return null;
   }
 
-  static Future<Map<String, dynamic>> getAccountSetting() async {
-    print(Api.API_QUERY_ACCOUNT_SETTING + '-------------------');
+  static Future<Map<String, dynamic>> getAccountSetting(
+      {String passiveAccountId}) async {
+    String url = Api.API_QUERY_ACCOUNT_SETTING +
+        "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
+        (passiveAccountId ?? "");
+    print(url);
     checkAuthorizationHeaders();
     Response response;
     try {
-      response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_SETTING);
+      response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       dynamic json2 = json["data"];
       if (json2 == null || json['isSuccess'] == false) {

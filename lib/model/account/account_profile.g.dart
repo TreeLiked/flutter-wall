@@ -21,7 +21,9 @@ AccountProfile _$AccountProfileFromJson(Map<String, dynamic> json) {
     ..city = json['city'] as String
     ..district = json['district'] as String
     ..qq = json['qq'] as String
-    ..wechat = json['wechat'] as String;
+    ..wechat = json['wechat'] as String
+    ..age = json['age'] as int
+    ..displayHistoryTweet = json['displayHistoryTweet'] as bool;
 }
 
 Map<String, dynamic> _$AccountProfileToJson(AccountProfile instance) =>
@@ -37,5 +39,7 @@ Map<String, dynamic> _$AccountProfileToJson(AccountProfile instance) =>
       'city': instance.city,
       'district': instance.district,
       'qq': instance.qq,
-      'wechat': instance.wechat
+      'wechat': instance.wechat,
+      'age': instance.age,
+      'displayHistoryTweet': instance.displayHistoryTweet
     };

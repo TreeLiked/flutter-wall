@@ -22,10 +22,14 @@ import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/models/tabIconData.dart';
+import 'package:iap_app/page/home/create_page.dart';
+import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/part/space_header.dart';
+import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -54,23 +58,14 @@ class _HomePageState extends State<HomePage>
       RefreshController(initialRefresh: false);
 
   EasyRefreshController _esRefreshController = EasyRefreshController();
+  ScrollController _scrollController = ScrollController();
 
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
 
-  final recomKey = GlobalKey<RecommendationState>();
+  final commentWrapperKey = GlobalKey<HomeCommentWrapperState>();
 
   int _currentPage = 1;
-
-  // 回复相关
-  TextEditingController _controller = TextEditingController();
-  FocusNode _focusNode = FocusNode();
-  String _hintText = "说点什么吧";
-  TweetReply curReply;
-  String destAccountId;
-  double _replyContainerHeight = 0;
-  // 是否开启匿名评论
-  bool showAnonymous = false;
 
   List<String> tweetQueryTypes = List();
 
@@ -78,23 +73,28 @@ class _HomePageState extends State<HomePage>
 
   AccountLocalProvider accountLocalProvider;
   TweetTypesFilterProvider typesFilterProvider;
+  TweetProvider tweetProvider;
 
+  // weather first build
   bool firstBuild = true;
 
+  // touch position, for display or hide bottomNavigatorBar
   double startY = -1;
   double lastY = -1;
 
+  // menu float choice
   GlobalKey _menuKey = GlobalKey();
 
+  // last refresh time
   DateTime _lastRefresh;
 
   @override
   void initState() {
+    super.initState();
     tabIconsList.forEach((tab) {
       tab.isSelected = false;
     });
     tabIconsList[0].isSelected = true;
-    super.initState();
   }
 
   Widget tabBody = Container(
@@ -103,19 +103,10 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _onRefresh(BuildContext context) async {
     print('On refresh');
-
     _esRefreshController.resetLoadState();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
-    if (!CollectionUtil.isListEmpty(temp)) {
-      recomKey.currentState.updateTweetList(temp, add: false);
-      _esRefreshController.finishRefresh(success: true, noMore: false);
-      _refreshController.refreshCompleted();
-    } else {
-      recomKey.currentState.updateTweetList(null, add: true);
-      _esRefreshController.finishRefresh(success: true, noMore: true);
-      _refreshController.refreshCompleted();
-    }
+    tweetProvider.update(temp, clear: true, append: false);
     setState(() {
       _lastRefresh = DateTime.now();
     });
@@ -123,31 +114,25 @@ class _HomePageState extends State<HomePage>
 
   void initData() async {
     List<BaseTweet> temp = await getData(1);
-    if (!CollectionUtil.isListEmpty(temp)) {
-      recomKey.currentState.updateTweetList(temp, add: false);
-    }
+    tweetProvider.update(temp, clear: true, append: false);
+    _esRefreshController.finishRefresh(success: true);
   }
 
   Future<void> _onLoading() async {
-    // monitor network fetch
-
     print('loading more data');
     List<BaseTweet> temp = await getData(++_currentPage);
+    tweetProvider.update(temp, append: true, clear: false);
     if (CollectionUtil.isListEmpty(temp)) {
-      print('没有数据了');
-      _currentPage--;
       _esRefreshController.finishLoad(success: true, noMore: true);
       _refreshController.loadNoData();
     } else {
-      recomKey.currentState.updateTweetList(temp, add: true, start: false);
+      _currentPage--;
       _esRefreshController.finishLoad(success: true, noMore: false);
-      _refreshController.loadComplete();
     }
   }
 
   Future getData(int page) async {
-    print('get data ---------------------$page');
-    print(typesFilterProvider.selTypeNames);
+    print('get data ------$page------');
     List<BaseTweet> pbt = await (TweetApi.queryTweets(
         PageParam(page,
             pageSize: 5,
@@ -155,64 +140,23 @@ class _HomePageState extends State<HomePage>
                 ? null
                 : typesFilterProvider.selTypeNames)),
         Application.getAccountId));
-    pbt.forEach((f) => print(f.toJson()));
     return pbt;
   }
 
-  // void getStoragePreferTypes() async {
-  //   List<String> selTypes = await SharedPreferenceUtil.readListStringValue(
-  //       SharedConstant.LOCAL_FILTER_TYPES);
-  //   if (!CollectionUtil.isListEmpty(selTypes)) {
-  //     setState(() {
-  //       this.tweetQueryTypes = selTypes;
-  //     });
-  //   }
-  //   setState(() {
-  //     isIniting = false;
-  //   });
-  // }
-
+  /*
+   * 显示回复框 
+   */
   void showReplyContainer(
       TweetReply tr, String destAccountNick, String destAccountId) {
-    print(
-        'home page 回调 =============== $destAccountNick----------------${tr.type}');
-    if (StringUtil.isEmpty(destAccountNick)) {
-      setState(() {
-        if (tr.type == 1) {
-          showAnonymous = true;
-        } else {
-          showAnonymous = false;
-        }
-        _hintText = "评论";
-        curReply = tr;
-        _replyContainerHeight = MediaQuery.of(context).size.width;
-        this.destAccountId = destAccountId;
-      });
-    } else {
-      setState(() {
-        if (tr.type == 1) {
-          showAnonymous = true;
-        } else {
-          showAnonymous = false;
-        }
-        _hintText = "回复 $destAccountNick";
-        curReply = tr;
-        _replyContainerHeight = MediaQuery.of(context).size.width;
-        this.destAccountId = destAccountId;
-      });
-    }
-
-    _focusNode.requestFocus();
+    commentWrapperKey.currentState
+        .showReplyContainer(tr, destAccountNick, destAccountId);
   }
 
+  /*
+   * 监测滑动手势，隐藏回复框
+   */
   void hideReplyContainer() {
-    if (_replyContainerHeight != 0) {
-      setState(() {
-        _replyContainerHeight = 0;
-        _controller.clear();
-        _focusNode.unfocus();
-      });
-    }
+    commentWrapperKey.currentState.hideReplyContainer();
   }
 
   void _forwardFilterPage() async {
@@ -241,6 +185,7 @@ class _HomePageState extends State<HomePage>
     accountLocalProvider = Provider.of<AccountLocalProvider>(context);
     if (firstBuild) {
       initData();
+      tweetProvider = Provider.of<TweetProvider>(context);
     }
     firstBuild = false;
     return Stack(
@@ -250,7 +195,7 @@ class _HomePageState extends State<HomePage>
               _sliverBuilder(context, innerBoxIsScrolled),
           body: Listener(
               onPointerDown: (_) {
-                // 只有未显示回复框开启滑动检测
+                // 只有未�����示回复框开启滑动检测
                 // if (_replyContainerHeight == 0) {
                 hideReplyContainer();
                 startY = _.position.dy;
@@ -262,6 +207,7 @@ class _HomePageState extends State<HomePage>
                 }
               },
               child: EasyRefresh(
+                scrollController: _scrollController,
                 header: ClassicalHeader(
                   enableHapticFeedback: true,
                   enableInfiniteRefresh: false,
@@ -270,7 +216,7 @@ class _HomePageState extends State<HomePage>
                   refreshingText: '更新中',
                   refreshedText: '更新完成',
                   refreshFailedText: '更新失败',
-                  noMoreText: '没有更多了',
+                  noMoreText: '没有数据',
                   // bgColor: Theme.of(context).appBarTheme.color,
                   infoColor: null,
                   float: false,
@@ -297,98 +243,24 @@ class _HomePageState extends State<HomePage>
                 // footer: Wat,
                 controller: _esRefreshController,
                 child: Recommendation(
-                  key: recomKey,
                   callback: (a, b, c, d) {
                     showReplyContainer(a, b, c);
                     sendCallback = d;
                   },
+                  refreshController: _esRefreshController,
                 ),
                 onRefresh: () => _onRefresh(context),
                 onLoad: _onLoading,
               )),
         ),
+        // StatelessWdigetWrapper(Text('data')),
         Positioned(
             left: 0,
             bottom: 0,
-            child: Offstage(
-                offstage: false,
-                child: AnimatedOpacity(
-                    opacity: _replyContainerHeight != 0 ? 1.0 : 0.0,
-                    duration: Duration(milliseconds: 500),
-                    child: Container(
-                        width: _replyContainerHeight,
-                        decoration: BoxDecoration(
-                          color: ThemeUtils.isDark(context)
-                              ? Color(0xff363636)
-                              : Color(0xfff2f2f2),
-                          // borderRadius: BorderRadius.only(
-                          //   topLeft: Radius.circular(15),
-                          //   topRight: Radius.circular(15),
-                          // ),
-                        ),
-                        padding: EdgeInsets.fromLTRB(11, 7, 15, 7),
-                        child: Row(
-                          children: <Widget>[
-                            AccountAvatar(
-                              cache: true,
-                              avatarUrl: accountLocalProvider.account.avatarUrl,
-                              size: SizeConstant.TWEET_PROFILE_SIZE * 0.85,
-                            ),
-                            Expanded(
-                              child: Padding(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: TextField(
-                                    controller: _controller,
-                                    focusNode: _focusNode,
-                                    keyboardAppearance:
-                                        Theme.of(context).brightness,
-                                    decoration: InputDecoration(
-                                        suffixIcon: curReply != null &&
-                                                curReply.type == 1
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    curReply.anonymous =
-                                                        !curReply.anonymous;
-                                                    if (curReply.anonymous) {
-                                                      ToastUtil.showToast(
-                                                          context, '此条评论将匿名回复');
-                                                    }
-                                                  });
-                                                },
-                                                child: Icon(
-                                                  curReply.anonymous
-                                                      ? Icons.visibility_off
-                                                      : Icons.visibility,
-                                                  size: SizeConstant
-                                                          .TWEET_PROFILE_SIZE *
-                                                      0.5,
-                                                  color: curReply.anonymous
-                                                      ? Colors.blueAccent
-                                                      : Colors.grey,
-                                                ),
-                                              )
-                                            : null,
-                                        hintText: _hintText,
-                                        border: InputBorder.none,
-                                        hintStyle: TextStyle(
-                                          color: ColorConstant.TWEET_TIME_COLOR,
-                                          fontSize:
-                                              SizeConstant.TWEET_TIME_SIZE - 1,
-                                        )),
-                                    textInputAction: TextInputAction.send,
-                                    cursorColor: Colors.grey,
-                                    style: TextStyle(
-                                      fontSize:
-                                          SizeConstant.TWEET_FONT_SIZE - 1,
-                                    ),
-                                    onSubmitted: (value) {
-                                      _sendReply(value);
-                                    },
-                                  )),
-                            ),
-                          ],
-                        ))))),
+            child: HomeCommentWrapper(
+              key: commentWrapperKey,
+              sendCallback: (reply) => sendCallback(reply),
+            )),
       ],
     );
   }
@@ -397,10 +269,19 @@ class _HomePageState extends State<HomePage>
     return <Widget>[
       SliverAppBar(
         centerTitle: true, //标题居中
-        title: Text(
-          Application.getOrgName ?? "未知错误",
+        title: GestureDetector(
+          child: Text(
+            Application.getOrgName ?? "未知错误",
+          ),
+          onTap: () {
+            if (_scrollController.offset > 1000) {
+              _scrollController.animateTo(.0,
+                  duration: Duration(milliseconds: 2000),
+                  curve: Curves.fastLinearToSlowEaseIn);
+            }
+          },
         ),
-        elevation: 0.4,
+        elevation: 0.3,
         actions: <Widget>[
           IconButton(
               key: _menuKey,
@@ -424,32 +305,6 @@ class _HomePageState extends State<HomePage>
         // )),
       ),
     ];
-  }
-
-  _sendReply(String value) async {
-    if (StringUtil.isEmpty(value) || value.trim().length == 0) {
-      ToastUtil.showToast(context, '回复内容不能为空');
-      return;
-    }
-    Utils.showDefaultLoading(context);
-    curReply.body = value;
-    Account acc = Account.fromId(accountLocalProvider.accountId);
-    curReply.account = acc;
-    await TweetApi.pushReply(curReply, curReply.tweetId).then((result) {
-      print(result.data);
-      if (result.isSuccess) {
-        TweetReply newReply = TweetReply.fromJson(result.data);
-        _controller.clear();
-        hideReplyContainer();
-        sendCallback(newReply);
-      } else {
-        _controller.clear();
-        _hintText = "评论";
-        sendCallback(null);
-      }
-      NavigatorUtils.goBack(context);
-      // widget.callback(tr, destAccountId);
-    });
   }
 
   _showAddMenu() {
@@ -520,14 +375,20 @@ class _HomePageState extends State<HomePage>
                   textColor: Theme.of(context).textTheme.body1.color,
                   onPressed: () {
                     NavigatorUtils.goBack(context);
-                    NavigatorUtils.push(context, Routes.create,
-                        transitionType: TransitionType.fadeIn);
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreatePage(),
+                        ));
+                    // NavigatorUtils.push(context, Routes.create,
+                    //     transitionType: TransitionType.fadeIn);
                   },
                   color: backgroundColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(8.0),
-                        bottomRight: Radius.circular(8.0)),
+                        bottomLeft: const Radius.circular(8.0),
+                        bottomRight: const Radius.circular(8.0)),
                   ),
                   icon: LoadAssetIcon(
                     "create",

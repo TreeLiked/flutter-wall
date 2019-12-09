@@ -88,10 +88,10 @@ class TweetTypeEntity {
 
   static const COMPLAINT = const TweetTypeEntity(
       iconData: Icons.mic,
-      iconColor: Colors.blue,
+      iconColor: Color(0xffEE799F),
       name: "COMPLAINT",
       zhTag: "吐槽",
-      color: Colors.blue,
+      color: Color(0xffEE799F),
       intro: "日子再坏，也要满怀期待",
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_complaint.png");
@@ -107,10 +107,10 @@ class TweetTypeEntity {
 
   static const HAVE_FUN = const TweetTypeEntity(
       iconData: Icons.toys,
-      iconColor: Colors.lightGreen,
+      iconColor: Color(0xff87CEEB),
       intro: "看到天上的星星了吗？是我打排位掉的",
       name: "HAVE_FUN",
-      color: Colors.lightGreen,
+      color: Color(0xff87CEEB),
       zhTag: "一起玩");
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
@@ -139,17 +139,17 @@ class TweetTypeEntity {
 
   static const OTHER = const TweetTypeEntity(
       iconData: Icons.face,
-      iconColor: Colors.black,
+      iconColor: Color(0xffB0C4DE),
       intro: "没有别的就选这个吧！",
       name: "OTHER",
-      color: Colors.black,
+      color: Color(0xffB0C4DE),
       zhTag: "其他");
 
   static const OFFICIAL = const TweetTypeEntity(
       iconData: Icons.check_circle,
-      iconColor: Color(0xff000080),
+      iconColor: Color(0xff8470FF),
       name: "OTHER",
-      color: Color(0xff000080),
-      zhTag: "官方认证",
+      color: Color(0xff8470FF),
+      zhTag: "官方",
       visible: false);
 }

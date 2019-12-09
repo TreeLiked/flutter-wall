@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/api/member.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
@@ -28,18 +29,12 @@ class UniversityApi {
   static Future<University> queryUnis(String accountToken) async {
     Response response;
     String url = Api.API_QUERY_ORG;
-    print(url);
+    MemberApi.checkAuthorizationHeaders();
     try {
-      if (httpUtil2.options.headers.containsKey("Authorization")) {
-        httpUtil2.options.headers.update('Authorization', (_) => accountToken);
-      } else {
-        httpUtil2.options.headers
-            .putIfAbsent('Authorization', () => accountToken);
-      }
       response = await httpUtil2.dio.post(url);
-      print(response.data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      return University.fromJson(json);
+      dynamic json2 = json["data"];
+      return University.fromJson(json2);
     } on DioError catch (e) {
       Api.formatError(e);
     }

@@ -7,8 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/asset_image.dart';
-import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/result.dart';
@@ -22,8 +20,6 @@ import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -35,8 +31,7 @@ class CreatePage extends StatefulWidget {
   }
 }
 
-class _CreatePageState extends State<CreatePage>
-    with AutomaticKeepAliveClientMixin {
+class _CreatePageState extends State<CreatePage> {
   TextEditingController _controller = TextEditingController();
   FocusNode _focusNode = FocusNode();
 
@@ -363,8 +358,6 @@ class _CreatePageState extends State<CreatePage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     print("create page build");
     sw = ScreenUtil.screenWidthDp;
 
@@ -608,9 +601,6 @@ class _CreatePageState extends State<CreatePage>
           child: Image.asset("assets/images/pic_select.png", width: width),
         ));
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
   List<Widget> getPicList() {
     double width = (sw - 25 - spacing * 3) / 3;

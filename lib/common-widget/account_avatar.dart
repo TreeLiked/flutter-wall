@@ -11,7 +11,7 @@ class AccountAvatar extends StatelessWidget {
   final GestureTapCallback onTap;
   final bool cache;
 
-  AccountAvatar(
+  const AccountAvatar(
       {Key key,
       this.avatarUrl,
       this.size = SizeConstant.TWEET_PROFILE_SIZE,

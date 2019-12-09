@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
+import 'package:iap_app/common-widget/update_dialog.dart';
 import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
@@ -98,8 +99,31 @@ class _AboutPageState extends State<AboutPage> {
                 NavigatorUtils.goWebViewPage(
                     context, "作者博客", "https://weilu.blog.csdn.net");
               }),
+          ClickItem(
+            title: "版本",
+            content: '1.0.0 beta',
+          ),
+          ClickItem(
+            title: '检查更新',
+            onTap: () {
+              _showUpdateDialog();
+            },
+          ),
+          ClickItem(
+            title: "帮助和反馈",
+            onTap: () {},
+          ),
         ],
       ),
     );
+  }
+
+  void _showUpdateDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return UpdateDialog();
+        });
   }
 }

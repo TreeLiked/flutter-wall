@@ -213,7 +213,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
                 _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
             onTap: () {
               _showRadioDialog(
-                  '展���我的微信',
+                  '展示我的微信',
                   settingMap[AccountSettingKeys.displayWeChat]
                       .toString()
                       .toUpperCase(), (k, v) {

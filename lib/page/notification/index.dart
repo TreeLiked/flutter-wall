@@ -4,6 +4,7 @@ import 'package:iap_app/common-widget/app_bar.dart';
 class NotificationIndexPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
+    print('NotificationIndexPage create state');
     return _NotificationIndexPageState();
   }
 }

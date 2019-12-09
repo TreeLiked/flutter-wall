@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/res/gaps.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(
   BuildContext context,
@@ -61,24 +62,26 @@ class _CustomFutureBuilderState<T> extends State<CustomSliverFutureBuilder<T>> {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                 case ConnectionState.active:
-                  return Align(
+                  return Center(
                     child: Container(
-                      alignment: Alignment.center,
-                      height: ScreenUtil().setWidth(200),
-                      child: CupertinoActivityIndicator(),
-                    ),
+                        alignment: Alignment.center,
+                        height: ScreenUtil().setWidth(300),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            CupertinoActivityIndicator(),
+                            Gaps.vGap16,
+                            Text('正在加载')
+                          ],
+                        )),
                   );
                 case ConnectionState.done:
                   if (snapshot.hasData) {
                     return widget.builder(context, snapshot.data);
                   } else if (snapshot.hasError) {
-                    return SliverToBoxAdapter(
-                        // child: NetErrorWidget(
-                        //   callback: () {
-                        //     _request();
-                        //   },
-                        // ),
-                        );
+                    print(
+                        '=====================================================');
+                    return Center(child: Text('${snapshot.error}'));
                   }
               }
               return Container();

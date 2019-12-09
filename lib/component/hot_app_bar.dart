@@ -33,11 +33,13 @@ class HotAppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      actions: <Widget>[
-        CircleHeader(
-          headerNotifier,
-        ),
-      ],
+      actions: headerNotifier != null
+          ? <Widget>[
+              CircleHeader(
+                headerNotifier,
+              ),
+            ]
+          : [],
       centerTitle: true,
       expandedHeight: expandedHeight,
       pinned: true,

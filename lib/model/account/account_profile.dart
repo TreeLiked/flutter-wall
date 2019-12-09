@@ -16,6 +16,8 @@ class AccountProfile {
   String district;
   String qq;
   String wechat;
+  int age;
+  bool displayHistoryTweet;
 
   AccountProfile();
 

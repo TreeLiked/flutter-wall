@@ -71,16 +71,17 @@ class RecommendationState extends State<Recommendation>
                               children: provider.displayTweets
                                   .map((f) => TweetCard2(
                                         f,
-                                        displayReplyContainerCallback:
-                                            (TweetReply tr,
-                                                    String destAccountNick,
-                                                    String destAccountId,
-                                                    callback) =>
-                                                showReplyContainer(
-                                                    tr,
-                                                    destAccountNick,
-                                                    destAccountId,
-                                                    callback),
+                                        displayReplyContainerCallback: (
+                                          TweetReply tr,
+                                          String destAccountNick,
+                                          String destAccountId,
+                                          callback,
+                                        ) =>
+                                            showReplyContainer(
+                                                tr,
+                                                destAccountNick,
+                                                destAccountId,
+                                                callback),
                                       ))
                                   .toList())
                           : Center(

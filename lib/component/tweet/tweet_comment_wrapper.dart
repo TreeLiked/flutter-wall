@@ -17,7 +17,11 @@ class TweetCommentWrapper extends StatefulWidget {
   // 点击回复框，回调home page textfield
   final displayReplyContainerCallback;
 
-  TweetCommentWrapper(this.tweet, {this.displayReplyContainerCallback});
+  // 回复callback
+  final sendDisplayCallback;
+
+  TweetCommentWrapper(this.tweet,
+      {this.displayReplyContainerCallback, this.sendDisplayCallback});
 
   @override
   State<StatefulWidget> createState() {

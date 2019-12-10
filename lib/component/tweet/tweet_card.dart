@@ -35,6 +35,7 @@ class TweetCard2 extends StatelessWidget {
   final bool downClickable;
   // 点击回复框，回调home page textfield
   final displayReplyContainerCallback;
+  final sendReplyCallback;
 
   final bool displayPraise;
   final bool displayComment;
@@ -45,6 +46,7 @@ class TweetCard2 extends StatelessWidget {
       {this.upClickable = true,
       this.downClickable = true,
       this.displayReplyContainerCallback,
+      this.sendReplyCallback,
       this.displayPraise = true,
       this.displayComment = true,
       this.displayExtra = true,

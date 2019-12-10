@@ -129,11 +129,10 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
                       : Theme.of(context).backgroundColor)
                   : Theme.of(context).appBarTheme.color,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             child: ListTile(
               leading: Icon(tweetTypeMap[typeKeysList[index]].iconData,
                   size: 35, color: tweetTypeMap[typeKeysList[index]].iconColor),
-              contentPadding: EdgeInsets.all(0),
               title: Text(
                 tweetTypeMap[typeKeysList[index]].zhTag,
                 style: TextStyle(

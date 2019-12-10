@@ -25,7 +25,6 @@ class _StatefulWidgetWrapper extends State<StatefulWidgetWrapper> {
   Widget build(BuildContext context) {
     print(
         'stateful widget wrapper---------build---------------------------------==========================================');
-
     return Container(child: widget.widget);
   }
 }

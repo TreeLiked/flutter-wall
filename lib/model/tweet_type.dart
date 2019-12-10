@@ -19,16 +19,16 @@ final tweetTypeMap = {
 };
 
 class TweetTypeUtil {
-  static Map getVisibleTweetTypeMap() {
+  static Map getFilterableTweetTypeMap() {
     final filteredMap = new Map.fromIterable(
-        tweetTypeMap.keys.where((k) => tweetTypeMap[k].visible),
+        tweetTypeMap.keys.where((k) => tweetTypeMap[k].filterable),
         value: (k) => tweetTypeMap[k]);
     return filteredMap;
   }
 
-  static Map getAllTweetTypeMap() {
-    return Map.from(tweetTypeMap);
-  }
+  // static Map getAllTweetTypeMap() {
+  //   return Map.from(tweetTypeMap);
+  // }
 }
 
 class TweetTypeEntity {
@@ -39,8 +39,13 @@ class TweetTypeEntity {
   final IconData iconData;
   final Color iconColor;
   final String intro;
-  // 是否可见
-  final bool visible;
+
+  // 是否可以被本地筛选掉
+  final bool filterable;
+  // 是否用户可以选择此类型标签发布内容
+  final bool pushable;
+  // 是否可以被用户取消订阅
+  final bool canUnSubscribe;
 
   const TweetTypeEntity(
       {this.iconData,
@@ -50,14 +55,16 @@ class TweetTypeEntity {
       this.color,
       this.coverUrl,
       this.intro = "暂无介绍喔～",
-      this.visible = true});
+      this.filterable = true,
+      this.pushable = true,
+      this.canUnSubscribe = true});
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
       iconData: Icons.favorite,
       iconColor: Colors.redAccent,
       name: "LOVE_CONFESSION",
       zhTag: "表白",
-      color: Color(0xffEEAD0E),
+      color: Color(0xffFFB6C1),
       intro: "对你何止一句中意",
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
@@ -107,10 +114,10 @@ class TweetTypeEntity {
 
   static const HAVE_FUN = const TweetTypeEntity(
       iconData: Icons.toys,
-      iconColor: Color(0xff87CEEB),
+      iconColor: Color(0xffe5e5a5),
       intro: "看到天上的星星了吗？是我打排位掉的",
       name: "HAVE_FUN",
-      color: Color(0xff87CEEB),
+      color: Color(0xffe5e5a5),
       zhTag: "一起玩");
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
@@ -151,5 +158,17 @@ class TweetTypeEntity {
       name: "OTHER",
       color: Color(0xff8470FF),
       zhTag: "官方",
-      visible: false);
+      canUnSubscribe: false,
+      pushable: false,
+      filterable: false);
+
+  static const AD = const TweetTypeEntity(
+      iconData: Icons.check_circle,
+      iconColor: Color(0xff8B008B),
+      name: "AD",
+      color: Color(0xff8B008B),
+      zhTag: "广告",
+      canUnSubscribe: false,
+      pushable: false,
+      filterable: false);
 }

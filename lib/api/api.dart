@@ -3,12 +3,15 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class Api {
+  static const bool dev = true;
   static const String API_BASE = "http://treeliked.com";
+  static const String API_BASE_DEV = "http://192.168.10.63";
 
   //  static const String API_BASE =
   // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
 
-  static const String API_BASE_INF_URL = API_BASE + ":8088/iap/api";
+  static const String API_BASE_INF_URL =
+      (dev ? API_BASE_DEV : API_BASE) + ":8088/iap/api";
   static const String API_BASE_MEMBER_URL = API_BASE + ":9001/trms/api";
 
   // tweet
@@ -67,6 +70,10 @@ class Api {
 
   static const String API_QUERY_ORG =
       API_BASE_MEMBER_URL + "/org/getAccUniversity.json";
+
+  // device
+  static const String API_UPDATE_DEVICE_INFO =
+      API_BASE_INF_URL + "/device/update.do";
 
   static Map<String, dynamic> convertResponse(Object reponseData) {
     String jsonTemp = json.encode(reponseData);

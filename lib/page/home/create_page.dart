@@ -13,6 +13,7 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
+import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
@@ -47,15 +48,13 @@ class _CreatePageState extends State<CreatePage> {
 
   // 是否禁用发布按钮
   bool _isPushBtnEnabled = false;
+  bool _publishing = false;
 
   // 选中的图片
   List<AssetEntity> pics = List();
 
   // 选中图片的路径
   List<File> picFiles = List();
-
-  // 是否正在发布状态
-  bool _publishing = false;
 
   // 屏幕宽度
   double sw;
@@ -66,20 +65,22 @@ class _CreatePageState extends State<CreatePage> {
 
   File file;
 
-  void _updateTypeText(String text, String typeName) {
-    setState(() {
-      this._typeText = text;
-      this._typeName = typeName;
-    });
-  }
-
   void _updatePushBtnState() {
-    setState(() {
-      this._textCountText = 10;
-      this._isPushBtnEnabled = !StringUtil.isEmpty(this._typeName) &&
-          (_controller.text.length > 0 ||
-              !CollectionUtil.isListEmpty(this.pics));
-    });
+    if (((_controller.text.length > 0 && _controller.text.length < 256) ||
+            !CollectionUtil.isListEmpty(this.pics)) &&
+        !StringUtil.isEmpty(this._typeName)) {
+      if (this._isPushBtnEnabled == false) {
+        setState(() {
+          this._isPushBtnEnabled = true;
+        });
+      }
+    } else {
+      if (this._isPushBtnEnabled == true) {
+        setState(() {
+          this._isPushBtnEnabled = false;
+        });
+      }
+    }
   }
 
   @override
@@ -88,6 +89,15 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   void _assembleAndPushTweet() async {
+    if (_controller.text.length >= 256) {
+      ToastUtil.showToast(context, '内容超出最大字符限制');
+      return;
+    }
+    if (_typeName == null) {
+      ToastUtil.showToast(context, '请选择内容类型');
+      return;
+    }
+
     Utils.showDefaultLoadingWithBonuds(context, text: '正在发布');
     _focusNode.unfocus();
     setState(() {
@@ -186,27 +196,6 @@ class _CreatePageState extends State<CreatePage> {
     setState(() {
       this._enbaleReply = !this._enbaleReply;
     });
-  }
-
-  Widget _clipItemInSheet(
-      String text, String typeName, IconData iconData, Color iconColor) {
-    return GestureDetector(
-        onTap: () {
-          this._updateTypeText(text, typeName);
-          Navigator.of(context).pop(this);
-        },
-        child: Chip(
-          backgroundColor: GlobalConfig.DEFAULT_BAR_BACK_COLOR,
-          label: Text(
-            text,
-            style: TextStyle(fontSize: 14),
-          ),
-          avatar: Icon(
-            iconData,
-            size: 15,
-            color: iconColor,
-          ),
-        ));
   }
 
   void _forwardSelPage() {
@@ -379,7 +368,7 @@ class _CreatePageState extends State<CreatePage> {
           Container(
             height: 10,
             child: FlatButton(
-              onPressed: _isPushBtnEnabled
+              onPressed: _isPushBtnEnabled && !_publishing
                   ? () {
                       this._assembleAndPushTweet();
                     }
@@ -396,7 +385,7 @@ class _CreatePageState extends State<CreatePage> {
           )
         ],
       ),
-      backgroundColor: Color(0xfff5f6f7),
+      backgroundColor: Color(0xfff7f8f9),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,10 +399,6 @@ class _CreatePageState extends State<CreatePage> {
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    // Container(
-                    //   height: 10,
-                    //   color: Colors.grey,
-                    // ),
                     Container(
                       child: TextField(
                         keyboardAppearance: Theme.of(context).brightness,
@@ -439,9 +424,6 @@ class _CreatePageState extends State<CreatePage> {
                               style: TextStyle(color: Color(0xffb22222)),
                             )),
                         onChanged: (val) {
-                          setState(() {
-                            this._textCountText = val.length;
-                          });
                           _updatePushBtnState();
                         },
                       ),
@@ -466,13 +448,13 @@ class _CreatePageState extends State<CreatePage> {
                           GestureDetector(
                             onTap: () => _reverseEnableReply(),
                             child: Container(
-                              margin: EdgeInsets.only(right: 10),
-                              padding: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.only(right: 10),
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   color: Color(0xffF5F5F5),
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20))),
+                                      BorderRadius.all(Radius.circular(15))),
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: <Widget>[
@@ -495,13 +477,13 @@ class _CreatePageState extends State<CreatePage> {
                           GestureDetector(
                             onTap: () => _reverseAnonymous(),
                             child: Container(
-                              margin: EdgeInsets.only(right: 10),
-                              padding: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.only(right: 10),
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   color: Color(0xffF5F5F5),
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20))),
+                                      BorderRadius.all(Radius.circular(15))),
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: <Widget>[
@@ -530,12 +512,12 @@ class _CreatePageState extends State<CreatePage> {
                               GestureDetector(
                                 onTap: () => _forwardSelPage(),
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                       color: Color(0xffF5F5F5),
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(20))),
+                                          Radius.circular(15))),
                                   child: Text(
                                     "# " + _typeText,
                                     style: TextStyle(
@@ -555,7 +537,9 @@ class _CreatePageState extends State<CreatePage> {
                           ),
                         ],
                       ),
-                    )
+                    ),
+
+                    // StatelessWdigetWrapper(Text('hello')),
                   ],
                 ),
               ),
@@ -616,6 +600,7 @@ class _CreatePageState extends State<CreatePage> {
                     () {
                   setState(() {
                     this.pics.removeAt(j);
+                    _updatePushBtnState();
                     Navigator.pop(context);
                   });
                 })

@@ -22,7 +22,7 @@ class TweetTypesFilterProvider extends ChangeNotifier {
     if (CollectionUtil.isListEmpty(types)) {
       _selAll = true;
       _selTypeNames = List()
-        ..addAll(TweetTypeUtil.getVisibleTweetTypeMap()
+        ..addAll(TweetTypeUtil.getFilterableTweetTypeMap()
             .keys
             .map((nameKey) => nameKey.toString())
             .toList());

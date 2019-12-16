@@ -55,14 +55,14 @@ class _TweetCommentWrapper extends State<TweetCommentWrapper> {
                   avatarUrl: Application.getAccount.avatarUrl,
                   size: SizeConstant.TWEET_PROFILE_SIZE * 0.75),
               Expanded(
-                child: const Padding(
+                child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: const Text(
+                    child: Text(
                       TextConstant.TWEET_CARD_REPLY_HINT,
                       style: TextStyle(
                           fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
-                          color: ColorConstant.TWEET_TIME_COLOR),
-                    )),
+                          color: ColorConstant.getTweetSigColor(context),
+                    ))),
               ),
             ],
           ),

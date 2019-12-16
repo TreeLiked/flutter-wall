@@ -1,6 +1,7 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix2;
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
@@ -79,7 +80,7 @@ class _SMSLoginPageState extends State<LoginPage> {
   }
 
   void _login() {
-    Utils.showDefaultLoadingWithBonuds(context, text: '正在验证');
+    Utils.showDefaultLoadingWithBounds(context, text: '正在验证');
     MemberApi.login(_phoneController.text).then((res) async {
       if (res.isSuccess && res.code == "1") {
         // 已经存在账户，直接登录
@@ -89,8 +90,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         _loadStorageTweetTypes();
         // 查询账户信息
         Account acc = await MemberApi.getMyAccount(token);
-        AccountLocalProvider accountLocalProvider =
-            Provider.of<AccountLocalProvider>(context);
+        AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
         accountLocalProvider.setAccount(acc);
         print(accountLocalProvider.account.toJson());
         Application.setAccount(acc);
@@ -119,39 +119,51 @@ class _SMSLoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider =
-        Provider.of<TweetTypesFilterProvider>(context);
+    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
     tweetTypesFilterProvider.updateTypeNames();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: prefix1.MyAppBar(isBack: false),
-        body: defaultTargetPlatform == TargetPlatform.iOS
-            ? FormKeyboardActions(
-                child: _buildBody(),
-              )
-            : SingleChildScrollView(
-                child: _buildBody(),
-              ));
+//      appBar: prefix1.MyAppBar(isBack: false),
+
+        body: Container(
+        padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(250)),
+        height: double.infinity,
+      width: double.infinity,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1g9yd2ehhskj30u01hcu0x.jpg'))),
+      child: Center(
+        heightFactor: 0.1,
+          child: defaultTargetPlatform == TargetPlatform.iOS
+              ? FormKeyboardActions(
+                  child: _buildBody(),
+                )
+              : SingleChildScrollView(
+                  child: _buildBody(),
+                )),
+    ));
   }
 
   _buildBody() {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
-            "注册丨登录 到甜甜圈",
-            style: TextStyles.textBold26,
+           Text(
+            "注册丨登录 到 Wall",
+            style: TextStyles.textBold26.copyWith(color: Colors.white70)
+
           ),
           Gaps.vGap16,
           MyTextField(
             focusNode: _nodeText1,
-            config: Utils.getKeyboardActionsConfig(
-                context, [_nodeText1, _nodeText2]),
+            config: Utils.getKeyboardActionsConfig(context, [_nodeText1, _nodeText2]),
             controller: _phoneController,
             maxLength: 11,
             keyboardType: TextInputType.phone,
@@ -170,9 +182,8 @@ class _SMSLoginPageState extends State<LoginPage> {
                 ToastUtil.showToast(context, '手机号格式不正确');
                 return Future.value(false);
               } else {
-                Utils.showDefaultLoadingWithBonuds(context);
-                Result res = await MemberApi.sendPhoneVerificationCode(
-                    _phoneController.text);
+                Utils.showDefaultLoadingWithBounds(context);
+                Result res = await MemberApi.sendPhoneVerificationCode(_phoneController.text);
                 NavigatorUtils.goBack(context);
                 if (res.isSuccess) {
                   ToastUtil.showToast(context, '发送成功');

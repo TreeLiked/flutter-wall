@@ -9,6 +9,7 @@ import 'package:iap_app/page/index/navigation_icon_view.dart';
 import 'package:iap_app/page/notification/index.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/part/hot_today.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
 
 class Index extends StatefulWidget {
@@ -65,7 +66,7 @@ class _IndexState extends State<Index>
       NavigationIconView(
           icon: Icon(Icons.home, size: 20, color: Colors.grey),
           title: Container(
-            child: MyDefaultTextStyle.getBottomNavTextItem('推荐', Colors.indigo),
+            child: MyDefaultTextStyle.getBottomNavTextItem('首页', Colors.indigo),
           ),
           selColor: Colors.indigo,
           vsync: this),
@@ -99,7 +100,7 @@ class _IndexState extends State<Index>
     //     });
 
     _pageList = <StatefulWidget>[
-      HomePage(pullDownCallBack: (_) => updateBottombar(_)),
+      HomePage(pullDownCallBack: (_) => updateBottomBar(_)),
       HotToday(),
       NotificationIndexPage(),
       PersonalCenter(),
@@ -107,7 +108,7 @@ class _IndexState extends State<Index>
   }
 
   // 是否向下滑动
-  void updateBottombar(bool pullDown) {
+  void updateBottomBar(bool pullDown) {
     if (pullDown) {
       // 向下滑动，显示
       if (!_showBottomNavBar) {
@@ -149,7 +150,6 @@ class _IndexState extends State<Index>
         items: _navigationViews.map((navIconView) => navIconView.item).toList(),
         currentIndex: _currentIndex,
         backgroundColor: Colors.transparent,
-        // fixedColor: Color(0xff1E90FF),
         // selectedIconTheme: IconThemeData(opacity: 0.9),
         // unselectedIconTheme: IconThemeData(opacity: 0.5),
         showUnselectedLabels: false,

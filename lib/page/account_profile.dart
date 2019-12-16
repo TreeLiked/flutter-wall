@@ -2,12 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/component/flexible_detail_bar.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/widget_sliver_future_builder.dart';
+import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
@@ -17,6 +19,7 @@ import 'package:iap_app/model/account/account_setting.dart';
 import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/page/common/avatar_origin.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
@@ -40,10 +43,8 @@ class AccountProfilePage extends StatefulWidget {
   }
 }
 
-class _AccountProfilePageState extends State<AccountProfilePage>
-    with SingleTickerProviderStateMixin {
+class _AccountProfilePageState extends State<AccountProfilePage> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  PageController _pageController = PageController(initialPage: 0);
 
   var _pageList;
 
@@ -91,109 +92,103 @@ class _AccountProfilePageState extends State<AccountProfilePage>
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
-        centerTitle: false, //标题居中
-        elevation: 0.3,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.more_horiz,
-              color: Colors.white,
+          centerTitle: false,
+          //标题居中
+          elevation: 0.3,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.more_horiz,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                BottomSheetUtil.showBottomSheetView(context, [
+                  BottomSheetItem(
+                      Icon(
+                        Icons.favorite,
+                        color: Colors.redAccent,
+                      ),
+                      '关注', () async {
+                    ToastUtil.showToast(context, '关注成功');
+                    Navigator.pop(context);
+                  }),
+                  BottomSheetItem(
+                      Icon(
+                        Icons.warning,
+                        color: Colors.grey,
+                      ),
+                      '举报', () {
+                    ToastUtil.showToast(context, '举报成功');
+                    Navigator.pop(context);
+                  }),
+                ]);
+              },
             ),
+          ],
+          leading: IconButton(
             onPressed: () {
-              BottomSheetUtil.showBottmSheetView(context, [
-                BottomSheetItem(
-                    Icon(
-                      Icons.favorite,
-                      color: Colors.redAccent,
-                    ),
-                    '关注', () async {
-                  ToastUtil.showToast(context, '关注成功');
-                  Navigator.pop(context);
-                }),
-                BottomSheetItem(
-                    Icon(
-                      Icons.warning,
-                      color: Colors.grey,
-                    ),
-                    '举报', () {
-                  ToastUtil.showToast(context, '举报成功');
-                  Navigator.pop(context);
-                }),
-              ]);
+              FocusScope.of(context).unfocus();
+              Navigator.maybePop(context);
             },
+            tooltip: '返回',
+            padding: const EdgeInsets.all(12.0),
+            icon: Image.asset(PathConstant.ICON_GO_BACK_ARROW, color: Colors.white, width: 20),
           ),
-        ],
-
-        leading: IconButton(
-          onPressed: () {
-            FocusScope.of(context).unfocus();
-            Navigator.maybePop(context);
-          },
-          tooltip: '返回',
-          padding: const EdgeInsets.all(12.0),
-          icon: Image.asset(PathConstant.ICON_GO_BACK_ARROW,
-              color: Colors.white, width: 20),
-        ),
-
-        expandedHeight: 200,
-        floating: false,
-        pinned: true,
-        snap: false,
-        bottom: new TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            isScrollable: false,
-            // indicatorColor: Colors.black87,
-            controller: _tabController,
-            // onTap: (index) {
-            //   if (!mounted) {
-            //     return;
-            //   }
-            //   _pageController.jumpToPage(index);
-            // },
-            tabs: [
-              const Tab(child: Text('个人资料', style: TextStyle(color: null))),
-              const Tab(child: Text('历史发布', style: TextStyle(color: null)))
-            ]),
-
-        flexibleSpace: FlexibleDetailBar(
-            content: Text(''),
-            background: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(25))),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(25))),
-                  child: Stack(
-                    children: <Widget>[
-                      Utils.showNetImage(
-                        widget.avatarUrl,
+          expandedHeight: 200,
+          floating: false,
+          pinned: true,
+          snap: false,
+          bottom: new TabBar(
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white70,
+              isScrollable: false,
+              // indicatorColor: Colors.black87,
+              controller: _tabController,
+              tabs: [
+                const Tab(child: Text('个人资料', style: TextStyle(color: null))),
+                const Tab(child: Text('历史发布', style: TextStyle(color: null)))
+              ]),
+          flexibleSpace: FlexibleDetailBar(
+              content: Padding(
+                padding: EdgeInsets.only(top: ScreenUtil().setHeight(100)),
+                child: Center(
+                    child: Hero(
+                        tag: 'avatar',
+                        child: AccountAvatar(
+                            avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
+                            whitePadding: true,
+                            size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
+                            onTap: () {
+                              Navigator.push(context, PageRouteBuilder(pageBuilder:
+                                  (BuildContext context, Animation animation, Animation secondaryAnimation) {
+                                return new FadeTransition(
+                                  opacity: animation,
+                                  child: AvatarOriginPage(widget.avatarUrl),
+                                );
+                              }));
+                            }))),
+              ),
+              background: Container(
+                  decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(25))),
+                  child: Stack(children: <Widget>[
+                    Utils.showNetImage(
+                      widget.avatarUrl,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                    BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaY: 5,
+                        sigmaX: 5,
+                      ),
+                      child: Container(
+                        color: Colors.black38,
                         width: double.infinity,
                         height: double.infinity,
-                        fit: BoxFit.cover,
                       ),
-                      BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaY: 5,
-                          sigmaX: 5,
-                        ),
-                        child: Container(
-                          color: Colors.black38,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
-                      ),
-                      Center(
-                        child: AccountAvatar(
-                          avatarUrl: widget.avatarUrl,
-                          whitePadding: true,
-                          size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
-                        ),
-                      )
-                    ],
-                  ),
-                ))),
-      ),
+                    ),
+                  ]))))
     ];
   }
 }
@@ -203,19 +198,19 @@ class AccountProfileInfoPageView extends StatefulWidget {
   final loadFinishCallback;
 
   AccountProfileInfoPageView({this.accountId, this.loadFinishCallback});
+
   @override
   _AccountProfileInfoPageView createState() => _AccountProfileInfoPageView();
 }
 
 class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<AccountProfileInfoPageView> {
   String _nullText = "未知";
   double _iconSize = 17;
   Function _getProfileTask;
 
   Future<Account> getProfileInfo(BuildContext context) async {
-    Account account =
-        await MemberApi.getAccountDisplayProfile(widget.accountId);
+    Account account = await MemberApi.getAccountDisplayProfile(widget.accountId);
     return account;
   }
 
@@ -254,13 +249,9 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             _titleItem('个人档案'),
             _buildPersonInfo('name', account.profile.name, '姓名不可见'),
             Gaps.line,
-            _buildPersonInfo(
-                'age',
-                account.profile.age > 0 ? account.profile.age.toString() : null,
-                '年龄不可见'),
+            _buildPersonInfo('age', account.profile.age > 0 ? account.profile.age.toString() : null, '年龄不可见'),
             Gaps.line,
-            _buildPersonInfo(
-                'region', _getRegionText(account.profile), '地区不可见'),
+            _buildPersonInfo('region', _getRegionText(account.profile), '地区不可见'),
 
             Gaps.vGap30,
             _titleItem('社交信息'),
@@ -290,31 +281,25 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
       child: Flex(
         direction: Axis.horizontal,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/nick',
-              width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetIcon('profile/nick', width: _iconSize, height: _iconSize)),
           Gaps.hGap10,
           Flexible(
             flex: 8,
             child: Text(nick ?? TextConstant.TEXT_UNCATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
+                style: TextStyle(fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
           ),
           Gaps.hGap10,
-          male == null
+          (male == null || male == "UNKNOWN")
               ? Container(
                   height: 0,
                 )
               : (male == "MALE"
                   ? Flexible(
-                      flex: 1,
-                      child: LoadAssetIcon('profile/male',
-                          width: _iconSize, height: _iconSize))
+                      flex: 1, child: LoadAssetIcon('profile/male', width: _iconSize, height: _iconSize))
                   : Flexible(
-                      flex: 1,
-                      child: LoadAssetIcon('profile/female',
-                          width: _iconSize, height: _iconSize)))
+                      flex: 1, child: LoadAssetIcon('profile/female', width: _iconSize, height: _iconSize)))
         ],
       ),
     );
@@ -326,8 +311,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/sig',
-              width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetIcon('profile/sig', width: _iconSize, height: _iconSize)),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -335,8 +319,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                 softWrap: true,
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
+                style: TextStyle(fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
           ),
           _getCopyWidget(sig)
         ],
@@ -355,8 +338,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
         crossAxisAlignment: CrossAxisAlignment.start,
         // direction: Axis.horizontal,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/$iconName',
-              width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetIcon('profile/$iconName', width: _iconSize, height: _iconSize)),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -366,8 +348,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     color: value == null ? Colors.grey : null,
-                    fontSize:
-                        value != null ? Dimens.font_sp14 : Dimens.font_sp13p5,
+                    fontSize: value != null ? Dimens.font_sp14 : Dimens.font_sp13p5,
                     fontWeight: FontWeight.w400)),
           ),
         ],
@@ -399,8 +380,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
         crossAxisAlignment: CrossAxisAlignment.start,
         // direction: Axis.horizontal,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/$iconName',
-              width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetIcon('profile/$iconName', width: _iconSize, height: _iconSize)),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -434,15 +414,19 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
         child: Padding(padding: EdgeInsets.only(left: 5), child: Images.copy),
         onTap: () {
           Utils.copyTextToClipBoard(value);
-          ToastUtil.showToast(context, '签名已复制到粘贴板');
+          ToastUtil.showToast(context, '复制成功');
         },
       );
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class AccountProfileTweetPageView extends StatefulWidget {
   final String accountId;
+
   AccountProfileTweetPageView({Key key, this.accountId});
 
   @override
@@ -450,7 +434,7 @@ class AccountProfileTweetPageView extends StatefulWidget {
 }
 
 class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<AccountProfileTweetPageView> {
   Function _getSettingTask;
 
   int _currentPage = 1;
@@ -459,10 +443,8 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
 
   EasyRefreshController _easyRefreshController;
 
-  Future<Map<String, dynamic>> _getAccountSettingOrTweets(
-      BuildContext context) async {
-    Map<String, dynamic> settings =
-        await MemberApi.getAccountSetting(passiveAccountId: widget.accountId);
+  Future<Map<String, dynamic>> _getAccountSettingOrTweets(BuildContext context) async {
+    Map<String, dynamic> settings = await MemberApi.getAccountSetting(passiveAccountId: widget.accountId);
     if (settings == null) {
       return null;
     } else {
@@ -524,8 +506,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   @override
   Widget build(BuildContext context) {
     return CustomSliverFutureBuilder(
-        futureFunc: _getSettingTask,
-        builder: (context, data) => _buildBody(data));
+        futureFunc: _getSettingTask, builder: (context, data) => _buildBody(data));
   }
 
   _buildBody(Map<String, dynamic> dataMap) {
@@ -564,10 +545,8 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
       onLoad: _loadMoreData,
       child: SingleChildScrollView(
         child: Column(
-          children: _accountTweets
-              .map(
-                  (f) => TweetCard2(f, upClickable: false, downClickable: true))
-              .toList(),
+          children:
+              _accountTweets.map((f) => TweetCard2(f, upClickable: false, downClickable: true)).toList(),
         ),
       ),
     );
@@ -581,4 +560,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
     //     // ),
     //     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

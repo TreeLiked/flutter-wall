@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/theme_utils.dart';
 
 class InputTextPage extends StatefulWidget {
   InputTextPage({
@@ -36,35 +40,41 @@ class _InputTextPageState extends State<InputTextPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        title: widget.title,
-        actionName: "完成",
-        onPressed: () {
-          NavigatorUtils.goBackWithParams(context, _controller.text);
-        },
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(
-            top: 21.0, left: 16.0, right: 16.0, bottom: 16.0),
-        child: TextField(
-            maxLength: widget.limit,
-            maxLengthEnforced: widget.showLimit,
-            maxLines: 5,
-            autofocus: true,
-            controller: _controller,
-            keyboardType: widget.keyboardType == 0
-                ? TextInputType.text
-                : TextInputType.phone,
-            keyboardAppearance: Theme.of(context).brightness,
+        appBar: MyAppBar(
+          title: widget.title,
+          actionName: "完成",
+          onPressed: () {
+            NavigatorUtils.goBackWithParams(context, _controller.text);
+          },
+        ),
+        body: Container(
+            margin: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+            padding: const EdgeInsets.only(left: 5.0,right: 5.0, bottom: 10.0),
+            decoration: BoxDecoration(
+                color: ThemeUtils.isDark(context)
+                    ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                    : ColorConstant.DEFAULT_BAR_BACK_COLOR,
+                borderRadius: BorderRadius.circular(8.0)),
+            child: TextField(
+                maxLength: widget.limit,
+                maxLengthEnforced: widget.showLimit,
+                maxLines: 5,
+                autofocus: true,
+                controller: _controller,
+                keyboardType: widget.keyboardType == 0 ? TextInputType.text : TextInputType.phone,
+                keyboardAppearance: Theme.of(context).brightness,
 
-            //style: TextStyles.textDark14,
+                //style: TextStyles.textDark14,
 
-            decoration: InputDecoration(
-              hintText: widget.hintText,
-              border: InputBorder.none,
-              //hintStyle: TextStyles.textGrayC14
-            )),
-      ),
-    );
+                style: TextStyle(height: 1.6, fontSize: Dimens.font_sp14, letterSpacing: 1.5),
+                decoration: InputDecoration(
+                  hintText: widget.hintText,
+                  border: InputBorder.none,
+                  hintMaxLines: 3,
+                  hintStyle: TextStyle(height: 1.6, fontSize: Dimens.font_sp14, letterSpacing: 1.4),
+//                  hintStyle: MyDefaultTextStyle.getTweetBodyStyle(ThemeUtils.isDark(context)).copyWith(color:null),
+
+                  //hintStyle: TextStyles.textGrayC14
+                ))));
   }
 }

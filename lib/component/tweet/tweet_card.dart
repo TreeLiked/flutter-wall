@@ -16,12 +16,13 @@ import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class TweetCard2 extends StatelessWidget {
-  final recomKey = GlobalKey<RecommendationState>();
+//  final recomKey = GlobalKey<RecommendationState>();
 
   final BaseTweet tweet;
 
@@ -31,9 +32,11 @@ class TweetCard2 extends StatelessWidget {
 
   // spach header 可点击
   final bool upClickable;
+
   // 点赞账户可点击
   final bool downClickable;
-  // 点击回复框，回调home page textfield
+
+  // 点击回复框，回调home page textField
   final displayReplyContainerCallback;
   final sendReplyCallback;
 
@@ -41,6 +44,9 @@ class TweetCard2 extends StatelessWidget {
   final bool displayComment;
   final bool displayExtra;
   final Widget moreWidget;
+
+  BuildContext context;
+  bool isDark;
 
   TweetCard2(this.tweet,
       {this.upClickable = true,
@@ -58,11 +64,15 @@ class TweetCard2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(tweet.toJson().toString() + "================================================");
     print('-----------------------tweet card 2 buld');
+    this.context = context;
+    isDark = ThemeUtils.isDark(context);
     return cardContainer2(context);
   }
 
   Widget cardContainer2(BuildContext context) {
+    print(tweet.gmtCreated.toIso8601String() + "============================");
     Widget wd = new Row(
       children: <Widget>[
         Expanded(
@@ -75,32 +85,26 @@ class TweetCard2 extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          TweetCardHeaderWrapper(
-                              tweet.account, tweet.anonymous, tweet.gmtCreated,
+                          TweetCardHeaderWrapper(tweet.account, tweet.anonymous, tweet.gmtCreated,
                               canClick: upClickable),
                           Gaps.vGap8,
                           _typeContainer(context),
                           Gaps.vGap5,
-                          _bodyContainer(),
-                          TweetImageWraper(
-                              picUrls: tweet.picUrls, sw: sw, sh: sh),
+                          _bodyContainer(context),
+                          TweetImageWrapper(picUrls: tweet.picUrls),
                           Gaps.vGap8,
                           displayPraise
                               ? TweetCardExtraWrapper(
-                                  tweet: tweet,
-                                  displayReplyContainerCallback:
-                                      displayReplyContainerCallback)
+                                  tweet: tweet, displayReplyContainerCallback: displayReplyContainerCallback)
                               : VEmptyView(0),
                           Gaps.vGap8,
                           displayComment
                               ? TweetCommentWrapper(tweet,
-                                  displayReplyContainerCallback:
-                                      displayReplyContainerCallback)
+                                  displayReplyContainerCallback: displayReplyContainerCallback)
                               : VEmptyView(0),
                           displayComment ? Gaps.vGap30 : Gaps.vGap10,
                           Gaps.line
@@ -128,15 +132,12 @@ class TweetCard2 extends StatelessWidget {
       NavigatorUtils.push(
           context,
           Routes.accountProfile +
-              Utils.packConvertArgs({
-                'nick': account.nick,
-                'accId': account.id,
-                'avatarUrl': account.avatarUrl
-              }));
+              Utils.packConvertArgs(
+                  {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
     }
   }
 
-  Widget _bodyContainer() {
+  Widget _bodyContainer(BuildContext context) {
     String body = tweet.body;
     return !StringUtil.isEmpty(body)
         ? Container(
@@ -148,8 +149,7 @@ class TweetCard2 extends StatelessWidget {
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 10,
-                      style: TextStyle(
-                          fontSize: GlobalConfig.TWEET_FONT_SIZE, height: 1.6)))
+                      style: MyDefaultTextStyle.getTweetBodyStyle(isDark)))
             ])
           ]))
         : Container(height: 0);
@@ -160,17 +160,12 @@ class TweetCard2 extends StatelessWidget {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-            color: tweetTypeMap[tweet.type].color ?? Colors.blueAccent,
-            borderRadius: BorderRadius.only(
-                topRight: temp, bottomLeft: temp, bottomRight: temp)),
-        child: Text(
-            ' # ' +
-                (tweetTypeMap[tweet.type].zhTag ??
-                    TextConstant.TEXT_UNCATCH_TWEET_TYPE),
-            style: TextStyle(
-                color: !ThemeUtils.isDark(context)
-                    ? Colors.white
-                    : ColorConstant.TWEET_TYPE_TEXT_DARK,
-                fontWeight: FontWeight.bold)));
+            color: (!ThemeUtils.isDark(context)
+                    ? tweetTypeMap[tweet.type].color
+                    : tweetTypeMap[tweet.type].color.withAlpha(100)) ??
+                Colors.blueAccent,
+            borderRadius: BorderRadius.only(topRight: temp, bottomLeft: temp, bottomRight: temp)),
+        child: Text(' # ' + (tweetTypeMap[tweet.type].zhTag ?? TextConstant.TEXT_UNCATCH_TWEET_TYPE),
+            style: MyDefaultTextStyle.getTweetTypeStyle(context)));
   }
 }

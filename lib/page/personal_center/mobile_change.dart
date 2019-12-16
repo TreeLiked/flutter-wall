@@ -59,7 +59,7 @@ class _SMSLoginPageState extends State<LoginPage> {
   }
 
   void _login() {
-    Utils.showDefaultLoadingWithBonuds(context, text: '正在更新');
+    Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
     MemberApi.login(_phoneController.text).then((res) async {
       if (res.isSuccess && res.code == "1") {
         // 已经存在账户，直接登录
@@ -131,7 +131,7 @@ class _SMSLoginPageState extends State<LoginPage> {
             keyboardType: TextInputType.number,
             hintText: "请输入验证码",
             getVCode: () async {
-              Utils.showDefaultLoadingWithBonuds(context);
+              Utils.showDefaultLoadingWithBounds(context);
               Result res = await MemberApi.sendPhoneVerificationCode(
                   _phoneController.text);
               NavigatorUtils.goBack(context);

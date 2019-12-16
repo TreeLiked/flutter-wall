@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:rxdart/rxdart.dart';
@@ -116,6 +117,8 @@ class _MyTextFieldState extends State<MyTextField> {
           obscureText: widget.isInputPwd ? !_isShowPwd : false,
           autofocus: widget.autoFocus,
           controller: widget.controller,
+          style: TextStyle(color: Colors.white70),
+
           textInputAction: TextInputAction.done,
           keyboardType: widget.keyboardType,
           // 数字、手机号限制格式为0到9(白名单)， 密码限制不包含汉字（黑名单）
@@ -127,8 +130,10 @@ class _MyTextFieldState extends State<MyTextField> {
                   : null),
           onChanged: (val) => widget.onChange(val),
           decoration: InputDecoration(
+
               contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
               hintText: widget.hintText,
+              hintStyle: TextStyle(color: Colors.white30),
               counterText: "",
               focusedBorder: UnderlineInputBorder(
                   borderSide:

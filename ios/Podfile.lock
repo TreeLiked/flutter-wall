@@ -1,6 +1,9 @@
 PODS:
-  - city_pickers (0.0.1):
-    - Flutter
+  - BSGridCollectionViewLayout (1.2.5)
+  - BSImagePicker (2.10.3):
+    - BSGridCollectionViewLayout (= 1.2.5)
+    - BSImageView (= 1.0.3)
+  - BSImageView (1.0.3)
   - device_info (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -21,6 +24,9 @@ PODS:
   - jpush_flutter (0.0.2):
     - Flutter
     - JPush
+  - multi_image_picker (4.6.0):
+    - BSImagePicker (~> 2.10.3)
+    - Flutter
   - path_provider (0.0.1):
     - Flutter
   - permission_handler (4.0.0):
@@ -32,11 +38,12 @@ PODS:
   - sqflite (0.0.1):
     - Flutter
     - FMDB (~> 2.7.2)
+  - vibrate (0.0.1):
+    - Flutter
   - webview_flutter (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - city_pickers (from `.symlinks/plugins/city_pickers/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
@@ -44,22 +51,25 @@ DEPENDENCIES:
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - image_picker_saver (from `.symlinks/plugins/image_picker_saver/ios`)
   - jpush_flutter (from `.symlinks/plugins/jpush_flutter/ios`)
+  - multi_image_picker (from `.symlinks/plugins/multi_image_picker/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - vibrate (from `.symlinks/plugins/vibrate/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - BSGridCollectionViewLayout
+    - BSImagePicker
+    - BSImageView
     - FMDB
     - JCore
     - JPush
 
 EXTERNAL SOURCES:
-  city_pickers:
-    :path: ".symlinks/plugins/city_pickers/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   Flutter:
@@ -74,6 +84,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_saver/ios"
   jpush_flutter:
     :path: ".symlinks/plugins/jpush_flutter/ios"
+  multi_image_picker:
+    :path: ".symlinks/plugins/multi_image_picker/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   permission_handler:
@@ -84,11 +96,15 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  vibrate:
+    :path: ".symlinks/plugins/vibrate/ios"
   webview_flutter:
     :path: ".symlinks/plugins/webview_flutter/ios"
 
 SPEC CHECKSUMS:
-  city_pickers: b0370f4c35c201723b5b7fcce10ec29b59d5bc35
+  BSGridCollectionViewLayout: 333dcb457a5a3bdd9212607ab5756553dcfe06cb
+  BSImagePicker: 07404254f2fcdaf5a2eb403c0f8c337267ce8738
+  BSImageView: a149459433a2687157d034c78e059d30ac7f2544
   device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
@@ -99,11 +115,13 @@ SPEC CHECKSUMS:
   JCore: d345c049141877eb61c33011455fdb5fcab1673f
   JPush: 41dd48a69bd8c08abc692dc7f2b23c0fb281471f
   jpush_flutter: d7e3a79466eb9447fd940233f02661b514f137c6
+  multi_image_picker: 20b39637c5728e44c69d7b3742bb555cd09a9970
   path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
   permission_handler: 0fb88b8a3c23e31e5de45b8f1bb8b7de28cf8941
   photo_manager: 47ca9adddeea702246c96c6f67769f03907cd953
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
+  vibrate: 967ba16b8bd87d2fa3646472bb10429f1927c32f
   webview_flutter: db3aba222b23e4dc432e0c5882834123dc50ff9f
 
 PODFILE CHECKSUM: 892d13e03a00c787c53a943af5a0f26d176556fc

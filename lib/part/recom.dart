@@ -57,6 +57,7 @@ class RecommendationState extends State<Recommendation>
 
     return Consumer<TweetProvider>(builder: (context, provider, _) {
       return SingleChildScrollView(
+
           scrollDirection: Axis.vertical,
           child: Stack(
             children: <Widget>[

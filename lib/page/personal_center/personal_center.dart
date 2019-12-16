@@ -8,6 +8,7 @@ import 'package:iap_app/component/up_down_item.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/page/common/avatar_origin.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -24,8 +25,7 @@ class PersonalCenter extends StatefulWidget {
   }
 }
 
-class PersonCenterState extends State<PersonalCenter>
-    with AutomaticKeepAliveClientMixin<PersonalCenter> {
+class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveClientMixin<PersonalCenter> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -39,31 +39,22 @@ class PersonCenterState extends State<PersonalCenter>
             SliverAppBar(
                 pinned: false,
                 snap: false,
-                expandedHeight: ScreenUtil().setHeight(160),
+                expandedHeight: ScreenUtil().setHeight(180),
                 elevation: 0.5,
                 floating: false,
                 leading: Icon(Icons.notifications),
                 bottom: PreferredSize(
                   // Add this code
-                  preferredSize: Size.fromHeight(
-                      ScreenUtil().setHeight(160)), // Add this code
+                  preferredSize: Size.fromHeight(ScreenUtil().setHeight(180)), // Add this code
                   child: Text(''), // Add this code
                 ),
                 flexibleSpace: Container(
-                  padding:
-                      EdgeInsets.only(top: ScreenUtil.statusBarHeight + 10),
+                  padding: EdgeInsets.only(top: ScreenUtil.statusBarHeight + 10),
                   // margin: EdgeInsets.only(bottom: 40),
                   decoration: BoxDecoration(
                     // color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20)),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //       color: Colors.white,
-                    //       blurRadius: 10.0,
-                    //       spreadRadius: 5.0),
-                    // ],
+                    borderRadius:
+                        BorderRadius.only(bottomLeft:const Radius.circular(20), bottomRight: Radius.circular(200)),
                     gradient: new LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomCenter,
@@ -88,26 +79,35 @@ class PersonCenterState extends State<PersonalCenter>
                           ),
                           child: Column(
                             children: <Widget>[
-                              AccountAvatar(
-                                avatarUrl: Application.getAccount.avatarUrl,
-                                size: SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
-                                whitePadding: true,
+                              Hero(
+                                tag: "avatar",
+                                child: AccountAvatar(
+                                  avatarUrl: Application.getAccount.avatarUrl,
+                                  size: SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
+                                  whitePadding: true,
+                                  onTap: () {
+                                    print("sdmasdmasldmsaldas------------");
+                                    Navigator.push(context, PageRouteBuilder(pageBuilder:
+                                        (BuildContext context, Animation animation,
+                                            Animation secondaryAnimation) {
+                                      return new FadeTransition(
+                                        opacity: animation,
+                                        child: AvatarOriginPage(Application.getAccount.avatarUrl),
+                                      );
+                                    }));
+                                  },
+                                ),
                               ),
                               Container(
-                                padding: EdgeInsets.only(
-                                    top: ScreenUtil().setHeight(20)),
+                                padding: EdgeInsets.only(top: ScreenUtil().setHeight(20)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: <Widget>[
                                     Container(
-                                        child: MediaQuery.removePadding(
-                                      context: context,
                                       child: Text(provider.account.nick,
-                                          style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500)),
-                                    )),
+                                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -166,26 +166,15 @@ class PersonCenterState extends State<PersonalCenter>
                   children: <Widget>[
                     Container(
                       // color: Theme.of(context).scaffoldBackgroundColor,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
+                          UpDownItem(WidgetUtil.getAsset(PathConstant.ICON_ARTICLE, size: 25), Text('发布'),
+                              () => NavigatorUtils.push(context, SettingRouter.historyPushPage)),
                           UpDownItem(
-                              WidgetUtil.getAsset(PathConstant.ICON_ARTICLE,
-                                  size: 25),
-                              Text('我的发布'),
-                              () => NavigatorUtils.push(
-                                  context, SettingRouter.historyPushPage)),
-                          UpDownItem(
-                              WidgetUtil.getAsset(PathConstant.ICON_LOVE_PLUS,
-                                  size: 25),
-                              Text('我点赞的'),
-                              null),
-                          UpDownItem(
-                              WidgetUtil.getAsset(PathConstant.ICON_STAR,
-                                  size: 25),
-                              Text('我的收藏'),
+                              WidgetUtil.getAsset(PathConstant.ICON_LOVE_PLUS, size: 25), Text('点赞'), () {}),
+                          UpDownItem(WidgetUtil.getAsset(PathConstant.ICON_STAR, size: 25), Text('收藏'),
                               () => ToastUtil.showToast(context, '收藏功能暂未开放')),
                         ],
                       ),
@@ -199,10 +188,9 @@ class PersonCenterState extends State<PersonalCenter>
                           _getGroupSetting([
                             ClickItem(
                               title: '我的组织',
-                              content: Application.getOrgName ??
-                                  TextConstant.TEXT_UNCATCH_ERROR,
+                              content: Application.getOrgName ?? TextConstant.TEXT_UNCATCH_ERROR,
                               onTap: () {
-                                ToastUtil.showToast(context, '组织切换功能暂无开放');
+                                ToastUtil.showToast(context, '组织切换功能暂未开放');
                                 // NavigatorUtils.push(
                                 //     context,
                                 //     SettingRouter.orgChoosePage +
@@ -221,8 +209,7 @@ class PersonCenterState extends State<PersonalCenter>
                             ClickItem(
                               title: '我的信息',
                               onTap: () {
-                                NavigatorUtils.push(
-                                    context, SettingRouter.accountInfoPage);
+                                NavigatorUtils.push(context, SettingRouter.accountInfoPage);
                               },
                             ),
                             ClickItem(
@@ -237,8 +224,7 @@ class PersonCenterState extends State<PersonalCenter>
                             ClickItem(
                               title: '隐私设置',
                               onTap: () {
-                                NavigatorUtils.push(
-                                    context, SettingRouter.privateSettingPage);
+                                NavigatorUtils.push(context, SettingRouter.privateSettingPage);
                               },
                             )
                           ]),
@@ -246,14 +232,12 @@ class PersonCenterState extends State<PersonalCenter>
                             ClickItem(
                               title: '其他设置',
                               onTap: () {
-                                NavigatorUtils.push(
-                                    context, SettingRouter.otherSettingPage);
+                                NavigatorUtils.push(context, SettingRouter.otherSettingPage);
                               },
                             ),
                             ClickItem(
                               title: '关于我们',
-                              onTap: () => NavigatorUtils.push(
-                                  context, SettingRouter.aboutPage),
+                              onTap: () => NavigatorUtils.push(context, SettingRouter.aboutPage),
                             )
                           ]),
                           _getGroupSetting([]),

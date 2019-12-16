@@ -68,7 +68,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                       barrierDismissible: false,
                       builder: (_) => SimpleConfirmDialog(
                             '无法访问照片',
-                            '你未开启"允许甜甜圈访问照片"选项',
+                            '你未开启"允许Wall访问照片"选项',
                             leftItem: ClickableText('知道了', () {
                               NavigatorUtils.goBack(context);
                             }),
@@ -181,7 +181,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
           builder: (context) =>
               ImageCropContainer(cropKey: cropKey, file: image)));
       if (file != null) {
-        Utils.showDefaultLoadingWithBonuds(context, text: '正在更新ß');
+        Utils.showDefaultLoadingWithBounds(context, text: '正在更新ß');
         String resultUrl =
             await OssUtil.uploadImage(file.path, file, toTweet: false);
         if (resultUrl != "-1") {
@@ -204,7 +204,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   }
 
   Future<void> _updateSomething(AccountEditParam param, final callback) async {
-    Utils.showDefaultLoadingWithBonuds(context, text: "正在更新");
+    Utils.showDefaultLoadingWithBounds(context, text: "正在更新");
     Result r = await MemberApi.modAccount(param);
     if (r != null && r.isSuccess) {
       callback(true);

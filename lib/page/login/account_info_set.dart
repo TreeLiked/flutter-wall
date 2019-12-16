@@ -85,7 +85,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           barrierDismissible: false,
           builder: (_) => SimpleConfirmDialog(
                 '无法访问照片',
-                '你未开启"允许甜甜圈访问照片"选项',
+                '你未开启"允许Wall访问照片"选项',
                 leftItem: ClickableText('知道了', () {
                   NavigatorUtils.goBack(context);
                 }),
@@ -221,7 +221,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
       return;
     }
     // checkNikc
-    Utils.showDefaultLoadingWithBonuds(context);
+    Utils.showDefaultLoadingWithBounds(context);
     MemberApi.checkNickRepeat(nick.trim()).then((res) async {
       if (res.isSuccess) {
         NavigatorUtils.goBack(context);

@@ -26,6 +26,7 @@ import 'package:photo_manager/photo_manager.dart';
 
 class CreatePage extends StatefulWidget {
   final String title = "发布内容";
+
   @override
   State<StatefulWidget> createState() {
     return _CreatePageState();
@@ -38,6 +39,7 @@ class _CreatePageState extends State<CreatePage> {
 
   // 开启回复
   bool _enbaleReply = true;
+
   // 是否匿名
   bool _anonymous = false;
 
@@ -58,6 +60,7 @@ class _CreatePageState extends State<CreatePage> {
 
   // 屏幕宽度
   double sw;
+
   // 去除边距剩余宽度
   double remain;
 
@@ -98,7 +101,7 @@ class _CreatePageState extends State<CreatePage> {
       return;
     }
 
-    Utils.showDefaultLoadingWithBonuds(context, text: '正在发布');
+    Utils.showDefaultLoadingWithBounds(context, text: '正在发布');
     _focusNode.unfocus();
     setState(() {
       this._isPushBtnEnabled = false;
@@ -204,66 +207,11 @@ class _CreatePageState extends State<CreatePage> {
         MaterialPageRoute(
             builder: (context) => TweetTypeSelect(
                   title: "选择内容类型",
-                  multi: false,
                   finishText: "完成",
                   needVisible: false,
-                  initNames:
-                      !StringUtil.isEmpty(_typeName) ? [_typeName] : null,
+                  initNames: !StringUtil.isEmpty(_typeName) ? [_typeName] : null,
                   callback: (typeNames) => _selectTypeCallback(typeNames),
                 )));
-    // showModalBottomSheet(
-    //     isScrollControlled: true,
-    //     context: context,
-    //     builder: (builder) {
-    //       return StatefulBuilder(builder: (context1, state) {
-    //         return Stack(
-    //           children: <Widget>[
-    //             Container(
-    //               height: 30.0,
-    //               width: double.infinity,
-    //               color: Colors.black54,
-    //             ),
-    //             Container(
-    //                 // height: 350,
-    //                 // constraints: BoxConstraints(maxHeight: 500),
-    //                 decoration: BoxDecoration(
-    //                     color: Colors.white,
-    //                     borderRadius:
-    //                         BorderRadius.vertical(top: Radius.circular(16))),
-    //                 child: FractionallySizedBox(
-    //                     heightFactor: 0.46,
-    //                     child: Container(
-    //                       padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
-    //                       child: Column(
-    //                         children: <Widget>[
-    //                           Row(
-    //                             mainAxisAlignment: MainAxisAlignment.center,
-    //                             children: <Widget>[
-    //                               Text(
-    //                                 '- 请选择内容类型 -',
-    //                                 style: TextStyle(
-    //                                     color: Colors.black, fontSize: 18),
-    //                               ),
-    //                             ],
-    //                           ),
-    //                           Expanded(
-    //                             child: Container(
-    //                                 child: Wrap(
-    //                               spacing: 2,
-    //                               alignment: WrapAlignment.start,
-    //                               runAlignment: WrapAlignment.spaceEvenly,
-    //                               runSpacing: 5,
-    //                               children: <Widget>[
-    //                               ],
-    //                             )),
-    //                           )
-    //                         ],
-    //                       ),
-    //                     ))),
-    //           ],
-    //         );
-    //       });
-    //     });
   }
 
   void pickImage(PickType type) async {
@@ -395,11 +343,12 @@ class _CreatePageState extends State<CreatePage> {
               onPanDown: (_) => _hideKeyB(),
               child: new Container(
                 color: Colors.white,
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Container(
+                      padding: const EdgeInsets.only(left: 3.0, right: 3.0, top: 5.0),
                       child: TextField(
                         keyboardAppearance: Theme.of(context).brightness,
                         controller: _controller,
@@ -411,8 +360,7 @@ class _CreatePageState extends State<CreatePage> {
                         autocorrect: false,
                         maxLines: 8,
                         style: TextStyle(
-                            fontSize: SizeConstant.TWEET_FONT_SIZE,
-                            color: Colors.black),
+                            height: 1.5, fontSize: SizeConstant.TWEET_FONT_SIZE, color: Colors.black),
                         decoration: new InputDecoration(
                             hintText: '分享新鲜事',
                             border: InputBorder.none,
@@ -449,26 +397,21 @@ class _CreatePageState extends State<CreatePage> {
                             onTap: () => _reverseEnableReply(),
                             child: Container(
                               margin: const EdgeInsets.only(right: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: const BoxDecoration(
                                   color: Color(0xffF5F5F5),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15))),
+                                  borderRadius: BorderRadius.all(Radius.circular(15))),
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: <Widget>[
                                   Icon(
                                     _enbaleReply ? Icons.lock_open : Icons.lock,
-                                    color: _enbaleReply
-                                        ? Color(0xff87CEEB)
-                                        : Colors.grey,
+                                    color: _enbaleReply ? Color(0xff87CEEB) : Colors.grey,
                                     size: 16,
                                   ),
                                   Text(
                                     " " + (_enbaleReply ? "允许评论 " : "禁止评论 "),
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
+                                    style: TextStyle(fontSize: 12, color: Colors.grey),
                                   ),
                                 ],
                               ),
@@ -478,28 +421,21 @@ class _CreatePageState extends State<CreatePage> {
                             onTap: () => _reverseAnonymous(),
                             child: Container(
                               margin: const EdgeInsets.only(right: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: const BoxDecoration(
                                   color: Color(0xffF5F5F5),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15))),
+                                  borderRadius: BorderRadius.all(Radius.circular(15))),
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: <Widget>[
                                   Icon(
-                                    _anonymous
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: _anonymous
-                                        ? Color(0xff87CEEB)
-                                        : Colors.grey,
+                                    _anonymous ? Icons.visibility_off : Icons.visibility,
+                                    color: _anonymous ? Color(0xff87CEEB) : Colors.grey,
                                     size: 16,
                                   ),
                                   Text(
                                     " " + (_anonymous ? "匿名" : "公开"),
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
+                                    style: TextStyle(fontSize: 12, color: Colors.grey),
                                   ),
                                 ],
                               ),
@@ -512,19 +448,15 @@ class _CreatePageState extends State<CreatePage> {
                               GestureDetector(
                                 onTap: () => _forwardSelPage(),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                   decoration: const BoxDecoration(
                                       color: Color(0xffF5F5F5),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15))),
+                                      borderRadius: BorderRadius.all(Radius.circular(15))),
                                   child: Text(
                                     "# " + _typeText,
                                     style: TextStyle(
                                         fontSize: 12,
-                                        color: !StringUtil.isEmpty(_typeName)
-                                            ? Colors.blue
-                                            : Colors.grey),
+                                        color: !StringUtil.isEmpty(_typeName) ? Colors.blue : Colors.grey),
                                   ),
                                 ),
                               ),
@@ -573,7 +505,7 @@ class _CreatePageState extends State<CreatePage> {
     });
   }
 
-  Widget getIamgeSelWidget() {
+  Widget getImageSelWidget() {
     double width = (sw - 25 - spacing * 2) / 3;
 
     return GestureDetector(
@@ -595,9 +527,8 @@ class _CreatePageState extends State<CreatePage> {
         widgets.add(GestureDetector(
           onLongPress: () {
             setState(() {
-              BottomSheetUtil.showBottmSheetView(context, [
-                BottomSheetItem(Icon(Icons.delete, color: Colors.red), '删除这张图片',
-                    () {
+              BottomSheetUtil.showBottomSheetView(context, [
+                BottomSheetItem(Icon(Icons.delete, color: Colors.redAccent), '删除这张图片', () {
                   setState(() {
                     this.pics.removeAt(j);
                     _updatePushBtnState();
@@ -622,7 +553,7 @@ class _CreatePageState extends State<CreatePage> {
       }
     }
 
-    widgets.add(getIamgeSelWidget());
+    widgets.add(getImageSelWidget());
     // pics
     //     .map((f) => GestureDetector(
     //           onTap: () async {

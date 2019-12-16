@@ -1,14 +1,9 @@
-import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
-import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
-import 'package:iap_app/provider/tweet_typs_filter.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:provider/provider.dart';
 
 class TweetTypeSelect extends StatefulWidget {
   String title;
@@ -16,8 +11,6 @@ class TweetTypeSelect extends StatefulWidget {
   String finishText;
   String backText;
 
-  // 是否多选
-  bool multi;
   final callback;
   List<String> initNames;
 
@@ -26,7 +19,6 @@ class TweetTypeSelect extends StatefulWidget {
 
   TweetTypeSelect(
       {this.title,
-      this.multi = false,
       this.finishText,
       this.backText = "返回",
       this.callback,
@@ -43,11 +35,10 @@ class TweetTypeSelect extends StatefulWidget {
 class _TweetTypeSelectState extends State<TweetTypeSelect> {
   List<String> selTypes = new List();
 
-  List<String> typeKeysList = tweetTypeMap.keys.toList();
+  List<String> typeKeysList =
+      TweetTypeUtil.getPushableTweetTypeMap().keys.map((nameKey) => nameKey.toString()).toList();
 
   Map<String, bool> selects = Map();
-
-  TweetTypesFilterProvider filterProvider;
 
   @override
   void initState() {
@@ -61,19 +52,13 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
 
   @override
   Widget build(BuildContext context) {
-    filterProvider = Provider.of<TweetTypesFilterProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            if (!widget.multi) {
-              Navigator.pop(context);
-            } else {
-              setState(() {
-                widget.editState = !widget.editState;
-              });
-            }
+            NavigatorUtils.goBack(context);
           },
           icon: Text(
             widget.backText,
@@ -89,18 +74,10 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
                   list.add(k);
                 }
               });
-              if (widget.multi) {
-                await SpUtil.putStringList(
-                    SharedConstant.LOCAL_FILTER_TYPES, list);
-                filterProvider.updateTypeNames();
-              }
-
               Navigator.pop(context);
               widget.callback(list);
             },
-            icon: Text(widget.finishText,
-                style:
-                    TextStyle(color: Theme.of(context).textTheme.title.color)),
+            icon: Text(widget.finishText, style: TextStyle(color: Theme.of(context).textTheme.title.color)),
           )
         ],
       ),
@@ -116,17 +93,14 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
             ),
           );
         },
-        itemCount: tweetTypeMap.length,
+        itemCount: typeKeysList.length,
         itemBuilder: (BuildContext context, int index) {
-          bool sel = selects[typeKeysList[index]] != null &&
-              selects[typeKeysList[index]];
+          bool sel = selects[typeKeysList[index]] != null && selects[typeKeysList[index]];
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(6)),
-              color: sel && !widget.multi
-                  ? (!ThemeUtils.isDark(context)
-                      ? Color(0xff87CEEB)
-                      : Theme.of(context).backgroundColor)
+              color: sel
+                  ? (!ThemeUtils.isDark(context) ? Color(0xff87CEEB) : Theme.of(context).backgroundColor)
                   : Theme.of(context).appBarTheme.color,
             ),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -136,61 +110,28 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
               title: Text(
                 tweetTypeMap[typeKeysList[index]].zhTag,
                 style: TextStyle(
-                  color: sel && !widget.multi
-                      ? Colors.white
-                      : Theme.of(context).textTheme.title.color,
+                  color: sel ? Colors.white : Theme.of(context).textTheme.title.color,
                 ),
               ),
               subtitle: Text(
                 tweetTypeMap[typeKeysList[index]].intro,
                 style: TextStyle(
                   fontSize: 13,
-                  color: sel && !widget.multi
-                      ? Colors.white
-                      : Theme.of(context).textTheme.title.color,
+                  color: sel ? Colors.white : Theme.of(context).textTheme.subtitle.color,
                 ),
               ),
-              trailing: sel && widget.multi
-                  ? (widget.editState
-                      ? getIcon(PathConstant.ICON_CHECKBOX_SEL)
-                      : getIcon(PathConstant.ICON_TICK))
-                  : (widget.editState
-                      ? getIcon(PathConstant.ICON_CHECKBOX_UNSEL)
-                      : null),
               onTap: () {
-                if (widget.editState || !widget.multi) {
-                  setState(() {
-                    if (widget.multi) {
-                      if (selects.containsKey(typeKeysList[index])) {
-                        if (selects[typeKeysList[index]] == true) {
-                          selects[typeKeysList[index]] = false;
-                        } else {
-                          selects[typeKeysList[index]] = true;
-                        }
-                      } else {
-                        selects[typeKeysList[index]] = true;
-                      }
-                    } else {
-                      for (int i = 0; i < typeKeysList.length; i++) {
-                        selects[typeKeysList[i]] = false;
-                      }
-                      selects[typeKeysList[index]] = true;
-                    }
-                  });
-                }
+                setState(() {
+                  for (int i = 0; i < typeKeysList.length; i++) {
+                    selects[typeKeysList[i]] = false;
+                  }
+                  selects[typeKeysList[index]] = true;
+                });
               },
             ),
           );
         },
       ),
-    );
-  }
-
-  static Image getIcon(String path) {
-    return Image.asset(
-      path,
-      fit: BoxFit.scaleDown,
-      width: prefix0.ScreenUtil().setWidth(40),
     );
   }
 }

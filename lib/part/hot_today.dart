@@ -59,7 +59,7 @@ class _HotTodayState extends State<HotToday>
   }
 
   Future<void> getData() async {
-    HotTweet ht = await TweetApi.queryOrghHotTweets(orgId);
+    HotTweet ht = await TweetApi.queryOrgHotTweets(orgId);
 
     if (ht == null) {
       ToastUtil.showToast(context, '数据加载错误');
@@ -176,7 +176,7 @@ class _HotTodayState extends State<HotToday>
       print(ht.toJson());
       List<Widget> list = new List();
       for (int i = 0; i < hotTweet.tweets.length; i++) {
-        list.add(_buldHotTweetCard(ht.tweets[i], i));
+        list.add(_buildHotTweetCard(ht.tweets[i], i));
       }
       return list;
     } else if (hotTweet != null) {
@@ -212,7 +212,7 @@ class _HotTodayState extends State<HotToday>
     );
   }
 
-  _buldHotTweetCard(BaseTweet bt, int index) {
+  _buildHotTweetCard(BaseTweet bt, int index) {
     index = index + 1;
     String idxStr = index.toString();
     if (index < 10) {
@@ -369,31 +369,34 @@ class _HotTodayState extends State<HotToday>
                       ],
                     ),
                   ),
-                  Expanded(
-                      flex: 2,
-                      child: Container(
-                        padding: EdgeInsets.only(right: 10),
-                        child: ClipRRect(
-                          clipBehavior: Clip.antiAlias,
-                          borderRadius: BorderRadius.circular(5),
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: CachedNetworkImage(
-                              imageUrl: CollectionUtil.isListEmpty(bt.picUrls)
-                                  ? (tweetTypeMap[bt.type].coverUrl ??
-                                      PathConstant.HOT_COVER_URL)
-                                  : bt.picUrls[0] +
+                  !CollectionUtil.isListEmpty(bt.picUrls)
+                      ? Expanded(
+                          flex: 2,
+                          child: Container(
+                            padding: EdgeInsets.only(right: 10),
+                            child: ClipRRect(
+                              clipBehavior: Clip.antiAlias,
+                              borderRadius: BorderRadius.circular(5),
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: CachedNetworkImage(
+                                  imageUrl: bt.picUrls[0] +
                                       OssConstant.THUMBNAIL_SUFFIX,
-                              placeholder: (context, url) => Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Image.asset(PathConstant.LOADING_GIF)),
-                              fit: BoxFit.cover,
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
+                                  placeholder: (context, url) => Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Image.asset(
+                                          PathConstant.LOADING_GIF)),
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
+                              ),
                             ),
-                          ),
+                          ))
+                      : Expanded(
+                          flex: 2,
+                          child: Container(height: 0),
                         ),
-                      )),
                   Divider()
                 ],
               ),

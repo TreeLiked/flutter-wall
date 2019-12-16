@@ -43,7 +43,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     Routes.configureRoutes(router);
     Application.router = router;
 
-    PaintingBinding.instance.imageCache.clear();
+//    PaintingBinding.instance.imageCache.clear();
 //   DefaultCacheManger manager = new DefaultCacheManager();
 // manager.emtyCache();
   }
@@ -120,7 +120,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
         ],
         child: Consumer<ThemeProvider>(builder: (_, provider, __) {
           return MaterialApp(
-            title: 'Flutter Deer',
+            title: 'Wall',
             //showPerformanceOverlay: true, //显示性能标签
             debugShowCheckedModeBanner: false,
             theme: provider.getTheme(),

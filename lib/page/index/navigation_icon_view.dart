@@ -12,13 +12,14 @@ class NavigationIconView {
   NavigationIconView(
       {Icon icon, Widget title, TickerProvider vsync, this.selColor})
       : item = new BottomNavigationBarItem(
-            icon: icon,
-            title: title,
-            activeIcon: Icon(
-              icon.icon,
-              size: icon.size,
-              color: selColor,
-            )),
+          icon: icon,
+          title: title,
+           activeIcon: Icon(
+             icon.icon,
+             size: icon.size,
+             color: Colors.blueAccent,
+           )
+        ),
         controller = new AnimationController(
             duration: kThemeAnimationDuration, vsync: vsync);
 }

@@ -11,6 +11,10 @@ class TweetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void delete(int tweetId) {
+    _displayTweets.removeWhere((t)=> t.id == tweetId);
+  }
+
   void update(List<BaseTweet> tweets,
       {bool append = true, bool clear = false}) {
     if (append && clear) {
@@ -22,8 +26,6 @@ class TweetProvider extends ChangeNotifier {
       if (clear) {
         _displayTweets = List();
         _displayTweets.addAll(tweets);
-        print('----------------');
-        print(_displayTweets);
       } else {
         if (append) {
           if (_displayTweets == null) {

@@ -8,6 +8,7 @@ import 'package:iap_app/component/widget_sliver_future_builder.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class HistoryPushedPage extends StatefulWidget {
   @override
@@ -58,8 +59,7 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
         centerTitle: '我的发布',
       ),
       body: CustomSliverFutureBuilder(
-          futureFunc: _getPushedTask,
-          builder: (context, data) => _buildBody(context, data)),
+          futureFunc: _getPushedTask, builder: (context, data) => _buildBody(context, data)),
     );
   }
 
@@ -82,13 +82,12 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
       onLoad: _loadMoreData,
       child: SingleChildScrollView(
         child: Column(
-          children: _accountTweets
-              .map((f) => TweetCard2(f,
-                  upClickable: false,
-                  downClickable: true,
-                  displayPraise: false,
-                  displayComment: false))
-              .toList(),
+          children: !CollectionUtil.isListEmpty(_accountTweets)
+              ? _accountTweets
+                  .map((f) => TweetCard2(f,
+                      upClickable: false, downClickable: true, displayPraise: false, displayComment: false))
+                  .toList()
+              : [LoadAssetImage('no_data')],
         ),
       ),
     );

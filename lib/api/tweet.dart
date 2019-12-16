@@ -14,6 +14,7 @@ import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
+import 'package:iap_app/util/string.dart';
 
 class TweetApi {
   static String localAccountToken =
@@ -21,7 +22,7 @@ class TweetApi {
 
   static Future<List<BaseTweet>> queryTweets(
       PageParam param, String accountId) async {
-    String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY;
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
     print(url);
 
     checkAuthorizationHeaders();
@@ -45,7 +46,7 @@ class TweetApi {
   static Future<List<BaseTweet>> queryAccountTweets(
       PageParam pageParam, String passiveAccountId,
       {bool needAnonymous = true}) async {
-    String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY;
+    String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
     checkAuthorizationHeaders();
     Response response;
     var param = {
@@ -70,12 +71,33 @@ class TweetApi {
     return null;
   }
 
+  static Future<Result> deleteAccountTweets(String accountId,int tweetId) async {
+    if (StringUtil.isEmpty(accountId)) {
+      return Result(isSuccess: false);
+    }
+    String requestUrl = Api.API_TWEET_DELETE +
+        "?" +
+        SharedConstant.ACCOUNT_ID_IDENTIFIER +
+        "=$accountId&tId=$tweetId";
+    print(requestUrl);
+    checkAuthorizationHeaders();
+    Response response;
+    try {
+      response = await httpUtil.dio.post(requestUrl);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
   static Future<Map<String, dynamic>> pushTweet(BaseTweet tweet) async {
-    print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERYY);
+    print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERY);
+    checkAuthorizationHeaders();
     Response response = await httpUtil.dio.post(
         Api.API_BASE_INF_URL + Api.API_TWEET_CREATE,
         data: tweet.toJson());
-
     return Api.convertResponse(response.data);
   }
 
@@ -83,7 +105,6 @@ class TweetApi {
       List<String> fileSuffixes, String type) async {
     StringBuffer buffer = new StringBuffer();
     fileSuffixes.forEach((f) => buffer.write("&suffix=$f"));
-
     String url = Api.API_BASE_INF_URL +
         Api.API_TWEET_MEDIA_UPLOAD_REQUEST +
         "?type=$type&${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
@@ -140,7 +161,7 @@ class TweetApi {
     return replies;
   }
 
-  static Future<List<Account>> quertTweetPraise(int tweetId) async {
+  static Future<List<Account>> queryTweetPraise(int tweetId) async {
     var param = {
       'tweetIds': [tweetId],
       'type': 'PRAISE'
@@ -171,10 +192,10 @@ class TweetApi {
   //   return Result.fromJson(json);
   // }
 
-  static Future<HotTweet> queryOrghHotTweets(int orgId) async {
+  static Future<HotTweet> queryOrgHotTweets(int orgId) async {
     try {
       String url = Api.API_BASE_INF_URL +
-          Api.API_TWEET_HOT_QUERYY +
+          Api.API_TWEET_HOT_QUERY +
           '?orgId=$orgId&acId=' +
           Application.getAccountId;
       Response response = await httpUtil.dio.get(url);
@@ -187,9 +208,9 @@ class TweetApi {
   }
 
   static Future<HotTweet> queryPraise(int tweetId) async {
-    print(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERYY);
+    print(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY);
     Response response = await httpUtil.dio
-        .get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERYY + '?tId=$tweetId');
+        .get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?tId=$tweetId');
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return HotTweet.fromJson(json);
   }

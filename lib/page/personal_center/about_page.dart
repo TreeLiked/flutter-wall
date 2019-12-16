@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/update_dialog.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
@@ -91,7 +92,7 @@ class _AboutPageState extends State<AboutPage> {
               content: "请我喝咖啡",
               onTap: () {
                 NavigatorUtils.goWebViewPage(
-                    context, "甜甜圈", "https://gitee.com/treeliked/iap-app");
+                    context, "Wall", "https://gitee.com/treeliked/iap-app");
               }),
           ClickItem(
               title: "作者",

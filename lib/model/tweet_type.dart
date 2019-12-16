@@ -16,14 +16,30 @@ final tweetTypeMap = {
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
   "OTHER": TweetTypeEntity.OTHER,
   "OFFICIAL": TweetTypeEntity.OFFICIAL,
+  "AD": TweetTypeEntity.AD,
 };
 
 class TweetTypeUtil {
   static Map getFilterableTweetTypeMap() {
     final filteredMap = new Map.fromIterable(
-        tweetTypeMap.keys.where((k) => tweetTypeMap[k].filterable),
+        tweetTypeMap.keys.where(
+            (k) => tweetTypeMap[k].filterable && tweetTypeMap[k].visible),
         value: (k) => tweetTypeMap[k]);
     return filteredMap;
+  }
+
+  static Map<dynamic, TweetTypeEntity> getVisibleTweetTypeMap() {
+    final visibleMap = new Map.fromIterable(
+        tweetTypeMap.keys.where((k) => tweetTypeMap[k].visible),
+        value: (k) => tweetTypeMap[k]);
+    return visibleMap;
+  }
+
+  static Map<dynamic, TweetTypeEntity> getPushableTweetTypeMap() {
+    final visibleMap = new Map.fromIterable(
+        tweetTypeMap.keys.where((k) => tweetTypeMap[k].pushable),
+        value: (k) => tweetTypeMap[k]);
+    return visibleMap;
   }
 
   // static Map getAllTweetTypeMap() {
@@ -46,6 +62,8 @@ class TweetTypeEntity {
   final bool pushable;
   // 是否可以被用户取消订阅
   final bool canUnSubscribe;
+  // 是否用户可见
+  final bool visible;
 
   const TweetTypeEntity(
       {this.iconData,
@@ -57,14 +75,15 @@ class TweetTypeEntity {
       this.intro = "暂无介绍喔～",
       this.filterable = true,
       this.pushable = true,
-      this.canUnSubscribe = true});
+      this.canUnSubscribe = true,
+      this.visible = true});
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
       iconData: Icons.favorite,
-      iconColor: Colors.redAccent,
+      iconColor: Color(0xffFA8072),
       name: "LOVE_CONFESSION",
       zhTag: "表白",
-      color: Color(0xffFFB6C1),
+      color: Color(0xffFA8072),
       intro: "对你何止一句中意",
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
@@ -74,11 +93,11 @@ class TweetTypeEntity {
       name: "ASK_FOR_MARRIAGE",
       zhTag: "征婚",
       intro: "我想早恋，但已经晚了",
-      color: Color(0xffFA8072),
+      color: Colors.red,
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_marriage.png");
   static const SOMEONE_FIND = const TweetTypeEntity(
-      iconData: Icons.face,
+      iconData: Icons.portrait,
       iconColor: Colors.lightBlue,
       name: "SOMEONE_FIND",
       intro: "世界上所有的相遇都是久别重逢",
@@ -86,47 +105,47 @@ class TweetTypeEntity {
       color: Colors.lightBlue);
 
   static const QUESTION_CONSULT = const TweetTypeEntity(
-      iconData: Icons.help,
+      iconData: Icons.local_library,
       iconColor: Colors.orange,
       name: "QUESTION_CONSULT",
       intro: "发布一下，你就知道",
       color: Colors.orange,
-      zhTag: "问题咨询");
+      zhTag: "咨询");
 
   static const COMPLAINT = const TweetTypeEntity(
-      iconData: Icons.mic,
-      iconColor: Color(0xffEE799F),
+      iconData: Icons.mood,
+      iconColor: Color(0xffaa7aaF),
       name: "COMPLAINT",
       zhTag: "吐槽",
-      color: Color(0xffEE799F),
+      color: Color(0xffaa7aaF),
       intro: "日子再坏，也要满怀期待",
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_complaint.png");
   static const GOSSIP = const TweetTypeEntity(
       iconData: Icons.free_breakfast,
-      iconColor: Color(0xffF08080),
+      iconColor: Color(0xffEEB4B4),
       intro: "多说话，多喝热水",
       name: "GOSSIP",
-      color: Color(0xffFFFC0CB),
+      color: Color(0xffEEB4B4),
       coverUrl:
           'https://tva1.sinaimg.cn/large/006y8mN6ly1g870g0gah7j30qo0xbwl7.jpg',
       zhTag: "闲聊");
 
   static const HAVE_FUN = const TweetTypeEntity(
       iconData: Icons.toys,
-      iconColor: Color(0xffe5e5a5),
+      iconColor: Color(0xffDEB887),
       intro: "看到天上的星星了吗？是我打排位掉的",
       name: "HAVE_FUN",
-      color: Color(0xffe5e5a5),
-      zhTag: "一起玩");
+      color: Color(0xffDEB887),
+      zhTag: "娱乐");
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
-      iconData: Icons.build,
+      iconData: Icons.local_florist,
       iconColor: Colors.grey,
       intro: "你不等我回家，我还能去哪",
       name: "LOST_AND_FOUND",
       color: Colors.grey,
-      zhTag: "失物招领");
+      zhTag: "寻物");
 
   static const HELP_AND_REWARD = const TweetTypeEntity(
       iconData: Icons.transfer_within_a_station,
@@ -134,7 +153,7 @@ class TweetTypeEntity {
       name: "HELP_AND_REWARD",
       intro: "送人玫瑰，手有余香",
       color: Color(0xff778899),
-      zhTag: "帮我做事");
+      zhTag: "帮助");
 
   static const SECOND_HAND_TRANSACTION = const TweetTypeEntity(
       iconData: Icons.compare_arrows,
@@ -142,10 +161,10 @@ class TweetTypeEntity {
       name: "SECOND_HAND_TRANSACTION",
       intro: "让价值再飞一会",
       color: Colors.blue,
-      zhTag: "二手交易");
+      zhTag: "交易");
 
   static const OTHER = const TweetTypeEntity(
-      iconData: Icons.face,
+      iconData: Icons.public,
       iconColor: Color(0xffB0C4DE),
       intro: "没有别的就选这个吧！",
       name: "OTHER",
@@ -155,7 +174,7 @@ class TweetTypeEntity {
   static const OFFICIAL = const TweetTypeEntity(
       iconData: Icons.check_circle,
       iconColor: Color(0xff8470FF),
-      name: "OTHER",
+      name: "OFFICIAL",
       color: Color(0xff8470FF),
       zhTag: "官方",
       canUnSubscribe: false,
@@ -163,12 +182,13 @@ class TweetTypeEntity {
       filterable: false);
 
   static const AD = const TweetTypeEntity(
-      iconData: Icons.check_circle,
+      iconData: Icons.school,
       iconColor: Color(0xff8B008B),
       name: "AD",
       color: Color(0xff8B008B),
       zhTag: "广告",
       canUnSubscribe: false,
       pushable: false,
-      filterable: false);
+      filterable: false,
+      visible: false);
 }

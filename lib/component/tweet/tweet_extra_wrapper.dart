@@ -26,7 +26,7 @@ import 'package:iap_app/util/widget_util.dart';
 class TweetCardExtraWrapper extends StatefulWidget {
   final BaseTweet tweet;
 
-  // 点击某一条评论回调 homepage textfield
+  // 点击某一条评论回调 homepage textField
   final displayReplyContainerCallback;
 
   const TweetCardExtraWrapper({this.tweet, this.displayReplyContainerCallback});
@@ -44,13 +44,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        _extraContainer(),
-        Gaps.vGap8,
-        _praiseContainer(),
-        Gaps.vGap8,
-        _replyContainer()
-      ],
+      children: <Widget>[_extraContainer(), Gaps.vGap8, _praiseContainer(), Gaps.vGap8, _replyContainer()],
     );
   }
 
@@ -76,14 +70,11 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
             ))));
     List<Account> praiseList = widget.tweet.latestPraise;
     if (!CollectionUtil.isListEmpty(praiseList)) {
-      for (int i = 0;
-          i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE;
-          i++) {
+      for (int i = 0; i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE; i++) {
         Account account = praiseList[i];
         spans.add(TextSpan(
             text: "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
-            style:
-                MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
+            style: MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 goAccountDetail(account, false);
@@ -105,9 +96,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
     items.add(widgetT);
 
     return Wrap(
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: items);
+        alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items);
   }
 
   void updatePraise() async {
@@ -118,14 +107,12 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       widget.tweet.loved = !widget.tweet.loved;
       if (widget.tweet.loved) {
         Utils.showFavoriteAnimation(context);
-        Future.delayed(Duration(seconds: 2))
-            .then((_) => Navigator.pop(context));
+        Future.delayed(Duration(seconds: 2)).then((_) => Navigator.pop(context));
         widget.tweet.praise++;
         widget.tweet.latestPraise.insert(0, Application.getAccount);
       } else {
         widget.tweet.praise--;
-        widget.tweet.latestPraise
-            .removeWhere((account) => account.id == Application.getAccountId);
+        widget.tweet.latestPraise.removeWhere((account) => account.id == Application.getAccountId);
       }
     });
     TweetApi.operateTweet(widget.tweet.id, 'PRAISE', widget.tweet.loved);
@@ -138,9 +125,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _getReplyList()),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: _getReplyList()),
             )
           ],
         );
@@ -179,8 +164,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
     return list;
   }
 
-  Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom,
-      {int parentId}) {
+  Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom, {int parentId}) {
     if (bottom) {
       return Padding(
         padding: EdgeInsets.only(top: 5),
@@ -198,8 +182,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       reply.account.nick = "作者";
     }
 
-    bool replyAuthor = reply.tarAccount == null ||
-        (widget.tweet.account.id == reply.tarAccount.id);
+    bool replyAuthor = reply.tarAccount == null || (widget.tweet.account.id == reply.tarAccount.id);
     String tarNick = AccountUtil.getNickFromAccount(reply.tarAccount, false);
     if (replyAuthor && authorAnonymous) {
       tarNick = "作者";
@@ -223,8 +206,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
           onTap: !dirReplyAnonymous
               ? () {
                   // 只要点击评论中的某一行，都是它的子回复
-                  _sendReply(2, parentId, reply.account.id,
-                      tarAccNick: accNick);
+                  _sendReply(2, parentId, reply.account.id, tarAccNick: accNick);
                 }
               : () {
                   ToastUtil.showToast(context, '匿名评论不可回复');
@@ -243,18 +225,13 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
                             goAccountDetail(reply.account, false);
                           }
                         },
-                      text: dirReplyAnonymous
-                          ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK
-                          : accNick,
+                      text: dirReplyAnonymous ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK : accNick,
                       style: isAuthorReply && authorAnonymous
-                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                              context, Dimens.font_sp14)
-                          : MyDefaultTextStyle.getTweetReplyNickStyle(
-                              context, Dimens.font_sp14)),
+                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(context, Dimens.font_sp14)
+                          : MyDefaultTextStyle.getTweetReplyNickStyle(context)),
                   TextSpan(
                       text: reply.type == 2 ? ' 回复 ' : '',
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.subtitle.color)),
+                      style: TextStyle(color: Theme.of(context).textTheme.subtitle.color)),
                   TextSpan(
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
@@ -264,15 +241,12 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
                         },
                       text: reply.type == 2 ? tarNick : '',
                       style: replyAuthor && authorAnonymous
-                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                              context, Dimens.font_sp14)
-                          : MyDefaultTextStyle.getTweetReplyNickStyle(
-                              context, Dimens.font_sp14)),
+                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(context, Dimens.font_sp14)
+                          : MyDefaultTextStyle.getTweetReplyNickStyle(context)),
                   TextSpan(
                     text: ': ',
                     style: TextStyle(
-                        color: Theme.of(context).textTheme.subtitle.color,
-                        fontSize: Dimens.font_sp14),
+                        color: Theme.of(context).textTheme.subtitle.color, fontSize: Dimens.font_sp14),
                   ),
                   TextSpan(
                     text: reply.body,
@@ -299,11 +273,8 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
     NavigatorUtils.push(
         context,
         Routes.accountProfile +
-            Utils.packConvertArgs({
-              'nick': account.nick,
-              'accId': account.id,
-              'avatarUrl': account.avatarUrl
-            }));
+            Utils.packConvertArgs(
+                {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
   }
 
   _sendReply(int type, int parentId, String tarAccId, {String tarAccNick}) {
@@ -315,8 +286,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       tr.anonymous = false;
       tr.tarAccount = Account.fromId(tarAccId);
 
-      widget.displayReplyContainerCallback(
-          tr, tarAccNick, tarAccId, _sendReplyCallback);
+      widget.displayReplyContainerCallback(tr, tarAccNick, tarAccId, _sendReplyCallback);
     }
   }
 
@@ -341,9 +311,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
         // 子回复
         int parentId = tr.parentId;
         setState(() {
-          TweetReply tr2 = widget.tweet.dirReplies
-              .where((dirReply) => dirReply.id == parentId)
-              .first;
+          TweetReply tr2 = widget.tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
           if (tr2.children == null) {
             tr2.children = List();
           }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -15,13 +16,16 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/models/tabIconData.dart';
+import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/page/home/create_page.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
@@ -31,6 +35,7 @@ import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
@@ -45,17 +50,17 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
   final pullDownCallBack;
+
   HomePage({this.pullDownCallBack});
+
   @override
   State<StatefulWidget> createState() {
     return new _HomePageState();
   }
 }
 
-class _HomePageState extends State<HomePage>
-    with AutomaticKeepAliveClientMixin<HomePage> {
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<HomePage> {
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   EasyRefreshController _esRefreshController = EasyRefreshController();
   ScrollController _scrollController = ScrollController();
@@ -123,10 +128,10 @@ class _HomePageState extends State<HomePage>
     List<BaseTweet> temp = await getData(++_currentPage);
     tweetProvider.update(temp, append: true, clear: false);
     if (CollectionUtil.isListEmpty(temp)) {
+      _currentPage--;
       _esRefreshController.finishLoad(success: true, noMore: true);
       _refreshController.loadNoData();
     } else {
-      _currentPage--;
       _esRefreshController.finishLoad(success: true, noMore: false);
     }
   }
@@ -136,9 +141,7 @@ class _HomePageState extends State<HomePage>
     List<BaseTweet> pbt = await (TweetApi.queryTweets(
         PageParam(page,
             pageSize: 5,
-            types: ((typesFilterProvider.selectAll ?? true)
-                ? null
-                : typesFilterProvider.selTypeNames)),
+            types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames)),
         Application.getAccountId));
     return pbt;
   }
@@ -146,10 +149,8 @@ class _HomePageState extends State<HomePage>
   /*
    * 显示回复框 
    */
-  void showReplyContainer(
-      TweetReply tr, String destAccountNick, String destAccountId) {
-    commentWrapperKey.currentState
-        .showReplyContainer(tr, destAccountNick, destAccountId);
+  void showReplyContainer(TweetReply tr, String destAccountNick, String destAccountId) {
+    commentWrapperKey.currentState.showReplyContainer(tr, destAccountNick, destAccountId);
   }
 
   /*
@@ -159,25 +160,64 @@ class _HomePageState extends State<HomePage>
     commentWrapperKey.currentState.hideReplyContainer();
   }
 
+  List<String> _getFilterTypes() {
+    List<String> types = typesFilterProvider.selTypeNames;
+
+    List<String> names = TweetTypeUtil.getVisibleTweetTypeMap()
+        .values
+        .where((f) => (!f.filterable) && f.visible)
+        .map((f) => f.name)
+        .toList();
+    names.forEach((f) {
+      if (!types.contains(f)) {
+        types.add(f);
+      }
+    });
+    types = types.toSet().toList();
+    return types;
+  }
+
   void _forwardFilterPage() async {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => TweetTypeSelect(
+            builder: (context) => TweetTypeSelectPage(
                   title: "过滤内容类型",
-                  multi: true,
-                  backText: "编辑",
-                  finishText: "完成",
-                  initNames: typesFilterProvider.selTypeNames,
-                  callback: (_) {
-                    // _refreshController.requestRefresh();
-                    _esRefreshController.resetLoadState();
+                  subTitle: '我的只看',
+                  filter: true,
+                  subScribe: false,
+                  initFirst: _getFilterTypes(),
+                  callback: (resultNames) async {
+                    print("callbacl result names");
+                    await SpUtil.putStringList(SharedConstant.LOCAL_FILTER_TYPES, resultNames);
+                    typesFilterProvider.updateTypeNames();
                     _esRefreshController.callRefresh();
+                    print(resultNames);
                   },
+
+                  // callback: (_) {
+                  //   // _refreshController.requestRefresh();
+                  //   _esRefreshController.resetLoadState();
+                  //   _esRefreshController.callRefresh();
+                  // },
                 )));
+    // MaterialPageRoute(
+    //     builder: (context) => TweetTypeSelect(
+    //           title: "过滤内容类型",
+    //           multi: true,
+    //           backText: "编辑",
+    //           finishText: "完成",
+    //           initNames: typesFilterProvider.selTypeNames,
+    //           callback: (_) {
+    //             // _refreshController.requestRefresh();
+    //             _esRefreshController.resetLoadState();
+    //             _esRefreshController.callRefresh();
+    //           },
+    //         )));
   }
 
   void updateHeader(bool next) {}
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -191,11 +231,9 @@ class _HomePageState extends State<HomePage>
     return Stack(
       children: <Widget>[
         NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) =>
-              _sliverBuilder(context, innerBoxIsScrolled),
+          headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
           body: Listener(
               onPointerDown: (_) {
-                // 只有未�����示回复框开启滑动检测
                 // if (_replyContainerHeight == 0) {
                 hideReplyContainer();
                 startY = _.position.dy;
@@ -223,9 +261,7 @@ class _HomePageState extends State<HomePage>
                   showInfo: true,
                   infoText: _lastRefresh == null
                       ? "未刷新"
-                      : '更新于 ' +
-                          DateUtil.formatDate(_lastRefresh,
-                              format: DataFormats.h_m),
+                      : '更新于 ' + DateUtil.formatDate(_lastRefresh, format: DataFormats.h_m),
                   bgColor: null,
                   textColor: Theme.of(context).textTheme.subhead.color,
                 ),
@@ -268,17 +304,15 @@ class _HomePageState extends State<HomePage>
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
-        centerTitle: true, //标题居中
+        centerTitle: true,
+        //标题居中
         title: GestureDetector(
           child: Text(
             Application.getOrgName ?? "未知错误",
           ),
           onTap: () {
-            if (_scrollController.offset > 1000) {
-              _scrollController.animateTo(.0,
-                  duration: Duration(milliseconds: 2000),
-                  curve: Curves.fastLinearToSlowEaseIn);
-            }
+            _scrollController.animateTo(.0,
+                duration: Duration(milliseconds: 2000), curve: Curves.fastLinearToSlowEaseIn);
           },
         ),
         elevation: 0.3,
@@ -310,11 +344,9 @@ class _HomePageState extends State<HomePage>
   _showAddMenu() {
     final RenderBox button = _menuKey.currentContext.findRenderObject();
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
-    var a = button.localToGlobal(
-        Offset(button.size.width - 8.0, button.size.height - 12.0),
-        ancestor: overlay);
-    var b = button.localToGlobal(button.size.bottomLeft(Offset(0, -12.0)),
-        ancestor: overlay);
+    var a =
+        button.localToGlobal(Offset(button.size.width - 8.0, button.size.height - 12.0), ancestor: overlay);
+    var b = button.localToGlobal(button.size.bottomLeft(Offset(0, -12.0)), ancestor: overlay);
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(a, b),
       Offset.zero & overlay.size,
@@ -350,9 +382,8 @@ class _HomePageState extends State<HomePage>
                     _forwardFilterPage();
                   },
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8.0),
-                        topRight: Radius.circular(8.0)),
+                    borderRadius:
+                        BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
                   ),
                   icon: LoadAssetIcon(
                     "filter",
@@ -362,12 +393,13 @@ class _HomePageState extends State<HomePage>
                   ),
                   label: const Text("筛 选")),
             ),
-            Container(
-              width: 120.0,
-              height: 0.6,
-              color: Colours.line,
-              padding: EdgeInsets.symmetric(horizontal: 0),
-            ),
+            // Container(
+            //   width: 120.0,
+            //   height: 0.6,
+            //   color: Colours.line,
+            //   padding: EdgeInsets.symmetric(horizontal: 0),
+            // ),
+            // Gaps.vGap4,
             SizedBox(
               width: 120.0,
               height: 40.0,
@@ -387,8 +419,7 @@ class _HomePageState extends State<HomePage>
                   color: backgroundColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
-                        bottomLeft: const Radius.circular(8.0),
-                        bottomRight: const Radius.circular(8.0)),
+                        bottomLeft: const Radius.circular(8.0), bottomRight: const Radius.circular(8.0)),
                   ),
                   icon: LoadAssetIcon(
                     "create",

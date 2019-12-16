@@ -9,14 +9,17 @@ import 'package:iap_app/util/widget_util.dart';
 
 import '../../application.dart';
 
-class TweetImageWraper extends StatelessWidget {
-  final double sw;
-  final double sh;
+class TweetImageWrapper extends StatelessWidget {
+  double sw;
+  double sh;
   final double _imgRightPadding = 1.5;
 
   final List<String> picUrls;
 
-  const TweetImageWraper({this.picUrls, this.sw, this.sh});
+   TweetImageWrapper({this.picUrls}) {
+    this.sw = Application.screenWidth;
+    this.sh = Application.screenHeight;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +27,18 @@ class TweetImageWraper extends StatelessWidget {
     return CollectionUtil.isListEmpty(picUrls)
         ? Container(height: 0, padding: const EdgeInsets.only(top: 10))
         : Container(
-            padding: const EdgeInsets.only(top: 10),
-            child: Wrap(
-              children: <Widget>[
-                Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
-                  Expanded(
-                      child: Wrap(
-                          children: picUrls.length == 1
-                              ? <Widget>[_imgContainerSingle(context)]
-                              : _handleMultiPics(context)))
-                ]),
-              ],
-            ));
+        padding: const EdgeInsets.only(top: 10),
+        child: Wrap(
+          children: <Widget>[
+            Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+              Expanded(
+                  child: Wrap(
+                      children: picUrls.length == 1
+                          ? <Widget>[_imgContainerSingle(context)]
+                          : _handleMultiPics(context)))
+            ]),
+          ],
+        ));
   }
 
   Widget _imgContainerSingle(BuildContext context) {
@@ -43,23 +46,25 @@ class TweetImageWraper extends StatelessWidget {
         onTap: () => open(context, 0),
         child: ConstrainedBox(
             constraints:
-                BoxConstraints(maxWidth: sw * 0.75, maxHeight: sh * 0.4),
+            BoxConstraints(maxWidth: sw * 0.75, maxHeight: sh * 0.4),
             child: CachedNetworkImage(
                 filterQuality: FilterQuality.high,
                 imageUrl: "${picUrls[0]}${OssConstant.THUMBNAIL_SUFFIX}",
-                placeholder: (context, url) => SizedBox(
-                    width: Application.screenWidth * 0.25,
-                    height: Application.screenWidth * 0.25,
-                    child: LoadAssetImage(PathConstant.IAMGE_HOLDER)),
-                errorWidget: (context, url, error) => SizedBox(
-                    width: Application.screenWidth * 0.25,
-                    height: Application.screenWidth * 0.25,
-                    child: LoadAssetImage(PathConstant.IAMGE_FAILED)))));
+                placeholder: (context, url) =>
+                    SizedBox(
+                        width: Application.screenWidth * 0.25,
+                        height: Application.screenWidth * 0.25,
+                        child: LoadAssetImage(PathConstant.IAMGE_HOLDER)),
+                errorWidget: (context, url, error) =>
+                    SizedBox(
+                        width: Application.screenWidth * 0.25,
+                        height: Application.screenWidth * 0.25,
+                        child: LoadAssetImage(PathConstant.IAMGE_FAILED)))));
   }
 
   List<Widget> _handleMultiPics(BuildContext context) {
     List<String> picUrls2 =
-        picUrls.map((f) => "$f${OssConstant.THUMBNAIL_SUFFIX}").toList();
+    picUrls.map((f) => "$f${OssConstant.THUMBNAIL_SUFFIX}").toList();
     List<Widget> list = new List(picUrls2.length);
     for (int i = 0; i < picUrls2.length; i++) {
       list[i] = _imgContainer(picUrls2[i], i, picUrls2.length, context);
@@ -67,8 +72,8 @@ class TweetImageWraper extends StatelessWidget {
     return list;
   }
 
-  Widget _imgContainer(
-      String url, int index, int totalSize, BuildContext context) {
+  Widget _imgContainer(String url, int index, int totalSize,
+      BuildContext context) {
     // 40 最外层container左右padding,
     double left = (sw - 20);
     double perw;

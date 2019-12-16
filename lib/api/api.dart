@@ -3,22 +3,21 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class Api {
-  static const bool dev = true;
+  static const bool dev = false;
   static const String API_BASE = "http://treeliked.com";
-  static const String API_BASE_DEV = "http://192.168.10.63";
+  static const String API_BASE_DEV = "http://127.0.0.1";
 
   //  static const String API_BASE =
   // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
 
-  static const String API_BASE_INF_URL =
-      (dev ? API_BASE_DEV : API_BASE) + ":8088/iap/api";
+  static const String API_BASE_INF_URL = (dev ? API_BASE_DEV : API_BASE) + ":8088/iap/api";
   static const String API_BASE_MEMBER_URL = API_BASE + ":9001/trms/api";
 
   // tweet
   static const String API_TWEET_CREATE = "/tweet/add.do";
-  static const String API_TWEET_QUERYY = "/tweet/list.json";
-  static const String API_TWEET_MEDIA_UPLOAD_REQUEST =
-      "/tweet/media/generate.json";
+  static const String API_TWEET_DELETE = API_BASE_INF_URL + "/tweet/d.do";
+  static const String API_TWEET_QUERY = "/tweet/list.json";
+  static const String API_TWEET_MEDIA_UPLOAD_REQUEST = "/tweet/media/generate.json";
 
   // tweet operation
   static const String API_TWEET_OPERATION = "/tweet/opt/opt.do";
@@ -26,54 +25,41 @@ class Api {
 
   // tweet praise query
   static const String API_TWEET_PRAISE_QUERY = "/tweet/praise/list.json";
-  static const String API_TWEET_HOT_QUERYY = "/tweet/listHot.json";
+  static const String API_TWEET_HOT_QUERY = "/tweet/listHot.json";
 
   // tweet reply
   static const String API_TWEET_REPLY_CREATE = "/tweet/reply/add.do";
   static const String API_TWEET_REPLY_QUERY = "/tweet/reply/list.json";
 
   // sms
-  static const String API_SEND_VERIFICATION_CODE =
-      API_BASE_INF_URL + "/sms/send.do";
-  static const String API_CHECK_VERIFICATION_CODE =
-      API_BASE_INF_URL + "/sms/check.do";
+  static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";
+  static const String API_CHECK_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/check.do";
 
   // member start --------
-  static const String API_QUERY_ACCOUNT =
-      API_BASE_MEMBER_URL + "/account/getAccInfo.json";
-  static const String API_QUERY_ACCOUNT_PROFILE =
-      API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
+  static const String API_QUERY_ACCOUNT = API_BASE_MEMBER_URL + "/account/getAccInfo.json";
+  static const String API_QUERY_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
 
-  static const String API_QUERY_FILTERED_ACCOUNT_PROFILE =
-      API_BASE_MEMBER_URL + "/account/getShowInfo.json";
+  static const String API_QUERY_FILTERED_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getShowInfo.json";
 
-  static const String API_QUERY_ACCOUNT_SETTING =
-      API_BASE_MEMBER_URL + "/account/getSettings.json";
+  static const String API_QUERY_ACCOUNT_SETTING = API_BASE_MEMBER_URL + "/account/getSettings.json";
 
-  static const String API_UPDATE_ACCOUNT_SETTING =
-      API_BASE_MEMBER_URL + "/account/edit/setting.do";
+  static const String API_UPDATE_ACCOUNT_SETTING = API_BASE_MEMBER_URL + "/account/edit/setting.do";
 
-  static const String API_ACCOUNT_MOD_BASIC =
-      API_BASE_MEMBER_URL + "/account/edit/basic.do";
+  static const String API_ACCOUNT_MOD_BASIC = API_BASE_MEMBER_URL + "/account/edit/basic.do";
 
-  static const String API_CHECK_NICK_REPEAT =
-      API_BASE_MEMBER_URL + "/account/nickCheck.do";
+  static const String API_CHECK_NICK_REPEAT = API_BASE_MEMBER_URL + "/account/nickCheck.do";
 
-  static const String API_REGISTER_BY_PHONE =
-      API_BASE_MEMBER_URL + "/auth/rbp.do";
+  static const String API_REGISTER_BY_PHONE = API_BASE_MEMBER_URL + "/auth/rbp.do";
 
   static const String API_LOGIN_BY_PHONE = API_BASE_MEMBER_URL + "/auth/lbp.do";
 
   // university
-  static const String API_BLUR_QUERY_UNIVERSITY =
-      API_BASE_INF_URL + "/un/blurQuery.json";
+  static const String API_BLUR_QUERY_UNIVERSITY = API_BASE_MEMBER_URL + "/un/blurQuery.json";
 
-  static const String API_QUERY_ORG =
-      API_BASE_MEMBER_URL + "/org/getAccUniversity.json";
+  static const String API_QUERY_ORG = API_BASE_MEMBER_URL + "/org/getAccUniversity.json";
 
   // device
-  static const String API_UPDATE_DEVICE_INFO =
-      API_BASE_INF_URL + "/device/update.do";
+  static const String API_UPDATE_DEVICE_INFO = API_BASE_INF_URL + "/device/update.do";
 
   static Map<String, dynamic> convertResponse(Object reponseData) {
     String jsonTemp = json.encode(reponseData);

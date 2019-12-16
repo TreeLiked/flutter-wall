@@ -59,8 +59,7 @@ class CircleHeaderState extends State<CircleHeader> {
         height: 24.0,
         child: CircularProgressIndicator(
           value: _indicatorValue,
-          valueColor:
-              AlwaysStoppedAnimation(Theme.of(context).scaffoldBackgroundColor),
+          valueColor: AlwaysStoppedAnimation(Colors.white),
           strokeWidth: 2.4,
         ),
       ),

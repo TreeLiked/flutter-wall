@@ -101,7 +101,7 @@ class _AccountBindPageState extends State<AccountBindPage> {
   }
 
   Future<void> _updateSomething(AccountEditParam param, final callback) async {
-    Utils.showDefaultLoadingWithBonuds(context, text: "正在更新");
+    Utils.showDefaultLoadingWithBounds(context, text: "正在更新");
     Result r = await MemberApi.modAccount(param);
     if (r != null && r.isSuccess) {
       callback(true);

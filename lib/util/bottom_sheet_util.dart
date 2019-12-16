@@ -10,12 +10,12 @@ class BottomSheetItem {
   final Icon icon;
   final String text;
   final callback;
+
   BottomSheetItem(this.icon, this.text, this.callback);
 }
 
 class BottomSheetUtil {
-  static void shwoBottomChoise(
-      BuildContext context, List<BSChoiceItem> items, final callback) {
+  static void showBottomChoice(BuildContext context, List<BSChoiceItem> items, final callback) {
     final picker = CupertinoPicker(
         backgroundColor: Color(0xffe5e6e7),
         useMagnifier: true,
@@ -34,6 +34,7 @@ class BottomSheetUtil {
           );
         });
   }
+
   // static void showBottmSheetView(
   //     BuildContext context, List<BottomSheetItem> items) {
   //   showDialog(
@@ -72,8 +73,7 @@ class BottomSheetUtil {
   //         );
   //       });
   // }
-  static void showBottmSheetView(
-      BuildContext context, List<BottomSheetItem> items) {
+  static void showBottomSheetView(BuildContext context, List<BottomSheetItem> items) {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
@@ -82,27 +82,22 @@ class BottomSheetUtil {
           return StatefulBuilder(builder: (context1, state) {
             return Stack(
               children: <Widget>[
-                // Container(
-                //   height: 30.0,
-                //   width: double.infinity,
-                //   // color: Color(0x000000),
-                // ),
                 Container(
                     // height: 350,
                     // constraints: BoxConstraints(maxHeight: 500),
                     decoration: BoxDecoration(
-                        color: !ThemeUtils.isDark(context)
-                            ? Color(0xffEbEcEd)
-                            : Colours.dark_bg_color_darker,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(16))),
+                        color: !ThemeUtils.isDark(context) ? Color(0xffEbEcEd) : Colours.dark_bg_color_darker,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(15, 20, 15, 20),
+                      padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                          Wrap(
+                              alignment: WrapAlignment.start,
+                              runAlignment: WrapAlignment.start,
+                              runSpacing: 10.0,
                               children: _renderItems(context, items)),
 
                           Row(
@@ -114,8 +109,7 @@ class BottomSheetUtil {
                                   width: ScreenUtil.screenWidthDp * 0.95 - 30,
                                   child: CupertinoButton(
                                     padding: EdgeInsets.all(0),
-                                    onPressed: () =>
-                                        NavigatorUtils.goBack(context),
+                                    onPressed: () => NavigatorUtils.goBack(context),
                                     child: Text('取消'),
                                   ),
                                 ),
@@ -157,33 +151,24 @@ class BottomSheetUtil {
     //     });
   }
 
-  static List<Widget> _renderItems(
-      BuildContext context, List<BottomSheetItem> items) {
+  static List<Widget> _renderItems(BuildContext context, List<BottomSheetItem> items) {
     return items.map((f) => _renderSingleItem(context, f)).toList();
   }
 
   static Widget _renderSingleItem(BuildContext context, BottomSheetItem item) {
-    return Container(
-        margin: EdgeInsets.only(right: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                item.callback();
-              },
-              child: Container(
+    return InkWell(
+        onTap: () => item.callback(),
+        child: Container(
+            margin: const EdgeInsets.only(right: 15),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+              Container(
                 decoration: BoxDecoration(
-                    color: !ThemeUtils.isDark(context)
-                        ? Colors.white
-                        : Colours.dark_bg_color,
+                    color: !ThemeUtils.isDark(context) ? Colors.white : Colours.dark_bg_color,
                     borderRadius: const BorderRadius.all(Radius.circular(15))),
                 padding: const EdgeInsets.all(20),
                 child: item.icon,
               ),
-            ),
-            Padding(padding: EdgeInsets.only(top: 10), child: Text(item.text))
-          ],
-        ));
+              Padding(padding: EdgeInsets.only(top: 10), child: Text(item.text))
+            ])));
   }
 }

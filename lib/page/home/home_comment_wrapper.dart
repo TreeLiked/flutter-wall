@@ -122,7 +122,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
       ToastUtil.showToast(context, '回复内容不能为空');
       return;
     }
-    Utils.showDefaultLoadingWithBonuds(context);
+    Utils.showDefaultLoadingWithBounds(context);
     curReply.body = value;
     Account acc = Account.fromId(Application.getAccountId);
     curReply.account = acc;

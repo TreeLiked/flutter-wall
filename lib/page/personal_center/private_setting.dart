@@ -231,7 +231,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
   }
 
   Future<void> _updateSomething(String key, String value, callback) async {
-    Utils.showDefaultLoadingWithBonuds(context);
+    Utils.showDefaultLoadingWithBounds(context);
     Result r = await MemberApi.updateAccountSetting(key, value);
     if (r != null && r.isSuccess) {
       callback(true);

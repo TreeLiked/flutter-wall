@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
@@ -28,6 +29,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   int _status = 0;
+
   // List<String> _guideList = ["app_start_1", "app_start_2", "app_start_3"];
   StreamSubscription _subscription;
 
@@ -56,11 +58,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _initSplash() {
-    _subscription = Observable.just(1)
-        .delay(Duration(milliseconds: 1500))
-        .listen((_) async {
-      String storageToken =
-          SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
+    _subscription = Observable.just(1).delay(Duration(milliseconds: 1500)).listen((_) async {
+      String storageToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
       print(storageToken);
       if (storageToken == '') {
         _goLogin();
@@ -69,33 +68,26 @@ class _SplashPageState extends State<SplashPage> {
           if (acc == null) {
             _goLogin();
           } else {
-            AccountLocalProvider accountLocalProvider =
-                Provider.of<AccountLocalProvider>(context);
+            AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
             accountLocalProvider.setAccount(acc);
             Application.setAccount(acc);
             Application.setAccountId(acc.id);
 
-            int orgId =
-                SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
-            String orgName =
-                SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
+            int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
+            String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
             if (orgId == -1 || orgName == "") {
-              University university =
-                  await UniversityApi.queryUnis(storageToken);
+              University university = await UniversityApi.queryUnis(storageToken);
               if (university == null) {
                 // 错误，有账户无组织
                 print("ERROR , ------------");
                 ToastUtil.showToast(context, '数据错误');
               } else {
-                if (university == null ||
-                    university.id == null ||
-                    university.name == null) {
+                if (university == null || university.id == null || university.name == null) {
                   ToastUtil.showToast(context, '数据错误');
                   return;
                 }
                 await SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
-                await SpUtil.putString(
-                    SharedConstant.LOCAL_ORG_NAME, university.name);
+                await SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, university.name);
                 Application.setOrgName(university.name);
                 Application.setOrgId(university.id);
               }
@@ -117,8 +109,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider =
-        Provider.of<TweetTypesFilterProvider>(context);
+    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
     tweetTypesFilterProvider.updateTypeNames();
   }
 
@@ -128,19 +119,19 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)
-      ..init(context);
+    prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)..init(context);
     Application.screenWidth = prefix0.ScreenUtil.screenWidthDp;
     Application.screenHeight = prefix0.ScreenUtil.screenHeightDp;
 
     return Material(
+
         child: _status == 0
-            ? Image.asset(
-                ImageUtils.getImgPath("start_page", format: "jpg"),
+            ? CachedNetworkImage(
+                imageUrl: 'https://tva1.sinaimg.cn/large/006tNbRwgy1g9yhn5qbdpj30u01hchdu.jpg',
                 width: double.infinity,
                 fit: BoxFit.fill,
                 height: double.infinity,
               )
-            : Index());
+            :Index());
   }
 }

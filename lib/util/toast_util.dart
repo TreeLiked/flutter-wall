@@ -13,7 +13,7 @@ class ToastUtil {
       msg: '    $text    ',
       fontSize: 13,
       gravity: gravity,
-      backgroundColor: dark ? Colors.black87 : Colors.white70,
+      backgroundColor: dark ? Colors.black87 : Colors.white,
       textColor: dark ? Colors.white : Colors.black,
     );
   }

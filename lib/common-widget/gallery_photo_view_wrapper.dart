@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:photo_view/photo_view.dart';
@@ -68,20 +69,19 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
       },
       onLongPress: () {
         if (widget.fromNetwork) {
-          BottomSheetUtil.showBottmSheetView(context, [
+          BottomSheetUtil.showBottomSheetView(context, [
             BottomSheetItem(
                 Icon(
                   Icons.file_download,
                   color: Colors.lightBlue,
                 ),
                 '保存到本地', () async {
-              var response = await Dio().get(
-                  widget.galleryItems[currentIndex].url,
+              var response = await Dio().get(widget.galleryItems[currentIndex].url,
                   options: Options(responseType: ResponseType.bytes));
-              ImagePickerSaver.saveFile(
-                  fileData: Uint8List.fromList(response.data));
-              ToastUtil.showToast(context, '已保存到手机相册');
+              ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
               Navigator.pop(context);
+              Utils.vibrateOnceOrNotSupport();
+              ToastUtil.showToast(context, '已保存到手机相册');
             }),
             BottomSheetItem(
                 Icon(
@@ -94,7 +94,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
             }),
           ]);
         } else {
-          BottomSheetUtil.showBottmSheetView(context, [
+          BottomSheetUtil.showBottomSheetView(context, [
             BottomSheetItem(
                 Icon(
                   Icons.delete,
@@ -144,25 +144,21 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                   left: (sw - 100) / 2,
                   child: Container(
                     width: 100,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 15),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(15),
-                              ),
-                            ),
-                            child: Text(
-                                widget.galleryItems.length != 1
-                                    ? '${currentIndex + 1} / ${widget.galleryItems.length}'
-                                    : '',
-                                style: TextStyle(
-                                    color: Colors.white70, fontSize: 16)),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15),
                           ),
-                        ]),
+                        ),
+                        child: Text(
+                            widget.galleryItems.length != 1
+                                ? '${currentIndex + 1} / ${widget.galleryItems.length}'
+                                : '',
+                            style: TextStyle(color: Colors.white70, fontSize: 16)),
+                      ),
+                    ]),
                   )),
               // widget.usePageViewWrapper
               //     ? Container(

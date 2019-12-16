@@ -56,7 +56,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   }
 
   _finishAll() async {
-    Utils.showDefaultLoadingWithBonuds(context, text: '正在加载');
+    Utils.showDefaultLoadingWithBounds(context, text: '正在加载');
     RegTemp.regTemp.orgId = _cId;
     RegTemp rt = RegTemp.regTemp;
     Result res =

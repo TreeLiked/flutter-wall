@@ -48,6 +48,16 @@ class Utils {
     showDialog(context: context, barrierDismissible: barrierDismissible, builder: (_) => dialog);
   }
 
+  static void showSimpleConfirmDialog(
+      BuildContext context, String title, String content, ClickableText left, ClickableText right,
+      {bool barrierDismissible = false}) {
+    displayDialog(
+      context,
+      SimpleConfirmDialog('$title', '$content', leftItem: left, rightItem: right),
+      barrierDismissible: barrierDismissible,
+    );
+  }
+
   static void showDefaultLoading(BuildContext context, {double size = 30}) {
     showDialog(
         context: context,
@@ -73,8 +83,10 @@ class Utils {
                     borderRadius: BorderRadius.circular(8),
                     color: ThemeUtils.isDark(context) ? Colors.black87 : Colors.white,
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   alignment: Alignment.center,
                   child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: _renderLoadingList(context, size, text))),
             )),
@@ -85,13 +97,15 @@ class Utils {
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
     list.add(
-      CupertinoActivityIndicator(),
+      const CupertinoActivityIndicator(),
       // SpinKitChasingDots(color: Color(0xff00BFFF), size: size),
     );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
           padding: EdgeInsets.only(top: 0),
           child: Text(text,
+              softWrap: true,
+              textAlign: TextAlign.center,
               style: TextStyle(
                   color: ThemeUtils.isDark(context) ? Colors.white : Colors.black54,
                   fontSize: 14,

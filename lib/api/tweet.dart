@@ -123,7 +123,6 @@ class TweetApi {
     Response response = await httpUtil.dio.post(
         Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId',
         data: reply.toJson());
-    print('${response.data}');
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return Result.fromJson(json);
   }

@@ -173,7 +173,7 @@ class TweetDetailState extends State<TweetDetail> {
               children: <Widget>[
                 Text(
                   "${widget._tweet.views} 次浏览",
-                  style: MyDefaultTextStyle.getTweetTimeStyle(13),
+                  style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13),
                 )
               ],
             ),
@@ -207,6 +207,9 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _bodyContainer() {
+    if (StringUtil.isEmpty(widget._tweet.body)) {
+      return Container(height: 0);
+    }
     return Wrap(
       children: <Widget>[
         Row(children: <Widget>[
@@ -215,7 +218,8 @@ class TweetDetailState extends State<TweetDetail> {
                   softWrap: true,
                   textAlign: TextAlign.left,
                   style: MyDefaultTextStyle.getTweetBodyStyle(isDark)))
-        ])
+        ]),
+        Gaps.vGap8
       ],
     );
   }
@@ -261,22 +265,6 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget _getPraiseList() {
     List<InlineSpan> spans = List();
-    // spans.add(WidgetSpan(
-    //     child: GestureDetector(
-    //         onTap: () {
-    //           updatePraise(widget._tweet);
-    //         },
-    //         child: Padding(
-    //           padding: EdgeInsets.only(right: 5),
-    //           child: Image.asset(
-    //             // PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-    //             widget._tweet.loved
-    //                 ? PathConstant.ICON_PRAISE_ICON_PRAISE
-    //                 : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-    //             width: 18,
-    //             height: 18,
-    //           ),
-    //         ))));
 
     if (!CollectionUtil.isListEmpty(praiseAccounts)) {
       for (int i = 0; i < praiseAccounts.length && i < GlobalConfig.MAX_DISPLAY_PRAISE; i++) {
@@ -286,7 +274,8 @@ class TweetDetailState extends State<TweetDetail> {
             style: MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                // goAccountDetail();
+//                 goAccountDetail();
+                _forwardAccountProfile(false, widget._tweet.account);
               }));
       }
 
@@ -357,7 +346,7 @@ class TweetDetailState extends State<TweetDetail> {
     Widget wgt = GestureDetector(
       behavior: HitTestBehavior.translucent,
       child: LoadAssetIcon(
-        widget._tweet.loved ? PathConstant.ICON_PRAISE_ICON_PRAISE : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
+        widget._tweet.loved ? PathConstant.ICON_PRAISE_ICON_PRAISE : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
         width: 20,
         height: 20,
       ),
@@ -394,7 +383,6 @@ class TweetDetailState extends State<TweetDetail> {
                   child: new Text("${async.error}"),
                 );
               } else if (async.hasData) {
-                print('update --------');
                 List<Account> list = async.data;
                 updateListData(list, 1);
                 return Wrap(
@@ -428,7 +416,6 @@ class TweetDetailState extends State<TweetDetail> {
               );
             }
             if (async.connectionState == ConnectionState.done) {
-              debugPrint("done");
               if (async.hasError) {
                 return _textTitleRow('拉取回复失败');
               } else if (async.hasData) {
@@ -594,7 +581,7 @@ class TweetDetailState extends State<TweetDetail> {
                 fit: FlexFit.tight,
                 flex: 1,
                 child: Container(
-                  padding: EdgeInsets.only(right: 5, left: 2, top: 5),
+                  padding: const EdgeInsets.only(right: 5, left: 2, top: 5),
                   child: Column(children: <Widget>[
                     _headContainer(reply),
                     _replyBodyContainer(reply.body),
@@ -652,8 +639,6 @@ class TweetDetailState extends State<TweetDetail> {
                       _spaceRow(),
                       Gaps.vGap10,
                       _bodyContainer(),
-                      // _picContainer(),
-                      Gaps.vGap8,
                       TweetImageWrapper(picUrls: widget._tweet.picUrls),
                       Gaps.vGap8,
                       _viewContainer(),

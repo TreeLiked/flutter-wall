@@ -12,7 +12,7 @@ class ImageUtils {
     return 'assets/images/$name.$format';
   }
 
-  static String getIconPath(String name, {String format: 'png'}) {
+  static String  getIconPath(String name, {String format: 'png'}) {
     return 'assets/icons/$name.$format';
   }
 

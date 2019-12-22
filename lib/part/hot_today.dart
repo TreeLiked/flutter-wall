@@ -1,3 +1,4 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,8 @@ import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
+import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/image_utils.dart';
@@ -29,8 +32,7 @@ class HotToday extends StatefulWidget {
   }
 }
 
-class _HotTodayState extends State<HotToday>
-    with AutomaticKeepAliveClientMixin {
+class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin {
   double _expandedHeight = ScreenUtil().setWidth(380);
 
   final items = new List<String>.generate(10000, (i) => "Item $i");
@@ -119,12 +121,10 @@ class _HotTodayState extends State<HotToday>
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text:
-                                  '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
+                              text: '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
                               style: TextStyle(fontSize: 30)),
                           TextSpan(
-                              text:
-                                  '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
+                              text: '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
                               style: TextStyle(fontSize: 16)),
                         ],
                       ),
@@ -143,9 +143,7 @@ class _HotTodayState extends State<HotToday>
                         Text(
                           '上次更新时间：' +
                               (hotTweet != null
-                                  ? DateUtil.formatDate(hotTweet.lastFetched,
-                                          format: "HH:mm")
-                                      .toString()
+                                  ? DateUtil.formatDate(hotTweet.lastFetched, format: "HH:mm").toString()
                                   : '暂未更新'),
                           style: TextStyle(fontSize: 13, color: Colors.white60),
                         )
@@ -191,11 +189,13 @@ class _HotTodayState extends State<HotToday>
               height: ScreenUtil().setHeight(100),
             ),
             SizedBox(
-                width: 100.0,
-                height: 100.0,
-                child: Image.asset(
-                    ImageUtils.getImgPath("no_data", format: 'png'))),
-            // Text('暂无数据', style: Theme.of(context).textTheme.subhead),
+                width: ScreenUtil().setHeight(210),
+                child: LoadAssetImage(
+                  'no_data',
+                  fit: BoxFit.cover,
+                  width: 100,
+                )),
+//             Text('暂无数据', style: Theme.of(context).textTheme.subhead),
           ],
         ),
       ];
@@ -253,10 +253,7 @@ class _HotTodayState extends State<HotToday>
                                             ? Colors.red
                                             : (index <= 6
                                                 ? Color(0xffEEE685)
-                                                : Theme.of(context)
-                                                    .textTheme
-                                                    .overline
-                                                    .color)),
+                                                : Theme.of(context).textTheme.overline.color)),
                                   ),
                                 ),
                                 Container(
@@ -308,55 +305,35 @@ class _HotTodayState extends State<HotToday>
                                               TextSpan(
                                                   text: !bt.anonymous
                                                       ? bt.account.nick
-                                                      : TextConstant
-                                                          .TWEET_ANONYMOUS_NICK,
-                                                  style: MyDefaultTextStyle
-                                                      .getTweetNickStyle(
-                                                          context, 14,
-                                                          bold: false,
-                                                          anonymous:
-                                                              bt.anonymous)),
+                                                      : TextConstant.TWEET_ANONYMOUS_NICK,
+                                                  style: MyDefaultTextStyle.getTweetNickStyle(context, 14,
+                                                      bold: false, anonymous: bt.anonymous)),
                                               TextSpan(
                                                   text: ' 发表于',
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 13)),
+                                                  style: TextStyle(color: Colors.grey, fontSize: 13)),
                                               TextSpan(
-                                                  text: TimeUtil.getShortTime(
-                                                      bt.gmtCreated),
+                                                  text: TimeUtil.getShortTime(bt.gmtCreated),
                                                   style: TextStyle(
-                                                      color: ColorConstant
-                                                          .TWEET_TIME_COLOR,
-                                                      fontSize: 13)),
+                                                      color: ColorConstant.TWEET_TIME_COLOR, fontSize: 13)),
                                             ]),
                                           ),
                                         ],
                                       )),
                                   Container(
-                                      padding:
-                                          EdgeInsets.only(bottom: 2, top: 3),
+                                      padding: EdgeInsets.only(bottom: 2, top: 3),
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Text(
-                                            '# ' +
-                                                tweetTypeMap[bt.type]
-                                                    .zhTag
-                                                    .toString(),
-                                            style: TextStyle(
-                                                color:
-                                                    tweetTypeMap[bt.type].color,
-                                                fontSize: 12),
+                                            '# ' + tweetTypeMap[bt.type].zhTag.toString(),
+                                            style:
+                                                TextStyle(color: tweetTypeMap[bt.type].color, fontSize: 12),
                                           ),
                                           Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 20),
+                                              padding: EdgeInsets.only(right: 20),
                                               child: Text(
                                                 ' ${bt.hot}',
-                                                style: TextStyle(
-                                                    color: Color(0xffBEBEBE),
-                                                    fontSize: 12),
+                                                style: TextStyle(color: Color(0xffBEBEBE), fontSize: 12),
                                               ))
                                         ],
                                       )),
@@ -380,15 +357,12 @@ class _HotTodayState extends State<HotToday>
                               child: AspectRatio(
                                 aspectRatio: 1,
                                 child: CachedNetworkImage(
-                                  imageUrl: bt.picUrls[0] +
-                                      OssConstant.THUMBNAIL_SUFFIX,
+                                  imageUrl: bt.picUrls[0] + OssConstant.THUMBNAIL_SUFFIX,
                                   placeholder: (context, url) => Container(
                                       padding: EdgeInsets.all(10),
-                                      child: Image.asset(
-                                          PathConstant.LOADING_GIF)),
+                                      child: Image.asset(PathConstant.LOADING_GIF)),
                                   fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
                                 ),
                               ),
                             ),

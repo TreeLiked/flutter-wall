@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/widget_util.dart';
@@ -16,7 +17,7 @@ class TweetImageWrapper extends StatelessWidget {
 
   final List<String> picUrls;
 
-   TweetImageWrapper({this.picUrls}) {
+  TweetImageWrapper({this.picUrls}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
   }
@@ -25,46 +26,43 @@ class TweetImageWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     print('tweet image wrapper build--------------------------');
     return CollectionUtil.isListEmpty(picUrls)
-        ? Container(height: 0, padding: const EdgeInsets.only(top: 10))
+        ? Container(height: 0)
         : Container(
-        padding: const EdgeInsets.only(top: 10),
-        child: Wrap(
-          children: <Widget>[
-            Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
-              Expanded(
-                  child: Wrap(
-                      children: picUrls.length == 1
-                          ? <Widget>[_imgContainerSingle(context)]
-                          : _handleMultiPics(context)))
-            ]),
-          ],
-        ));
+            padding: const EdgeInsets.only(top: 10),
+            child: Wrap(
+              children: <Widget>[
+                Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                  Expanded(
+                      child: Wrap(
+                          children: picUrls.length == 1
+                              ? <Widget>[_imgContainerSingle(context)]
+                              : _handleMultiPics(context)))
+                ]),
+              ],
+            ));
   }
 
   Widget _imgContainerSingle(BuildContext context) {
+    String imageurl = "${picUrls[0]}${OssConstant.THUMBNAIL_SUFFIX}";
     return GestureDetector(
         onTap: () => open(context, 0),
         child: ConstrainedBox(
-            constraints:
-            BoxConstraints(maxWidth: sw * 0.75, maxHeight: sh * 0.4),
+            constraints: BoxConstraints(maxWidth: sw * 0.75, maxHeight: sh * 0.4),
             child: CachedNetworkImage(
                 filterQuality: FilterQuality.high,
                 imageUrl: "${picUrls[0]}${OssConstant.THUMBNAIL_SUFFIX}",
-                placeholder: (context, url) =>
-                    SizedBox(
-                        width: Application.screenWidth * 0.25,
-                        height: Application.screenWidth * 0.25,
-                        child: LoadAssetImage(PathConstant.IAMGE_HOLDER)),
-                errorWidget: (context, url, error) =>
-                    SizedBox(
-                        width: Application.screenWidth * 0.25,
-                        height: Application.screenWidth * 0.25,
-                        child: LoadAssetImage(PathConstant.IAMGE_FAILED)))));
+                placeholder: (context, url) => SizedBox(
+                    width: Application.screenWidth * 0.25,
+                    height: Application.screenWidth * 0.25,
+                    child: LoadAssetImage(PathConstant.IAMGE_HOLDER)),
+                errorWidget: (context, url, error) => SizedBox(
+                    width: Application.screenWidth * 0.25,
+                    height: Application.screenWidth * 0.25,
+                    child: LoadAssetImage(PathConstant.IAMGE_FAILED)))));
   }
 
   List<Widget> _handleMultiPics(BuildContext context) {
-    List<String> picUrls2 =
-    picUrls.map((f) => "$f${OssConstant.THUMBNAIL_SUFFIX}").toList();
+    List<String> picUrls2 = picUrls.map((f) => "$f${OssConstant.THUMBNAIL_SUFFIX}").toList();
     List<Widget> list = new List(picUrls2.length);
     for (int i = 0; i < picUrls2.length; i++) {
       list[i] = _imgContainer(picUrls2[i], i, picUrls2.length, context);
@@ -72,8 +70,7 @@ class TweetImageWrapper extends StatelessWidget {
     return list;
   }
 
-  Widget _imgContainer(String url, int index, int totalSize,
-      BuildContext context) {
+  Widget _imgContainer(String url, int index, int totalSize, BuildContext context) {
     // 40 最外层container左右padding,
     double left = (sw - 20);
     double perw;

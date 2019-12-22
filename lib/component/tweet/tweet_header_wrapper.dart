@@ -6,6 +6,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
@@ -19,8 +20,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
   final bool canClick;
   final DateTime tweetCreated;
 
-  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetCreated,
-      {this.canClick = true});
+  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetCreated, {this.canClick = true});
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +73,8 @@ class TweetCardHeaderWrapper extends StatelessWidget {
       NavigatorUtils.push(
           context,
           Routes.accountProfile +
-              Utils.packConvertArgs({
-                'nick': account.nick,
-                'accId': account.id,
-                'avatarUrl': account.avatarUrl
-              }));
+              Utils.packConvertArgs(
+                  {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
     }
   }
 
@@ -89,18 +86,15 @@ class TweetCardHeaderWrapper extends StatelessWidget {
         ? Container(
             child: Text(
             TextConstant.TWEET_ANONYMOUS_NICK,
-            style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                context, SizeConstant.TWEET_NICK_SIZE,
+            style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
                 anonymous: true, bold: true),
           ))
         : GestureDetector(
-            onTap: () =>
-                anonymous ? null : goAccountDetail(context, account, true),
+            onTap: () => anonymous ? null : goAccountDetail(context, account, true),
             child: Container(
               child: Text(
                 account.nick ?? TextConstant.TEXT_UNCATCH_ERROR,
-                style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                    context, SizeConstant.TWEET_NICK_SIZE,
+                style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
                     bold: true),
               ),
             ));
@@ -111,9 +105,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
       return Container(height: 0);
     }
     return Text(TimeUtil.getShortTime(tweetCreated) ?? "未知",
-        style: TextStyle(
-            fontSize: SizeConstant.TWEET_TIME_SIZE,
-            color: ColorConstant.getTweetTimeColor(context)));
+        style: MyDefaultTextStyle.getTweetTimeStyle(context));
   }
 
   Widget _signatureContainer(BuildContext context) {
@@ -124,9 +116,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
         margin: EdgeInsets.only(right: 20),
         child: Text(
           !anonymous ? account.signature : TextConstant.TWEET_ANONYMOUS_SIG,
-          style: TextStyle(
-              fontSize: SizeConstant.TWEET_TIME_SIZE,
-              color: ColorConstant.getTweetSigColor(context)),
+          style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: SizeConstant.TWEET_TIME_SIZE),
           overflow: TextOverflow.ellipsis,
           softWrap: true,
           maxLines: 2,

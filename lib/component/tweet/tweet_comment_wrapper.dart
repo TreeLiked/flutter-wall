@@ -14,14 +14,13 @@ import 'package:iap_app/util/toast_util.dart';
 class TweetCommentWrapper extends StatefulWidget {
   final BaseTweet tweet;
 
-  // 点击回复框，回调home page textfield
+  // 点击回复框，回调home page textField
   final displayReplyContainerCallback;
 
-  // 回复callback
-  final sendDisplayCallback;
+
 
   TweetCommentWrapper(this.tweet,
-      {this.displayReplyContainerCallback, this.sendDisplayCallback});
+      {this.displayReplyContainerCallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -92,7 +91,6 @@ class _TweetCommentWrapper extends State<TweetCommentWrapper> {
    * 发送了评论，结果回调
    */
   _sendReplyCallback(TweetReply tr) {
-    print('评论回复结果回调 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！');
     if (tr == null) {
       ToastUtil.showToast(
         context,

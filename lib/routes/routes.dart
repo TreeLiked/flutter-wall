@@ -21,13 +21,15 @@ class Routes {
   static String index = "/";
 
   static String loginPage = "login";
-  static String home = "/home";
-
   static String webViewPage = "/webview";
 
   static String hot = "/hot";
+
+  // home index
+  static String home = "/home";
   static String create = "/home/create";
   static String filter = "/home/filter";
+  static String square = "/home/square";
 
   static String inputTextPage = "/iptxtPage";
 
@@ -59,6 +61,7 @@ class Routes {
 
     router.define(index, handler: indexHander);
     router.define(home, handler: homeHandler);
+    router.define(square, handler: squareHandler,transitionType: TransitionType.fadeIn);
 
     router.define(create, handler: createHandler);
     router.define(accountProfile, handler: accountProfileHander);

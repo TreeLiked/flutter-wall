@@ -7,6 +7,7 @@ import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
@@ -132,7 +133,9 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
         TweetReply newReply = TweetReply.fromJson(result.data);
         _controller.clear();
         hideReplyContainer();
-        widget.sendCallback(newReply);
+        final _tweetProvider = Provider.of<TweetProvider>(context);
+        _tweetProvider.updateReply(context, newReply);
+//        widget.sendCallback(newReply);
       } else {
         _controller.clear();
         _hintText = "评论";

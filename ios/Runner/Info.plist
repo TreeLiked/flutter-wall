@@ -23,9 +23,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Wall</string>
+	<string>“Wall”请求在您使用期间获取您的相机权限</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Wall</string>
+	<string>“Wall”请求在您使用期间获取您的相册权限</string>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
 	<key>MOBAppkey</key>

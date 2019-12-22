@@ -1,3 +1,4 @@
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,8 +30,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // AccountLocalProvider accountLocalProvider =
-    //     Provider.of<AccountLocalProvider>(context);
+
     return Consumer<AccountLocalProvider>(builder: (_, provider, __) {
       return Scaffold(
         // backgroundColor: Color(0xfffafafa),
@@ -42,7 +42,19 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                 expandedHeight: ScreenUtil().setHeight(180),
                 elevation: 0.5,
                 floating: false,
-                leading: Icon(Icons.notifications),
+                leading: IconButton(
+                  icon: LoadAssetIcon(
+                    "alert",
+                    key: const Key('message'),
+                    width: 24.0,
+                    height: 24.0,
+                    color: ThemeUtils.getIconColor(context),
+                  ),
+                  onPressed: () {
+                    NavigatorUtils.push(context, SettingRouter.notificationSettingPage,
+                        transitionType: TransitionType.fadeIn);
+                  },
+                ),
                 bottom: PreferredSize(
                   // Add this code
                   preferredSize: Size.fromHeight(ScreenUtil().setHeight(180)), // Add this code
@@ -53,8 +65,8 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                   // margin: EdgeInsets.only(bottom: 40),
                   decoration: BoxDecoration(
                     // color: Colors.white,
-                    borderRadius:
-                        BorderRadius.only(bottomLeft:const Radius.circular(20), bottomRight: Radius.circular(200)),
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: const Radius.circular(20), bottomRight: Radius.circular(200)),
                     gradient: new LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomCenter,
@@ -86,7 +98,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                                   size: SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
                                   whitePadding: true,
                                   onTap: () {
-                                    print("sdmasdmasldmsaldas------------");
                                     Navigator.push(context, PageRouteBuilder(pageBuilder:
                                         (BuildContext context, Animation animation,
                                             Animation secondaryAnimation) {
@@ -111,49 +122,8 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                                   ],
                                 ),
                               ),
-                              // Container(
-                              //   margin: EdgeInsets.only(top: 5),
-                              //   child: Row(
-                              //     mainAxisAlignment: MainAxisAlignment.start,
-                              //     crossAxisAlignment: CrossAxisAlignment.center,
-                              //     children: <Widget>[
-                              //       Text('���京工程学院',
-                              //           style: TextStyle(
-                              //               fontSize: 17,
-                              //               color: Colors.black,
-                              //               fontWeight: FontWeight.w400)),
-                              //     ],
-                              //   ),
-                              // )
                             ],
                           )),
-                      // Container(
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.end,
-                      //     children: <Widget>[
-                      //       Container(
-                      //         margin: EdgeInsets.only(
-                      //             right: 15, top: ScreenUtil().setHeight(20)),
-                      //         padding: EdgeInsets.symmetric(
-                      //           horizontal: 10,
-                      //         ),
-                      //         decoration: BoxDecoration(
-                      //             gradient: new LinearGradient(
-                      //                 begin: Alignment.centerLeft,
-                      //                 end: Alignment.centerRight,
-                      //                 colors: [
-                      //                   Color(0xffe2d1c3),
-                      //                   Color(0xfffdfcfb),
-                      //                 ]),
-                      //             borderRadius: BorderRadius.circular(8)),
-                      //         child: Text(
-                      //           '高级认证',
-                      //           style: TextStyles.textHint14,
-                      //         ),
-                      //       )
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                   // title: Text('Demo'),

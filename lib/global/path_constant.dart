@@ -7,10 +7,10 @@ class PathConstant {
   static const String IAMGE_FAILED = "img_failed";
   static const String AVATAR_FAILED = "avatar_failed";
 
-  static const String ICON_CHECKBOX_SEL = "assets/icons/cbx_ck.png";
-  static const String ICON_CHECKBOX_UNSEL = "assets/icons/cbx_uck.png";
+  static const String ICON_CHECKBOX_SEL = "cbx_ck";
+  static const String ICON_CHECKBOX_UNSEL = "cbx_uck";
 
-  static const String ICON_PRAISE_ICON_UNPRAISE = "thumb_up";
+  static const String ICON_PRAISE_ICON_UN_PRAISE = "thumb_up";
   static const String ICON_PRAISE_ICON_PRAISE = "thumb_up_2";
   static const String ICON_COMMENT_ICON = "comment";
 
@@ -34,7 +34,7 @@ class PathConstant {
   // personal center
   static const String ICON_ARTICLE = "assets/icons/article.png";
   static const String ICON_STAR = "assets/icons/star.png";
-  static const String ICON_LOVE_PLUS = "assets/icons/love_plus.png";
+  static const String ICON_LOVE_PLUS = "love_plus";
 
   // nav
   static const String ICON_GO_BACK_ARROW = "assets/icons/ic_back_black.png";

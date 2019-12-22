@@ -7,7 +7,6 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class MyDefaultTextStyle {
-
   static TextStyle getTweetNickStyle(BuildContext context, double fontSize,
       {bool bold = true, bool anonymous = false}) {
     return TextStyle(
@@ -46,11 +45,12 @@ class MyDefaultTextStyle {
         color: !anonymous ? ColorConstant.getTweetNickColor(context) : Color(0xff828282));
   }
 
-  static TextStyle getTweetTimeStyle(double fontSize) {
-    return TextStyle(
-      color: ColorConstant.TWEET_TIME_COLOR,
-      fontSize: fontSize,
-    );
+  static TextStyle getTweetSigStyle(BuildContext context, {double fontSize = Dimens.font_sp13}) {
+    return TextStyle(fontSize: fontSize, color: ColorConstant.getTweetSigColor(context),fontWeight: FontWeight.w400);
+  }
+
+  static TextStyle getTweetTimeStyle(BuildContext context, {double fontSize = SizeConstant.TWEET_TIME_SIZE}) {
+    return TextStyle(fontSize: fontSize, color: ColorConstant.getTweetTimeColor(context));
   }
 
   static TextStyle getTweetReplyOtherStyle(double fontSize) {

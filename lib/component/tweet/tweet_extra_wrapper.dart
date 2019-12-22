@@ -11,6 +11,7 @@ import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -54,19 +55,22 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
 
     List<InlineSpan> spans = List();
     spans.add(WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
         child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
               updatePraise();
             },
             child: Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 8),
               child: LoadAssetIcon(
-                  widget.tweet.loved
-                      ? PathConstant.ICON_PRAISE_ICON_PRAISE
-                      : PathConstant.ICON_PRAISE_ICON_UNPRAISE,
-                  width: 20,
-                  height: 20),
+                widget.tweet.loved
+                    ? PathConstant.ICON_PRAISE_ICON_PRAISE
+                    : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
+                width: 17,
+                height: 17,
+//                color: widget.tweet.loved ? Colors.lightBlue : Colors.grey
+              ),
             ))));
     List<Account> praiseList = widget.tweet.latestPraise;
     if (!CollectionUtil.isListEmpty(praiseList)) {
@@ -134,7 +138,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       }
     } else {
       // 评论关闭
-      return Text('评论关闭', style: MyDefaultTextStyle.getTweetTimeStyle(12));
+      return Text('评论关闭', style: MyDefaultTextStyle.getTweetTimeStyle(context));
     }
   }
 

@@ -183,7 +183,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       if (file != null) {
         Utils.showDefaultLoadingWithBounds(context, text: '正在更新ß');
         String resultUrl =
-            await OssUtil.uploadImage(file.path, file, toTweet: false);
+            await OssUtil.uploadImage(file.path, file.readAsBytesSync(), toTweet: false);
         if (resultUrl != "-1") {
           Result r = await MemberApi.modAccount(
               AccountEditParam(AccountEditKey.AVATAR, resultUrl));

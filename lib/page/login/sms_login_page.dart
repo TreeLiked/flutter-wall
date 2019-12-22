@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix2;
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/app_bar.dart' as prefix1;
 import 'package:iap_app/common-widget/my_button.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/config/auth_constant.dart';
@@ -14,6 +13,7 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/page/login/reg_temp.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
@@ -42,6 +42,11 @@ class _SMSLoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await SpUtil.getInstance();
+      // 由于SpUtil未初始化，所以MaterialApp获取的为默认主题配置，这里同步一下。
+      Provider.of<ThemeProvider>(context).syncTheme();
+    });
     _phoneController.addListener(_verify);
     _vCodeController.addListener(_verifyCode);
     _vCodeController.addListener(_verify);
@@ -126,18 +131,16 @@ class _SMSLoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-//      appBar: prefix1.MyAppBar(isBack: false),
-
         body: Container(
-        padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(250)),
-        height: double.infinity,
+      padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(180)),
+      height: double.infinity,
       width: double.infinity,
       decoration: BoxDecoration(
           image: DecorationImage(
               fit: BoxFit.cover,
-              image: NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1g9yd2ehhskj30u01hcu0x.jpg'))),
+              image: NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1ga0xvtcd9rj30u0190qv8.jpg'))),
       child: Center(
-        heightFactor: 0.1,
+          heightFactor: 0.1,
           child: defaultTargetPlatform == TargetPlatform.iOS
               ? FormKeyboardActions(
                   child: _buildBody(),
@@ -155,11 +158,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-           Text(
-            "注册丨登录 到 Wall",
-            style: TextStyles.textBold26.copyWith(color: Colors.white70)
-
-          ),
+          Text("注册丨登录 到 Wall", style: TextStyles.textBold26.copyWith(color: Colors.white70)),
           Gaps.vGap16,
           MyTextField(
             focusNode: _nodeText1,

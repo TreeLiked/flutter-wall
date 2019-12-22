@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:city_pickers/city_pickers.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -140,71 +141,64 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
             title: "地区",
             content: _getAccountPCD(_profile.province, _profile.city, _profile.district),
             onTap: () async {
-              // prefix0.Result result = await CityPickers.showFullPageCityPicker(
-              //   context: context,
-              //   // height: Application.screenHeight * 0.25,
-              // );
-              //   print(result);
-              //   if (result == null) {
-              //     return;
-              //   }
-              //   bool update = false;
-              //   if (result.provinceName != _profile.province) {
-              //     update = true;
-              //     _updateSomething(
-              //         AccountEditParam(
-              //             AccountEditKey.PROVINCE, result.provinceName),
-              //         (boolres1) {
-              //       if (boolres1) {
-              //         if (!boolres1) {
-              //           ToastUtil.showToast(context, '修改失败');
-              //           return;
-              //         } else {
-              //           setState(() {
-              //             _profile.province = result.provinceName;
-              //           });
-              //         }
-              //       }
-              //     }, showLoading: false);
-              //   }
-              //   if (result.cityName != _profile.city) {
-              //     update = true;
+              Result result = await CityPickers.showFullPageCityPicker(
+                context: context,
+                // height: Application.screenHeight * 0.25,
+              );
+              print(result);
+              if (result == null) {
+                return;
+              }
+              bool update = false;
+              if (result.provinceName != _profile.province) {
+                update = true;
+                _updateSomething(AccountEditParam(AccountEditKey.PROVINCE, result.provinceName), (boolres1) {
+                  if (boolres1) {
+                    if (!boolres1) {
+                      ToastUtil.showToast(context, '修改失败');
+                      return;
+                    } else {
+                      setState(() {
+                        _profile.province = result.provinceName;
+                      });
+                    }
+                  }
+                }, showLoading: false);
+              }
+              if (result.cityName != _profile.city) {
+                update = true;
 
-              //     _updateSomething(
-              //         AccountEditParam(AccountEditKey.CITY, result.cityName),
-              //         (boolres1) {
-              //       if (boolres1) {
-              //         if (!boolres1) {
-              //           ToastUtil.showToast(context, '修改失败');
-              //           return;
-              //         } else {
-              //           setState(() {
-              //             _profile.city = result.cityName;
-              //           });
-              //         }
-              //       }
-              //     }, showLoading: false);
-              //   }
-              //   if (result.areaName != _profile.district) {
-              //     update = true;
-              //     _updateSomething(
-              //         AccountEditParam(AccountEditKey.DISTRICT, result.areaName),
-              //         (boolres1) {
-              //       if (boolres1) {
-              //         if (!boolres1) {
-              //           ToastUtil.showToast(context, '修改失败');
-              //           return;
-              //         } else {
-              //           setState(() {
-              //             _profile.district = result.areaName;
-              //           });
-              //         }
-              //       }
-              //     }, showLoading: false);
-              //   }
-              //   if (update) {
-              //     ToastUtil.showToast(context, '修改成功');
-              //   }
+                _updateSomething(AccountEditParam(AccountEditKey.CITY, result.cityName), (boolres1) {
+                  if (boolres1) {
+                    if (!boolres1) {
+                      ToastUtil.showToast(context, '修改失败');
+                      return;
+                    } else {
+                      setState(() {
+                        _profile.city = result.cityName;
+                      });
+                    }
+                  }
+                }, showLoading: false);
+              }
+              if (result.areaName != _profile.district) {
+                update = true;
+                _updateSomething(AccountEditParam(AccountEditKey.DISTRICT, result.areaName), (boolres1) {
+                  if (boolres1) {
+                    if (!boolres1) {
+                      ToastUtil.showToast(context, '修改失败');
+                      return;
+                    } else {
+                      setState(() {
+                        _profile.district = result.areaName;
+                      });
+                    }
+                  }
+                }, showLoading: false);
+              }
+              if (update) {
+                ToastUtil.showToast(context, '修改成功');
+              }
             }),
         ClickItem(
           title: '性别',

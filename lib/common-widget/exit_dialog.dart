@@ -2,6 +2,7 @@ import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/material.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/base_dialog.dart';
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/fluro_navigator.dart' as prefix1;
@@ -30,7 +31,14 @@ class _ExitDialog extends State<ExitDialog> {
         Utils.showDefaultLoading(context);
         Application.setAccount(null);
         Application.setAccountId(null);
-        await prefix0.SpUtil.clear();
+//        await prefix0.SpUtil.clear();
+        prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+        prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_ID);
+
+        prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_ID);
+        prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_NAME);
+
+        prefix0.SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
         prefix1.NavigatorUtils.goBack(context);
         NavigatorUtils.push(context, Routes.loginPage, clearStack: true);
       },

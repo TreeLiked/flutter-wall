@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
-class TweetDeleteBottomSheet extends StatelessWidget {
-  const TweetDeleteBottomSheet({
+/// design/4商品/index.html#artboard2
+class BottomSheetConfirm extends StatelessWidget {
+  const BottomSheetConfirm({
     Key key,
-    @required this.onTapDelete,
+    this.title,
+    this.optChoice,
+    this.cancelText = "取消",
+    @required this.onTapOpt,
   }) : super(key: key);
 
-  final Function onTapDelete;
+  final String title;
+  final String optChoice;
+  final String cancelText;
+
+  final Function onTapOpt;
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +30,11 @@ class TweetDeleteBottomSheet extends StatelessWidget {
             height: 161.2,
             child: Column(
               children: <Widget>[
-                const SizedBox(
+                SizedBox(
                   height: 52.0,
-                  child: const Center(
-                    child: const Text(
-                      "是否确认删除，此操作不可撤销",
+                  child: Center(
+                    child: Text(
+                      title ?? TextConstant.TEXT_UNCATCH_ERROR,
                       style: TextStyles.textSize14,
                     ),
                   ),
@@ -36,11 +45,12 @@ class TweetDeleteBottomSheet extends StatelessWidget {
                   width: double.infinity,
                   child: FlatButton(
                     textColor: Theme.of(context).errorColor,
-                    child: const Text("确认删除",
-                        style: TextStyle(fontSize: Dimens.font_sp14)),
+                    child: Text(optChoice, style: TextStyle(fontSize: Dimens.font_sp14)),
                     onPressed: () {
                       NavigatorUtils.goBack(context);
-                      onTapDelete();
+                      if (onTapOpt != null) {
+                        onTapOpt();
+                      }
                     },
                   ),
                 ),
@@ -50,8 +60,7 @@ class TweetDeleteBottomSheet extends StatelessWidget {
                   width: double.infinity,
                   child: FlatButton(
                     textColor: Colours.text_gray,
-                    child: const Text("取消",
-                        style: TextStyle(fontSize: Dimens.font_sp14)),
+                    child: Text(cancelText, style: TextStyle(fontSize: Dimens.font_sp14)),
                     onPressed: () {
                       NavigatorUtils.goBack(context);
                     },

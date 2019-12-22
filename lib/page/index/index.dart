@@ -36,22 +36,18 @@ class _IndexState extends State<Index>
     BarItem(
       text: "首页",
       iconData: Icons.home,
-      color: Colors.indigo,
     ),
     BarItem(
       text: "热门",
       iconData: Icons.room,
-      color: Colors.pinkAccent,
     ),
     BarItem(
       text: "消息",
       iconData: Icons.notifications,
-      color: Colors.yellow.shade900,
     ),
     BarItem(
       text: "我的",
       iconData: Icons.person,
-      color: Colors.teal,
     ),
   ];
 

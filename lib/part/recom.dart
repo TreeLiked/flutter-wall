@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 
 class Recommendation extends StatefulWidget {
-  Recommendation(
-      {Key key, this.callback, this.callback2, this.refreshController})
-      : super(key: key);
+  Recommendation({Key key, this.callback, this.callback2, this.refreshController}) : super(key: key);
 
   // 传递推文点击的回复
   final callback;
@@ -29,22 +29,22 @@ class Recommendation extends StatefulWidget {
   }
 }
 
-class RecommendationState extends State<Recommendation>
-    with AutomaticKeepAliveClientMixin<Recommendation> {
+class RecommendationState extends State<Recommendation> with AutomaticKeepAliveClientMixin<Recommendation> {
   List<BaseTweet> children;
 
   List<Widget> widgets;
+
   /*
    * 中转回调
    */
-  void showReplyContainer(TweetReply tr, String destAccountNick,
-      String destAccountId, sendCallback) {
+  void showReplyContainer(TweetReply tr, String destAccountNick, String destAccountId, sendCallback) {
     widget.callback(tr, destAccountNick, destAccountId, sendCallback);
   }
 
   RecommendationState() {
     print('reco state construct');
   }
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +57,6 @@ class RecommendationState extends State<Recommendation>
 
     return Consumer<TweetProvider>(builder: (context, provider, _) {
       return SingleChildScrollView(
-
           scrollDirection: Axis.vertical,
           child: Stack(
             children: <Widget>[
@@ -72,24 +71,14 @@ class RecommendationState extends State<Recommendation>
                               children: provider.displayTweets
                                   .map((f) => TweetCard2(
                                         f,
-                                        displayReplyContainerCallback: (
-                                          TweetReply tr,
-                                          String destAccountNick,
-                                          String destAccountId,
-                                          callback,
-                                        ) =>
-                                            showReplyContainer(
-                                                tr,
-                                                destAccountNick,
-                                                destAccountId,
-                                                callback),
+                                        displayReplyContainerCallback: (TweetReply tr, String destAccountNick,
+                                                String destAccountId, callback) =>
+                                            showReplyContainer(tr, destAccountNick, destAccountId, callback),
                                       ))
                                   .toList())
                           : Center(
                               child: Container(
-                              padding: EdgeInsets.only(
-                                  top: MediaQuery.of(context).size.height *
-                                      0.25),
+                              padding: EdgeInsets.only(top: ScreenUtil().setHeight(200)),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -98,31 +87,26 @@ class RecommendationState extends State<Recommendation>
                                   Container(
                                     color: Colors.transparent,
                                     child: Image.asset(
-                                      ImageUtils.getImgPath("no_data",
-                                          format: "png"),
+                                      ImageUtils.getImgPath("no_data", format: "png"),
                                       fit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.25,
+                                      width: MediaQuery.of(context).size.width * 0.25,
                                     ),
                                   ),
-                                  Container(
-                                      margin: EdgeInsets.only(top: 10),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          if (widget.refreshController !=
-                                              null) {
-                                            widget.refreshController
-                                                .resetRefreshState();
-                                            widget.refreshController
-                                                .callRefresh();
-                                          }
-                                        },
-                                        child: Text(
-                                          '点击重新加载',
-                                          style: TextStyle(
-                                              color: Colors.blueAccent),
-                                        ),
-                                      ))
+                                  Gaps.vGap15,
+                                  Text('暂无数据',style: TextStyle(letterSpacing: 2)),
+                                  Gaps.vGap10,
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (widget.refreshController != null) {
+                                        widget.refreshController.resetRefreshState();
+                                        widget.refreshController.callRefresh();
+                                      }
+                                    },
+                                    child: Text(
+                                      '点击重新加载',
+                                      style: TextStyle(color: Colors.blueAccent),
+                                    ),
+                                  )
                                 ],
                               ),
                             )))),

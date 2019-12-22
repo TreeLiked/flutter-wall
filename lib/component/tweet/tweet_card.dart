@@ -30,7 +30,7 @@ class TweetCard2 extends StatelessWidget {
   double sh;
   double maxWidthSinglePic;
 
-  // spach header 可点击
+  // space header 可点击
   final bool upClickable;
 
   // 点赞账户可点击
@@ -73,56 +73,51 @@ class TweetCard2 extends StatelessWidget {
 
   Widget cardContainer2(BuildContext context) {
     print(tweet.gmtCreated.toIso8601String() + "============================");
-    Widget wd = new Row(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-              padding: EdgeInsets.only(bottom: 10),
-              child: GestureDetector(
-                onTap: () => _forwardDetail(context),
-                behavior: HitTestBehavior.translucent,
+    Widget wd = Container(
+        padding: EdgeInsets.only(bottom: 10),
+        child: GestureDetector(
+          onTap: () => _forwardDetail(context),
+          behavior: HitTestBehavior.translucent,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
                 child: Column(
-                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          TweetCardHeaderWrapper(tweet.account, tweet.anonymous, tweet.gmtCreated,
-                              canClick: upClickable),
-                          Gaps.vGap8,
-                          _typeContainer(context),
-                          Gaps.vGap5,
-                          _bodyContainer(context),
-                          TweetImageWrapper(picUrls: tweet.picUrls),
-                          Gaps.vGap8,
-                          displayPraise
-                              ? TweetCardExtraWrapper(
-                                  tweet: tweet, displayReplyContainerCallback: displayReplyContainerCallback)
-                              : VEmptyView(0),
-                          Gaps.vGap8,
-                          displayComment
-                              ? TweetCommentWrapper(tweet,
-                                  displayReplyContainerCallback: displayReplyContainerCallback)
-                              : VEmptyView(0),
-                          displayComment ? Gaps.vGap30 : Gaps.vGap10,
-                          Gaps.line
-                        ],
-                      ),
-                    ),
+                    TweetCardHeaderWrapper(tweet.account, tweet.anonymous, tweet.gmtCreated,
+                        canClick: upClickable),
+                    Gaps.vGap8,
+                    _typeContainer(context),
+                    Gaps.vGap5,
+                    _bodyContainer(context),
+                    TweetImageWrapper(picUrls: tweet.picUrls),
+                    Gaps.vGap8,
+                    displayPraise
+                        ? TweetCardExtraWrapper(
+                            tweet: tweet, displayReplyContainerCallback: displayReplyContainerCallback)
+                        : VEmptyView(0),
+                    Gaps.vGap8,
+                    displayComment && tweet.enableReply
+                        ? TweetCommentWrapper(tweet,
+                            displayReplyContainerCallback: displayReplyContainerCallback,)
+                        : VEmptyView(0),
+                    displayComment ? Gaps.vGap30 : Gaps.vGap10,
+                    Gaps.line
                   ],
                 ),
-              )),
-        )
-      ],
-    );
+              ),
+            ],
+          ),
+        ));
     return wd;
   }
 
   void _forwardDetail(BuildContext context) {
     Navigator.push(
       context,
+
       MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
     );
   }

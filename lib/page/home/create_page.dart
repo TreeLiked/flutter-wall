@@ -3,15 +3,18 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/asset_image.dart';
+import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/page/common/image_origin.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -21,6 +24,7 @@ import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:photo/photo.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -38,12 +42,14 @@ class _CreatePageState extends State<CreatePage> {
   FocusNode _focusNode = FocusNode();
 
   // 开启回复
-  bool _enbaleReply = true;
+  bool _enableReply = true;
 
   // 是否匿名
   bool _anonymous = false;
 
   String _typeText = "选择标签";
+
+  // 标签tag
   String _typeName = "";
 
   int _textCountText = 0;
@@ -53,10 +59,9 @@ class _CreatePageState extends State<CreatePage> {
   bool _publishing = false;
 
   // 选中的图片
-  List<AssetEntity> pics = List();
+  List<Asset> pics = List();
 
-  // 选中图片的路径
-  List<File> picFiles = List();
+  int _maxImageCount = 9;
 
   // 屏幕宽度
   double sw;
@@ -65,8 +70,6 @@ class _CreatePageState extends State<CreatePage> {
   double remain;
 
   double spacing = 2;
-
-  File file;
 
   void _updatePushBtnState() {
     if (((_controller.text.length > 0 && _controller.text.length < 256) ||
@@ -109,12 +112,18 @@ class _CreatePageState extends State<CreatePage> {
     });
     BaseTweet _baseTweet = BaseTweet();
     bool hasError = false;
+    Navigator.pop(context);
     if (!CollectionUtil.isListEmpty(this.pics)) {
       for (int i = 0; i < this.pics.length; i++) {
-        File f = await this.pics[i].file;
-        String name = f.path.substring(f.path.lastIndexOf("/") + 1);
+        Utils.showDefaultLoadingWithBounds(context, text: '正在上传第${i + 1}张图片');
+        ByteData bd = await this.pics[i].getByteData();
+        if (bd == null) {
+          NavigatorUtils.goBack(context);
+          ToastUtil.showToast(context, '图片上传失败');
+          return;
+        }
         try {
-          String result = await OssUtil.uploadImage(name, f);
+          String result = await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List());
           print(result);
           if (result != "-1") {
             if (_baseTweet.picUrls == null) {
@@ -131,19 +140,19 @@ class _CreatePageState extends State<CreatePage> {
         } finally {
           // print('第$i张图片上传完成');
         }
+        Navigator.pop(context);
       }
     }
+    Utils.showDefaultLoadingWithBounds(context, text: '正在发布');
     if (!hasError) {
-      print('开始pus=============================');
       _baseTweet.type = _typeName;
       _baseTweet.body = _controller.text;
       _baseTweet.account = Application.getAccount;
-      _baseTweet.enableReply = _enbaleReply;
+      _baseTweet.enableReply = _enableReply;
       _baseTweet.anonymous = _anonymous;
       _baseTweet.orgId = 1;
       print(_baseTweet.toJson());
       TweetApi.pushTweet(_baseTweet).then((result) {
-        // print(result.toString());
         Navigator.of(context).pop();
         Result r = Result.fromJson(result);
         print(r.isSuccess);
@@ -157,29 +166,11 @@ class _CreatePageState extends State<CreatePage> {
       Navigator.pop(context);
       ToastUtil.showToast(context, '发布出错，请稍后重试');
     }
+    setState(() {
+      this._publishing = false;
+    });
     _updatePushBtnState();
   }
-
-  // Widget _bottomSheetItem(IconData leftIcon, String text) {
-  //   print(text + " " + _typeText);
-  //   return Material(
-  //     color: Colors.transparent,
-  //     child: Ink(
-  //       child: InkWell(
-  //         onTap: () {
-  //           this._updateTypeText(text);
-  //           Navigator.pop(context);
-  //         },
-  //         child: Container(
-  //             alignment: Alignment.centerLeft,
-  //             padding: EdgeInsets.symmetric(vertical: 5),
-  //             child: Chip(
-  //                 label: Text(text),
-  //                 avatar: Icon(Icons.add_location, color: Colors.lightBlue))),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   void _selectTypeCallback(List<String> typeNames) {
     if (!CollectionUtil.isListEmpty(typeNames)) {
@@ -197,7 +188,7 @@ class _CreatePageState extends State<CreatePage> {
 
   void _reverseEnableReply() {
     setState(() {
-      this._enbaleReply = !this._enbaleReply;
+      this._enableReply = !this._enableReply;
     });
   }
 
@@ -214,72 +205,40 @@ class _CreatePageState extends State<CreatePage> {
                 )));
   }
 
-  void pickImage(PickType type) async {
-    // File image =
-    //     await ImagePicker.pickImage(source: prefix0.ImageSource.gallery);
-    // setState(() {
-    //   this.file = image;
-    // });
-    await Utils.checkPhotoPermission(context);
-    // var assetPathList = await PhotoManager.getImageAsset();
+  Future<void> loadAssets() async {
+    List<Asset> resultList = List<Asset>();
 
-    List<AssetEntity> imgList = await PhotoPicker.pickAsset(
-      // BuildContext required
-      context: context,
-
-      /// The following are optional parameters.
-      themeColor: Theme.of(context).scaffoldBackgroundColor,
-      // the title color and bottom color
-
-      textColor: Theme.of(context).textTheme.subhead.color,
-
-      // text color
-      padding: 1.0,
-      // item padding
-      dividerColor: Colors.grey,
-      // divider color
-      disableColor: Colors.grey.shade300,
-      // the check box disable color
-      itemRadio: 0.88,
-      // the content item radio
-      maxSelected: pics == null ? 9 : 9 - pics.length,
-      // max picker image count
-      // provider: I18nProvider.english,
-      provider: I18nProvider.chinese,
-      // i18n provider ,default is chinese. , you can custom I18nProvider or use ENProvider()
-      rowCount: 4,
-      // item row count
-
-      thumbSize: 150,
-      // preview thumb size , default is 64
-      sortDelegate: SortDelegate.common,
-      // default is common ,or you make custom delegate to sort your gallery
-      checkBoxBuilderDelegate: DefaultCheckBoxBuilderDelegate(
-        activeColor: Colors.white,
-        unselectedColor: Colors.white,
-        checkColor: Colors.green,
-      ),
-      // default is DefaultCheckBoxBuilderDelegate ,or you make custom delegate to create checkbox
-
-      // loadingDelegate: this,
-      // if you want to build custom loading widget,extends LoadingDelegate, [see example/lib/main.dart]
-
-      badgeDelegate: const DurationBadgeDelegate(),
-      // badgeDelegate to show badge widget
-
-      pickType: type,
-      // photoPathList: assetPathList
-    );
-
-    if (!CollectionUtil.isListEmpty(imgList)) {
-      // imgList.forEach((f) async => this.picFiles.add(await f.file));
-      setState(() {
-        this.pics.addAll(imgList);
-      });
-
-      // Navigator.push(context,
-      //     MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: _maxImageCount,
+        enableCamera: true,
+        selectedAssets: pics,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "选择图片",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+    } on Exception catch (e) {
+      debugPrint("$e");
+      return;
     }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      pics = resultList;
+    });
+  }
+
+  void pickImage(PickType type) async {
+    await loadAssets();
     _updatePushBtnState();
   }
 
@@ -297,7 +256,6 @@ class _CreatePageState extends State<CreatePage> {
   Widget build(BuildContext context) {
     print("create page build");
     sw = ScreenUtil.screenWidthDp;
-
     return new Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: new AppBar(
@@ -344,6 +302,7 @@ class _CreatePageState extends State<CreatePage> {
               child: new Container(
                 color: Colors.white,
                 padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                margin: const EdgeInsets.only(bottom: 20),
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -362,7 +321,7 @@ class _CreatePageState extends State<CreatePage> {
                         style: TextStyle(
                             height: 1.5, fontSize: SizeConstant.TWEET_FONT_SIZE, color: Colors.black),
                         decoration: new InputDecoration(
-                            hintText: '分享新鲜事',
+                            hintText: '分享校园新鲜事',
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(5),
                             counter: Text(
@@ -390,7 +349,7 @@ class _CreatePageState extends State<CreatePage> {
                     ),
 
                     Container(
-                      margin: EdgeInsets.only(top: 20),
+                      margin: const EdgeInsets.only(top: 20),
                       child: Row(
                         children: <Widget>[
                           GestureDetector(
@@ -405,12 +364,12 @@ class _CreatePageState extends State<CreatePage> {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: <Widget>[
                                   Icon(
-                                    _enbaleReply ? Icons.lock_open : Icons.lock,
-                                    color: _enbaleReply ? Color(0xff87CEEB) : Colors.grey,
+                                    _enableReply ? Icons.lock_open : Icons.lock,
+                                    color: _enableReply ? Color(0xff87CEEB) : Colors.grey,
                                     size: 16,
                                   ),
                                   Text(
-                                    " " + (_enbaleReply ? "允许评论 " : "禁止评论 "),
+                                    " " + (_enableReply ? "允许评论 " : "禁止评论 "),
                                     style: TextStyle(fontSize: 12, color: Colors.grey),
                                   ),
                                 ],
@@ -462,11 +421,7 @@ class _CreatePageState extends State<CreatePage> {
                               ),
                             ],
                           )),
-                          Divider(
-                            height: 1.0,
-                            indent: 0.0,
-                            color: Color(0xffF5F5F5),
-                          ),
+
                         ],
                       ),
                     ),
@@ -525,52 +480,45 @@ class _CreatePageState extends State<CreatePage> {
     if (!CollectionUtil.isListEmpty(pics)) {
       for (int j = 0; j < pics.length; j++) {
         widgets.add(GestureDetector(
-          onLongPress: () {
-            setState(() {
-              BottomSheetUtil.showBottomSheetView(context, [
-                BottomSheetItem(Icon(Icons.delete, color: Colors.redAccent), '删除这张图片', () {
-                  setState(() {
-                    this.pics.removeAt(j);
-                    _updatePushBtnState();
-                    Navigator.pop(context);
-                  });
-                })
-              ]);
-            });
-          },
-          child: AssetImageWidget(
-            assetEntity: pics[j],
-            width: width,
-            height: width,
-            boxFit: BoxFit.cover,
-          ),
-          // child: Container(
-          //   width: width,
-          //   height: width,
-          //   child: Image.file(picFiles[j]),
-          // ),
-        ));
+            onLongPress: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return BottomSheetConfirm(
+                    title: '确认删除这张图片吗',
+                    optChoice: '删除',
+                    onTapOpt: () async {
+                      setState(() {
+                        this.pics.removeAt(j);
+                        _updatePushBtnState();
+                      });
+                    },
+                  );
+                },
+              );
+            },
+            onTap: () async {
+              ByteData bd = await this.pics[j].getByteData();
+              Utils.displayDialog(
+                  context,
+                  Center(
+                    child: GestureDetector(
+                        child: Image.memory(bd.buffer.asUint8List(), fit: BoxFit.fitWidth),
+                        onTap: () => NavigatorUtils.goBack(context)),
+                  ),
+                  barrierDismissible: true);
+            },
+            child: AssetThumb(
+              asset: pics[j],
+              width: width.toInt(),
+              height: width.toInt(),
+            )));
       }
     }
 
-    widgets.add(getImageSelWidget());
-    // pics
-    //     .map((f) => GestureDetector(
-    //           onTap: () async {
-    //             List<File> files = new List();
-    //             for(int i = 0 ; i < files.length; i++) {
-    //               files.add(await pics[i].file);
-    //             }
-    //             Utils.openPhotoView(context, , initialIndex),
-    //           },
-    //           child: AssetImageWidget(
-    //             assetEntity: f,
-    //             width: width,
-    //             height: width,
-    //             boxFit: BoxFit.cover,
-    //           ),
-    //         ))
-    //     .forEach((imageWidget) => widgets.add(imageWidget));
+    if (pics.length < _maxImageCount) {
+      widgets.add(getImageSelWidget());
+    }
     return widgets;
   }
 }

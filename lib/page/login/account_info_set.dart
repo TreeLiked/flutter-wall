@@ -228,7 +228,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
         ToastUtil.showToast(context, '昵称重复了，换一个试试吧');
       } else {
         RegTemp.regTemp.nick = nick;
-        String url = await OssUtil.uploadImage(_avatarFile.path, _avatarFile,
+        String url = await OssUtil.uploadImage(_avatarFile.path, _avatarFile.readAsBytesSync(),
             toTweet: false);
         NavigatorUtils.goBack(context);
         if (url != "-1") {

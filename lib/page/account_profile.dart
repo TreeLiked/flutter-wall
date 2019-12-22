@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/member.dart';
@@ -23,6 +24,7 @@ import 'package:iap_app/page/common/avatar_origin.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -162,9 +164,7 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
                               Navigator.push(context, PageRouteBuilder(pageBuilder:
                                   (BuildContext context, Animation animation, Animation secondaryAnimation) {
                                 return new FadeTransition(
-                                  opacity: animation,
-                                  child: AvatarOriginPage(widget.avatarUrl),
-                                );
+                                    opacity: animation, child: AvatarOriginPage(widget.avatarUrl));
                               }));
                             }))),
               ),
@@ -239,7 +239,6 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             // _buildAvatarItem(account.avatarUrl),
-
             _titleItem('基础信息'),
             _buildNick(account.nick, account.profile.gender),
             Gaps.line,
@@ -288,7 +287,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             child: Text(nick ?? TextConstant.TEXT_UNCATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
+                style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14)),
           ),
           Gaps.hGap10,
           (male == null || male == "UNKNOWN")
@@ -319,7 +318,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                 softWrap: true,
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
+                style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: Dimens.font_sp13p5)),
           ),
           _getCopyWidget(sig)
         ],
@@ -462,7 +461,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
           });
           return {'displayHistoryTweet': true, 'tweets': tweets};
         }
-        return {'displayHistoryTweet': true, 'tweets': []};
+        return {'displayHistoryTweet': true, 'tweets': <BaseTweet>[]};
       }
     }
   }

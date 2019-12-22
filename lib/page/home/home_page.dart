@@ -1,52 +1,37 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_easyrefresh/bezier_circle_header.dart' as prefix0;
-import 'package:flutter_easyrefresh/delivery_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_easyrefresh/material_footer.dart';
-import 'package:flutter_easyrefresh/bezier_circle_header.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/size_constant.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/common/tweet_type_select.dart';
-import 'package:iap_app/page/home/create_page.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
-import 'package:iap_app/page/tweet_type_sel.dart';
+import 'package:iap_app/page/home/second_floor.dart';
+import 'package:iap_app/page/square/index.dart';
 import 'package:iap_app/part/recom.dart';
-import 'package:iap_app/part/space_header.dart';
-import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/colors.dart';
-import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:iap_app/component/link_header.dart' as prefix1;
 
 class HomePage extends StatefulWidget {
   final pullDownCallBack;
@@ -93,6 +78,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   // last refresh time
   DateTime _lastRefresh;
 
+  LinkHeaderNotifier _linkNotifier;
+  ValueNotifier<bool> _secondFloorOpen;
+
   @override
   void initState() {
     super.initState();
@@ -100,6 +88,16 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
       tab.isSelected = false;
     });
     tabIconsList[0].isSelected = true;
+
+    _linkNotifier = LinkHeaderNotifier();
+    _secondFloorOpen = ValueNotifier<bool>(false);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _linkNotifier.dispose();
+    _secondFloorOpen.dispose();
   }
 
   Widget tabBody = Container(
@@ -141,6 +139,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     List<BaseTweet> pbt = await (TweetApi.queryTweets(
         PageParam(page,
             pageSize: 5,
+            orgId: Application.getOrgId,
             types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames)),
         Application.getAccountId));
     return pbt;
@@ -230,6 +229,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     firstBuild = false;
     return Stack(
       children: <Widget>[
+//        SecondFloorWidget(_linkNotifier, _secondFloorOpen),
         NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
           body: Listener(
@@ -246,6 +246,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
               },
               child: EasyRefresh(
                 scrollController: _scrollController,
+
                 header: ClassicalHeader(
                   enableHapticFeedback: true,
                   enableInfiniteRefresh: false,
@@ -265,6 +266,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                   bgColor: null,
                   textColor: Theme.of(context).textTheme.subhead.color,
                 ),
+//                header: prefix1.LinkHeader(_linkNotifier),
 
                 footer: ClassicalFooter(
                   loadText: '上滑加载更多',
@@ -306,6 +308,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
       SliverAppBar(
         centerTitle: true,
         //标题居中
+
         title: GestureDetector(
           child: Text(
             Application.getOrgName ?? "未知错误",
@@ -318,10 +321,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
         elevation: 0.3,
         actions: <Widget>[
           IconButton(
+            icon: Icon(Icons.blur_on),
+            onPressed: () {
+              NavigatorUtils.push(context, Routes.square, transitionType: TransitionType.fadeIn);
+            },
+          ),
+          IconButton(
               key: _menuKey,
               icon: Icon(Icons.add),
               onPressed: _showAddMenu,
               color: ThemeUtils.getIconColor(context)),
+
         ],
 
         expandedHeight: 0,
@@ -408,11 +418,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                   onPressed: () {
                     NavigatorUtils.goBack(context);
 
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreatePage(),
-                        ));
+                    NavigatorUtils.push(context, Routes.create, transitionType: TransitionType.fadeIn);
                     // NavigatorUtils.push(context, Routes.create,
                     //     transitionType: TransitionType.fadeIn);
                   },

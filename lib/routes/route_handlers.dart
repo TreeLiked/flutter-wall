@@ -16,6 +16,7 @@ import 'package:iap_app/page/home/create_page.dart';
 import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/index.dart';
 import 'package:iap_app/page/input_text_page.dart';
+import 'package:iap_app/page/square/index.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
@@ -29,6 +30,11 @@ var homeHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return HomePage();
 });
+
+var squareHandler = Handler(
+    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      return SquareIndexPage();
+    });
 
 var tweetDetailHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {

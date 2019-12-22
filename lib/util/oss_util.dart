@@ -36,26 +36,21 @@ class OssUtil {
 
   static Future<Result> requestPostUrls(int count) async {
     String requestUrl =
-        "${Api.API_BASE_INF_URL}/?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
-            Application.getAccountId;
+        "${Api.API_BASE_INF_URL}/?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" + Application.getAccountId;
     Response response = await httpUtil.dio.post(requestUrl);
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return Result.fromJson(json);
   }
 
-  static Future<String> uploadImage(String fileName, File object,
+  static Future<String> uploadImage(String fileName, List<int> fileBytes,
       {bool toTweet = true, String fixName}) async {
-    //构建policy, `expriation`设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了, `content-length-range`设置上传文件的大小限制
     String newFileName;
 
     if (StringUtil.isEmpty(fixName)) {
-      String prifex = !StringUtil.isEmpty(Application.getAccountId)
-          ? Application.getAccountId
-          : Uuid().v1().toString();
-      newFileName = prifex +
-          "-" +
-          Uuid().v1().substring(0, 8) +
-          fileName.substring(fileName.lastIndexOf("."));
+      String prefix =
+          !StringUtil.isEmpty(Application.getAccountId) ? Application.getAccountId : Uuid().v1().toString();
+      newFileName =
+          prefix + "-" + Uuid().v1().substring(0, 8) + fileName.substring(fileName.lastIndexOf("."));
     } else {
       newFileName = fixName;
     }
@@ -91,10 +86,12 @@ class OssUtil {
       'success_action_status': '200',
       'signature': signature,
       'Access-Control-Allow-Origin': '*',
-      'file': new UploadFileInfo(object, fileName),
+//      'file': new UploadFileInfo(object, fileName),
+      'file': new UploadFileInfo.fromBytes(fileBytes, fileName),
+
     });
     try {
-      print(object.lengthSync() / 1024 / 1024);
+//      print(object.lengthSync() / 1024 / 1024);
       Response response = await dio.post(OssConstant.POST_URL, data: data);
       print(response.headers);
       print(response.data);

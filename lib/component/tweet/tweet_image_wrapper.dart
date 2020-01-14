@@ -86,7 +86,7 @@ class TweetImageWrapper extends StatelessWidget {
         rp = 0;
       }
     }
-    return ImageCoatainer(
+    return ImageContainer(
       url: url,
       width: perw,
       height: perw,

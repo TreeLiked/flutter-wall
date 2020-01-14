@@ -131,6 +131,7 @@ class _SMSLoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
         body: Container(
       padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(180)),
       height: double.infinity,
@@ -138,7 +139,7 @@ class _SMSLoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
           image: DecorationImage(
               fit: BoxFit.cover,
-              image: NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1ga0xvtcd9rj30u0190qv8.jpg'))),
+              image: const NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1ga9zk4ju6oj30pz0k00vy.jpg'))),
       child: Center(
           heightFactor: 0.1,
           child: defaultTargetPlatform == TargetPlatform.iOS

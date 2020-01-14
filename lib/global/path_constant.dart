@@ -32,8 +32,8 @@ class PathConstant {
   static const String ICON_CHAMPIN = "assets/icons/champin.png";
 
   // personal center
-  static const String ICON_ARTICLE = "assets/icons/article.png";
-  static const String ICON_STAR = "assets/icons/star.png";
+  static const String ICON_ARTICLE = "article";
+  static const String ICON_STAR = "star";
   static const String ICON_LOVE_PLUS = "love_plus";
 
   // nav

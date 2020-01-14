@@ -10,6 +10,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/page/common/avatar_origin.dart';
+import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -66,7 +67,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                   decoration: BoxDecoration(
                     // color: Colors.white,
                     borderRadius: BorderRadius.only(
-                        bottomLeft: const Radius.circular(20), bottomRight: Radius.circular(200)),
+                        bottomLeft:  Radius.circular(20), bottomRight: Radius.circular(140)),
                     gradient: new LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomCenter,
@@ -140,12 +141,12 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          UpDownItem(WidgetUtil.getAsset(PathConstant.ICON_ARTICLE, size: 25), Text('发布'),
-                              () => NavigatorUtils.push(context, SettingRouter.historyPushPage)),
-                          UpDownItem(
-                              WidgetUtil.getAsset(PathConstant.ICON_LOVE_PLUS, size: 25), Text('点赞'), () {}),
-                          UpDownItem(WidgetUtil.getAsset(PathConstant.ICON_STAR, size: 25), Text('收藏'),
-                              () => ToastUtil.showToast(context, '收藏功能暂未开放')),
+                          UpDownItem(const LoadAssetIcon(PathConstant.ICON_ARTICLE, width: 25, height: 25),
+                              Text('发布'), () => NavigatorUtils.push(context, SettingRouter.historyPushPage)),
+                          UpDownItem(const LoadAssetIcon(PathConstant.ICON_LOVE_PLUS, width: 25, height: 25),
+                              Text('点赞'), () {}),
+                          UpDownItem(const LoadAssetIcon(PathConstant.ICON_STAR, width: 25, height: 25),
+                              Text('收藏'), () => ToastUtil.showToast(context, '收藏功能暂未开放')),
                         ],
                       ),
                     ),
@@ -185,7 +186,27 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                             ClickItem(
                               title: '我的订阅',
                               onTap: () {
-                                ToastUtil.showToast(context, '订阅功能暂未开放');
+//                                ToastUtil.showToast(context, '订阅功能暂未开放');
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => TweetTypeSelectPage(
+                                              title: "订阅内容类型",
+                                              subTitle: '我的订阅',
+                                              filter: false,
+                                              subScribe: true,
+                                              initFirst: [],
+                                              callback: (resultNames) async {
+                                                print("callbacl result names");
+                                                print(resultNames);
+                                              },
+
+                                              // callback: (_) {
+                                              //   // _refreshController.requestRefresh();
+                                              //   _esRefreshController.resetLoadState();
+                                              //   _esRefreshController.callRefresh();
+                                              // },
+                                            )));
                               },
                             ),
                           ]),

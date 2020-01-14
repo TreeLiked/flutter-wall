@@ -213,7 +213,7 @@ class _CreatePageState extends State<CreatePage> {
         maxImages: _maxImageCount,
         enableCamera: true,
         selectedAssets: pics,
-        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat",),
         materialOptions: MaterialOptions(
           actionBarColor: "#abcdef",
           actionBarTitle: "选择图片",
@@ -301,13 +301,13 @@ class _CreatePageState extends State<CreatePage> {
               onPanDown: (_) => _hideKeyB(),
               child: new Container(
                 color: Colors.white,
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                padding: const EdgeInsets.only(left: 5, right: 10, bottom: 10),
                 margin: const EdgeInsets.only(bottom: 20),
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Container(
-                      padding: const EdgeInsets.only(left: 3.0, right: 3.0, top: 5.0),
+                      padding: const EdgeInsets.only(right: 3.0, top: 5.0),
                       child: TextField(
                         keyboardAppearance: Theme.of(context).brightness,
                         controller: _controller,
@@ -421,7 +421,6 @@ class _CreatePageState extends State<CreatePage> {
                               ),
                             ],
                           )),
-
                         ],
                       ),
                     ),
@@ -461,7 +460,7 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   Widget getImageSelWidget() {
-    double width = (sw - 25 - spacing * 2) / 3;
+    double width = (sw - 18 - spacing * 2) / 3;
 
     return GestureDetector(
         onTap: () {

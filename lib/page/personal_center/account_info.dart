@@ -150,6 +150,14 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                   NavigatorUtils.push(
                       context, SettingRouter.accountBindInfoPage);
                 }),
+            ClickItem(
+                title: "实名认证",
+                content: "未认证",
+
+                onTap: () {
+                  NavigatorUtils.push(
+                      context, SettingRouter.accountBindInfoPage);
+                }),
             InkWell(
               onTap: () {
                 showElasticDialog(

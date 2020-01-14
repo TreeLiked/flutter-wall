@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
@@ -80,16 +81,20 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
           enableHapticFeedback: true,
           enableInfiniteLoad: true),
       onLoad: _loadMoreData,
-      child: SingleChildScrollView(
-        child: Column(
-          children: !CollectionUtil.isListEmpty(_accountTweets)
-              ? _accountTweets
-                  .map((f) => TweetCard2(f,
-                      upClickable: false, downClickable: true, displayPraise: false, displayComment: false))
-                  .toList()
-              : [LoadAssetImage('no_data')],
-        ),
-      ),
+      child: !CollectionUtil.isListEmpty(_accountTweets)
+          ? SingleChildScrollView(
+              child: Column(
+                  children: _accountTweets
+                      .map((f) => TweetCard2(f,
+                          upClickable: false,
+                          downClickable: true,
+                          displayPraise: false,
+                          displayComment: false))
+                      .toList()))
+          : Center(
+              child: Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: LoadAssetImage('no_data', width: ScreenUtil().setWidth(250)))),
     );
   }
 

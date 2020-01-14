@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/res/resources.dart';
+import 'package:iap_app/res/styles.dart';
+import 'package:iap_app/style/text_style.dart';
 
 // class SwitchItem extends StatefulWidget {
 //   @override
@@ -10,9 +12,7 @@ import 'package:iap_app/res/resources.dart';
 
 // }
 class SwitchItem extends StatelessWidget {
-  const SwitchItem(
-      {Key key, this.onTap, @required this.title, this.initBool = false})
-      : super(key: key);
+  const SwitchItem({Key key, this.onTap, @required this.title, this.initBool = false}) : super(key: key);
 
   final onTap;
   final String title;
@@ -33,8 +33,7 @@ class SwitchItem extends StatelessWidget {
         //为了数字类文字居中
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Container(child: Text(title)),
-
+          Container(child: Text(title, style: TextStyles.textSize14)),
           // const Spacer(),
           Expanded(
             child: Align(

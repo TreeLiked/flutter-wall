@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:device_info/device_info.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/page/splash_page.dart';
@@ -22,8 +24,7 @@ void main() {
 
   // 透明状态栏
   if (Platform.isAndroid) {
-    SystemUiOverlayStyle systemUiOverlayStyle =
-        SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
 }
@@ -132,10 +133,14 @@ class AlmondDonutsState extends State<AlmondDonuts> {
             //   GlobalWidgetsLocalizations.delegate,
             //   GlobalCupertinoLocalizations.delegate,
             // ],
-            // supportedLocales: const [
-            //   Locale('zh', 'CH'),
-            //   Locale('en', 'US')
-            // ]
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+
+              GlobalCupertinoLocalizations.delegate,
+              DefaultCupertinoLocalizations.delegate
+            ],
+            supportedLocales: const [const Locale('zh', 'CH')],
           );
         }));
 
@@ -174,17 +179,14 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       _updateDeviceInfo("IPHONE", "IOS", iosInfo.systemVersion, regId);
     } else if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      _updateDeviceInfo(androidInfo.brand.toUpperCase(), "ANDROID",
-          androidInfo.device, regId);
+      _updateDeviceInfo(androidInfo.brand.toUpperCase(), "ANDROID", androidInfo.device, regId);
     } else {
       debugPrint("Unsupport Platform type");
     }
   }
 
-  void _updateDeviceInfo(
-      String name, String platform, String model, String regId) async {
-    DeviceApi.updateDeviceInfo(
-        Application.getAccountId, name, platform, model, regId);
+  void _updateDeviceInfo(String name, String platform, String model, String regId) async {
+    DeviceApi.updateDeviceInfo(Application.getAccountId, name, platform, model, regId);
   }
 
   Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {

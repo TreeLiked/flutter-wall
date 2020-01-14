@@ -37,9 +37,12 @@ class HttpUtil {
       ///  注意: 这并不是接收数据的总时限.
       receiveTimeout: 30000,
       headers: header,
+
+
     );
 
     dio = new Dio(options);
+
 
     // dio.interceptors.add(CookieManager(CookieJar()));
   }

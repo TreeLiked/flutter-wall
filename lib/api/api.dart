@@ -4,14 +4,16 @@ import 'package:dio/dio.dart';
 
 class Api {
   static const bool dev = false;
-  static const String API_BASE = "http://treeliked.com";
-  static const String API_BASE_DEV = "http://127.0.0.1";
+  static const String API_BASE_AL = "https://almond-donuts.iutr.tech:8088";
+  static const String API_BASE_TR = "https://member.iutr.tech:9002";
+
+  static const String API_BASE_DEV = "http://127.0.0.1:8089";
 
   //  static const String API_BASE =
   // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
 
-  static const String API_BASE_INF_URL = (dev ? API_BASE_DEV : API_BASE) + ":8088/iap/api";
-  static const String API_BASE_MEMBER_URL = API_BASE + ":9001/trms/api";
+  static const String API_BASE_INF_URL = (dev ? API_BASE_DEV : API_BASE_AL) + "/iap/api";
+  static const String API_BASE_MEMBER_URL = API_BASE_TR + "/trms/api";
 
   // tweet
   static const String API_TWEET_CREATE = "/tweet/add.do";
@@ -61,8 +63,8 @@ class Api {
   // device
   static const String API_UPDATE_DEVICE_INFO = API_BASE_INF_URL + "/device/update.do";
 
-  static Map<String, dynamic> convertResponse(Object reponseData) {
-    String jsonTemp = json.encode(reponseData);
+  static Map<String, dynamic> convertResponse(Object responseData) {
+    String jsonTemp = json.encode(responseData);
     return json.decode(jsonTemp);
   }
 
@@ -79,13 +81,13 @@ class Api {
       print("响应超时");
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
-      print("出现异常");
+      print("出现异常$e");
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.
       print("请求取消");
     } else {
       //DEFAULT Default error type, Some other Error. In this case, you can read the DioError.error if it is not null.
-      print("未知错误");
+      print("未知错误$e");
     }
   }
 }

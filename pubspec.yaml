@@ -129,6 +129,10 @@ dependencies:
   # floating action bar
   unicorndial: "^1.1.5"
 
+  # 轮播图 https://github.com/jzoom/flutter_swiper
+  flutter_swiper: ^1.1.6
+
+
 
 
 

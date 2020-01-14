@@ -19,6 +19,7 @@ class HomeCommentWrapper extends StatefulWidget {
   final sendCallback;
 
   HomeCommentWrapper({Key key, this.sendCallback}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return HomeCommentWrapperState();
@@ -47,15 +48,13 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
               child: Container(
                   width: _replyContainerHeight,
                   decoration: BoxDecoration(
-                    color: ThemeUtils.isDark(context)
-                        ? Color(0xff363636)
-                        : Color(0xfff2f3f4),
+                    color: ThemeUtils.isDark(context) ? Color(0xff363636) : Color(0xfff2f3f4),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(5),
-                      topRight: Radius.circular(5),
+                      topLeft: const Radius.circular(7),
+                      topRight: const Radius.circular(7),
                     ),
                   ),
-                  padding: EdgeInsets.fromLTRB(11, 7, 15, 7),
+                  padding: const EdgeInsets.fromLTRB(11, 7, 15, 7),
                   child: Row(
                     children: <Widget>[
                       AccountAvatar(
@@ -65,47 +64,38 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                       ),
                       Expanded(
                         child: Padding(
-                            padding: EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.only(left: 10),
                             child: TextField(
                               controller: _controller,
                               focusNode: _focusNode,
                               keyboardAppearance: Theme.of(context).brightness,
                               decoration: InputDecoration(
-                                  suffixIcon:
-                                      curReply != null && curReply.type == 1
-                                          ? GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  curReply.anonymous =
-                                                      !curReply.anonymous;
-                                                  if (curReply.anonymous) {
-                                                    ToastUtil.showToast(
-                                                        context, '此条评论将匿名回复');
-                                                  }
-                                                });
-                                              },
-                                              child: Icon(
-                                                curReply.anonymous
-                                                    ? Icons.visibility_off
-                                                    : Icons.visibility,
-                                                size: SizeConstant
-                                                        .TWEET_PROFILE_SIZE *
-                                                    0.5,
-                                                color: curReply.anonymous
-                                                    ? Colors.blueAccent
-                                                    : Colors.grey,
-                                              ),
-                                            )
-                                          : null,
+                                  suffixIcon: curReply != null && curReply.type == 1
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              curReply.anonymous = !curReply.anonymous;
+                                              if (curReply.anonymous) {
+                                                ToastUtil.showToast(context, '此条评论将匿名回复');
+                                              }
+                                            });
+                                          },
+                                          child: Icon(
+                                            curReply.anonymous ? Icons.visibility_off : Icons.visibility,
+                                            size: SizeConstant.TWEET_PROFILE_SIZE * 0.5,
+                                            color: curReply.anonymous ? Colors.blueAccent : Colors.grey,
+                                          ),
+                                        )
+                                      : null,
                                   hintText: _hintText,
                                   border: InputBorder.none,
-                                  hintStyle: TextStyle(
+                                  hintStyle: const TextStyle(
                                     color: ColorConstant.TWEET_TIME_COLOR,
                                     fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
                                   )),
                               textInputAction: TextInputAction.send,
                               cursorColor: Colors.grey,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: SizeConstant.TWEET_FONT_SIZE - 1,
                               ),
                               onSubmitted: (value) {
@@ -123,7 +113,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
       ToastUtil.showToast(context, '回复内容不能为空');
       return;
     }
-    Utils.showDefaultLoadingWithBounds(context);
+    Utils.showDefaultLoadingWithBounds(context, text: '');
     curReply.body = value;
     Account acc = Account.fromId(Application.getAccountId);
     curReply.account = acc;
@@ -139,17 +129,14 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
       } else {
         _controller.clear();
         _hintText = "评论";
-        widget.sendCallback(null);
+        ToastUtil.showToast(context, '回复失败');
       }
       NavigatorUtils.goBack(context);
-      // widget.callback(tr, destAccountId);
     });
   }
 
-  void showReplyContainer(
-      TweetReply tr, String destAccountNick, String destAccountId) {
-    print(
-        'home page 回调 =============== $destAccountNick----------------${tr.type}');
+  void showReplyContainer(TweetReply tr, String destAccountNick, String destAccountId) {
+    print('home page 回调 =============== $destAccountNick----------------${tr.type}');
     if (StringUtil.isEmpty(destAccountNick)) {
       setState(() {
         if (tr.type == 1) {
@@ -175,7 +162,6 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
         this.destAccountId = destAccountId;
       });
     }
-
     _focusNode.requestFocus();
   }
 

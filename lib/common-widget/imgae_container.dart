@@ -4,19 +4,14 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/util/widget_util.dart';
 
-class ImageCoatainer extends StatelessWidget {
+class ImageContainer extends StatelessWidget {
   final String url;
   final double width;
   final double height;
   final EdgeInsetsGeometry padding;
   final callback;
 
-  ImageCoatainer(
-      {@required this.url,
-      this.width,
-      this.height,
-      this.callback,
-      this.padding});
+  ImageContainer({@required this.url, this.width, this.height, this.callback, this.padding});
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +26,13 @@ class ImageCoatainer extends StatelessWidget {
                 filterQuality: FilterQuality.medium,
                 imageUrl: url,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                    margin: EdgeInsets.all(Application.screenWidth * 0.1),
-                    width: Application.screenWidth * 0.25,
-                    height: Application.screenWidth * 0.25,
-                    child: LoadAssetImage(
-                      PathConstant.IAMGE_HOLDER,
-                      width: 50,
-                      height: 50,
-                    )),
+                placeholder: (context, url) => ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: Application.screenWidth * 0.2,
+                      maxWidth: Application.screenWidth * 0.2,
+                    ),
+                    child: LoadAssetImage(PathConstant.IAMGE_HOLDER,
+                        width: Application.screenWidth * 0.2, height: Application.screenWidth * 0.2)),
                 errorWidget: (context, url, error) => SizedBox(
                       width: Application.screenWidth * 0.25,
                       height: Application.screenWidth * 0.25,

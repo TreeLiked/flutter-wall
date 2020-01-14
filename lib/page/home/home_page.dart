@@ -6,10 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix2;
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -49,7 +51,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   EasyRefreshController _esRefreshController = EasyRefreshController();
   ScrollController _scrollController = ScrollController();
-
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
 
@@ -89,8 +90,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     });
     tabIconsList[0].isSelected = true;
 
-    _linkNotifier = LinkHeaderNotifier();
-    _secondFloorOpen = ValueNotifier<bool>(false);
+    _scrollController.addListener(() {
+      // TODO 自动加载更多
+//      ScrollNotification scroll = notification as ScrollNotification;
+//      // 当前滑动距离
+//      double currentExtent = scroll.metrics.pixels;
+//      double maxExtent = scroll.metrics.maxScrollExtent;
+//      if (maxExtent - currentExtent > widget.startLoadMoreOffset) {
+//        // 开始加载更多
+//
+//      }
+    });
   }
 
   @override
@@ -244,51 +254,54 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                   widget.pullDownCallBack((_.position.dy - startY) > 0);
                 }
               },
-              child: EasyRefresh(
-                scrollController: _scrollController,
+              child: Scrollbar(
+                controller: _scrollController,
+                child: EasyRefresh(
+                  scrollController: _scrollController,
 
-                header: ClassicalHeader(
-                  enableHapticFeedback: true,
-                  enableInfiniteRefresh: false,
-                  refreshText: '下拉刷新',
-                  refreshReadyText: '释放以刷新',
-                  refreshingText: '更新中',
-                  refreshedText: '更新完成',
-                  refreshFailedText: '更新失败',
-                  noMoreText: '没有数据',
-                  // bgColor: Theme.of(context).appBarTheme.color,
-                  infoColor: null,
-                  float: false,
-                  showInfo: true,
-                  infoText: _lastRefresh == null
-                      ? "未刷新"
-                      : '更新于 ' + DateUtil.formatDate(_lastRefresh, format: DataFormats.h_m),
-                  bgColor: null,
-                  textColor: Theme.of(context).textTheme.subhead.color,
-                ),
+                  header: ClassicalHeader(
+                    enableHapticFeedback: true,
+                    enableInfiniteRefresh: false,
+                    refreshText: '下拉刷新',
+                    refreshReadyText: '释放以刷新',
+                    refreshingText: '更新中',
+                    refreshedText: '更新完成',
+                    refreshFailedText: '更新失败',
+                    noMoreText: '没有数据',
+                    // bgColor: Theme.of(context).appBarTheme.color,
+                    infoColor: null,
+                    float: false,
+                    showInfo: true,
+                    infoText: _lastRefresh == null
+                        ? "未刷新"
+                        : '更新于 ' + DateUtil.formatDate(_lastRefresh, format: DataFormats.h_m),
+                    bgColor: null,
+                    textColor: Theme.of(context).textTheme.subhead.color,
+                  ),
 //                header: prefix1.LinkHeader(_linkNotifier),
 
-                footer: ClassicalFooter(
-                  loadText: '上滑加载更多',
-                  loadReadyText: '释放以加载更多',
-                  loadingText: '加载中',
-                  loadedText: '加载完成',
-                  loadFailedText: '加载失败',
-                  noMoreText: '没有更多了',
-                  showInfo: false,
-                  textColor: Theme.of(context).textTheme.subhead.color,
+                  footer: ClassicalFooter(
+                    loadText: '上滑加载更多',
+                    loadReadyText: '释放以加载更多',
+                    loadingText: '加载中',
+                    loadedText: '加载完成',
+                    loadFailedText: '加载失败',
+                    noMoreText: '没有更多了',
+                    showInfo: false,
+                    textColor: Theme.of(context).textTheme.subhead.color,
+                  ),
+                  // footer: Wat,
+                  controller: _esRefreshController,
+                  child: Recommendation(
+                    callback: (a, b, c, d) {
+                      showReplyContainer(a, b, c);
+                      sendCallback = d;
+                    },
+                    refreshController: _esRefreshController,
+                  ),
+                  onRefresh: () => _onRefresh(context),
+                  onLoad: _onLoading,
                 ),
-                // footer: Wat,
-                controller: _esRefreshController,
-                child: Recommendation(
-                  callback: (a, b, c, d) {
-                    showReplyContainer(a, b, c);
-                    sendCallback = d;
-                  },
-                  refreshController: _esRefreshController,
-                ),
-                onRefresh: () => _onRefresh(context),
-                onLoad: _onLoading,
               )),
         ),
         // StatelessWdigetWrapper(Text('data')),
@@ -311,9 +324,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
         title: GestureDetector(
           child: Text(
-            Application.getOrgName ?? "未知错误",
+            Application.getOrgName ?? TextConstant.TEXT_UNCATCH_ERROR,
           ),
-          onTap: () {
+          onDoubleTap: () {
             _scrollController.animateTo(.0,
                 duration: Duration(milliseconds: 2000), curve: Curves.fastLinearToSlowEaseIn);
           },
@@ -331,7 +344,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
               icon: Icon(Icons.add),
               onPressed: _showAddMenu,
               color: ThemeUtils.getIconColor(context)),
-
         ],
 
         expandedHeight: 0,

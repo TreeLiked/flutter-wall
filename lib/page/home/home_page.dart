@@ -49,7 +49,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<HomePage> {
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-  EasyRefreshController _esRefreshController = EasyRefreshController();
   ScrollController _scrollController = ScrollController();
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
@@ -116,19 +115,25 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   Future<void> _onRefresh(BuildContext context) async {
     print('On refresh');
-    _esRefreshController.resetLoadState();
+//    _esRefreshController.resetLoadState();
+    _refreshController.resetNoData();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
     tweetProvider.update(temp, clear: true, append: false);
-    setState(() {
-      _lastRefresh = DateTime.now();
-    });
+    if (temp == null) {
+      _refreshController.refreshFailed();
+    } else {
+      _refreshController.refreshCompleted();
+    }
+//    setState(() {
+//      _lastRefresh = DateTime.now();
+//    });
   }
 
   void initData() async {
     List<BaseTweet> temp = await getData(1);
     tweetProvider.update(temp, clear: true, append: false);
-    _esRefreshController.finishRefresh(success: true);
+    _refreshController.refreshCompleted();
   }
 
   Future<void> _onLoading() async {
@@ -137,10 +142,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     tweetProvider.update(temp, append: true, clear: false);
     if (CollectionUtil.isListEmpty(temp)) {
       _currentPage--;
-      _esRefreshController.finishLoad(success: true, noMore: true);
       _refreshController.loadNoData();
     } else {
-      _esRefreshController.finishLoad(success: true, noMore: false);
+      _refreshController.loadComplete();
     }
   }
 
@@ -200,7 +204,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     print("callbacl result names");
                     await SpUtil.putStringList(SharedConstant.LOCAL_FILTER_TYPES, resultNames);
                     typesFilterProvider.updateTypeNames();
-                    _esRefreshController.callRefresh();
+                    _refreshController.requestRefresh();
                     print(resultNames);
                   },
 
@@ -237,9 +241,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
       tweetProvider = Provider.of<TweetProvider>(context);
     }
     firstBuild = false;
+
+
     return Stack(
       children: <Widget>[
-//        SecondFloorWidget(_linkNotifier, _secondFloorOpen),
         NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
           body: Listener(
@@ -256,51 +261,36 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
               },
               child: Scrollbar(
                 controller: _scrollController,
-                child: EasyRefresh(
+                child: SmartRefresher(
+
+                  enablePullUp: true,
+                  enablePullDown: true,
                   scrollController: _scrollController,
-
-                  header: ClassicalHeader(
-                    enableHapticFeedback: true,
-                    enableInfiniteRefresh: false,
-                    refreshText: '下拉刷新',
-                    refreshReadyText: '释放以刷新',
-                    refreshingText: '更新中',
-                    refreshedText: '更新完成',
-                    refreshFailedText: '更新失败',
-                    noMoreText: '没有数据',
-                    // bgColor: Theme.of(context).appBarTheme.color,
-                    infoColor: null,
-                    float: false,
-                    showInfo: true,
-                    infoText: _lastRefresh == null
-                        ? "未刷新"
-                        : '更新于 ' + DateUtil.formatDate(_lastRefresh, format: DataFormats.h_m),
-                    bgColor: null,
-                    textColor: Theme.of(context).textTheme.subhead.color,
-                  ),
-//                header: prefix1.LinkHeader(_linkNotifier),
-
-                  footer: ClassicalFooter(
-                    loadText: '上滑加载更多',
-                    loadReadyText: '释放以加载更多',
-                    loadingText: '加载中',
-                    loadedText: '加载完成',
-                    loadFailedText: '加载失败',
-                    noMoreText: '没有更多了',
-                    showInfo: false,
-                    textColor: Theme.of(context).textTheme.subhead.color,
+                  controller: _refreshController,
+                  header: WaterDropHeader(waterDropColor: Colors.lightBlue, complete: const Text('刷新完成')),
+                  footer: ClassicFooter(
+                    loadingText: '正在加载',
+                    canLoadingText: '释放以加载更多',
+                    noDataText: '到底了哦',
                   ),
                   // footer: Wat,
-                  controller: _esRefreshController,
-                  child: Recommendation(
-                    callback: (a, b, c, d) {
-                      showReplyContainer(a, b, c);
-                      sendCallback = d;
-                    },
-                    refreshController: _esRefreshController,
+                  child: CustomScrollView(
+                    primary: false,
+                    slivers: <Widget>[
+                      SliverToBoxAdapter(
+                        child: Recommendation(
+                          callback: (a, b, c, d) {
+                            showReplyContainer(a, b, c);
+                            sendCallback = d;
+                          },
+                          refreshController: _refreshController,
+                        ),
+                      )
+                    ],
                   ),
                   onRefresh: () => _onRefresh(context),
-                  onLoad: _onLoading,
+//                  onLoad: _onLoading,
+                  onLoading: _onLoading,
                 ),
               )),
         ),

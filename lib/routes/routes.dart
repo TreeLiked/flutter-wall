@@ -49,6 +49,7 @@ class Routes {
       return WidgetNotFound();
     });
 
+
     router.define(webViewPage, handler: Handler(handlerFunc: (_, params) {
       String title = params['title']?.first;
       String url = params['url']?.first;

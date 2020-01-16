@@ -18,7 +18,7 @@ class AvatarOriginPage extends StatelessWidget {
             child: GestureDetector(
               child: CachedNetworkImage(
                 imageUrl: avatarUrl,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitWidth,
               ),
               onTap: () {
                 NavigatorUtils.goBack(context);

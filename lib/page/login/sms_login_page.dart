@@ -139,7 +139,7 @@ class _SMSLoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
           image: DecorationImage(
               fit: BoxFit.cover,
-              image: const NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1ga9zk4ju6oj30pz0k00vy.jpg'))),
+              image: const NetworkImage('https://tva1.sinaimg.cn/large/006tNbRwgy1gaw6ewmbxrj30u011h40v.jpg'))),
       child: Center(
           heightFactor: 0.1,
           child: defaultTargetPlatform == TargetPlatform.iOS

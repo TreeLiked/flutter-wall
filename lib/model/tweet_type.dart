@@ -106,10 +106,10 @@ class TweetTypeEntity {
 
   static const QUESTION_CONSULT = const TweetTypeEntity(
       iconData: Icons.local_library,
-      iconColor: Colors.orange,
+      iconColor: Colors.deepOrangeAccent,
       name: "QUESTION_CONSULT",
       intro: "发布一下，你就知道",
-      color: Colors.orange,
+      color: Colors.deepOrangeAccent,
       zhTag: "咨询");
 
   static const COMPLAINT = const TweetTypeEntity(

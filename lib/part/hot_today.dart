@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -208,7 +207,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   _forwardDetail(BaseTweet bt, int rank) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TweetDetail(bt, hotRank: rank)),
+      MaterialPageRoute(builder: (context) => TweetDetail(bt, hotRank: rank), maintainState: true),
     );
   }
 
@@ -228,7 +227,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
           children: <Widget>[
             Container(
               margin: EdgeInsets.only(top: index == 0 ? 0 : 10),
-              padding: EdgeInsets.only(top: 5, bottom: 15),
+              padding: const EdgeInsets.only(top: 5, bottom: 15),
               // constraints: BoxConstraints(maxHeight: 150),
 
               // margin: EdgeInsets.only(bottom: 10),

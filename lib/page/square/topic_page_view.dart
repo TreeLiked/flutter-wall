@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -28,13 +29,24 @@ class TopicPageView extends StatefulWidget {
 
 class _TopicPageView extends State<TopicPageView>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<TopicPageView> {
-  List<String> titleList = [];
+  List<String> titleList;
 
   ScrollController _scrollController = ScrollController();
-  RefreshController _refreshController = new RefreshController();
+  RefreshController _refreshController = new RefreshController(initialRefresh: false);
 
   @override
   void initState() {
+    this.titleList = [
+      "网易云音乐上看到过最触动的热评是什么？",
+      "有没有可以摘抄下来的神仙句子",
+      "有哪些你第一眼就爱上的电影台词",
+      "你和异性发生过的最尴尬的事情是什么",
+      "有没有哪些最好一辈子也不必要读懂的话",
+      "你和异性发生过的最尴尬的事情是什么",
+      "有没有可以摘抄下来的神仙句子",
+      "你和异性发生过的最尴尬的事情是什么",
+      "网易云音乐上看到过最触动的热评是什么？",
+    ];
     super.initState();
   }
 
@@ -47,7 +59,7 @@ class _TopicPageView extends State<TopicPageView>
 //    setState(() {
 //      _lastRefresh = DateTime.now();
 //    });
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     setState(() {
       this.titleList = [
         "网易云音乐上看到过最触动的热评是什么？",
@@ -73,8 +85,8 @@ class _TopicPageView extends State<TopicPageView>
   Future<void> _onLoading() async {
     print('loading more data');
 
-    await Future.delayed(Duration(seconds: 2));
-    List<String> temp = this.titleList.sublist(0, Random().nextInt(this.titleList.length - 1));
+    await Future.delayed(Duration(seconds: 1));
+    List<String> temp = this.titleList.sublist(0, Random().nextInt(5) + 1);
 
     setState(() {
       this.titleList.addAll(temp);
@@ -96,34 +108,47 @@ class _TopicPageView extends State<TopicPageView>
     super.build(context);
 
     return Scaffold(
-      body: Scrollbar(
-        controller: _scrollController,
-        child: SmartRefresher(
-          scrollController: _scrollController,
-
-          header: WaterDropHeader(
-            waterDropColor: Colors.lightBlueAccent,
-            complete: const Text('刷新完成', style: TextStyle(color: Colors.grey)),
-          ),
-
-          // footer: Wat,
-          controller: _refreshController,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-            child: CollectionUtil.isListEmpty(titleList)
-                ? Container()
-                : SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: titleList.map((f) => _buildTopicCard(f, '')).toList())),
-          ),
-
-          onRefresh: () => _onRefresh(context),
-          onLoading: _onLoading,
-          enablePullUp: true,
+        body: Scrollbar(
+      controller: _scrollController,
+      child: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        controller: _refreshController,
+//        scrollController: _scrollController,
+        header: WaterDropHeader(
+          waterDropColor: Colors.deepPurple,
+          complete: const Text('刷新完成', style: TextStyle(color: Colors.grey)),
         ),
+        footer: ClassicFooter(
+          loadingText: '正在加载',
+          canLoadingText: '释放以加载更多',
+          noDataText: '到底了哦',
+        ),
+        child: CustomScrollView(slivers: <Widget>[
+          SliverToBoxAdapter(
+              child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            child: Column(
+                children: this
+                    .titleList
+                    .map((f) => _buildTopicCard(
+                        f, 'https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e7kafy4j30u00u0acu.jpg'))
+                    .toList()),
+          ))
+        ]),
+//        child: ListView.builder(
+//            shrinkWrap: true,
+//            itemCount: this.titleList.length,
+//            itemBuilder: (context, index) {
+//              print(index);
+//              return _buildTopicCard(this.titleList[index], 'https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e7kafy4j30u00u0acu.jpg');
+//
+//            }),
+
+        onRefresh: () => _onRefresh(context),
+        onLoading: _onLoading,
       ),
-    );
+    ));
   }
 
   Widget _buildTitleWithExtra(String titleText, onPress,

@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class BottomSheetItem {
@@ -86,7 +91,7 @@ class BottomSheetUtil {
                     // height: 350,
                     // constraints: BoxConstraints(maxHeight: 500),
                     decoration: BoxDecoration(
-                        color: !ThemeUtils.isDark(context) ? Color(0xffEbEcEd) : Colours.dark_bg_color_darker,
+                        color: !ThemeUtils.isDark(context) ? Color(0xffEbEcEd) : Colours.dark_bottom_sheet,
                         borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
@@ -133,22 +138,61 @@ class BottomSheetUtil {
             );
           });
         });
-    // showModalBottomSheet(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return new Column(
-    //         mainAxisSize: MainAxisSize.min,
-    //         children: <Widget>[
-    //           Container(
-    //             decoration: BoxDecoration(
-    //                 color: Color(0xfff4f5f7),
-    //                 borderRadius: BorderRadius.all(Radius.circular(30))),
-    //             padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-    //             child: Row(children: _renderItems(context, items)),
-    //           )
-    //         ],
-    //       );
-    //     });
+  }
+
+  static void showBottomSheetText(BuildContext context, String text,
+      {String authorNick, String extra = " 的回复"}) {
+    bool isDark = ThemeUtils.isDark(context);
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        context: context,
+        builder: (builder) {
+          return StatefulBuilder(builder: (context1, state) {
+            return Stack(
+              children: <Widget>[
+                Container(
+                    height: Application.screenHeight / 2.1,
+                    // constraints: BoxConstraints(maxHeight: 500),
+                    decoration: BoxDecoration(
+                        color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color_darker,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
+                    child: Scrollbar(
+                      child: SingleChildScrollView(
+                        child: Container(
+                            padding: const EdgeInsets.fromLTRB(10, 15, 15, 50),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                authorNick == null
+                                    ? Gaps.empty
+                                    : Container(
+                                        padding: const EdgeInsets.only(bottom: 15),
+                                        child: RichText(
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                                text: authorNick,
+                                                style: TextStyle(
+                                                    fontSize: Dimens.font_sp15, color: Colours.app_main)),
+                                            TextSpan(
+                                                text: "$extra",
+                                                style: MyDefaultTextStyle.getSubTextBodyStyle(isDark,
+                                                    fontSize: Dimens.font_sp15)),
+                                          ]),
+                                        ),
+                                      ),
+                                Text("$text" * 5,
+                                    style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
+                                            fontSize: Dimens.font_sp15)
+                                        .copyWith(height: 1.8))
+                              ],
+                            )),
+                      ),
+                    )),
+              ],
+            );
+          });
+        });
   }
 
   static List<Widget> _renderItems(BuildContext context, List<BottomSheetItem> items) {

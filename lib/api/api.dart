@@ -3,27 +3,38 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class Api {
-  static const bool dev = false;
-  static const String API_BASE_AL = "https://almond-donuts.iutr.tech:8088";
+  static const bool devInf = false;
+  static const bool devMem = false;
+  static const String API_BASE_AL = "http://almond-donuts.iutr.tech:8088";
   static const String API_BASE_TR = "https://member.iutr.tech:9002";
 
-  static const String API_BASE_DEV = "http://127.0.0.1:8089";
+  static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
+  static const String API_BASE_MEM_DEV = "http://127.0.0.1:9001";
 
   //  static const String API_BASE =
   // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
 
-  static const String API_BASE_INF_URL = (dev ? API_BASE_DEV : API_BASE_AL) + "/iap/api";
-  static const String API_BASE_MEMBER_URL = API_BASE_TR + "/trms/api";
+  static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
+  static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";
+
+  // topic
+  static const String API_TOPIC_CREATE = "/topic/addNormal.do";
+  static const String API_TOPIC_STATUS_MOD = "/topic/close.do";
+  static const String API_TOPIC_BATCH_QUERY = "/topic/listOfUni.json";
+  static const String API_TOPIC_SINGLE_QUERY = "/topic/get.json";
+
+  static const String API_TOPIC_REPLY_SINGLE_QUERY = "/topic/reply/list.json";
 
   // tweet
   static const String API_TWEET_CREATE = "/tweet/add.do";
   static const String API_TWEET_DELETE = API_BASE_INF_URL + "/tweet/d.do";
+  static const String API_TWEET_QUERY_SIN = "/tweet/listSingle.json";
   static const String API_TWEET_QUERY = "/tweet/list.json";
   static const String API_TWEET_MEDIA_UPLOAD_REQUEST = "/tweet/media/generate.json";
 
   // tweet operation
   static const String API_TWEET_OPERATION = "/tweet/opt/opt.do";
-  static const String API_TWEET_QUERY_SINGLE = "/tweet/opt/querySingle.json";
+  static const String API_TWEET_OPT_QUERY_SINGLE = "/tweet/opt/querySingle.json";
 
   // tweet praise query
   static const String API_TWEET_PRAISE_QUERY = "/tweet/praise/list.json";
@@ -62,32 +73,39 @@ class Api {
 
   // device
   static const String API_UPDATE_DEVICE_INFO = API_BASE_INF_URL + "/device/update.do";
+  static const String API_REMOVE_DEVICE_INFO = API_BASE_INF_URL + "/device/signOut.do";
 
   static Map<String, dynamic> convertResponse(Object responseData) {
     String jsonTemp = json.encode(responseData);
     return json.decode(jsonTemp);
   }
 
-  static void formatError(DioError e) {
+  static String formatError(DioError e) {
     print(e);
     if (e.type == DioErrorType.CONNECT_TIMEOUT) {
       // It occurs when url is opened timeout.
       print("连接超时");
+      return "连接超时";
     } else if (e.type == DioErrorType.SEND_TIMEOUT) {
       // It occurs when url is sent timeout.
       print("请求超时");
+      return "请求超时";
     } else if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
       //It occurs when receiving timeout
       print("响应超时");
+      return "响应超时";
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
       print("出现异常$e");
+      return "出现异常";
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.
       print("请求取消");
+      return "请求取消";
     } else {
       //DEFAULT Default error type, Some other Error. In this case, you can read the DioError.error if it is not null.
       print("未知错误$e");
+      return "未知错误";
     }
   }
 }

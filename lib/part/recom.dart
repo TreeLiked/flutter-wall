@@ -62,7 +62,7 @@ class RecommendationState extends State<Recommendation> with AutomaticKeepAliveC
           Container(
               child: provider.displayTweets == null
                   ? (Center(
-                      child: WidgetUtil.getLoadingAnimiation(),
+                      child: WidgetUtil.getLoadingAnimation(),
                     ))
                   : (provider.displayTweets.length != 0
                       ? Column(

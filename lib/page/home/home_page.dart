@@ -26,9 +26,12 @@ import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
@@ -75,15 +78,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   // menu float choice
   GlobalKey _menuKey = GlobalKey();
 
-  // last refresh time
-  DateTime _lastRefresh;
-
-  LinkHeaderNotifier _linkNotifier;
-  ValueNotifier<bool> _secondFloorOpen;
+  bool isDark = false;
 
   @override
   void initState() {
     super.initState();
+
+
     tabIconsList.forEach((tab) {
       tab.isSelected = false;
     });
@@ -105,8 +106,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   @override
   void dispose() {
     super.dispose();
-    _linkNotifier.dispose();
-    _secondFloorOpen.dispose();
   }
 
   Widget tabBody = Container(
@@ -115,7 +114,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   Future<void> _onRefresh(BuildContext context) async {
     print('On refresh');
-//    _esRefreshController.resetLoadState();
     _refreshController.resetNoData();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
@@ -125,9 +123,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     } else {
       _refreshController.refreshCompleted();
     }
-//    setState(() {
-//      _lastRefresh = DateTime.now();
-//    });
   }
 
   void initData() async {
@@ -150,12 +145,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   Future getData(int page) async {
     print('get data ------$page------');
-    List<BaseTweet> pbt = await (TweetApi.queryTweets(
-        PageParam(page,
-            pageSize: 5,
-            orgId: Application.getOrgId,
-            types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames)),
-        Application.getAccountId));
+    List<BaseTweet> pbt = await (TweetApi.queryTweets(PageParam(page,
+        pageSize: 5,
+        orgId: Application.getOrgId,
+        types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames))));
     return pbt;
   }
 
@@ -234,6 +227,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    isDark = ThemeUtils.isDark(context);
+
     typesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
     accountLocalProvider = Provider.of<AccountLocalProvider>(context);
     if (firstBuild) {
@@ -241,7 +236,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
       tweetProvider = Provider.of<TweetProvider>(context);
     }
     firstBuild = false;
-
 
     return Stack(
       children: <Widget>[
@@ -262,12 +256,14 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
               child: Scrollbar(
                 controller: _scrollController,
                 child: SmartRefresher(
-
                   enablePullUp: true,
                   enablePullDown: true,
                   scrollController: _scrollController,
                   controller: _refreshController,
-                  header: WaterDropHeader(waterDropColor: Colors.lightBlue, complete: const Text('刷新完成')),
+                  header: WaterDropHeader(
+                    waterDropColor: Colors.lightBlue,
+                    complete: const Text('刷新完成'),
+                  ),
                   footer: ClassicFooter(
                     loadingText: '正在加载',
                     canLoadingText: '释放以加载更多',
@@ -310,11 +306,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     return <Widget>[
       SliverAppBar(
         centerTitle: true,
+        backgroundColor: isDark ? Color(0xff303233) : Color(0xfff7f8f9),
         //标题居中
 
         title: GestureDetector(
           child: Text(
-            Application.getOrgName ?? TextConstant.TEXT_UNCATCH_ERROR,
+            Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
+            style: TextStyle(fontSize: Dimens.font_sp15),
           ),
           onDoubleTap: () {
             _scrollController.animateTo(.0,

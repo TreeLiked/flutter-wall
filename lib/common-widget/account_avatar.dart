@@ -24,8 +24,7 @@ class AccountAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-          border:
-              whitePadding ? Border.all(width: 2, color: Colors.white) : null,
+          border: whitePadding ? Border.all(width: 2, color: Colors.white) : null,
           borderRadius: BorderRadius.all((Radius.circular(50))),
         ),
         width: size,

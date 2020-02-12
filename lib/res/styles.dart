@@ -38,6 +38,11 @@ class TextStyles {
     color: Colors.white,
   );
 
+  static const TextStyle textClickable = const TextStyle(
+    fontSize: Dimens.font_sp14,
+    color: Color(0xff03489d),
+  );
+
   static const commonTextStyle = const TextStyle(fontSize: 16, color: Colors.black87);
 
   static const TextStyle text = const TextStyle(

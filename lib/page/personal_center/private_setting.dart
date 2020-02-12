@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/member.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/dialog/radio_sel_dialog.dart';
@@ -41,7 +42,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
   }
 
   Future<Map<String, dynamic>> getData(BuildContext context) async {
-    Map<String, dynamic> settings = await MemberApi.getAccountSetting();
+    Map<String, dynamic> settings = await MemberApi.getAccountSetting(passiveAccountId: Application.getAccountId);
     return settings;
   }
 

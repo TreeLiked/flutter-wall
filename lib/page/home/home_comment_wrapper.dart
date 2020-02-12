@@ -117,6 +117,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
     curReply.body = value;
     Account acc = Account.fromId(Application.getAccountId);
     curReply.account = acc;
+
     await TweetApi.pushReply(curReply, curReply.tweetId).then((result) {
       print(result.data);
       if (result.isSuccess) {

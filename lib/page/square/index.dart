@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:badges/badges.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
@@ -11,12 +12,13 @@ import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/page/notification/pm_page.dart';
 import 'package:iap_app/page/notification/sn.page.dart';
 import 'package:iap_app/page/square/activity_page_view.dart';
-import 'package:iap_app/page/square/topic_page_view.dart';
+import 'package:iap_app/page/square/topic/topic_page_view.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/routes/square_router.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -73,21 +75,34 @@ class _SquareIndexPage extends State<SquareIndexPage>
     _pageList = <StatefulWidget>[TopicPageView(), ActivityPageView()];
 
     childButtons.add(UnicornButton(
+        labelText: '创建话题',
+        labelColor: Colors.black,
+        labelBackgroundColor: Colors.transparent,
+        labelHasShadow: false,
+        hasLabel: true,
         currentButton: FloatingActionButton(
             backgroundColor: Colors.white,
             mini: true,
-            onPressed: () {},
-            child: Icon(Icons.add_to_photos, color: Colors.grey))));
+            heroTag: 'topic',
+            onPressed: () {
+              NavigatorUtils.push(context, SquareRouter.topicCreate,transitionType: TransitionType.fadeIn);
+            },
+            child: Icon(Icons.bubble_chart, color: Colors.lightGreen))));
 
     childButtons.add(UnicornButton(
+        labelText: '发起活动',
+        labelColor: Colors.black,
+        labelBackgroundColor: Colors.transparent,
+        labelHasShadow: false,
+        hasLabel: true,
         currentButton: FloatingActionButton(
             onPressed: () {
               NavigatorUtils.goBack(context);
             },
-            heroTag: "directions",
             backgroundColor: Colors.white,
             mini: true,
-            child: Icon(Icons.fullscreen_exit, color: Colors.grey))));
+            heroTag: 'activity',
+            child: Icon(Icons.assistant_photo, color: Colors.teal))));
   }
 
   @override
@@ -102,7 +117,10 @@ class _SquareIndexPage extends State<SquareIndexPage>
         // 设置没有高度的 appbar，目的是为了设置状态栏的颜色
         appBar: AppBar(
             title: const Text('广场'),
-            elevation: .3,
+            backgroundColor: isDark ? Color(0xff303233) : Color(0xfff7f8f9),
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back, size: 20), onPressed: () => NavigatorUtils.goBack(context)),
+            elevation: 0.5,
             automaticallyImplyLeading: false,
 //            actions: _renderActions(),
             bottom: TabBar(
@@ -112,13 +130,13 @@ class _SquareIndexPage extends State<SquareIndexPage>
                 controller: _controller,
                 unselectedLabelColor: isDark ? Colours.dark_text : Colours.text,
                 indicatorColor: Colours.app_main,
-                labelColor: Colours.app_main,
+                labelColor: Color(0xff8968CD),
                 labelStyle: const TextStyle(fontSize: Dimens.font_sp15),
                 unselectedLabelStyle: const TextStyle(fontSize: Dimens.font_sp13),
                 tabs: tabs.map((e) => Tab(child: Text(e))).toList())),
         floatingActionButton: UnicornDialer(
 //          backgroundColor: Colors.black,
-          parentButtonBackground: Colors.lightBlue,
+          parentButtonBackground: Color(0xff8968CD),
           orientation: UnicornOrientation.VERTICAL,
           parentButton: Icon(Icons.add),
           childButtons: childButtons,
@@ -140,7 +158,13 @@ class _SquareIndexPage extends State<SquareIndexPage>
   }
 
   List<Widget> _renderActions() {
-    return [FlatButton(child: Text('返回'), onPressed: () => NavigatorUtils.goBack(context))];
+    return [
+      IconButton(
+          icon: Icon(
+        Icons.add_circle,
+        color: Colors.pink,
+      ))
+    ];
   }
 
   @override

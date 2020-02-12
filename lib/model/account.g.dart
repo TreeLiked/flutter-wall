@@ -21,7 +21,7 @@ Account _$AccountFromJson(Map<String, dynamic> json) {
     ..gender = json['gender'] as String
     ..province = json['province'] as String
     ..city = json['city'] as String
-    ..districtl = json['districtl'] as String
+    ..district = json['district'] as String
     ..qq = json['qq'] as String
     ..weixin = json['weixin'] as String
     ..profile = json['profile'] == null
@@ -41,7 +41,7 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
       'gender': instance.gender,
       'province': instance.province,
       'city': instance.city,
-      'districtl': instance.districtl,
+      'district': instance.district,
       'qq': instance.qq,
       'weixin': instance.weixin,
       'profile': instance.profile

@@ -47,7 +47,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
     _nickController.addListener(() {
       String nick = _nickController.text;
       bool go = true;
-      if (nick.isEmpty || nick.length >= 16) {
+      if (nick.isEmpty || nick.length > 16) {
         go = false;
       }
       if (_avatarFile == null) {
@@ -96,13 +96,11 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
 
       return;
     } else {
-      var image = await ImagePicker.pickImage(
-          source: ImageSource.gallery, imageQuality: 80);
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 80);
       if (image != null) {
         final cropKey = GlobalKey<CropState>();
-        File file = await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                ImageCropContainer(cropKey: cropKey, file: image)));
+        File file = await Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
         if (file != null) {
           this._avatarFile?.delete();
           setState(() {
@@ -136,75 +134,76 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
 
   _buildBody() {
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0),
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Gaps.vGap16,
           Gaps.vGap16,
-
-          Center(
-              child: Container(
-            decoration: BoxDecoration(
-                // border: Border.all(width: 0, color: Color(0xff8a8a8a)),
-                // borderRadius: BorderRadius.all((Radius.circular(10))),
-                ),
-            child: GestureDetector(
-                onTap: _goChoiceAvatar,
-                child: _avatarFile == null
-                    ? LoadAssetImage(
-                        "profile_sel",
-                        format: 'png',
-                        width: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
-                        fit: BoxFit.cover,
-                        color: Colors.grey,
-                      )
-                    : ClipOval(
+          Container(
+            alignment: Alignment.center,
+            child: _avatarFile == null
+                ? Container(
+                    padding: const EdgeInsets.all(25.0),
+                    decoration: BoxDecoration(
+                        color: Color(0xfff1f2f3),
+//                  borderRadius: BorderRadius.all((Radius.circular(100))),
+                        shape: BoxShape.circle),
+                    child: GestureDetector(
+                        onTap: _goChoiceAvatar,
+                        child: LoadAssetImage(
+                          "profile_sel",
+                          format: 'png',
+                          width: SizeConstant.TWEET_PROFILE_SIZE,
+                          fit: BoxFit.cover,
+                          color: Colors.grey,
+                        )),
+                  )
+                : GestureDetector(
+                    onTap: _goChoiceAvatar,
+                    child: ClipOval(
                         child: Image.file(
-                        _avatarFile,
-                        width: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
-                        height: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
-                        fit: BoxFit.cover,
-                        repeat: ImageRepeat.noRepeat,
-                      ))),
-          )),
-          Gaps.vGap30,
-          MyTextField(
-            focusNode: _nodeText1,
-            config: Utils.getKeyboardActionsConfig(context, [
-              _nodeText1,
-            ]),
-
-            controller: _nickController,
-            maxLength: 15,
-            keyboardType: TextInputType.text,
-            hintText: "请输入昵称(16个字符以内)",
-            // onChange: (String val) {},
+                      _avatarFile,
+                      width: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
+                      height: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
+                      fit: BoxFit.cover,
+                      repeat: ImageRepeat.noRepeat,
+                    ))),
           ),
-          Gaps.vGap15,
-          Gaps.vGap10,
-          MyButton(
-            onPressed: _canGoNext ? _chooseOrg : null,
-            text: "下一步",
+          Container(
+            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(10.0)),
+            padding: const EdgeInsets.only(left: 20),
+            margin: const EdgeInsets.only(top: 25),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: MyTextField(
+                    focusNode: _nodeText1,
+                    config: Utils.getKeyboardActionsConfig(context, [
+                      _nodeText1,
+                    ]),
+                    controller: _nickController,
+                    maxLength: 16,
+                    keyboardType: TextInputType.text,
+                    hintText: "请输入昵称(16个字符以内)",
+                  ),
+                )
+              ],
+            ),
+          ),
+          Gaps.vGap12,
+          Container(
+            width: double.infinity,
+            color: _canGoNext ? Colors.lightBlue : Color(0xffD7D6D9),
+            margin: const EdgeInsets.only(top: 15),
+            child: FlatButton(
+                child: Text('下一步', style: TextStyle(color: Colors.white)),
+                onPressed: _canGoNext ? _chooseOrg : null),
           ),
           Gaps.vGap15,
           Gaps.line,
           Gaps.vGap16,
-          Text('请选择一张图片作为您的头像并且起一个响亮的昵称吧～',
-              maxLines: 5, softWrap: true, style: TextStyles.textGray12)
-          // Container(
-          //   height: 40.0,
-          //   alignment: Alignment.centerRight,
-          //   child: GestureDetector(
-          //     child: Text(
-          //       '忘记密码',
-          //       style: Theme.of(context).textTheme.subtitle,
-          //     ),
-          //     onTap: (){
-          //       NavigatorUtils.push(context, LoginRouter.resetPasswordPage);
-          //     },
-          //   ),
-          // )
+          Text('请选择一张图片作为您的头像并且起一个响亮的昵称吧～', maxLines: 5, softWrap: true, style: TextStyles.textGray14)
         ],
       ),
     );
@@ -212,7 +211,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
 
   _chooseOrg() async {
     String nick = _nickController.text;
-    if (StringUtil.isEmpty(nick)) {
+    if (nick == null || nick == "") {
       ToastUtil.showToast(context, '请输入昵称');
       return;
     }
@@ -220,16 +219,16 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
       ToastUtil.showToast(context, '昵称不能全部为空');
       return;
     }
-    // checkNikc
+    // checkNick
     Utils.showDefaultLoadingWithBounds(context);
     MemberApi.checkNickRepeat(nick.trim()).then((res) async {
-      if (res.isSuccess) {
+      if (!res.isSuccess) {
         NavigatorUtils.goBack(context);
         ToastUtil.showToast(context, '昵称重复了，换一个试试吧');
       } else {
         RegTemp.regTemp.nick = nick;
-        String url = await OssUtil.uploadImage(_avatarFile.path, _avatarFile.readAsBytesSync(),
-            toTweet: false);
+        String url =
+            await OssUtil.uploadImage(_avatarFile.path, _avatarFile.readAsBytesSync(), OssUtil.DEST_AVATAR);
         NavigatorUtils.goBack(context);
         if (url != "-1") {
           RegTemp.regTemp.avatarUrl = url;

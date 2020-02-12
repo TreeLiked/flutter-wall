@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/model/result.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
-var httpUtil2 = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
+var httpUtil2 = HttpUtil(baseUrl: Api.API_BASE_MEMBER_URL, header: headersJson);
 
 //普通格式header
 Map<String, dynamic> headers = {
@@ -21,8 +22,7 @@ class HttpUtil {
   Dio dio;
   BaseOptions options;
 
-  HttpUtil(
-      {String baseUrl = Api.API_BASE_INF_URL, Map<String, dynamic> header}) {
+  HttpUtil({String baseUrl = Api.API_BASE_INF_URL, Map<String, dynamic> header}) {
     options = BaseOptions(
       // 请求基地址，一般为域名，可以包含路径
       // baseUrl: baseUrl,
@@ -37,12 +37,10 @@ class HttpUtil {
       ///  注意: 这并不是接收数据的总时限.
       receiveTimeout: 30000,
       headers: header,
-
-
     );
 
     dio = new Dio(options);
-
+    header.putIfAbsent("Authorization", () => Application.getLocalAccountToken);
 
     // dio.interceptors.add(CookieManager(CookieJar()));
   }

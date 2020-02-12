@@ -10,6 +10,9 @@ class Application {
   static SharedPreferences sp;
   static double screenWidth;
   static double screenHeight;
+
+  static String _localAccountToken;
+
   // static GetIt getIt = GetIt.instance;
 
   static int _ordId;
@@ -17,6 +20,10 @@ class Application {
 
   static String _accountId;
   static Account _account;
+
+  static String _deviceId;
+
+  static BuildContext context;
 
   static String get getAccountId {
     return _accountId;
@@ -56,5 +63,21 @@ class Application {
 
   static void setOrgName(String name) {
     _orgName = name;
+  }
+
+  static void setDeviceId(String deviceId) {
+    _deviceId = deviceId;
+  }
+
+  static String get getDeviceId {
+    return _deviceId;
+  }
+
+  static String get getLocalAccountToken {
+    return _localAccountToken;
+  }
+
+  static void setLocalAccountToken(String token) {
+    _localAccountToken = token;
   }
 }

@@ -82,7 +82,7 @@ var inputPageHander = Handler(
   );
 });
 
-var accountProfileHander = Handler(
+var accountProfileHandler = Handler(
     handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   String nick = params['nick'] == null
       ? ""

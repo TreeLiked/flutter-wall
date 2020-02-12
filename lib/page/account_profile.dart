@@ -284,7 +284,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 8,
-            child: Text(nick ?? TextConstant.TEXT_UNCATCH_ERROR,
+            child: Text(nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14)),

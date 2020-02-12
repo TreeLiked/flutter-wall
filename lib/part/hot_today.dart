@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
@@ -15,6 +16,7 @@ import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
@@ -33,9 +35,6 @@ class HotToday extends StatefulWidget {
 
 class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin {
   double _expandedHeight = ScreenUtil().setWidth(380);
-
-  final items = new List<String>.generate(10000, (i) => "Item $i");
-  int orgId = 1;
 
   HotTweet hotTweet;
 
@@ -60,7 +59,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   }
 
   Future<void> getData() async {
-    HotTweet ht = await TweetApi.queryOrgHotTweets(orgId);
+    HotTweet ht = await TweetApi.queryOrgHotTweets(Application.getOrgId);
 
     if (ht == null) {
       ToastUtil.showToast(context, '数据加载错误');
@@ -220,56 +219,49 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     if (bt.anonymous) {
       bt.account.nick = TextConstant.TWEET_ANONYMOUS_NICK;
     }
+
+    bool hasPic = !CollectionUtil.isListEmpty(bt.picUrls);
+    bool hasBody = !StringUtil.isEmpty(bt.body);
     return GestureDetector(
         onTap: () => _forwardDetail(bt, index),
         behavior: HitTestBehavior.translucent,
         child: Column(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(top: index == 0 ? 0 : 10),
-              padding: const EdgeInsets.only(top: 5, bottom: 15),
-              // constraints: BoxConstraints(maxHeight: 150),
-
-              // margin: EdgeInsets.only(bottom: 10),
+              margin: EdgeInsets.only(top: index == 0 ? 0 : 5),
+              padding: const EdgeInsets.only(top: 5, bottom: 10),
               child: Row(
                 children: <Widget>[
                   Expanded(
                       flex: 2,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  child: Text(
-                                    idxStr,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.italic,
-                                        fontSize: 16,
-                                        color: index <= 3
-                                            ? Colors.red
-                                            : (index <= 6
-                                                ? Color(0xffEEE685)
-                                                : Theme.of(context).textTheme.overline.color)),
-                                  ),
-                                ),
-                                Container(
-                                    child: bt.upTrend
-                                        ? Icon(
-                                            Icons.arrow_upward,
-                                            color: Colors.red,
-                                            size: 13,
-                                          )
-                                        : Icon(
-                                            Icons.arrow_downward,
-                                            color: Colors.green,
-                                            size: 13,
-                                          )),
-                              ],
+                            child: Text(
+                              idxStr,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: Dimens.font_sp16,
+                                  color: index <= 3
+                                      ? Colors.red
+                                      : (index <= 6
+                                          ? Colors.amber
+                                          : Theme.of(context).textTheme.overline.color)),
                             ),
-                          )
+                          ),
+                          Container(
+                              child: bt.upTrend
+                                  ? Icon(
+                                      Icons.arrow_upward,
+                                      color: Colors.redAccent,
+                                      size: 16,
+                                    )
+                                  : Icon(
+                                      Icons.arrow_downward,
+                                      color: Colors.lightGreen,
+                                      size: 16,
+                                    )),
                         ],
                       )),
                   Expanded(
@@ -285,54 +277,56 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  StringUtil.isEmpty(bt.body)
-                                      ? WidgetUtil.getEmptyContainer()
-                                      : Wrap(children: <Widget>[
-                                          Text(
-                                            bt.body,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                        ]),
+                                  hasBody
+                                      ? Text(
+                                          bt.body,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                          style: TextStyle(fontSize: Dimens.font_sp15),
+                                        )
+                                      : Gaps.empty,
+                                  Gaps.vGap4,
+                                  RichText(
+                                    softWrap: true,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    text: TextSpan(children: [
+                                      TextSpan(
+                                          text: !bt.anonymous
+                                              ? bt.account.nick
+                                              : TextConstant.TWEET_ANONYMOUS_NICK,
+                                          style: MyDefaultTextStyle.getTweetNickStyle(
+                                              context, Dimens.font_sp13p5,
+                                              bold: false, anonymous: bt.anonymous)),
+                                      TextSpan(
+                                          text: '发表于',
+                                          style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13)),
+                                      TextSpan(
+                                          text: TimeUtil.getShortTime(bt.gmtCreated),
+                                          style: TextStyle(
+                                              color: ColorConstant.TWEET_TIME_COLOR,
+                                              fontSize: Dimens.font_sp13)),
+                                    ]),
+                                  ),
                                   Container(
-                                      padding: EdgeInsets.only(top: 10),
-                                      child: Wrap(
-                                        children: <Widget>[
-                                          RichText(
-                                            text: TextSpan(children: [
-                                              TextSpan(
-                                                  text: !bt.anonymous
-                                                      ? bt.account.nick
-                                                      : TextConstant.TWEET_ANONYMOUS_NICK,
-                                                  style: MyDefaultTextStyle.getTweetNickStyle(context, 14,
-                                                      bold: false, anonymous: bt.anonymous)),
-                                              TextSpan(
-                                                  text: ' 发表于',
-                                                  style: TextStyle(color: Colors.grey, fontSize: 13)),
-                                              TextSpan(
-                                                  text: TimeUtil.getShortTime(bt.gmtCreated),
-                                                  style: TextStyle(
-                                                      color: ColorConstant.TWEET_TIME_COLOR, fontSize: 13)),
-                                            ]),
-                                          ),
-                                        ],
-                                      )),
-                                  Container(
-                                      padding: EdgeInsets.only(bottom: 2, top: 3),
+                                      padding: const EdgeInsets.only(bottom: 2, top: 3),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Text(
                                             '# ' + tweetTypeMap[bt.type].zhTag.toString(),
-                                            style:
-                                                TextStyle(color: tweetTypeMap[bt.type].color, fontSize: 12),
+                                            style: TextStyle(
+                                                color: tweetTypeMap[bt.type].color,
+                                                fontSize: Dimens.font_sp12,
+                                                fontWeight: FontWeight.w500),
                                           ),
                                           Padding(
-                                              padding: EdgeInsets.only(right: 20),
+                                              padding: const EdgeInsets.only(right: 20),
                                               child: Text(
                                                 ' ${bt.hot}',
-                                                style: TextStyle(color: Color(0xffBEBEBE), fontSize: 12),
+                                                style:
+                                                    TextStyle(color: Colors.grey, fontSize: Dimens.font_sp12),
                                               ))
                                         ],
                                       )),
@@ -341,15 +335,14 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                             ),
                           ],
                         ),
-                        // Divider()
                       ],
                     ),
                   ),
-                  !CollectionUtil.isListEmpty(bt.picUrls)
+                  hasPic
                       ? Expanded(
                           flex: 2,
                           child: Container(
-                            padding: EdgeInsets.only(right: 10),
+                            padding: const EdgeInsets.only(right: 10),
                             child: ClipRRect(
                               clipBehavior: Clip.antiAlias,
                               borderRadius: BorderRadius.circular(5),
@@ -357,27 +350,17 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                                 aspectRatio: 1,
                                 child: CachedNetworkImage(
                                   imageUrl: bt.picUrls[0] + OssConstant.THUMBNAIL_SUFFIX,
-                                  placeholder: (context, url) => Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Image.asset(PathConstant.LOADING_GIF)),
+                                  placeholder: (context, url) => CupertinoActivityIndicator(),
                                   fit: BoxFit.cover,
                                   errorWidget: (context, url, error) => Icon(Icons.error),
                                 ),
                               ),
                             ),
                           ))
-                      : Expanded(
-                          flex: 2,
-                          child: Container(height: 0),
-                        ),
+                      : Expanded(flex: 2, child: Gaps.empty),
                   Divider()
                 ],
               ),
-
-              // Container(
-              //   padding: EdgeInsets.only(left: 40),
-              //   child: Divider(),
-              // )
             ),
             Divider()
           ],

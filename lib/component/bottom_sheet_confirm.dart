@@ -6,7 +6,6 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
-/// design/4商品/index.html#artboard2
 class BottomSheetConfirm extends StatelessWidget {
   const BottomSheetConfirm({
     Key key,
@@ -34,7 +33,7 @@ class BottomSheetConfirm extends StatelessWidget {
                   height: 52.0,
                   child: Center(
                     child: Text(
-                      title ?? TextConstant.TEXT_UNCATCH_ERROR,
+                      title ?? TextConstant.TEXT_UN_CATCH_ERROR,
                       style: TextStyles.textSize14,
                     ),
                   ),

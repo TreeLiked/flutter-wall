@@ -1,5 +1,6 @@
 import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/material.dart';
+import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/base_dialog.dart';
 import 'package:iap_app/config/auth_constant.dart';
@@ -29,6 +30,11 @@ class _ExitDialog extends State<ExitDialog> {
       ),
       onPressed: () async {
         Utils.showDefaultLoading(context);
+
+        if (Application.getDeviceId != null) {
+          DeviceApi.removeDeviceInfo(Application.getAccountId, Application.getDeviceId);
+        }
+
         Application.setAccount(null);
         Application.setAccountId(null);
 //        await prefix0.SpUtil.clear();

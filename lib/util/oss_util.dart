@@ -20,6 +20,8 @@ import 'package:uuid/uuid.dart';
 class OssUtil {
   static OssUtil _instance;
 
+  static Dio uploadDio;
+
   // 工厂模式
   factory OssUtil() => _getInstance();
 
@@ -34,6 +36,20 @@ class OssUtil {
     return _instance;
   }
 
+  static Dio _getUploadDio() {
+    if (uploadDio == null) {
+      BaseOptions options = new BaseOptions();
+      options.responseType = ResponseType.plain;
+      options.contentType = ContentType.parse("multipart/form-data");
+      uploadDio = new Dio(options);
+    }
+    return uploadDio;
+  }
+
+  static const String DEST_TWEET = "tweet";
+  static const String DEST_TOPIC = "topic";
+  static const String DEST_AVATAR = "avatar";
+
   static Future<Result> requestPostUrls(int count) async {
     String requestUrl =
         "${Api.API_BASE_INF_URL}/?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" + Application.getAccountId;
@@ -42,10 +58,9 @@ class OssUtil {
     return Result.fromJson(json);
   }
 
-  static Future<String> uploadImage(String fileName, List<int> fileBytes,
-      {bool toTweet = true, String fixName}) async {
+  static Future<String> uploadImage(String fileName, List<int> fileBytes, String destDir,
+      {String fixName}) async {
     String newFileName;
-
     if (StringUtil.isEmpty(fixName)) {
       String prefix =
           !StringUtil.isEmpty(Application.getAccountId) ? Application.getAccountId : Uuid().v1().toString();
@@ -57,11 +72,11 @@ class OssUtil {
 
     String nameKey;
 
-    if (!toTweet) {
+    if (destDir == DEST_AVATAR) {
       nameKey = "almond-donuts/image/avatar/" + newFileName;
     } else {
       String date = DateUtil.formatDate(DateTime.now(), format: "yyyy-MM-dd");
-      nameKey = "almond-donuts/image/tweet/$date/" + newFileName;
+      nameKey = "almond-donuts/image/$destDir/$date/" + newFileName;
     }
     String policyText =
         '{"expiration": "2050-01-01T12:00:00.000Z","conditions": [["content-length-range", 0, 1048576000]]}';
@@ -69,15 +84,12 @@ class OssUtil {
     String policyBase64 = base64.encode(policyTextUtf8);
     List<int> policy = utf8.encode(policyBase64);
 
-    // 利用OSSAccesskeySecret签名Policy
+    // 利用OSSAccessKeySecret签名Policy
     List<int> key = utf8.encode(OssConstant.ACCESS_KEY_SECRET);
     List<int> signaturePre = new Hmac(sha1, key).convert(policy).bytes;
     String signature = base64.encode(signaturePre);
 
-    BaseOptions options = new BaseOptions();
-    options.responseType = ResponseType.plain;
-    options.contentType = ContentType.parse("multipart/form-data");
-    Dio dio = new Dio(options);
+    Dio dio = _getUploadDio();
 
     FormData data = new FormData.from({
       'key': nameKey,
@@ -86,9 +98,7 @@ class OssUtil {
       'success_action_status': '200',
       'signature': signature,
       'Access-Control-Allow-Origin': '*',
-//      'file': new UploadFileInfo(object, fileName),
       'file': new UploadFileInfo.fromBytes(fileBytes, fileName),
-
     });
     try {
 //      print(object.lengthSync() / 1024 / 1024);

@@ -2,12 +2,13 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/util/image_utils.dart';
 
 class WidgetUtil {
-  static Widget getAsset(String path,
-      {double size = 20, bool click = false, final callback}) {
+  static Widget getAsset(String path, {double size = 20, bool click = false, final callback}) {
     if (!click) {
       return Image.asset(
         path,
@@ -51,24 +52,17 @@ class WidgetUtil {
     }
   }
 
-  static Widget getLoadingAnimiation({double size = 140}) {
+  static Widget getLoadingAnimation({double size = 140}) {
     return Container(
       height: size,
       width: size,
       margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(30)),
-      // child: FlareActor(
-      //   PathConstant.FLARE_LOADING_ROUND,
-      //   fit: BoxFit.cover,
-      //   animation: 'idle',
-      // )
-      child: CupertinoActivityIndicator(),
+      child: SpinKitChasingDots(color: Colours.app_main,size: 25),
     );
   }
 
   static Widget getLoadingGif({double size = 60}) {
-    return Container(
-        padding: EdgeInsets.all(20),
-        child: Image.asset(PathConstant.LOADING_GIF));
+    return Container(padding: EdgeInsets.all(20), child: Image.asset(PathConstant.LOADING_GIF));
   }
 
   static Widget getEmptyContainer({double height = 0}) {
@@ -79,12 +73,7 @@ class WidgetUtil {
 /// 加载本地资源图片
 class LoadAssetImage extends StatelessWidget {
   const LoadAssetImage(this.image,
-      {Key key,
-      this.width,
-      this.height,
-      this.fit = BoxFit.cover,
-      this.format: 'png',
-      this.color})
+      {Key key, this.width, this.height, this.fit = BoxFit.cover, this.format: 'png', this.color})
       : super(key: key);
 
   final String image;
@@ -108,12 +97,7 @@ class LoadAssetImage extends StatelessWidget {
 
 class LoadAssetIcon extends StatelessWidget {
   const LoadAssetIcon(this.image,
-      {Key key,
-      this.width,
-      this.height,
-      this.fit,
-      this.format: 'png',
-      this.color})
+      {Key key, this.width, this.height, this.fit, this.format: 'png', this.color})
       : super(key: key);
 
   final String image;

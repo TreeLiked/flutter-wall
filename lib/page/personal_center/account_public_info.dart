@@ -263,7 +263,66 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
               });
             });
           },
-        )
+        ),
+        ClickItem(
+            title: "QQ",
+            content: _profile.qq ?? _unSetText,
+            onTap: () {
+              NavigatorUtils.pushResult(
+                  context,
+                  Routes.inputTextPage +
+                      Utils.packConvertArgs({
+                        'title': '修改个人资料[QQ]',
+                        'hintText': _profile.qq ?? _unSetText,
+                        'limit': 15,
+                        'showLimit': false,
+                        'kt': 1
+                      }), (res) {
+                if (!StringUtil.isEmpty(res.toString())) {
+                  String content = res.toString().trim();
+                  if (content.length <= 15) {
+                    _updateSomething(AccountEditParam(AccountEditKey.QQ, content), (success) {
+                      setState(() {
+                        _profile.qq = content;
+                      });
+                    });
+                  } else {
+                    ToastUtil.showToast(context, 'QQ格式错误');
+                  }
+                } else {
+                  ToastUtil.showToast(context, 'QQ格式错误');
+                }
+              });
+            }),
+        ClickItem(
+            title: "微信",
+            content: _profile.wechat ?? _unSetText,
+            onTap: () {
+              NavigatorUtils.pushResult(
+                  context,
+                  Routes.inputTextPage +
+                      Utils.packConvertArgs({
+                        'title': '修改修改个人资料[微信]',
+                        'hintText': _profile.wechat ?? _unSetText,
+                        'limit': 64,
+                        'showLimit': false
+                      }), (res) {
+                if (!StringUtil.isEmpty(res.toString())) {
+                  String content = res.toString().trim();
+                  if (content.length <= 64) {
+                    _updateSomething(AccountEditParam(AccountEditKey.WECHAT, content), (success) {
+                      setState(() {
+                        _profile.wechat = content;
+                      });
+                    });
+                  } else {
+                    ToastUtil.showToast(context, '微信格式错误');
+                  }
+                } else {
+                  ToastUtil.showToast(context, '微信格式错误');
+                }
+              });
+            }),
       ],
     );
   }

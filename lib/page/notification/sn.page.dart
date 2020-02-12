@@ -20,15 +20,15 @@ class _SystemNotificationPage extends State<SystemNotificationPage>
     super.build(context);
     return ListView.builder(
           itemCount: 20,
-          physics: AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//          physics: AlwaysScrollableScrollPhysics(),
+//          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           itemBuilder: (_, index) {
             return Column(
               children: <Widget>[
                 Gaps.vGap15,
-                Text("2019-5-31 17:19:36", style: Theme.of(context).textTheme.subtitle),
+//                Text("2019-5-31 17:19:36", style: Theme.of(context).textTheme.subtitle),
                 Gaps.vGap8,
-                MySnCard(
+                MyShadowCard(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -36,7 +36,7 @@ class _SystemNotificationPage extends State<SystemNotificationPage>
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Expanded(child: Text("系统通知")),
+//                            Expanded(child: Text("系统通知")),
                             Container(
                               margin: const EdgeInsets.only(right: 4.0),
                               height: 8.0,
@@ -46,7 +46,7 @@ class _SystemNotificationPage extends State<SystemNotificationPage>
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
                             ),
-                            Images.arrowRight
+//                            Images.arrowRight
                           ],
                         ),
                         Gaps.vGap8,

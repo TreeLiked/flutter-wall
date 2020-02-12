@@ -7,10 +7,9 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class DeviceApi {
-  static Future<Void> updateDeviceInfo(String accountId, String name,
-      String platform, String model, String regId) async {
-    String url = Api.API_UPDATE_DEVICE_INFO +
-        "?name=$name&devicePlf=$platform&model=$model&deviceId=$regId";
+  static void updateDeviceInfo(
+      String accountId, String name, String platform, String model, String regId) async {
+    String url = Api.API_UPDATE_DEVICE_INFO + "?name=$name&devicePlf=$platform&model=$model&deviceId=$regId";
     print(url);
     try {
       TweetApi.checkAuthorizationHeaders();
@@ -20,6 +19,18 @@ class DeviceApi {
     } on DioError catch (e) {
       Api.formatError(e);
     }
-    return null;
+  }
+
+  static void removeDeviceInfo(String accountId, String regId) async {
+    String url = Api.API_REMOVE_DEVICE_INFO + "?deviceId=$regId";
+    print(url);
+    try {
+      TweetApi.checkAuthorizationHeaders();
+      httpUtil.dio.get(url).then((res) {
+        print('delete device info finished');
+      });
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
   }
 }

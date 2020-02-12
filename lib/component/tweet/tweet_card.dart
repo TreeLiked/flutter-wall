@@ -13,6 +13,7 @@ import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
@@ -64,17 +65,15 @@ class TweetCard2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(tweet.toJson().toString() + "================================================");
-    print('-----------------------tweet card 2 buld');
     this.context = context;
     isDark = ThemeUtils.isDark(context);
     return cardContainer2(context);
   }
 
   Widget cardContainer2(BuildContext context) {
-    print(tweet.gmtCreated.toIso8601String() + "============================");
     Widget wd = Container(
         padding: EdgeInsets.only(bottom: 10),
+        color: isDark?Colours.dark_bg_color:Colors.white,
         child: GestureDetector(
           onTap: () => _forwardDetail(context),
           behavior: HitTestBehavior.translucent,
@@ -100,8 +99,10 @@ class TweetCard2 extends StatelessWidget {
                         : VEmptyView(0),
                     Gaps.vGap8,
                     displayComment && tweet.enableReply
-                        ? TweetCommentWrapper(tweet,
-                            displayReplyContainerCallback: displayReplyContainerCallback,)
+                        ? TweetCommentWrapper(
+                            tweet,
+                            displayReplyContainerCallback: displayReplyContainerCallback,
+                          )
                         : VEmptyView(0),
                     displayComment ? Gaps.vGap30 : Gaps.vGap10,
                     Gaps.line
@@ -119,6 +120,7 @@ class TweetCard2 extends StatelessWidget {
       context,
 
       MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
+//      MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
     );
   }
 
@@ -144,7 +146,7 @@ class TweetCard2 extends StatelessWidget {
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 10,
-                      style: MyDefaultTextStyle.getTweetBodyStyle(isDark)))
+                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark)))
             ])
           ]))
         : Container(height: 0);
@@ -160,7 +162,7 @@ class TweetCard2 extends StatelessWidget {
                     : tweetTypeMap[tweet.type].color.withAlpha(100)) ??
                 Colors.blueAccent,
             borderRadius: BorderRadius.only(topRight: temp, bottomLeft: temp, bottomRight: temp)),
-        child: Text(' # ' + (tweetTypeMap[tweet.type].zhTag ?? TextConstant.TEXT_UNCATCH_TWEET_TYPE),
+        child: Text(' # ' + (tweetTypeMap[tweet.type].zhTag ?? TextConstant.TEXT_UN_CATCH_TWEET_TYPE),
             style: MyDefaultTextStyle.getTweetTypeStyle(context)));
   }
 }

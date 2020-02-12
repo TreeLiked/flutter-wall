@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -7,13 +8,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/page/common/org_sel_page.dart';
+import 'package:iap_app/page/login/account_info_set.dart';
+import 'package:iap_app/page/login/org_info_set.dart';
 import 'package:iap_app/page/splash_page.dart';
+import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
@@ -53,34 +60,32 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   void initState() {
     super.initState();
 
-    addEventListeners();
     initPlatformState();
     print('------------------main--------------------------');
     _jPush.getRegistrationID().then((rid) {
-      _getAndUpdateDeviceInfo(rid);
+      if (rid != null && rid.length != 0) {
+        Application.setDeviceId(rid);
+        _getAndUpdateDeviceInfo(rid);
+      }
     });
 
-    // var fireDate = DateTime.fromMillisecondsSinceEpoch(
-    //     DateTime.now().millisecondsSinceEpoch + 3000);
-
-    // var localNotification = LocalNotification(
-    //   id: 234,
-    //   title: 'notification title',
-    //   buildId: 1,
-    //   content: 'notification content',
-    //   fireTime: fireDate,
-    //   subtitle: 'notification subtitle', // 该参数只有在 iOS 有效
-    //   badge: 5, // 该参数只有在 iOS 有效
-    //   // extras: {"fa": "0"} // 设置 extras ，extras 需要是 Map<String, String>
-    // );
-    // _jPush.sendLocalNotification(localNotification).then((res) {
-    //   print("$res");
-    // });
-    // SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    //     statusBarColor: Color(0xff000000),
-    //     statusBarIconBrightness: Brightness.dark));
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+//    var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
+//    var localNotification = LocalNotification(
+//        id: 234,
+//        title: 'fadsfa',
+//        buildId: 1,
+//        content: 'fdas',
+//        fireTime: fireDate,
+//        subtitle: 'fasf',
+//        badge: 5,
+//        extra: {"fa": "0"});
+//    _jPush.sendLocalNotification(localNotification).then((res) {
+//      print(res);
+//    });
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Color(0xff000000), statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   }
 
   addEventListeners() {
@@ -92,6 +97,23 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       // 点击通知回调方法。
       onOpenNotification: (Map<String, dynamic> message) async {
         print("flutter onOpenNotification: $message");
+        _jPush.clearAllNotifications();
+
+        Map<String, dynamic> extraMap;
+        if (Platform.isAndroid) {
+          extraMap = json.decode(message['extras']['cn.jpush.android.EXTRA']);
+        } else if (Platform.isIOS) {
+          extraMap = message;
+        } else {
+          return;
+        }
+        print(extraMap);
+        if (extraMap == null) {
+          return;
+        }
+        if (extraMap.containsKey("JUMP")) {
+          this._handleJump(extraMap);
+        }
       },
       // 接收自定义消息回调方法。
       onReceiveMessage: (Map<String, dynamic> message) async {
@@ -100,13 +122,40 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     );
   }
 
+  _handleJump(Map<String, dynamic> extraMap) {
+    if (Application.context == null) {
+      return;
+    }
+    String jumpKey = extraMap['JUMP'].toString();
+    int refId = int.parse(extraMap['REF_ID']);
+    if (jumpKey == 'TWEET_DETAIL') {
+      _forwardTweetDetail(refId);
+    }
+  }
+
+  _forwardTweetDetail(tweetId) async {
+    print('跳转到 -> tweet detail $tweetId');
+    NavigatorUtils.push(Application.context, Routes.tweetDetail + "?tweetId=$tweetId");
+
+//    Navigator.push(
+//      Application.context,
+//      MaterialPageRoute(builder: (context) => TweetDetail(null, tweetId: tweetId)),
+//    );
+  }
+
   Future<void> initPlatformState() async {
+    addEventListeners();
     _jPush.setup(
       appKey: "2541d486ffc85cf504572f6e",
-      channel: "flutter_channel",
+      channel: "developer-default",
+//      channel: "flutter_channel",
       production: false,
       debug: true,
     );
+    if (Platform.isIOS) {
+      _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
+    }
+//    _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
     if (!mounted) return;
   }
 
@@ -126,6 +175,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
             debugShowCheckedModeBanner: false,
             theme: provider.getTheme(),
             darkTheme: provider.getTheme(isDarkMode: true),
+//            home: SplashPage(),
             home: SplashPage(),
             onGenerateRoute: Application.router.generator,
             // localizationsDelegates: const [
@@ -136,7 +186,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
-
               GlobalCupertinoLocalizations.delegate,
               DefaultCupertinoLocalizations.delegate
             ],

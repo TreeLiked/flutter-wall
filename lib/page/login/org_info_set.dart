@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -42,6 +45,11 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   int _cId;
   String _cName = "";
 
+  Duration durationTime = Duration(seconds: 1);
+
+  // 防抖函数
+  Timer timer;
+
   @override
   void initState() {
     super.initState();
@@ -52,15 +60,15 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
 
   Future<List<University>> queryUnis(String name) async {
     // await Future.delayed(Duration(seconds: 3));
-    return await UniversityApi.blurQueryUnis(name);
+
+    return await UniversityApi.blurQueryUnis(name.trim());
   }
 
   _finishAll() async {
-    Utils.showDefaultLoadingWithBounds(context, text: '正在加载');
+    Utils.showDefaultLoadingWithBounds(context, text: '正在生成');
     RegTemp.regTemp.orgId = _cId;
     RegTemp rt = RegTemp.regTemp;
-    Result res =
-        await MemberApi.register(rt.phone, rt.nick, rt.avatarUrl, rt.orgId);
+    Result res = await MemberApi.register(rt.phone, rt.nick, rt.avatarUrl, rt.orgId);
     if (res != null && res.isSuccess && res.code == "1") {
       String token = res.message;
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
@@ -68,8 +76,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, _cName);
 
       Account acc = await MemberApi.getMyAccount(token);
-      AccountLocalProvider accountLocalProvider =
-          Provider.of<AccountLocalProvider>(context);
+      AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
       accountLocalProvider.setAccount(acc);
       _loadStorageTweetTypes();
       Application.setAccount(acc);
@@ -77,7 +84,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
       Application.setOrgId(_cId);
       Application.setOrgName(_cName);
       NavigatorUtils.goBack(context);
-      NavigatorUtils.push(context, Routes.index, clearStack: true);
+      NavigatorUtils.push(context, Routes.splash, clearStack: true);
     } else {
       NavigatorUtils.goBack(context);
       ToastUtil.showToast(context, '该手机号已被注册，请登录');
@@ -88,8 +95,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   }
 
   Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider =
-        Provider.of<TweetTypesFilterProvider>(context);
+    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
     tweetTypesFilterProvider.updateTypeNames();
   }
 
@@ -106,10 +112,13 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                 children: <Widget>[
                   Gaps.vGap16,
                   Container(
-                    color: ThemeUtils.isDark(context)
-                        ? Color(0xff363636)
-                        : Color(0xfff2f2f2),
-                    height: ScreenUtil().setHeight(80),
+//                    height: ScreenUtil().setHeight(80),
+                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: ThemeUtils.isDark(context) ? Color(0xff363636) : Color(0xfff2f2f2),
+                    ),
                     margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
                     child: TextField(
                       controller: _controller,
@@ -119,9 +128,20 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                           _queryUnTask = queryUnis(_controller.text);
                         });
                       },
+                      onChanged: (val) async {
+                        setState(() {
+                          timer?.cancel();
+                          timer = new Timer(durationTime, () {
+                            setState(() {
+                              _queryUnTask = queryUnis(val);
+                            });
+                          });
+                        });
+                      },
+                      style: TextStyles.textBold14,
                       decoration: InputDecoration(
-                          hintText: '输入大学以搜索',
-                          hintStyle: TextStyles.textGray12,
+                          hintText: '输入大学以搜索，英文缩写也可以哦',
+                          hintStyle: TextStyles.textGray14,
                           prefixIcon: Icon(
                             Icons.search,
                             color: Colors.grey,
@@ -131,15 +151,16 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                               Icons.clear,
                               color: Colors.grey,
                             ),
-                            onTap: () => _controller.clear(),
+                            onTap: () {
+                              _controller.clear();
+                              setState(() {
+                                _queryUnTask = queryUnis("");
+                              });
+                            },
                           ),
-                          filled: true,
-                          fillColor: Color(0xfff5f6f7),
-                          border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.0, style: BorderStyle.none),
-                            borderRadius: BorderRadius.circular(15),
-                          )),
+//                          filled: true,
+//                          fillColor: Color(0xfff5f6f7),
+                          border: InputBorder.none),
                       maxLines: 1,
                     ),
                   ),
@@ -148,24 +169,21 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                           margin: EdgeInsets.all(0),
                           padding: EdgeInsets.all(0),
                           child: FutureBuilder<List<University>>(
-                              builder: (context,
-                                  AsyncSnapshot<List<University>> async) {
+                              builder: (context, AsyncSnapshot<List<University>> async) {
                                 //在这里根据快照的状态，返回相应的widget
-                                if (async.connectionState ==
-                                        ConnectionState.active ||
-                                    async.connectionState ==
-                                        ConnectionState.waiting) {
+                                if (async.connectionState == ConnectionState.active ||
+                                    async.connectionState == ConnectionState.waiting) {
                                   return Container(
-                                    margin: EdgeInsets.only(
-                                        bottom: ScreenUtil().setHeight(500)),
+                                    margin: EdgeInsets.only(bottom: 500
+//                                    ScreenUtil().setHeight(500)
+                                        ),
                                     child: new SpinKitThreeBounce(
                                       color: Colors.lightGreen,
                                       size: 18,
                                     ),
                                   );
                                 }
-                                if (async.connectionState ==
-                                    ConnectionState.done) {
+                                if (async.connectionState == ConnectionState.done) {
                                   if (async.hasError) {
                                     return new Center(
                                       child: new Text("${async.error}"),
@@ -175,6 +193,13 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                     // setState(() {
                                     //   filterList = list;
                                     // });
+                                    if (list == null || list.length == 0) {
+                                      return Padding(
+//                                          alignment: Alignment.center,
+                                          padding: const EdgeInsets.only(top: 37),
+                                          child: Text('没有满足条件的数据',
+                                              style: TextStyles.textGray14));
+                                    }
 
                                     return ListView.builder(
                                         itemCount: list.length,
@@ -193,32 +218,32 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                         });
                                   }
                                 }
-                                return Container(
-                                  height: 10,
-                                );
+                                return Gaps.empty;
                               },
                               future: _queryUnTask)))
                 ],
               )
             : Container(
-                margin: EdgeInsets.only(top: ScreenUtil().setHeight(200)),
+                margin: EdgeInsets.only(
+                    top:
+//                ScreenUtil().setHeight(200)
+                        100),
                 width: double.infinity,
-                height: ScreenUtil().setHeight(100),
+                height: 100,
+//                height: ScreenUtil().setHeight(100),
                 alignment: Alignment.center,
                 child: RichText(
                   softWrap: true,
+                  textAlign: TextAlign.center,
                   text: TextSpan(children: [
                     TextSpan(
-                        text: '您已经选择：', style: TextStyle(color: Colors.black)),
+                        text: '您已经选择：', style: TextStyle(color: Colors.black, fontSize: Dimens.font_sp15)),
                     TextSpan(
-                        text: '$_cName，',
-                        style: TextStyle(color: Colors.black)),
+                        text: '$_cName\n\n',
+                        style: TextStyle(color: Colors.black, fontSize: Dimens.font_sp15)),
                     TextSpan(
-                        text: '点击',
-                        style: const TextStyle(color: Colors.black)),
-                    TextSpan(
-                      text: ' 重新选择',
-                      style: TextStyle(color: Theme.of(context).accentColor),
+                      text: '重新选择',
+                      style: TextStyle(color: Theme.of(context).accentColor, fontSize: Dimens.font_sp15),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           setState(() {

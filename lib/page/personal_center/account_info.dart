@@ -189,9 +189,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
           builder: (context) =>
               ImageCropContainer(cropKey: cropKey, file: image)));
       if (file != null) {
-        Utils.showDefaultLoadingWithBounds(context, text: '正在更新ß');
+        Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
         String resultUrl =
-            await OssUtil.uploadImage(file.path, file.readAsBytesSync(), toTweet: false);
+            await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);
         if (resultUrl != "-1") {
           Result r = await MemberApi.modAccount(
               AccountEditParam(AccountEditKey.AVATAR, resultUrl));

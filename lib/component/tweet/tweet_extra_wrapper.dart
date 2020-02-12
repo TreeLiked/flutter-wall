@@ -41,7 +41,6 @@ class TweetCardExtraWrapper extends StatefulWidget {
 class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
   @override
   Widget build(BuildContext context) {
-    print('_TweetCardExtraWrapper --------------------build');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,

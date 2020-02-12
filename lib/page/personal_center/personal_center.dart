@@ -67,7 +67,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                   decoration: BoxDecoration(
                     // color: Colors.white,
                     borderRadius: BorderRadius.only(
-                        bottomLeft:  Radius.circular(20), bottomRight: Radius.circular(140)),
+                        bottomLeft:  Radius.circular(20), bottomRight: Radius.circular(20)),
                     gradient: new LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomCenter,
@@ -159,7 +159,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                           _getGroupSetting([
                             ClickItem(
                               title: '我的组织',
-                              content: Application.getOrgName ?? TextConstant.TEXT_UNCATCH_ERROR,
+                              content: Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
                               onTap: () {
                                 ToastUtil.showToast(context, '组织切换功能暂未开放');
                                 // NavigatorUtils.push(
@@ -182,33 +182,33 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                               onTap: () {
                                 NavigatorUtils.push(context, SettingRouter.accountInfoPage);
                               },
-                            ),
-                            ClickItem(
-                              title: '我的订阅',
-                              onTap: () {
-//                                ToastUtil.showToast(context, '订阅功能暂未开放');
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TweetTypeSelectPage(
-                                              title: "订阅内容类型",
-                                              subTitle: '我的订阅',
-                                              filter: false,
-                                              subScribe: true,
-                                              initFirst: [],
-                                              callback: (resultNames) async {
-                                                print("callbacl result names");
-                                                print(resultNames);
-                                              },
-
-                                              // callback: (_) {
-                                              //   // _refreshController.requestRefresh();
-                                              //   _esRefreshController.resetLoadState();
-                                              //   _esRefreshController.callRefresh();
-                                              // },
-                                            )));
-                              },
-                            ),
+                            )
+//                            ClickItem(
+//                              title: '我的订阅',
+//                              onTap: () {
+////                                ToastUtil.showToast(context, '订阅功能暂未开放');
+//                                Navigator.push(
+//                                    context,
+//                                    MaterialPageRoute(
+//                                        builder: (context) => TweetTypeSelectPage(
+//                                              title: "订阅内容类型",
+//                                              subTitle: '我的订阅',
+//                                              filter: false,
+//                                              subScribe: true,
+//                                              initFirst: [],
+//                                              callback: (resultNames) async {
+//                                                print("callbacl result names");
+//                                                print(resultNames);
+//                                              },
+//
+//                                              // callback: (_) {
+//                                              //   // _refreshController.requestRefresh();
+//                                              //   _esRefreshController.resetLoadState();
+//                                              //   _esRefreshController.callRefresh();
+//                                              // },
+//                                            )));
+//                              },
+//                            ),
                           ]),
 
                           _getGroupSetting([

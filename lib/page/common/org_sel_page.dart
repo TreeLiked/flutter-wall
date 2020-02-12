@@ -130,7 +130,8 @@ class _OrgChoosePageState extends State<OrgChoosePage> {
           children: <Widget>[
             Gaps.vGap16,
             Container(
-              height: ScreenUtil().setHeight(80),
+              height: 100,
+//              height: ScreenUtil().setHeight(80),
               margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
               child: TextField(
                 keyboardAppearance: Theme.of(context).brightness,
@@ -151,12 +152,11 @@ class _OrgChoosePageState extends State<OrgChoosePage> {
                     ),
                     filled: true,
                     fillColor: Color(0xfff5f6f7),
-
                     // enabledBorder: InputBorder(),
                     border: OutlineInputBorder(
                       borderSide:
                           BorderSide(width: 0.0, style: BorderStyle.none),
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(10),
                     )),
                 maxLines: 1,
               ),

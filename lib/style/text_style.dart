@@ -12,11 +12,16 @@ class MyDefaultTextStyle {
     return TextStyle(
         color: ColorConstant.getTweetNickColor(context),
         fontSize: fontSize,
+
         fontWeight: bold ? FontWeight.bold : FontWeight.normal);
   }
 
-  static TextStyle getTweetBodyStyle(bool isDark, {double fontSize = Dimens.font_sp16}) {
+  static TextStyle getMainTextBodyStyle(bool isDark, {double fontSize = Dimens.font_sp16}) {
     return TextStyle(color: ColorConstant.getTweetBodyColor(isDark), height: 1.6, fontSize: fontSize);
+  }
+
+  static TextStyle getSubTextBodyStyle(bool isDark, {double fontSize = Dimens.font_sp15}) {
+    return TextStyle(color: ColorConstant.getSubTextBodyColor(isDark), height: 1.6, fontSize: fontSize);
   }
 
   static TextStyle getTweetTypeStyle(BuildContext context, {double fontSize = Dimens.font_sp16}) {

@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:iap_app/res/colors.dart';
 
 class ThemeUtils {
+  static Color getBackColor(BuildContext context) {
+    return isDark(context) ? Colours.dark_bg_color : Colours.bg_color;
+  }
+
   static bool isDark(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
   }

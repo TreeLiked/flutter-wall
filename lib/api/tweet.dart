@@ -17,11 +17,9 @@ import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetApi {
-  static String localAccountToken =
-      SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+  static String localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
 
-  static Future<List<BaseTweet>> queryTweets(
-      PageParam param, String accountId) async {
+  static Future<List<BaseTweet>> queryTweets(PageParam param) async {
     String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
     print(url);
 
@@ -34,8 +32,7 @@ class TweetApi {
       if (CollectionUtil.isListEmpty(jsonData)) {
         return new List<BaseTweet>();
       }
-      List<BaseTweet> tweetList =
-          jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+      List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -43,8 +40,28 @@ class TweetApi {
     return null;
   }
 
-  static Future<List<BaseTweet>> queryAccountTweets(
-      PageParam pageParam, String passiveAccountId,
+  static Future<BaseTweet> queryTweetById(int tweetId) async {
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY_SIN + "?id=$tweetId";
+    print(url);
+
+    checkAuthorizationHeaders();
+    Response response;
+    try {
+      response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
+      if (json['isSuccess'] == true) {
+        dynamic jsonData = json["data"];
+        return BaseTweet.fromJson(jsonData);
+      }
+      return null;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<List<BaseTweet>> queryAccountTweets(PageParam pageParam, String passiveAccountId,
       {bool needAnonymous = true}) async {
     String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
     checkAuthorizationHeaders();
@@ -62,8 +79,7 @@ class TweetApi {
       if (CollectionUtil.isListEmpty(jsonData)) {
         return new List<BaseTweet>();
       }
-      List<BaseTweet> tweetList =
-          jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+      List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -71,14 +87,12 @@ class TweetApi {
     return null;
   }
 
-  static Future<Result> deleteAccountTweets(String accountId,int tweetId) async {
+  static Future<Result> deleteAccountTweets(String accountId, int tweetId) async {
     if (StringUtil.isEmpty(accountId)) {
       return Result(isSuccess: false);
     }
-    String requestUrl = Api.API_TWEET_DELETE +
-        "?" +
-        SharedConstant.ACCOUNT_ID_IDENTIFIER +
-        "=$accountId&tId=$tweetId";
+    String requestUrl =
+        Api.API_TWEET_DELETE + "?" + SharedConstant.ACCOUNT_ID_IDENTIFIER + "=$accountId&tId=$tweetId";
     print(requestUrl);
     checkAuthorizationHeaders();
     Response response;
@@ -95,14 +109,12 @@ class TweetApi {
   static Future<Map<String, dynamic>> pushTweet(BaseTweet tweet) async {
     print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERY);
     checkAuthorizationHeaders();
-    Response response = await httpUtil.dio.post(
-        Api.API_BASE_INF_URL + Api.API_TWEET_CREATE,
-        data: tweet.toJson());
+    Response response =
+        await httpUtil.dio.post(Api.API_BASE_INF_URL + Api.API_TWEET_CREATE, data: tweet.toJson());
     return Api.convertResponse(response.data);
   }
 
-  static Future<Map<String, dynamic>> requestUploadMediaLink(
-      List<String> fileSuffixes, String type) async {
+  static Future<Map<String, dynamic>> requestUploadMediaLink(List<String> fileSuffixes, String type) async {
     StringBuffer buffer = new StringBuffer();
     fileSuffixes.forEach((f) => buffer.write("&suffix=$f"));
     String url = Api.API_BASE_INF_URL +
@@ -120,44 +132,35 @@ class TweetApi {
   static Future<Result> pushReply(TweetReply reply, int tweetId) async {
     print(Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE);
 
-    Response response = await httpUtil.dio.post(
-        Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId',
-        data: reply.toJson());
+    Response response = await httpUtil.dio
+        .post(Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId', data: reply.toJson());
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return Result.fromJson(json);
   }
 
-  static Future<void> operateTweet(
-      int tweetId, String type, bool positive) async {
-    var param = {
-      'tweetId': tweetId,
-      'accountId': Application.getAccountId,
-      'type': type,
-      'valid': positive
-    };
-    String url = Api.API_BASE_INF_URL +
-        Api.API_TWEET_OPERATION +
-        '?acId=' +
-        Application.getAccountId;
+  static Future<void> operateTweet(int tweetId, String type, bool positive) async {
+    var param = {'tweetId': tweetId, 'accountId': Application.getAccountId, 'type': type, 'valid': positive};
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_OPERATION + '?acId=' + Application.getAccountId;
     print(url);
     httpUtil.dio.post(url, data: param);
   }
 
-  static Future<List<TweetReply>> quertTweetReply(
-      int tweetId, bool needSub) async {
-    String url = Api.API_BASE_INF_URL +
-        Api.API_TWEET_REPLY_QUERY +
-        '?id=$tweetId&needSub=$needSub';
+  static Future<List<TweetReply>> queryTweetReply(int tweetId, bool needSub) async {
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_QUERY + '?id=$tweetId&needSub=$needSub';
     print(url);
-    Response response = await httpUtil.dio.get(url);
-    Map<String, dynamic> json = Api.convertResponse(response.data);
-    List<dynamic> jsonData = json["data"];
-    if (CollectionUtil.isListEmpty(jsonData)) {
-      return new List<TweetReply>();
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      List<dynamic> jsonData = json["data"];
+      if (CollectionUtil.isListEmpty(jsonData)) {
+        return new List<TweetReply>();
+      }
+      List<TweetReply> replies = jsonData.map((m) => TweetReply.fromJson(m)).toList();
+      return replies;
+    } on DioError catch (e) {
+      Api.formatError(e);
     }
-    List<TweetReply> replies =
-        jsonData.map((m) => TweetReply.fromJson(m)).toList();
-    return replies;
+    return null;
   }
 
   static Future<List<Account>> queryTweetPraise(int tweetId) async {
@@ -165,19 +168,21 @@ class TweetApi {
       'tweetIds': [tweetId],
       'type': 'PRAISE'
     };
-    String url = Api.API_BASE_INF_URL +
-        Api.API_TWEET_QUERY_SINGLE +
-        '?acId=' +
-        Application.getAccountId;
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_OPT_QUERY_SINGLE + '?acId=' + Application.getAccountId;
     print(url);
-    Response response = await httpUtil.dio.post(url, data: param);
-    Map<String, dynamic> json = Api.convertResponse(response.data);
-    List<dynamic> jsonData = json["data"];
-    if (CollectionUtil.isListEmpty(jsonData)) {
-      return new List<Account>();
+    try {
+      Response response = await httpUtil.dio.post(url, data: param);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      List<dynamic> jsonData = json["data"];
+      if (CollectionUtil.isListEmpty(jsonData)) {
+        return new List<Account>();
+      }
+      List<Account> accounts = jsonData.map((m) => Account.fromJson(m)).toList();
+      return accounts;
+    } on DioError catch (e) {
+      Api.formatError(e);
     }
-    List<Account> accounts = jsonData.map((m) => Account.fromJson(m)).toList();
-    return accounts;
+    return null;
   }
 
   //   static Future<Result> modPraise() async {
@@ -193,10 +198,8 @@ class TweetApi {
 
   static Future<HotTweet> queryOrgHotTweets(int orgId) async {
     try {
-      String url = Api.API_BASE_INF_URL +
-          Api.API_TWEET_HOT_QUERY +
-          '?orgId=$orgId&acId=' +
-          Application.getAccountId;
+      String url =
+          Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?orgId=$orgId&acId=' + Application.getAccountId;
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       return HotTweet.fromJson(json);
@@ -208,8 +211,8 @@ class TweetApi {
 
   static Future<HotTweet> queryPraise(int tweetId) async {
     print(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY);
-    Response response = await httpUtil.dio
-        .get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?tId=$tweetId');
+    Response response =
+        await httpUtil.dio.get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?tId=$tweetId');
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return HotTweet.fromJson(json);
   }
@@ -222,12 +225,10 @@ class TweetApi {
     }
     if (httpUtil.options.headers.containsKey("Authorization")) {
       if (update) {
-        httpUtil.options.headers
-            .update('Authorization', (_) => localAccountToken);
+        httpUtil.options.headers.update('Authorization', (_) => localAccountToken);
       }
     } else {
-      httpUtil.options.headers
-          .putIfAbsent('Authorization', () => localAccountToken);
+      httpUtil.options.headers.putIfAbsent('Authorization', () => localAccountToken);
     }
   }
 }

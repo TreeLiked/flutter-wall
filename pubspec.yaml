@@ -14,7 +14,7 @@ description: Application for information aggregation platform.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -123,6 +123,9 @@ dependencies:
   # 侧滑菜单
   flutter_slidable: ^0.5.4
 
+  # 自定义文本溢出 https://github.com/fluttercandies/extended_text/blob/master/README-ZH.md
+  extended_text: ^0.7.1
+
   # social 
   # sharesdk: ^1.1.8
 
@@ -155,6 +158,7 @@ flutter:
     - assets/flrs/
     - assets/icons/
     - assets/icons/nav/
+    - assets/icons/notification/
     - assets/icons/profile/
     - assets/gifs/loading.gif
 

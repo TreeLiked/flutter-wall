@@ -93,7 +93,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
             onTap: () => anonymous ? null : goAccountDetail(context, account, true),
             child: Container(
               child: Text(
-                account.nick ?? TextConstant.TEXT_UNCATCH_ERROR,
+                account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
                     bold: true),
               ),

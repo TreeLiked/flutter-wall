@@ -67,7 +67,7 @@ class Utils {
         });
   }
 
-  static void showDefaultLoadingWithBounds(BuildContext context, {double size = 30, String text = ""}) {
+  static void showDefaultLoadingWithBounds(BuildContext context, {double size = 25, String text = ""}) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -81,7 +81,7 @@ class Utils {
               child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ThemeUtils.isDark(context) ? Colors.black87 : Colors.white,
+                    color: ThemeUtils.isDark(context) ? Colors.black87 : Colors.black54,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   alignment: Alignment.center,
@@ -97,8 +97,7 @@ class Utils {
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
     list.add(
-      const CupertinoActivityIndicator(),
-      // SpinKitChasingDots(color: Color(0xff00BFFF), size: size),
+        SpinKitChasingDots(color: Colors.cyan, size: size),
     );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
@@ -107,7 +106,7 @@ class Utils {
               softWrap: true,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: ThemeUtils.isDark(context) ? Colors.white : Colors.black54,
+                  color: ThemeUtils.isDark(context) ? Colors.white : Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.bold))));
     }

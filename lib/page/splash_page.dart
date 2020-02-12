@@ -72,7 +72,7 @@ class _SplashPageState extends State<SplashPage> {
             accountLocalProvider.setAccount(acc);
             Application.setAccount(acc);
             Application.setAccountId(acc.id);
-
+//            Application.setLocalAccountToken(storageToken);
             int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
             String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
             if (orgId == -1 || orgName == "") {
@@ -94,13 +94,14 @@ class _SplashPageState extends State<SplashPage> {
             } else {
               print('$orgId---------------------orgId');
               print('$orgName---------------------orgName');
-
               Application.setOrgId(orgId);
               Application.setOrgName(orgName);
             }
+            Application.setLocalAccountToken(storageToken);
             setState(() {
               _status = 1;
             });
+
             _loadStorageTweetTypes();
           }
         });
@@ -122,16 +123,16 @@ class _SplashPageState extends State<SplashPage> {
     prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)..init(context);
     Application.screenWidth = prefix0.ScreenUtil.screenWidthDp;
     Application.screenHeight = prefix0.ScreenUtil.screenHeightDp;
+    Application.context = context;
 
     return Material(
-
         child: _status == 0
             ? CachedNetworkImage(
-                imageUrl: 'https://tva1.sinaimg.cn/large/006tNbRwgy1gaw6ewmbxrj30u011h40v.jpg',
+                imageUrl: 'https://tva1.sinaimg.cn/large/006tNbRwgy1gblmrbr7doj30g00lpqn9.jpg',
                 width: double.infinity,
                 fit: BoxFit.cover,
                 height: double.infinity,
               )
-            :Index());
+            : Index());
   }
 }

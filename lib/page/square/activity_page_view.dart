@@ -19,11 +19,8 @@ class ActivityPageView extends StatefulWidget {
 class _ActivityPageView extends State<ActivityPageView>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<ActivityPageView> {
   List<String> imageList = [
-    "https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e73jdtbj30u011i41q.jpg",
-    "https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e785n9mj30u011iad5.jpg",
-    "https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e7c9chjj30u011i41i.jpg",
-    "https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e7gl1wwj30u011iagt.jpg",
-    "https://tva1.sinaimg.cn/large/006tNbRwgy1ga6e7kafy4j30u00u0acu.jpg"
+    "https://tva1.sinaimg.cn/large/006tNbRwgy1gaw6ewmbxrj30u011h40v.jpg",
+    "https://tva1.sinaimg.cn/large/006tNbRwgy1gaw5piuerej30ss0zzt9p.jpg"
   ];
 
   @override

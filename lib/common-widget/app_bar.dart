@@ -7,7 +7,7 @@ import 'package:iap_app/util/theme_utils.dart';
 
 /// 自定义AppBar
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const MyAppBar(
+   const MyAppBar(
       {Key key,
       this.backgroundColor,
       this.title: "",

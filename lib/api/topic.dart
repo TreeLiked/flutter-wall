@@ -80,15 +80,12 @@ class TopicApi {
     return null;
   }
 
-
   static Future<Result> modTopicStatus(int topicId, bool close) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_STATUS_MOD;
     print("mod topic  status-> $url");
     try {
-      Response response = await httpUtil.dio.post(url, data:{
-        "tId":topicId,
-        "acId":Application.getAccountId
-      });
+      Response response =
+          await httpUtil.dio.post(url, data: {"tId": topicId, "acId": Application.getAccountId});
       print(response);
       return Result.fromJson(Api.convertResponse(response.data));
     } on DioError catch (e) {
@@ -121,11 +118,85 @@ class TopicApi {
           return MainTopicReply.fromJson(m);
         }).toList();
 
-         topicReplyList.forEach((m) {
+        topicReplyList.forEach((m) {
           print("${m.praised}");
         });
         return topicReplyList;
       }
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<List<SubTopicReply>> queryTopicSubReplies(
+      int topicId, int refId, int currentPage, int pageSize,
+      {String order = BaseTopicReply.QUERY_ORDER_TIME}) async {
+    String url = Api.API_BASE_INF_URL + Api.API_TOPIC_REPLY_SUB_QUERY;
+    print(url);
+    var data = {
+      "topicId": topicId,
+      "refId": refId,
+      "currentPage": currentPage,
+      "pageSize": pageSize,
+      "order": order
+    };
+    Response response;
+    try {
+      response = await httpUtil.dio.post(url, data: data);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
+      bool success = json["isSuccess"];
+      if (success) {
+        Map<String, dynamic> pageData = json["data"];
+        List<dynamic> jsonData = pageData["data"];
+        if (jsonData == null || jsonData.length <= 0) {
+          return [];
+        }
+        List<SubTopicReply> topicReplyList = jsonData.map((m) {
+          return SubTopicReply.fromJson(m);
+        }).toList();
+
+        topicReplyList.forEach((m) {
+          print("${m.praised}");
+        });
+        return topicReplyList;
+      }
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<Result> addReply(
+      int topicId, int refId, bool child, String tarAccountId, String body) async {
+    if (topicId == null ||
+        refId == null ||
+        child == null ||
+        tarAccountId == null ||
+        body == null ||
+        body.trim().length == 0) {
+      Result r = new Result();
+      r.isSuccess = false;
+      r.message = "回复错误";
+      return r;
+    }
+    var data = {
+      "topicId": topicId,
+      "refId": refId,
+      "child": child,
+      "tarAccId": tarAccountId,
+      "body": body,
+      "sentTime": DateUtil.formatDate(DateTime.now())
+    };
+
+    String url = Api.API_BASE_INF_URL + Api.API_TOPIC_ADD_REPLY;
+    print(url);
+    Response response;
+    try {
+      response = await httpUtil.dio.post(url, data: data);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
     }

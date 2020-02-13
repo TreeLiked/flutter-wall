@@ -25,6 +25,7 @@ class MyTextField extends StatefulWidget {
       this.getVCode,
       this.config,
       this.onChange,
+      this.onSub,
       this.isShowDelete = true,
       this.keyName})
       : super(key: key);
@@ -39,6 +40,7 @@ class MyTextField extends StatefulWidget {
   final Future<bool> Function() getVCode;
   final KeyboardActionsConfig config;
   final onChange;
+  final onSub;
   final bool isShowDelete;
 
   /// 用于集成测试寻找widget
@@ -50,7 +52,6 @@ class MyTextField extends StatefulWidget {
 
 class _MyTextFieldState extends State<MyTextField> {
   bool _isShowPwd = false;
-
 
   @override
   void initState() {
@@ -123,82 +124,13 @@ class _MyTextFieldState extends State<MyTextField> {
                         ? [BlacklistingTextInputFormatter(RegExp("[\u4e00-\u9fa5]"))]
                         : null),
             onChanged: (val) => widget.onChange(val),
+            onSubmitted: (val) => widget.onSub != null ? widget.onSub(val) : null,
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
                 hintText: widget.hintText,
                 counterText: "",
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none)),
-//            focusedBorder:
-//                  UnderlineInputBorder(borderSide: BorderSide(color: Colors.indigo, width: 0.8)),
-//              enabledBorder: UnderlineInputBorder(
-//                  borderSide: BorderSide(color: Theme.of(context).dividerTheme.color, width: 0.8))
-//                  ),
-//        ),
-//        Row(
-//          mainAxisSize: MainAxisSize.min,
-//          children: <Widget>[
-//            _isShowDelete && widget.isShowDelete
-//                ? Gaps.empty
-//                : GestureDetector(
-//                    child: LoadAssetImage(
-//                      "icon_delete",
-//                      key: Key('${widget.keyName}_delete'),
-//                      width: 18.0,
-//                      height: 18.0,
-//                    ),
-//                    onTap: () {
-//                      widget.controller.text = "";
-//                    },
-//                  ),
-//            !widget.isInputPwd ? Gaps.empty : Gaps.hGap15,
-//            !widget.isInputPwd
-//                ? Gaps.empty
-//                : GestureDetector(
-//                    child: LoadAssetImage(
-//                      _isShowPwd ? "login/qyg_shop_icon_display" : "login/qyg_shop_icon_hide",
-//                      key: Key('${widget.keyName}_showPwd'),
-//                      width: 18.0,
-//                      height: 18.0,
-//                    ),
-//                    onTap: () {
-//                      setState(() {
-//                        _isShowPwd = !_isShowPwd;
-//                      });
-//                    },
-//                  ),
-//            widget.getVCode == null ? Gaps.empty : Gaps.hGap15,
-//            widget.getVCode == null
-//                ? Gaps.empty
-//                : Theme(
-//                    data: Theme.of(context).copyWith(
-//                      buttonTheme: ButtonThemeData(
-//                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//                        height: 26.0,
-//                        minWidth: 76.0,
-//                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-//                      ),
-//                    ),
-//                    child: FlatButton(
-//                      onPressed: _isClick ? _getVCode : null,
-//                      textColor: themeData.primaryColor,
-//                      color: Colors.transparent,
-//                      disabledTextColor: isDark ? Colours.dark_text : Colors.white,
-//                      disabledColor: isDark ? Colours.dark_text_gray : Colours.text_gray_c,
-//                      shape: RoundedRectangleBorder(
-//                          borderRadius: BorderRadius.circular(1.0),
-//                          side: BorderSide(
-//                            color: _isClick ? themeData.primaryColor : Colors.transparent,
-//                            width: 0.8,
-//                          )),
-//                      child: Text(
-//                        _isClick ? "获取验证码" : "（$s s）",
-//                        style: TextStyle(fontSize: Dimens.font_sp12),
-//                      ),
-//                    ),
-//                  )
-//          ],
-//        )
       ],
     );
   }

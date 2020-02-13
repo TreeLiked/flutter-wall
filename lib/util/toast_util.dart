@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class ToastUtil {
@@ -17,5 +18,9 @@ class ToastUtil {
       backgroundColor: dark ? Colors.black87 : Colors.white,
       textColor: dark ? Colors.white : Colors.black,
     );
+  }
+
+  static void showServiceExpToast(BuildContext context) {
+    showToast(context, TextConstant.TEXT_SERVICE_ERROR,length: Toast.LENGTH_LONG);
   }
 }

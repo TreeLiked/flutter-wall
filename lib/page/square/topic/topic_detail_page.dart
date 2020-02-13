@@ -3,16 +3,23 @@ import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/topic.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
+import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/media.dart';
+import 'package:iap_app/model/result.dart';
+import 'package:iap_app/model/topic/add_topic.dart';
+import 'package:iap_app/model/topic/add_topic_reply.dart';
 import 'package:iap_app/model/topic/base_tr.dart';
 import 'package:iap_app/model/topic/topic.dart';
+import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/square/topic/topic_reply_card.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -21,6 +28,7 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
@@ -45,19 +53,20 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   _TopicDetailPageState(this.topic);
 
   bool isDark = false;
-  int _sortTypeIndex = 0;
   GlobalKey _sortButtonKey = GlobalKey();
 
   List _sortTypeList = ["热门排序", "时间排序"];
+  int _sortTypeIndex = 0;
 
   Future _getReplyTask;
   List<MainTopicReply> mainTopicReplies;
 
-  Future<void> _onRefresh() async {
-    Topic topic = await TopicApi.queryTopicById(widget.topicId);
-    await Future.delayed(Duration(seconds: 1));
-//    _refreshController.refreshCompleted();
-  }
+  TextEditingController _editController = TextEditingController();
+  FocusNode _focusNode = FocusNode();
+  String _defaultHintText = "评论";
+  String _hintText = "评论";
+
+  AddTopicReply myReply = new AddTopicReply();
 
   @override
   void initState() {
@@ -87,6 +96,13 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
       return [];
     }
     return temp;
+  }
+
+  @override
+  void dispose() {
+    _editController?.dispose();
+    _focusNode?.dispose();
+    super.dispose();
   }
 
   @override
@@ -130,23 +146,109 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
         ),
         body: topic == null
             ? Container(alignment: Alignment.topCenter, child: WidgetUtil.getLoadingAnimation())
-            : CustomScrollView(slivers: <Widget>[
-                SliverToBoxAdapter(
-                    child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _buildBody(),
-                      Gaps.vGap12,
-                      Gaps.line,
-                      _buildCommentRow(),
-                      _buildCommentWrap(),
+            : Listener(
+                onPointerDown: (_) {
+                  if (topic != null) {
+                    _focusNode.unfocus();
+                  }
+                },
+                child: Stack(
+                  children: <Widget>[
+                    CustomScrollView(slivers: <Widget>[
+                      SliverToBoxAdapter(
+                          child: Container(
+                        margin: EdgeInsets.only(
+                          left: 15,
+                          right: 15,
+                          top: 10,
+                          bottom: ScreenUtil().setHeight(110),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _buildBody(),
+                            Gaps.vGap12,
+                            Gaps.line,
+                            _buildCommentRow(),
+                            _buildCommentWrap(),
 //                      _buildCommentHeader(),
-                    ],
-                  ),
-                ))
-              ]));
+                          ],
+                        ),
+                      )),
+                    ]),
+                    Positioned(
+                        left: 0,
+                        bottom: 0,
+                        child: Container(
+                            padding: const EdgeInsets.only(left: 20, right: 10),
+                            width: Application.screenWidth,
+                            height: ScreenUtil().setHeight(100),
+                            decoration: BoxDecoration(
+                              color: isDark ? Color(0xff363636) : Color(0xfff2f3f4),
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(7),
+                                topRight: const Radius.circular(7),
+                              ),
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                AccountAvatar(
+                                  cache: true,
+                                  avatarUrl: Application.getAccount.avatarUrl,
+                                  size: 30,
+                                ),
+                                Gaps.hGap15,
+                                Expanded(
+                                  child: MyTextField(
+                                    controller: _editController,
+                                    hintText: _hintText,
+                                    focusNode: _focusNode,
+                                    maxLength: 256,
+                                    onSub: (String val) async {
+                                      if (val != null && val.trim().length > 0) {
+                                        Utils.showDefaultLoadingWithBounds(context);
+                                        Result r = await TopicApi.addReply(
+                                            topic.id, myReply.refId, myReply.child, myReply.tarAccId, val);
+                                        NavigatorUtils.goBack(context);
+                                        if (r == null) {
+                                          ToastUtil.showServiceExpToast(context);
+                                          return;
+                                        } else {
+                                          print("${r.isSuccess} --- ${r.message}");
+                                          if (r.isSuccess) {
+                                            _editController?.clear();
+                                            setState(() {
+                                              _hintText = _defaultHintText;
+                                              _getReplyTask = _fetchMainReplies();
+                                            });
+                                          } else {
+                                            ToastUtil.showToast(context, '回复失败');
+                                          }
+                                        }
+                                      } else {
+                                        ToastUtil.showToast(context, '请输入内容');
+                                      }
+                                    },
+                                  ),
+                                  flex: 1,
+                                )
+                              ],
+                            )))
+                  ],
+                )));
+  }
+
+  void _hitReply(SimpleAccount targetAccount, bool child, int parentId) {
+    setState(() {
+      _hintText = "回复 ${targetAccount.nick}";
+
+      myReply.topicId = topic.id;
+      myReply.tarAccId = targetAccount.id;
+      myReply.child = child;
+      myReply.refId = parentId;
+      print("${myReply.topicId}--${myReply.tarAccId}--${myReply.child}--${myReply.refId}--");
+      _focusNode.requestFocus();
+    });
   }
 
   Widget _buildBody() {
@@ -194,9 +296,6 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
     }
     // TODO 暂不展示图片以外的媒体类型
     medias.removeWhere((media) => media.mediaType != "IMAGE");
-//    List<Media> temp = new List.from(medias);
-//    medias.addAll(temp);
-//    medias.addAll(temp);
     double singleImageWidth = (Application.screenWidth - 40 - 10 - 15) / medias.length;
     return Container(
         margin: const EdgeInsets.only(bottom: 5.0),
@@ -303,7 +402,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                 return _centerText('拉取评论失败');
               } else if (async.hasData) {
                 List<MainTopicReply> list = async.data;
-                if (list.length == 0) {
+                if (list == null || list.length == 0) {
                   return _centerText('暂无评论');
                 }
                 this.mainTopicReplies = list;
@@ -319,10 +418,18 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   }
 
   List<Widget> _buildReplyList() {
-    return mainTopicReplies.map((tr) => Column(crossAxisAlignment: CrossAxisAlignment.start,children: <Widget>[
-      TopicReplyCardItem(tr, isDark),
-      Gaps.line
-    ],)).toList();
+    return mainTopicReplies
+        .map((tr) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // 无论是回复直接回复还是子回复，参照id都是直接回复的id
+                TopicReplyCardItem(
+                    tr, isDark, false, (SimpleAccount acc, bool child) => _hitReply(acc, true, tr.id),
+                    extra: true),
+                Gaps.line
+              ],
+            ))
+        .toList();
   }
 
   Widget _buildCommentHeader() {
@@ -335,28 +442,19 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
             Container(
               child: Text('${_sortTypeList[_sortTypeIndex]}', style: TextStyles.textGray14),
             ),
-            Icon(Icons.keyboard_arrow_down,color: ThemeUtils.getIconColor(context))
+            Icon(Icons.keyboard_arrow_down, color: ThemeUtils.getIconColor(context))
           ],
         ));
-  }
-
-  Widget _buildTitle(String title, Color underlineColor) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.only(bottom: 5.0),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: underlineColor, width: 1.0))),
-      child: Text(title, style: MyDefaultTextStyle.getMainTextBodyStyle(isDark, fontSize: Dimens.font_sp15)),
-    );
   }
 
   Widget _buildCommentRow() {
     return Container(
         alignment: Alignment.centerRight,
         child: FlatButton(
-          child: Text('回复',
-              style: TextStyle(color: Colors.blueAccent, fontSize: SizeConstant.TWEET_TIME_SIZE + 1)),
-          onPressed: () {},
-        ));
+            color: ThemeUtils.getBackColor(context),
+            child: Text('评论',
+                style: TextStyle(color: Colors.blueAccent, fontSize: SizeConstant.TWEET_TIME_SIZE + 1)),
+            onPressed: () => _hitReply(topic.author, false, topic.id)));
   }
 
   void _showSortTypeSel() {
@@ -471,7 +569,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
     items.add(BottomSheetItem(
         Icon(
           Icons.warning,
-          color: Colors.yellow,
+          color: Colors.grey,
         ),
         '举报', () {
       ToastUtil.showToast(context, '举报成功');

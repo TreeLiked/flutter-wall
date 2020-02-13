@@ -104,51 +104,52 @@ class _TopicPageView extends State<TopicPageView>
     style = MyDefaultTextStyle.getTweetSigStyle(context, fontSize: Dimens.font_sp13);
 
     return Scaffold(
-        body: Scrollbar(
-      controller: _scrollController,
-      child: SmartRefresher(
-        enablePullDown: true,
-        enablePullUp: true,
-        controller: _refreshController,
+      body: Scrollbar(
+        controller: _scrollController,
+        child: SmartRefresher(
+          enablePullDown: true,
+          enablePullUp: true,
+          controller: _refreshController,
 //        scrollController: _scrollController,
-        header: WaterDropHeader(
-          waterDropColor: Colors.deepPurple,
-          complete: const Text('刷新完成'),
+          header: WaterDropHeader(
+            waterDropColor: Colors.deepPurple,
+            complete: const Text('刷新完成'),
+          ),
+          footer: ClassicFooter(
+            loadingText: '正在加载',
+            canLoadingText: '释放以加载更多',
+            noDataText: '到底了哦',
+          ),
+          child: CustomScrollView(slivers: <Widget>[
+            SliverToBoxAdapter(
+                child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              child: topics == null
+                  ? Gaps.empty
+                  : topics.length == 0
+                      ? Container(
+                          margin: const EdgeInsets.only(top: 20),
+                          alignment: Alignment.center,
+                          child: Text('暂无数据'),
+                        )
+                      : Column(
+                          children: this
+                              .topics
+                              .map((topic) => GestureDetector(
+                                    onTap: () => NavigatorUtils.push(
+                                      context,
+                                      SquareRouter.topicDetail + "?topicId=0123",
+                                    ),
+                                    child: _buildTopicCard(topic),
+                                  ))
+                              .toList()),
+            ))
+          ]),
+          onRefresh: () => _onRefresh(context),
+          onLoading: _onLoading,
         ),
-        footer: ClassicFooter(
-          loadingText: '正在加载',
-          canLoadingText: '释放以加载更多',
-          noDataText: '到底了哦',
-        ),
-        child: CustomScrollView(slivers: <Widget>[
-          SliverToBoxAdapter(
-              child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-            child: topics == null
-                ? Gaps.empty
-                : topics.length == 0
-                    ? Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        alignment: Alignment.center,
-                        child: Text('暂无数据'),
-                      )
-                    : Column(
-                        children: this
-                            .topics
-                            .map((topic) => GestureDetector(
-                                  onTap: () => NavigatorUtils.push(
-                                    context,
-                                    SquareRouter.topicDetail + "?topicId=0123",
-                                  ),
-                                  child: _buildTopicCard(topic),
-                                ))
-                            .toList()),
-          ))
-        ]),
-        onRefresh: () => _onRefresh(context),
-        onLoading: _onLoading,
       ),
-    ));
+    );
   }
 
   Widget _buildTitleWithExtra(String titleText, onPress,
@@ -304,7 +305,7 @@ class _TopicPageView extends State<TopicPageView>
         decoration: BoxDecoration(
             color: _colors[Random().nextInt(_colors.length - 1)].withAlpha(isDark ? 50 : 150),
             borderRadius: BorderRadius.circular(5.0)),
-        margin: const EdgeInsets.only(right: 10,bottom: 5),
+        margin: const EdgeInsets.only(right: 10, bottom: 5),
         padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
         child: Text("# $tag", style: TextStyles.textWhite14));
   }

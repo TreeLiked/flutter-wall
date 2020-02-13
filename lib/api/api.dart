@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class Api {
-  static const bool devInf = false;
+  static const bool devInf = true;
   static const bool devMem = false;
   static const String API_BASE_AL = "http://almond-donuts.iutr.tech:8088";
   static const String API_BASE_TR = "https://member.iutr.tech:9002";
@@ -24,6 +24,8 @@ class Api {
   static const String API_TOPIC_SINGLE_QUERY = "/topic/get.json";
 
   static const String API_TOPIC_REPLY_SINGLE_QUERY = "/topic/reply/list.json";
+  static const String API_TOPIC_ADD_REPLY = "/topic/reply/add.do";
+  static const String API_TOPIC_REPLY_SUB_QUERY = "/topic/reply/listSubs.json";
 
   // tweet
   static const String API_TWEET_CREATE = "/tweet/add.do";

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class ToastUtil {
@@ -12,11 +13,11 @@ class ToastUtil {
     }
     Fluttertoast.showToast(
       msg: '    $text    ',
-      fontSize: 13,
+      fontSize: Dimens.font_sp14,
       gravity: gravity,
       toastLength: length,
-      backgroundColor: dark ? Colors.black87 : Colors.white,
-      textColor: dark ? Colors.white : Colors.black,
+      backgroundColor: dark ? Colors.black87 : Colors.black54,
+      textColor: dark ? Colors.white : Colors.white,
     );
   }
 

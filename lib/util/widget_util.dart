@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/util/image_utils.dart';
@@ -57,7 +58,7 @@ class WidgetUtil {
       height: size,
       width: size,
       margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(30)),
-      child: SpinKitChasingDots(color: Colours.app_main,size: 25),
+      child: SpinKitChasingDots(color: Colours.app_main, size: 25),
     );
   }
 
@@ -111,6 +112,32 @@ class LoadAssetIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.asset(
       ImageUtils.getIconPath(image, format: format),
+      height: height,
+      width: width,
+      fit: fit,
+      color: color,
+    );
+  }
+}
+
+class LoadAssetSvg extends StatelessWidget {
+  const LoadAssetSvg(this.svgName,
+      {Key key, this.width, this.height, this.fit = BoxFit.cover, this.format: 'svg', this.color})
+      : super(key: key);
+
+  final String svgName;
+  final double width;
+  final double height;
+  final BoxFit fit;
+  final String format;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset("assets/svgs/$svgName.$format",
+        width: width, height: height, fit: fit, color: color);
+    return Image.asset(
+      ImageUtils.getIconPath(svgName, format: format),
       height: height,
       width: width,
       fit: fit,

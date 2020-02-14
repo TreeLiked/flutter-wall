@@ -1068,7 +1068,7 @@ class TweetDetailState extends State<TweetDetail> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return TweetDeleteBottomSheet(
+        return SimpleConfirmBottomSheet(
           onTapDelete: () async {
             Utils.showDefaultLoading(context);
             Result r = await TweetApi.deleteAccountTweets(Application.getAccountId, widget._tweet.id);

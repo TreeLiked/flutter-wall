@@ -10,6 +10,7 @@ import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/component/text_field.dart';
+import 'package:iap_app/component/tweet_delete_bottom_sheet.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account/simple_account.dart';
@@ -59,6 +60,8 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   int _sortTypeIndex = 0;
 
   Future _getReplyTask;
+  int _currentPage = 1;
+  int _fetchSize = 30;
   List<MainTopicReply> mainTopicReplies;
 
   TextEditingController _editController = TextEditingController();
@@ -66,13 +69,13 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   String _defaultHintText = "评论";
   String _hintText = "评论";
 
-  AddTopicReply myReply = new AddTopicReply();
+  AddTopicReply myReply = AddTopicReply();
 
   @override
   void initState() {
     super.initState();
     _fetchTopicIfNullAndExtra();
-    _fetchMainReplies();
+    _fetchMainReplies(1);
   }
 
   void _fetchTopicIfNullAndExtra() async {
@@ -80,17 +83,25 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
       Topic topic = await TopicApi.queryTopicById(widget.topicId);
       setState(() {
         this.topic = topic;
-        _getReplyTask = _fetchMainReplies();
+        _getReplyTask = _fetchMainReplies(1);
+        myReply.topicId = topic.id;
+        myReply.refId = topic.id;
+        myReply.child = false;
+        myReply.tarAccId = topic.author.id;
       });
     } else {
       setState(() {
-        _getReplyTask = _fetchMainReplies();
+        _getReplyTask = _fetchMainReplies(1);
+        myReply.topicId = topic.id;
+        myReply.refId = topic.id;
+        myReply.child = false;
+        myReply.tarAccId = topic.author.id;
       });
     }
   }
 
-  Future<List<MainTopicReply>> _fetchMainReplies() async {
-    List<MainTopicReply> temp = await TopicApi.queryTopicMainReplies(topic.id, 1, 20,
+  Future<List<MainTopicReply>> _fetchMainReplies(int currentPage) async {
+    List<MainTopicReply> temp = await TopicApi.queryTopicMainReplies(topic.id, currentPage, _fetchSize,
         order: _sortTypeIndex == 0 ? BaseTopicReply.QUERY_ORDER_HOT : BaseTopicReply.QUERY_ORDER_TIME);
     if (temp == null) {
       return [];
@@ -176,72 +187,72 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                         ),
                       )),
                     ]),
-                    Positioned(
-                        left: 0,
-                        bottom: 0,
-                        child: Container(
-                            padding: const EdgeInsets.only(left: 20, right: 10),
-                            width: Application.screenWidth,
-                            height: ScreenUtil().setHeight(100),
-                            decoration: BoxDecoration(
-                              color: isDark ? Color(0xff363636) : Color(0xfff2f3f4),
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(7),
-                                topRight: const Radius.circular(7),
-                              ),
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                AccountAvatar(
-                                  cache: true,
-                                  avatarUrl: Application.getAccount.avatarUrl,
-                                  size: 30,
+                    topic.status != Topic.STATUS_OPEN
+                        ? Gaps.empty
+                        : Positioned(
+                            left: 0,
+                            bottom: 0,
+                            child: Container(
+                                padding: EdgeInsets.only(
+                                    left: ScreenUtil().setHeight(10),
+                                    right: ScreenUtil().setHeight(10),
+                                    top:  ScreenUtil().setHeight(15),
+                                    bottom: ScreenUtil().setHeight(10)),
+                                width: Application.screenWidth,
+                                alignment: Alignment.topCenter,
+                                height: ScreenUtil().setHeight(120),
+                                decoration: BoxDecoration(
+                                  color: isDark ? Color(0xff363636) : Color(0xfff2f3f4),
                                 ),
-                                Gaps.hGap15,
-                                Expanded(
-                                  child: MyTextField(
-                                    controller: _editController,
-                                    hintText: _hintText,
-                                    focusNode: _focusNode,
-                                    maxLength: 256,
-                                    onSub: (String val) async {
-                                      if (val != null && val.trim().length > 0) {
-                                        Utils.showDefaultLoadingWithBounds(context);
-                                        Result r = await TopicApi.addReply(
-                                            topic.id, myReply.refId, myReply.child, myReply.tarAccId, val);
-                                        NavigatorUtils.goBack(context);
-                                        if (r == null) {
-                                          ToastUtil.showServiceExpToast(context);
-                                          return;
-                                        } else {
-                                          print("${r.isSuccess} --- ${r.message}");
-                                          if (r.isSuccess) {
-                                            _editController?.clear();
-                                            setState(() {
-                                              _hintText = _defaultHintText;
-                                              _getReplyTask = _fetchMainReplies();
-                                            });
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: MyTextField(
+                                        controller: _editController,
+                                        hintText: _hintText,
+                                        focusNode: _focusNode,
+                                        bgColor: !isDark ? Colors.white : Color(0xff454545),
+                                        maxLength: 256,
+                                        onSub: (String val) async {
+                                          if (val != null && val.trim().length > 0) {
+                                            Utils.showDefaultLoadingWithBounds(context);
+                                            Result r = await TopicApi.addReply(topic.id, myReply.refId,
+                                                myReply.child, myReply.tarAccId, val);
+                                            NavigatorUtils.goBack(context);
+                                            if (r == null) {
+                                              ToastUtil.showServiceExpToast(context);
+                                              return;
+                                            } else {
+                                              print("${r.isSuccess} --- ${r.message}");
+                                              if (r.isSuccess) {
+                                                _editController?.clear();
+                                                setState(() {
+                                                  _hintText = _defaultHintText;
+                                                  _getReplyTask = _fetchMainReplies(1);
+                                                });
+                                              } else {
+                                                ToastUtil.showToast(context, '回复失败');
+                                              }
+                                            }
                                           } else {
-                                            ToastUtil.showToast(context, '回复失败');
+                                            ToastUtil.showToast(context, '请输入内容');
                                           }
-                                        }
-                                      } else {
-                                        ToastUtil.showToast(context, '请输入内容');
-                                      }
-                                    },
-                                  ),
-                                  flex: 1,
-                                )
-                              ],
-                            )))
+                                        },
+                                      ),
+                                      flex: 1,
+                                    )
+                                  ],
+                                )))
                   ],
                 )));
   }
 
   void _hitReply(SimpleAccount targetAccount, bool child, int parentId) {
+    if (myReply == null) {
+      myReply = AddTopicReply();
+    }
     setState(() {
       _hintText = "回复 ${targetAccount.nick}";
-
       myReply.topicId = topic.id;
       myReply.tarAccId = targetAccount.id;
       myReply.child = child;
@@ -297,22 +308,25 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
     // TODO 暂不展示图片以外的媒体类型
     medias.removeWhere((media) => media.mediaType != "IMAGE");
     double singleImageWidth = (Application.screenWidth - 40 - 10 - 15) / medias.length;
-    return Container(
-        margin: const EdgeInsets.only(bottom: 5.0),
-        child: Wrap(
-          children: medias
-              .map((media) => Container(
-                    margin: const EdgeInsets.only(right: 5),
-                    child: ImageContainer(
-                      url: media.url,
-//                      width: singleImageWidth,
-                      maxWidth: singleImageWidth,
-                      maxHeight: Application.screenHeight * 0.25,
-                      height: singleImageWidth,
-                    ),
-                  ))
-              .toList(),
-        ));
+
+    List<Widget> items = List();
+    for (int i = 0; i < medias.length; i++) {
+      items.add(Container(
+        margin: const EdgeInsets.only(right: 5),
+        child: ImageContainer(
+          url: medias[i].url,
+          maxWidth: singleImageWidth,
+          maxHeight: Application.screenHeight * 0.25,
+          height: singleImageWidth,
+          callback: () => open(context, i),
+        ),
+      ));
+    }
+    return Container(margin: const EdgeInsets.only(bottom: 5.0), child: Wrap(children: items));
+  }
+
+  void open(BuildContext context, final int index) {
+    Utils.openPhotoView(context, topic.medias.map((m) => m.url).toList(), index);
   }
 
   Widget _buildAuthInfo() {
@@ -407,7 +421,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                 }
                 this.mainTopicReplies = list;
                 return Column(
-                  children: _buildReplyList(),
+                  children: _buildReplyList(list.length == _fetchSize),
                 );
               }
             }
@@ -417,19 +431,42 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
     );
   }
 
-  List<Widget> _buildReplyList() {
-    return mainTopicReplies
+  List<Widget> _buildReplyList(bool hasMore) {
+    List<Widget> widgets = List();
+    widgets.addAll(mainTopicReplies
         .map((tr) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 // 无论是回复直接回复还是子回复，参照id都是直接回复的id
-                TopicReplyCardItem(
-                    tr, isDark, false, (SimpleAccount acc, bool child) => _hitReply(acc, true, tr.id),
+                TopicReplyCardItem(tr, isDark, false, topic.status != Topic.STATUS_OPEN,
+                    (SimpleAccount acc, bool child) => _hitReply(acc, true, tr.id),
                     extra: true),
                 Gaps.line
               ],
             ))
-        .toList();
+        .toList());
+    print(topic.toJson());
+//    if (mainTopicReplies!= null && topic!= null && mainTopicReplies.length < topic.replyCount) {
+    if (hasMore) {
+      widgets.add(Container(
+          alignment: Alignment.center,
+          margin: const EdgeInsets.only(top: 20),
+          child: FlatButton(
+            child: Text('加载更多', style: TextStyles.textClickable),
+            onPressed: () async {
+              Utils.showDefaultLoadingWithBounds(context, text: '正在加载更多');
+              List<MainTopicReply> replies = await _fetchMainReplies(++_currentPage);
+              NavigatorUtils.goBack(context);
+              if (replies != null && replies.length > 0) {
+                setState(() {
+                  this.mainTopicReplies.addAll(replies);
+                });
+              } else {
+                ToastUtil.showToast(context, '没有更多回复了');
+              }
+            },
+          )));
+    }
+    return widgets;
   }
 
   Widget _buildCommentHeader() {
@@ -448,13 +485,16 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   }
 
   Widget _buildCommentRow() {
+    bool closed = topic.status != Topic.STATUS_OPEN;
     return Container(
         alignment: Alignment.centerRight,
         child: FlatButton(
             color: ThemeUtils.getBackColor(context),
-            child: Text('评论',
-                style: TextStyle(color: Colors.blueAccent, fontSize: SizeConstant.TWEET_TIME_SIZE + 1)),
-            onPressed: () => _hitReply(topic.author, false, topic.id)));
+            child: Text(closed ? '话题已关闭' : '评论',
+                style: TextStyle(
+                    color: closed ? Colors.amber : Colors.blueAccent,
+                    fontSize: SizeConstant.TWEET_TIME_SIZE + 1)),
+            onPressed: !closed ? () => _hitReply(topic.author, false, topic.id) : null));
   }
 
   void _showSortTypeSel() {
@@ -507,7 +547,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                     NavigatorUtils.goBack(context);
                     setState(() {
                       _sortTypeIndex = index;
-                      _getReplyTask = _fetchMainReplies();
+                      _getReplyTask = _fetchMainReplies(1);
                     });
                   },
                 ),
@@ -543,22 +583,12 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
         items.add(BottomSheetItem(
             Icon(
               Icons.lock_open,
-              color: Colors.teal,
+              color: Colors.amber,
             ),
-            "关闭话题评论",
-            () => {
-                  // TODO 关闭话题
-                }));
-      } else if (topic.status == Topic.STATUS_CLOSE) {
-        items.add(BottomSheetItem(
-            Icon(
-              Icons.lock,
-              color: Colors.lightBlueAccent,
-            ),
-            "打开话题评论",
-            () => {
-                  // TODO 打开话题
-                }));
+            "关闭当前话题", () {
+          NavigatorUtils.goBack(context);
+          _showDeleteBottomSheet();
+        }));
       }
       // 作者自己的内容
 //      items.add(BottomSheetItem(Icon(Icons.delete, color: Colors.redAccent), '删除', () {
@@ -576,5 +606,34 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
       Navigator.pop(context);
     }));
     return items;
+  }
+
+  _showDeleteBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleConfirmBottomSheet(
+          tip: '这将关闭话题[话题可见，评论功能关闭]，此操作不可撤销',
+          confirmText: '确认关闭',
+          onTapDelete: () async {
+            Utils.showDefaultLoading(context);
+            Result r = await TopicApi.modTopicStatus(topic.id, true);
+            NavigatorUtils.goBack(context);
+            if (r == null) {
+              ToastUtil.showToast(context, '服务错误');
+            } else {
+              if (r.isSuccess) {
+                ToastUtil.showToast(context, '关闭成功');
+                setState(() {
+                  topic.status = Topic.STATUS_CLOSE;
+                });
+              } else {
+                ToastUtil.showToast(context, '用户身份验证失败');
+              }
+            }
+          },
+        );
+      },
+    );
   }
 }

@@ -149,7 +149,7 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
           print(exp);
           return;
         } finally {
-           print('第$i张图片上传完成');
+          print('第$i张图片上传完成');
         }
       }
       _addParam.medias = pics;
@@ -532,6 +532,9 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
       if (text.length > 0) {
 //        List<String> temp = _exp.allMatches(text).map((f) => print(f.input)).toList();
         List<String> temp = text.split(" ").map((f) => f.trim()).toList()..retainWhere((f) => f.trim() != "");
+        if (temp != null && temp.length > 5) {
+          temp = temp.sublist(0,5);
+        }
         setState(() {
           if (this.tags == null) {
             this.tags = List();

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
@@ -27,6 +28,7 @@ class MyTextField extends StatefulWidget {
       this.onChange,
       this.onSub,
       this.isShowDelete = true,
+      this.bgColor,
       this.keyName})
       : super(key: key);
 
@@ -42,6 +44,7 @@ class MyTextField extends StatefulWidget {
   final onChange;
   final onSub;
   final bool isShowDelete;
+  final Color bgColor;
 
   /// 用于集成测试寻找widget
   final String keyName;
@@ -126,8 +129,11 @@ class _MyTextFieldState extends State<MyTextField> {
             onChanged: (val) => widget.onChange(val),
             onSubmitted: (val) => widget.onSub != null ? widget.onSub(val) : null,
             decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
+                fillColor: widget.bgColor,
+                filled: widget.bgColor != null,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8),
                 hintText: widget.hintText,
+                hintStyle: TextStyles.textGray14,
                 counterText: "",
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none)),

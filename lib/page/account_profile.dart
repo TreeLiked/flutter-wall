@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
@@ -206,7 +207,7 @@ class AccountProfileInfoPageView extends StatefulWidget {
 class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<AccountProfileInfoPageView> {
   String _nullText = "未知";
-  double _iconSize = 17;
+  double _iconSize = 25;
   Function _getProfileTask;
 
   Future<Account> getProfileInfo(BuildContext context) async {
@@ -222,6 +223,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CustomSliverFutureBuilder(
       futureFunc: (context) => _getProfileTask(context),
       builder: (context, data) => _buildBody(data),
@@ -246,19 +248,20 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
 
             Gaps.vGap30,
             _titleItem('个人档案'),
-            _buildPersonInfo('name', account.profile.name, '姓名不可见'),
+            _buildPersonInfo('author', Colors.blue, account.profile.name, '姓名不可见'),
             Gaps.line,
-            _buildPersonInfo('age', account.profile.age > 0 ? account.profile.age.toString() : null, '年龄不可见'),
+            _buildPersonInfo('age', Colors.amber,
+                account.profile.age > 0 ? account.profile.age.toString() : null, '年龄不可见'),
             Gaps.line,
-            _buildPersonInfo('region', _getRegionText(account.profile), '地区不可见'),
+            _buildPersonInfo('location', Colors.blueGrey, _getRegionText(account.profile), '地区不可见'),
 
             Gaps.vGap30,
             _titleItem('社交信息'),
-            _buildContactItem('phone', account.profile.mobile),
+            _buildContactItem('phone', Colors.blue, account.profile.mobile),
             Gaps.line,
-            _buildContactItem('qq', account.profile.qq),
+            _buildContactItem('qq25', Colors.red, account.profile.qq),
             Gaps.line,
-            _buildContactItem('wechat', account.profile.wechat),
+            _buildContactItem('wechat', Colors.green, account.profile.wechat),
 
             // _buildItem('姓名', account.profile.name),
           ],
@@ -280,7 +283,12 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
       child: Flex(
         direction: Axis.horizontal,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/nick', width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetSvg(
+            'people_nick',
+            width: _iconSize - 5,
+            height: _iconSize - 5,
+            color: Colors.lightBlue,
+          )),
           Gaps.hGap10,
           Flexible(
             flex: 8,
@@ -291,14 +299,14 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           ),
           Gaps.hGap10,
           (male == null || male == "UNKNOWN")
-              ? Container(
-                  height: 0,
-                )
+              ? Gaps.empty
               : (male == "MALE"
                   ? Flexible(
-                      flex: 1, child: LoadAssetIcon('profile/male', width: _iconSize, height: _iconSize))
+                      flex: 1,
+                      child: LoadAssetSvg('male', width: _iconSize, height: _iconSize, color: Colors.blue))
                   : Flexible(
-                      flex: 1, child: LoadAssetIcon('profile/female', width: _iconSize, height: _iconSize)))
+                      flex: 1,
+                      child: LoadAssetSvg('female', width: _iconSize, height: _iconSize, color: Colors.pinkAccent)))
         ],
       ),
     );
@@ -310,7 +318,8 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/sig', width: _iconSize, height: _iconSize)),
+          _wrapIcon(
+              LoadAssetSvg('vote', width: _iconSize - 4, height: _iconSize - 4, color: Colors.deepPurple)),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -330,14 +339,13 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     return Container(child: Text(title, style: TextStyle(color: Colors.grey)));
   }
 
-  _buildPersonInfo(String iconName, String value, String nullText) {
+  _buildPersonInfo(String svgName, Color color, String value, String nullText) {
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        // direction: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/$iconName', width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetSvg(svgName, width: _iconSize, height: _iconSize, color: color)),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -347,7 +355,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     color: value == null ? Colors.grey : null,
-                    fontSize: value != null ? Dimens.font_sp14 : Dimens.font_sp13p5,
+                    fontSize: value != null ? Dimens.font_sp15 : Dimens.font_sp14,
                     fontWeight: FontWeight.w400)),
           ),
         ],
@@ -371,15 +379,20 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     }
   }
 
-  _buildContactItem(String iconName, String value) {
+  _buildContactItem(String svgName, Color color, String value) {
     bool isNull = StringUtil.isEmpty(value);
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         // direction: Axis.horizontal,
         children: <Widget>[
-          _wrapIcon(LoadAssetIcon('profile/$iconName', width: _iconSize, height: _iconSize)),
+          _wrapIcon(LoadAssetSvg(
+            '$svgName',
+            width: _iconSize,
+            height: _iconSize,
+            color: color,
+          )),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -389,7 +402,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     color: isNull ? Colors.grey : null,
-                    fontSize: isNull ? Dimens.font_sp13p5 : Dimens.font_sp14,
+                    fontSize: isNull ? Dimens.font_sp14 : Dimens.font_sp15,
                     fontWeight: FontWeight.w400)),
           ),
           _getCopyWidget(value)

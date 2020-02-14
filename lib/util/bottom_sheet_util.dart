@@ -240,15 +240,19 @@ class BottomSheetUtil {
   }
 
   static void showBottomSheetSubTopicReplies(
-      BuildContext context, MainTopicReply reply, List<SubTopicReply> subReplies) {
+      BuildContext context, MainTopicReply reply, bool closed, List<SubTopicReply> subReplies) {
     bool isDark = ThemeUtils.isDark(context);
+
     TextEditingController _controller = TextEditingController();
     FocusNode _focusNode = FocusNode();
     String _hintText = "回复 ${reply.author.nick}";
-
     List<SubTopicReply> storage = List.from(subReplies);
     int nextPage = 2;
     AddTopicReply myReply = AddTopicReply();
+    myReply.refId = reply.id;
+    myReply.topicId = reply.topicId;
+    myReply.child = true;
+    myReply.tarAccId = reply.author.id;
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
@@ -261,128 +265,138 @@ class BottomSheetUtil {
                     height: Application.screenHeight / 1.3,
                     // constraints: BoxConstraints(maxHeight: 500),
                     decoration: BoxDecoration(
-                        color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color_darker,
+                        color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color,
                         borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
                     child: Scrollbar(
+                        child: Listener(
+                      onPointerDown: (_) => _focusNode?.unfocus(),
                       child: SingleChildScrollView(
                         child: Container(
-                            padding: const EdgeInsets.fromLTRB(10, 15, 15, 50),
+                            padding:
+                                EdgeInsets.fromLTRB(10, !closed ? ScreenUtil().setHeight(110) : 10, 15, 50),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: _buildTopicReplyColumn(
-                                  context, isDark, reply, storage, reply.replyCount > storage.length,
-                                  () async {
-                                Utils.showDefaultLoadingWithBounds(context, text: "正在加载");
-                                List<SubTopicReply> temp =
-                                    await TopicApi.queryTopicSubReplies(reply.topicId, reply.id, nextPage, 2);
-                                NavigatorUtils.goBack(context);
-                                if (temp == null || temp.length == 0) {
-                                  ToastUtil.showToast(context, '没有更多回复');
-                                  return;
-                                } else {
-                                  setBottomSheetState(() {
-                                    {
-                                      storage.addAll(temp);
-                                      nextPage++;
-                                    }
-                                  });
-                                }
-                              }, (SimpleAccount tarAccount, bool child) {
-                                setBottomSheetState(() {
-                                  {
-                                    _focusNode.requestFocus();
-
-                                    myReply.tarAccId = tarAccount.id;
-                                    myReply.topicId = reply.topicId;
-                                    myReply.child = child;
-                                    myReply.refId = reply.id;
-                                    _hintText = "回复 " + tarAccount.nick;
-                                  }
-                                });
-                              }),
-                            )),
-                      ),
-                    )),
-                Positioned(
-                    left: 0,
-                    bottom: 0,
-                    child: Container(
-                        padding: const EdgeInsets.only(left: 20, right: 10),
-                        width: Application.screenWidth,
-                        height: ScreenUtil().setHeight(100),
-                        decoration: BoxDecoration(
-                          color: isDark ? Color(0xff363636) : Color(0xffe1e2e3),
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(7),
-                            topRight: const Radius.circular(7),
-                          ),
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            AccountAvatar(
-                              cache: true,
-                              avatarUrl: Application.getAccount.avatarUrl,
-                              size: 30,
-                            ),
-                            Gaps.hGap15,
-                            Expanded(
-                              child: MyTextField(
-                                controller: _controller,
-                                hintText: _hintText,
-                                focusNode: _focusNode,
-                                maxLength: 256,
-                                onSub: (String val) async {
-                                  if (val != null && val.trim().length > 0) {
-                                    Utils.showDefaultLoadingWithBounds(context);
-                                    Result r = await TopicApi.addReply(
-                                        reply.topicId, myReply.refId, myReply.child, myReply.tarAccId, val);
-                                    if (r == null) {
-                                      NavigatorUtils.goBack(context);
-                                      ToastUtil.showServiceExpToast(context);
+                              children: <Widget>[
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: _buildTopicReplyColumn(context, isDark, closed, reply, storage,
+                                      reply.replyCount > storage.length, () async {
+                                    Utils.showDefaultLoadingWithBounds(context, text: "正在加载");
+                                    List<SubTopicReply> temp = await TopicApi.queryTopicSubReplies(
+                                        reply.topicId, reply.id, nextPage, 20);
+                                    NavigatorUtils.goBack(context);
+                                    if (temp == null || temp.length == 0) {
+                                      ToastUtil.showToast(context, '没有更多回复');
                                       return;
                                     } else {
-                                      print("${r.isSuccess} --- ${r.message}");
-                                      if (r.isSuccess) {
-                                        _controller?.clear();
-                                        List<SubTopicReply> temp = await TopicApi.queryTopicSubReplies(
-                                            reply.topicId, reply.id, 1, 2);
-                                        NavigatorUtils.goBack(context);
-                                        if (temp == null || temp.length == 0) {
-                                          ToastUtil.showToast(context, '查询失败');
+                                      setBottomSheetState(() {
+                                        {
+                                          storage.addAll(temp);
+                                          nextPage++;
+                                        }
+                                      });
+                                    }
+                                  }, (SimpleAccount tarAccount, bool child) {
+                                    if (myReply == null) {
+                                      myReply = AddTopicReply();
+                                    }
+                                    setBottomSheetState(() {
+                                      {
+                                        _controller.clear();
+                                        myReply.tarAccId = tarAccount.id;
+                                        myReply.topicId = reply.topicId;
+                                        myReply.child = child;
+                                        myReply.refId = reply.id;
+                                        _hintText = "回复 " + tarAccount.nick;
+                                        print(
+                                            "${myReply.topicId}--${myReply.tarAccId}--${myReply.child}--${myReply.refId}--");
+                                        _focusNode.requestFocus();
+                                      }
+                                    });
+                                  }),
+                                )
+                              ],
+                            )),
+                      ),
+                    ))),
+                closed
+                    ? Gaps.empty
+                    : Positioned(
+                        left: 0,
+                        top: 0,
+                        child: Container(
+                            padding: const EdgeInsets.only(left: 10, right: 10,top: 5),
+                            width: Application.screenWidth,
+                            height: ScreenUtil().setHeight(105),
+                            decoration: BoxDecoration(
+                              color: isDark ? Colours.dark_bg_color : Color(0xffe1e2e3),
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(12),
+                                topRight: const Radius.circular(12),
+                              ),
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: MyTextField(
+                                    controller: _controller,
+                                    hintText: _hintText,
+                                    focusNode: _focusNode,
+                                    maxLength: 256,
+                                    bgColor: !isDark ? Colors.white : Color(0xff454545),
+                                    onSub: (String val) async {
+                                      if (val != null && val.trim().length > 0) {
+                                        Utils.showDefaultLoadingWithBounds(context);
+                                        Result r = await TopicApi.addReply(reply.topicId, myReply.refId,
+                                            myReply.child, myReply.tarAccId, val);
+                                        if (r == null) {
+                                          NavigatorUtils.goBack(context);
+                                          ToastUtil.showServiceExpToast(context);
                                           return;
                                         } else {
-                                          setBottomSheetState(() {
-                                            {
-                                              storage
-                                                ..clear()
-                                                ..addAll(temp);
-                                              nextPage = 2;
-                                              _hintText = "回复 ${reply.author.nick}";
+                                          print("${r.isSuccess} --- ${r.message}");
+                                          if (r.isSuccess) {
+                                            _controller?.clear();
+                                            List<SubTopicReply> temp = await TopicApi.queryTopicSubReplies(
+                                                reply.topicId, reply.id, 1, 20);
+                                            NavigatorUtils.goBack(context);
+                                            if (temp == null || temp.length == 0) {
+                                              ToastUtil.showToast(context, '查询失败');
+                                              return;
+                                            } else {
+                                              setBottomSheetState(() {
+                                                {
+                                                  storage
+                                                    ..clear()
+                                                    ..addAll(temp);
+                                                  nextPage = 2;
+                                                  _hintText = "回复 ${reply.author.nick}";
+                                                  myReply.refId = reply.id;
+                                                  myReply.topicId = reply.topicId;
+                                                  myReply.child = true;
+                                                  myReply.tarAccId = reply.author.id;
+                                                }
+                                              });
                                             }
-                                          });
+                                          } else {
+                                            NavigatorUtils.goBack(context);
+                                            ToastUtil.showToast(context, '回复失败');
+                                          }
                                         }
-                                      } else {
-                                        NavigatorUtils.goBack(context);
-                                        ToastUtil.showToast(context, '回复失败');
                                       }
-                                    }
-                                  } else {
-                                    ToastUtil.showToast(context, '请输入内容');
-                                  }
-                                },
-                              ),
-                              flex: 1,
-                            )
-                          ],
-                        )))
+                                    },
+                                  ),
+                                  flex: 1,
+                                )
+                              ],
+                            )))
               ],
             );
           });
         });
   }
 
-  static List<Widget> _buildTopicReplyColumn(BuildContext context, bool isDark, MainTopicReply reply,
-      List<SubTopicReply> subReplies, bool hasMore, onClickMore, onClickReply) {
+  static List<Widget> _buildTopicReplyColumn(BuildContext context, bool isDark, bool closed,
+      MainTopicReply reply, List<SubTopicReply> subReplies, bool hasMore, onClickMore, onClickReply) {
     List<Widget> items = List();
     items.add(Row(
       children: <Widget>[
@@ -404,29 +418,30 @@ class BottomSheetUtil {
             )),
       ],
     ));
-    items.add(TopicReplyCardItem(reply, isDark, false, (SimpleAccount account, bool child) => onClickReply(account, true),
+    items.add(TopicReplyCardItem(
+        reply, isDark, false, closed, (SimpleAccount account, bool child) => onClickReply(account, true),
         extra: false));
 
     if (subReplies != null && subReplies.length > 0) {
       items.add(const Divider(color: Color(0x649E9E9E)));
       items.add(Container(
         margin: const EdgeInsets.only(top: 10),
-        child: Text('全部回复 ${subReplies.length}'),
+        child: Text('全部回复 ${reply.replyCount ?? ''}'),
       ));
       items.addAll(subReplies.map((str) => TopicReplyCardItem(
-          null, isDark, true, (SimpleAccount account, bool child) => onClickReply(account, child),
+          null, isDark, true, closed, (SimpleAccount account, bool child) => onClickReply(account, true),
           extra: false, subTopicReply: str)));
     }
-    items.add(GestureDetector(
-        child: Container(
-            alignment: Alignment.center,
-            child: Text(
-              '加载更多',
-              style: TextStyles.textClickable,
-            )),
-        onTap: () {
-          onClickMore();
-        }));
+    items.add(Container(
+      alignment: Alignment.center,
+      child: FlatButton(
+        child: Text(
+          '加载更多',
+          style: TextStyles.textClickable,
+        ),
+        onPressed: () => onClickMore(),
+      ),
+    ));
 
     items.add(Gaps.vGap30);
 

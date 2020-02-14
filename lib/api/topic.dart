@@ -81,7 +81,7 @@ class TopicApi {
   }
 
   static Future<Result> modTopicStatus(int topicId, bool close) async {
-    String url = Api.API_BASE_INF_URL + Api.API_TOPIC_STATUS_MOD;
+    String url = Api.API_BASE_INF_URL + Api.API_TOPIC_STATUS_MOD + "?tId=$topicId" ;
     print("mod topic  status-> $url");
     try {
       Response response =
@@ -168,8 +168,7 @@ class TopicApi {
     return null;
   }
 
-  static Future<Result> addReply(
-      int topicId, int refId, bool child, String tarAccountId, String body) async {
+  static Future<Result> addReply(int topicId, int refId, bool child, String tarAccountId, String body) async {
     if (topicId == null ||
         refId == null ||
         child == null ||
@@ -195,6 +194,22 @@ class TopicApi {
     Response response;
     try {
       response = await httpUtil.dio.post(url, data: data);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<Result> modTopicPraiseStatus(int replyId, bool praise) async {
+    String url = Api.API_BASE_INF_URL +
+        (praise ? Api.API_TOPIC_REPLY_PRAISE : Api.API_TOPIC_REPLY_CANCEL_PRAISE) +
+        "?replyId=$replyId";
+    print(url);
+    Response response;
+    try {
+      response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       return Result.fromJson(json);
     } on DioError catch (e) {

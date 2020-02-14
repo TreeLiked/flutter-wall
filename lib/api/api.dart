@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class Api {
-  static const bool devInf = true;
+  static const bool devInf = false;
   static const bool devMem = false;
   static const String API_BASE_AL = "http://almond-donuts.iutr.tech:8088";
   static const String API_BASE_TR = "https://member.iutr.tech:9002";
@@ -11,8 +11,6 @@ class Api {
   static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
   static const String API_BASE_MEM_DEV = "http://127.0.0.1:9001";
 
-  //  static const String API_BASE =
-  // GlobalConfig.inProduction ? "http://treeliked.com" : "http://127.0.0.1";
 
   static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
   static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";
@@ -26,6 +24,10 @@ class Api {
   static const String API_TOPIC_REPLY_SINGLE_QUERY = "/topic/reply/list.json";
   static const String API_TOPIC_ADD_REPLY = "/topic/reply/add.do";
   static const String API_TOPIC_REPLY_SUB_QUERY = "/topic/reply/listSubs.json";
+
+
+  static const String API_TOPIC_REPLY_PRAISE = "/topic/reply/praise.do";
+  static const String API_TOPIC_REPLY_CANCEL_PRAISE = "/topic/reply/cancelPraise.do";
 
   // tweet
   static const String API_TWEET_CREATE = "/tweet/add.do";

@@ -58,8 +58,6 @@ class _TopicPageView extends State<TopicPageView>
   }
 
   Future<void> _onRefresh(BuildContext context) async {
-//    print('On refresh');
-//    _esRefreshController.resetLoadState();
     _currentPage = 1;
     List<Topic> topics = await getData(_currentPage);
     if (topics != null && topics.length > 0) {
@@ -82,10 +80,19 @@ class _TopicPageView extends State<TopicPageView>
   Future<void> _onLoading() async {
     print('loading more data');
 
-    await Future.delayed(Duration(seconds: 1));
-
-    setState(() {});
-    _refreshController.loadComplete();
+    List<Topic> topics = await getData(++_currentPage);
+    if (topics != null && topics.length > 0) {
+      setState(() {
+        if (this.topics == null) {
+          this.topics = List();
+        }
+        this.topics.addAll(topics);
+      });
+      _refreshController.loadComplete();
+    } else {
+      --_currentPage;
+      _refreshController.loadNoData();
+    }
 //    List<BaseTweet> temp = await getData(++_currentPage);
 //    tweetProvider.update(temp, append: true, clear: false);
 //    if (CollectionUtil.isListEmpty(temp)) {
@@ -118,6 +125,7 @@ class _TopicPageView extends State<TopicPageView>
           footer: ClassicFooter(
             loadingText: '正在加载',
             canLoadingText: '释放以加载更多',
+            idleText: '上滑加载更多',
             noDataText: '到底了哦',
           ),
           child: CustomScrollView(slivers: <Widget>[

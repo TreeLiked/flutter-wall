@@ -1,28 +1,12 @@
-import 'dart:math';
-
-import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/common-widget/v_empty_view.dart';
-import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/page/notification/pm_page.dart';
-import 'package:iap_app/page/notification/sn.page.dart';
 import 'package:iap_app/page/square/activity_page_view.dart';
 import 'package:iap_app/page/square/topic/topic_page_view.dart';
-import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/square_router.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:unicorndial/unicorndial.dart';
 
 class SquareIndexPage extends StatefulWidget {

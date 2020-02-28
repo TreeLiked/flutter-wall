@@ -27,6 +27,7 @@ import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
@@ -265,7 +266,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     complete: const Text('刷新完成'),
                   ),
                   footer: ClassicFooter(
-                    loadingText: '正在加载',
+                    loadingText: '正在加载...',
                     canLoadingText: '释放以加载更多',
                     noDataText: '到底了哦',
                   ),
@@ -306,7 +307,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     return <Widget>[
       SliverAppBar(
         centerTitle: true,
-        backgroundColor: isDark ? Color(0xff303233) : Color(0xfff7f8f9),
+        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
         //标题居中
 
         title: GestureDetector(

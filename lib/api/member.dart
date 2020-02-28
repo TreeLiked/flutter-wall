@@ -38,7 +38,6 @@ class MemberApi {
 
   static Future<Account> getAccountProfile(String accountId) async {
     print(Api.API_QUERY_ACCOUNT_PROFILE + '-------------------');
-    checkAuthorizationHeaders();
     Response response;
     try {
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_PROFILE);

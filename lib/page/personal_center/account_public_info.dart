@@ -80,8 +80,8 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
             if (async.connectionState == ConnectionState.active ||
                 async.connectionState == ConnectionState.waiting) {
               return new Center(
-                child: new SpinKitThreeBounce(
-                  color: Colors.lightGreen,
+                child: const SpinKitThreeBounce(
+                  color: Colors.lightBlue,
                   size: 18,
                 ),
               );

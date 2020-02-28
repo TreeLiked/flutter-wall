@@ -12,11 +12,11 @@ class DeviceApi {
     String url = Api.API_UPDATE_DEVICE_INFO + "?name=$name&devicePlf=$platform&model=$model&deviceId=$regId";
     print(url);
     try {
-      TweetApi.checkAuthorizationHeaders();
       httpUtil.dio.get(url).then((res) {
         print('update device info finished');
       });
     } on DioError catch (e) {
+      print('failed-------------------------------------update device info finished');
       Api.formatError(e);
     }
   }

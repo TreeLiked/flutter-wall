@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/api/message.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -55,6 +56,8 @@ class RecommendationState extends State<Recommendation> with AutomaticKeepAliveC
   Widget build(BuildContext context) {
     super.build(context);
     print('recom build');
+
+
 
     return Consumer<TweetProvider>(builder: (context, provider, _) {
       return Stack(

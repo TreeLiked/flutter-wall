@@ -224,7 +224,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           Gaps.vGap8,
           _renderGetCodeLine(),
           Gaps.vGap16,
-          _renderOtherLine(),
+//          _renderOtherLine(),
         ],
       ),
     );

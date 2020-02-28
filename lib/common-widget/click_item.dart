@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
+import 'package:iap_app/util/widget_util.dart';
 
 class ClickItem extends StatelessWidget {
   const ClickItem(
@@ -8,6 +10,7 @@ class ClickItem extends StatelessWidget {
       this.onTap,
       @required this.title,
       this.content: "",
+      this.prefixWidget,
       this.textAlign: TextAlign.start,
       this.maxLines: 1})
       : super(key: key);
@@ -17,6 +20,7 @@ class ClickItem extends StatelessWidget {
   final String content;
   final TextAlign textAlign;
   final int maxLines;
+  final Widget prefixWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +29,10 @@ class ClickItem extends StatelessWidget {
       title: title,
       textAlign: TextAlign.start,
       maxLines: maxLines,
+      prefixWidget: prefixWidget == null? null:Padding(
+        child: prefixWidget,
+        padding: const EdgeInsets.only(right: 4),
+      ),
       widget: Text(content,
           maxLines: maxLines,
           textAlign: TextAlign.right,
@@ -89,6 +97,7 @@ class ClickItemCommon extends StatelessWidget {
       this.onTap,
       @required this.title,
       this.widget,
+      this.prefixWidget,
       this.textAlign: TextAlign.start,
       this.maxLines: 1})
       : super(key: key);
@@ -96,6 +105,7 @@ class ClickItemCommon extends StatelessWidget {
   final GestureTapCallback onTap;
   final String title;
   final Widget widget;
+  final Widget prefixWidget;
   final TextAlign textAlign;
   final int maxLines;
 
@@ -106,8 +116,7 @@ class ClickItemCommon extends StatelessWidget {
       child: Container(
         // margin: const EdgeInsets.only(left: 15.0),
         padding: const EdgeInsets.fromLTRB(15, 15.0, 15.0, 15.0),
-        constraints:
-            BoxConstraints(maxHeight: double.infinity, minHeight: 50.0),
+        constraints: BoxConstraints(maxHeight: double.infinity, minHeight: 50.0),
         width: double.infinity,
         decoration: BoxDecoration(
           // color: Colors.white,
@@ -118,10 +127,10 @@ class ClickItemCommon extends StatelessWidget {
         ),
         child: Row(
           //为了数字类文字居中
-          crossAxisAlignment: maxLines == 1
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end ,
+//          crossAxisAlignment: maxLines == 1 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
           children: <Widget>[
+            prefixWidget ?? Gaps.empty,
             Text(
               title,
             ),

@@ -128,7 +128,7 @@ class _SplashPageState extends State<SplashPage> {
     return Material(
         child: _status == 0
             ? CachedNetworkImage(
-                imageUrl: 'https://tva1.sinaimg.cn/large/006tNbRwgy1gblmrbr7doj30g00lpqn9.jpg',
+                imageUrl: 'https://tva1.sinaimg.cn/large/0082zybpgy1gc5hcdn0jbj318y0u0no2.jpg',
                 width: double.infinity,
                 fit: BoxFit.cover,
                 height: double.infinity,

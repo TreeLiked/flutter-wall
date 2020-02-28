@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flustars/flustars.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
@@ -40,7 +42,13 @@ class HttpUtil {
     );
 
     dio = new Dio(options);
-    header.putIfAbsent("Authorization", () => Application.getLocalAccountToken);
+
+    String myToken = Application.getLocalAccountToken;
+    if (myToken == null) {
+      myToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+      Application.setLocalAccountToken(myToken);
+    }
+    header.putIfAbsent("Authorization", () => myToken);
 
     // dio.interceptors.add(CookieManager(CookieJar()));
   }

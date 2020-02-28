@@ -42,8 +42,9 @@ dependencies:
   
   # 全局数据存储，类vuex
   provider: ^3.1.0
+
   # 本地存储
-  shared_preferences: ^0.5.3+4
+  shared_preferences: ^0.5.6+2
 
   # 微信登录
   # fluwx: ^1.1.1
@@ -57,7 +58,7 @@ dependencies:
   flutter_screenutil: ^0.6.0
 
   # 权限管理
-  permission_handler: ^4.0.0
+  permission_handler: ^4.2.0+hotfix.3
 
   # 图片选择与下载
   image_picker_saver: ^0.3.0
@@ -112,7 +113,7 @@ dependencies:
   jpush_flutter: 0.1.0
 
   # 设备信息
-  device_info: ^0.4.1+4
+  device_info: ^0.4.1+5
 
   # 震动反馈
   vibrate: ^0.0.4

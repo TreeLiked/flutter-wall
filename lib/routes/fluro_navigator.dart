@@ -69,4 +69,11 @@ class NavigatorUtils {
             Utils.packConvertArgs(
                 {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
   }
+
+  static void goReportPage(BuildContext context, String type, String refId) {
+    if (type == null || refId == null) {
+      return;
+    }
+    push(context, Routes.reportPage + "?refId=" + refId + "&type=" + type);
+  }
 }

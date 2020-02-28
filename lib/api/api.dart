@@ -11,7 +11,6 @@ class Api {
   static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
   static const String API_BASE_MEM_DEV = "http://127.0.0.1:9001";
 
-
   static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
   static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";
 
@@ -24,7 +23,6 @@ class Api {
   static const String API_TOPIC_REPLY_SINGLE_QUERY = "/topic/reply/list.json";
   static const String API_TOPIC_ADD_REPLY = "/topic/reply/add.do";
   static const String API_TOPIC_REPLY_SUB_QUERY = "/topic/reply/listSubs.json";
-
 
   static const String API_TOPIC_REPLY_PRAISE = "/topic/reply/praise.do";
   static const String API_TOPIC_REPLY_CANCEL_PRAISE = "/topic/reply/cancelPraise.do";
@@ -78,6 +76,11 @@ class Api {
   // device
   static const String API_UPDATE_DEVICE_INFO = API_BASE_INF_URL + "/device/update.do";
   static const String API_REMOVE_DEVICE_INFO = API_BASE_INF_URL + "/device/signOut.do";
+
+  // notification message
+  static const String API_MSG_LIST_INTERACTION = API_BASE_INF_URL + "/message/listInteractions.json";
+  static const String API_MSG_LIST_SYSTEM = API_BASE_INF_URL + "/message/listSystems.json";
+  static const String API_MSG_READ_THIS = API_BASE_INF_URL + "/message/read.do";
 
   static Map<String, dynamic> convertResponse(Object responseData) {
     String jsonTemp = json.encode(responseData);

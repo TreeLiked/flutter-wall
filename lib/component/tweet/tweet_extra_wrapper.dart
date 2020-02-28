@@ -148,38 +148,48 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
     List<Widget> list = new List();
 
     int displayCnt = 0;
+    int totalCnt = 0;
     for (var dirTr in widget.tweet.dirReplies) {
       if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY) {
         break;
       }
+      if (totalCnt == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
+        break;
+      }
       list.add(_singleReplyContainer(dirTr, true, false, parentId: dirTr.id));
       displayCnt++;
+      totalCnt++;
       if (!CollectionUtil.isListEmpty(dirTr.children)) {
         dirTr.children.forEach((tr) {
           list.add(_singleReplyContainer(tr, true, false, parentId: dirTr.id));
+          totalCnt++;
         });
       }
     }
-    if (widget.tweet.replyCount > GlobalConfig.MAX_DISPLAY_REPLY) {
-      list.add(_singleReplyContainer(null, false, true));
+
+    if (displayCnt < GlobalConfig.MAX_DISPLAY_REPLY) {
+      list.add(_singleReplyContainer(null, false, true, showReplyCnt: widget.tweet.replyCount - displayCnt));
+    } else if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY && widget.tweet.replyCount > displayCnt) {
+      list.add(_singleReplyContainer(null, false, true,
+          showReplyCnt: widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));
     }
 
     return list;
   }
 
-  Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom, {int parentId}) {
+  Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom, {int parentId, int showReplyCnt}) {
     if (bottom) {
       return Padding(
         padding: EdgeInsets.only(top: 5),
         child: Text(
-          "查看更多 ${widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY} 条回复 ..",
+          showReplyCnt > 0 ? "查看更多 $showReplyCnt 条回复 .." : "查看更多回复..",
           style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
         ),
       );
     }
     bool authorAnonymous = widget.tweet.anonymous;
     String accNick = AccountUtil.getNickFromAccount(reply.account, false);
-    bool isAuthorReply = (widget.tweet.account.id == reply.account.id);
+    bool isAuthorReply = reply.account!= null && (widget.tweet.account.id == reply.account.id);
     if (isAuthorReply && authorAnonymous) {
       accNick = "作者";
       reply.account.nick = "作者";
@@ -215,6 +225,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
                   ToastUtil.showToast(context, '匿名评论不可回复');
                 },
           child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.start,
             children: <Widget>[
               RichText(
                 maxLines: 5,

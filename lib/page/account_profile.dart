@@ -22,6 +22,7 @@ import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/page/common/avatar_origin.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
@@ -96,7 +97,7 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
     return <Widget>[
       SliverAppBar(
           centerTitle: false,
-          //标题居中
+          // 标题居中
           elevation: 0.3,
           actions: <Widget>[
             IconButton(
@@ -106,15 +107,15 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
               ),
               onPressed: () {
                 BottomSheetUtil.showBottomSheetView(context, [
-                  BottomSheetItem(
-                      Icon(
-                        Icons.favorite,
-                        color: Colors.redAccent,
-                      ),
-                      '关注', () async {
-                    ToastUtil.showToast(context, '关注成功');
-                    Navigator.pop(context);
-                  }),
+//                  BottomSheetItem(
+//                      Icon(
+//                        Icons.favorite,
+//                        color: Colors.redAccent,
+//                      ),
+//                      '关注', () async {
+//                    ToastUtil.showToast(context, '关注成功');
+//                    Navigator.pop(context);
+//                  }),
                   BottomSheetItem(
                       Icon(
                         Icons.warning,
@@ -133,8 +134,6 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
               FocusScope.of(context).unfocus();
               Navigator.maybePop(context);
             },
-            tooltip: '返回',
-            padding: const EdgeInsets.all(12.0),
             icon: Image.asset(PathConstant.ICON_GO_BACK_ARROW, color: Colors.white, width: 20),
           ),
           expandedHeight: 200,
@@ -145,8 +144,10 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
               labelColor: Colors.white,
               unselectedLabelColor: Colors.white70,
               isScrollable: false,
+
               // indicatorColor: Colors.black87,
               controller: _tabController,
+              labelPadding: const EdgeInsets.all(0.0),
               tabs: [
                 const Tab(child: Text('个人资料', style: TextStyle(color: null))),
                 const Tab(child: Text('历史发布', style: TextStyle(color: null)))
@@ -233,6 +234,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
   Widget _buildBody(Account account) {
     return Scaffold(
       // backgroundColor: Color(0xff191970),
+      // 设置没有高度的 appbar，目的是为了设置状态栏的颜色
       body: SingleChildScrollView(
           child: Container(
         padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
@@ -248,9 +250,9 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
 
             Gaps.vGap30,
             _titleItem('个人档案'),
-            _buildPersonInfo('author', Colors.blue, account.profile.name, '姓名不可见'),
+            _buildPersonInfo('contact', Colors.blueGrey, account.profile.name, '姓名不可见'),
             Gaps.line,
-            _buildPersonInfo('age', Colors.amber,
+            _buildPersonInfo('age', Colors.blueGrey,
                 account.profile.age > 0 ? account.profile.age.toString() : null, '年龄不可见'),
             Gaps.line,
             _buildPersonInfo('location', Colors.blueGrey, _getRegionText(account.profile), '地区不可见'),
@@ -306,7 +308,8 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                       child: LoadAssetSvg('male', width: _iconSize, height: _iconSize, color: Colors.blue))
                   : Flexible(
                       flex: 1,
-                      child: LoadAssetSvg('female', width: _iconSize, height: _iconSize, color: Colors.pinkAccent)))
+                      child: LoadAssetSvg('female',
+                          width: _iconSize, height: _iconSize, color: Colors.pinkAccent)))
         ],
       ),
     );
@@ -318,8 +321,12 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _wrapIcon(
-              LoadAssetSvg('vote', width: _iconSize - 4, height: _iconSize - 4, color: Colors.deepPurple)),
+          _wrapIcon(LoadAssetSvg(
+            'vote',
+            width: _iconSize - 4,
+            height: _iconSize - 4,
+            color: Colors.lightBlue,
+          )),
           Gaps.hGap10,
           Flexible(
             flex: 1,
@@ -517,6 +524,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CustomSliverFutureBuilder(
         futureFunc: _getSettingTask, builder: (context, data) => _buildBody(data));
   }
@@ -540,28 +548,30 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
     }
 
     return EasyRefresh(
-      controller: _easyRefreshController,
-      enableControlFinishLoad: true,
-      footer: ClassicalFooter(
-          textColor: Colors.grey,
-          extent: 40.0,
-          noMoreText: '没有更多了～',
-          loadedText: '加载完成',
-          loadFailedText: '加载失败',
-          loadingText: '正在加载',
-          loadText: '上滑加载',
-          loadReadyText: '释放加载',
-          showInfo: false,
-          enableHapticFeedback: true,
-          enableInfiniteLoad: true),
-      onLoad: _loadMoreData,
-      child: SingleChildScrollView(
-        child: Column(
-          children:
-              _accountTweets.map((f) => TweetCard2(f, upClickable: false, downClickable: true)).toList(),
-        ),
-      ),
-    );
+        controller: _easyRefreshController,
+        enableControlFinishLoad: true,
+        footer: ClassicalFooter(
+            textColor: Colors.grey,
+            extent: 40.0,
+            noMoreText: '没有更多了～',
+            loadedText: '加载完成',
+            loadFailedText: '加载失败',
+            loadingText: '正在加载',
+            loadText: '上滑加载',
+            loadReadyText: '释放加载',
+            showInfo: false,
+            enableHapticFeedback: true,
+            enableInfiniteLoad: true),
+        onLoad: _loadMoreData,
+        child: Container(
+          margin: const EdgeInsets.only(top: 15.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children:
+                  _accountTweets.map((f) => TweetCard2(f, upClickable: false, downClickable: true)).toList(),
+            ),
+          ),
+        ));
     // return SingleChildScrollView(
     //     // child: EasyRefresh(
     //     //     footer: MaterialFooter(),

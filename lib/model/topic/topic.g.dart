@@ -26,10 +26,10 @@ Topic _$TopicFromJson(Map<String, dynamic> json) {
             (e) => e == null ? null : Media.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..clickCount = json['clickCount'] as int
+    ..participantsCount = json['participantsCount'] as int
     ..viewCount = json['viewCount'] as int
     ..hot = json['hot'] as int
     ..replyCount = json['replyCount'] as int
-    ..participantsCount = json['participantsCount'] as int
     ..sentTime = json['sentTime'] == null
         ? null
         : DateTime.parse(json['sentTime'] as String)
@@ -53,9 +53,9 @@ Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
       'coverUrl': instance.coverUrl,
       'medias': instance.medias,
       'clickCount': instance.clickCount,
+      'participantsCount': instance.participantsCount,
       'viewCount': instance.viewCount,
       'hot': instance.hot,
-      'participantsCount': instance.participantsCount,
       'replyCount': instance.replyCount,
       'sentTime': instance.sentTime?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),

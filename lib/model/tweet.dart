@@ -1,3 +1,4 @@
+import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -19,8 +20,9 @@ class BaseTweet {
 
   // Map<TweetReply, List<TweetReply>> replies;
 
-  List<String> picUrls;
-
+  List<Media> medias;
+//  List<Media> medias;
+  
   int hot;
   int praise;
   int views;

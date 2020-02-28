@@ -12,6 +12,7 @@ import 'package:flutter/painting.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/account_profile.dart';
+import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/page/home/create_page.dart';
 import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/index.dart';
@@ -21,58 +22,44 @@ import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
 
-var indexHander = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var indexHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return Index();
 });
 
-var homeHandler = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var homeHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return HomePage();
 });
 
-var squareHandler = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-      return SquareIndexPage();
-    });
+var squareHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  return SquareIndexPage();
+});
 
-var tweetDetailHandler = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var tweetDetailHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TweetDetail(null);
 });
 
-var createHandler = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var createHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return CreatePage();
 });
 
-var filterHander = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var filterHander = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   return TweetTypeSelect();
 });
 
-var inputPageHander = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  String title = params['title'] == null
-      ? ""
-      : FluroConvertUtils.fluroCnParamsDecode(params['title'].first);
-  String hintText = params['hintText'] == null
-      ? ""
-      : FluroConvertUtils.fluroCnParamsDecode(params['hintText'].first);
+var inputPageHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  String title = params['title'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['title'].first);
+  String hintText =
+      params['hintText'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['hintText'].first);
 
-  int limit = params['limit'] == null
-      ? 16
-      : int.parse(FluroConvertUtils.fluroCnParamsDecode(params['limit'].first));
+  int limit =
+      params['limit'] == null ? 16 : int.parse(FluroConvertUtils.fluroCnParamsDecode(params['limit'].first));
 
-  bool showLimit = params['showLimit'] == null
-      ? true
-      : (params['limit'].first.toLowerCase() == "true" ? true : false);
+  bool showLimit =
+      params['showLimit'] == null ? true : (params['limit'].first.toLowerCase() == "true" ? true : false);
 
-  int keyboardType = params['kt'] == null
-      ? 0
-      : int.parse(FluroConvertUtils.fluroCnParamsDecode(params['kt'].first));
+  int keyboardType =
+      params['kt'] == null ? 0 : int.parse(FluroConvertUtils.fluroCnParamsDecode(params['kt'].first));
 
-  print('-------------------------------$keyboardType');
   return InputTextPage(
     title: title,
     hintText: hintText,
@@ -82,29 +69,29 @@ var inputPageHander = Handler(
   );
 });
 
-var accountProfileHandler = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  String nick = params['nick'] == null
-      ? ""
-      : FluroConvertUtils.fluroCnParamsDecode(params['nick'].first);
-  String accountId = params['accId'] == null
-      ? ""
-      : FluroConvertUtils.fluroCnParamsDecode(params['accId'].first);
+var reportHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  String type = params['type'].first;
+  String refId = params['refId'].first;
 
-  String avatarUrl = params['avatarUrl'] == null
-      ? ""
-      : FluroConvertUtils.fluroCnParamsDecode(params['avatarUrl'].first);
+  return ReportPage(type, refId);
+});
+
+var accountProfileHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+  String nick = params['nick'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['nick'].first);
+  String accountId =
+      params['accId'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['accId'].first);
+
+  String avatarUrl =
+      params['avatarUrl'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['avatarUrl'].first);
 
   return AccountProfilePage(accountId, nick, avatarUrl);
 });
 
-var galleryViewHandler = Handler(
-    handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+var galleryViewHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   List<String> picUrls = params['urls'];
   int index = int.parse(params['index'].first);
-  List<PhotoWrapItem> items = picUrls
-      .map((f) => PhotoWrapItem(index: index, url: Uri.decodeComponent(f)))
-      .toList();
+  List<PhotoWrapItem> items =
+      picUrls.map((f) => PhotoWrapItem(index: index, url: Uri.decodeComponent(f))).toList();
   return GalleryPhotoViewWrapper(
     usePageViewWrapper: true,
     galleryItems: items,

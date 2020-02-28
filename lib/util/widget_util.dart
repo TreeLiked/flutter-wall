@@ -58,7 +58,7 @@ class WidgetUtil {
       height: size,
       width: size,
       margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(30)),
-      child: SpinKitChasingDots(color: Colours.app_main, size: 25),
+      child: const SpinKitChasingDots(color: Colours.app_main, size: 25),
     );
   }
 

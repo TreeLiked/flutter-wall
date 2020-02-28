@@ -217,17 +217,15 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   }
 
   void _getAndUpdateDeviceInfo(String regId) async {
-    if (StringUtil.isEmpty(regId)) {
-      print("reg id 获取失败！！！");
-      return;
-    }
     print("reg id 获取成功---$regId");
     DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
     if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      print(iosInfo);
       _updateDeviceInfo("IPHONE", "IOS", iosInfo.systemVersion, regId);
     } else if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      print(_readAndroidBuildData(androidInfo));
       _updateDeviceInfo(androidInfo.brand.toUpperCase(), "ANDROID", androidInfo.device, regId);
     } else {
       debugPrint("Unsupport Platform type");

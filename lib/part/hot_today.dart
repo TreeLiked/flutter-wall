@@ -12,6 +12,7 @@ import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/hot_tweet.dart';
+import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
@@ -83,11 +84,17 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     if (CollectionUtil.isListEmpty(bts)) {
       return baseUrl;
     }
-    List<String> s = bts[0].picUrls;
-    if (CollectionUtil.isListEmpty(s)) {
+    List<Media> firstMedias = bts[0].medias;
+
+    if (firstMedias == null || firstMedias.length == 0) {
       return baseUrl;
     }
-    return s[0] + OssConstant.THUMBNAIL_SUFFIX;
+    Media firstImg = firstMedias.firstWhere((m) => m.mediaType == Media.TYPE_IMAGE);
+    if (firstImg == null) {
+      return baseUrl;
+    }
+
+    return firstImg.url + OssConstant.THUMBNAIL_SUFFIX;
   }
 
   @override
@@ -135,7 +142,9 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          '精选20条最热门的内容，每小时更新一次',
+                          '精选20条最热门的内容，每小时更新一次',
+                          softWrap: true,
+                          maxLines: 2,
                           style: TextStyle(fontSize: 14, color: Colors.white70),
                         ),
                         Text(
@@ -220,7 +229,13 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       bt.account.nick = TextConstant.TWEET_ANONYMOUS_NICK;
     }
 
-    bool hasPic = !CollectionUtil.isListEmpty(bt.picUrls);
+    String coverUrl = null;
+    if (!CollectionUtil.isListEmpty(bt.medias)) {
+      Media m = bt.medias.firstWhere((media) => media.mediaType == Media.TYPE_IMAGE);
+      if (m != null) {
+        coverUrl = m.url;
+      }
+    }
     bool hasBody = !StringUtil.isEmpty(bt.body);
     return GestureDetector(
         onTap: () => _forwardDetail(bt, index),
@@ -338,7 +353,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                       ],
                     ),
                   ),
-                  hasPic
+                  coverUrl != null
                       ? Expanded(
                           flex: 2,
                           child: Container(
@@ -349,7 +364,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                               child: AspectRatio(
                                 aspectRatio: 1,
                                 child: CachedNetworkImage(
-                                  imageUrl: bt.picUrls[0] + OssConstant.THUMBNAIL_SUFFIX,
+                                  imageUrl: coverUrl + OssConstant.THUMBNAIL_SUFFIX,
                                   placeholder: (context, url) => CupertinoActivityIndicator(),
                                   fit: BoxFit.cover,
                                   errorWidget: (context, url, error) => Icon(Icons.error),

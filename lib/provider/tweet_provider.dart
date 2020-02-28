@@ -28,6 +28,7 @@ class TweetProvider extends ChangeNotifier {
       );
       return;
     } else {
+      targetTweet.replyCount++;
       if (tr.type == 1) {
         // 设置到直接回复
         if (targetTweet.dirReplies == null) {

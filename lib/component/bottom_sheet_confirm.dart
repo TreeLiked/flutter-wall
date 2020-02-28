@@ -11,6 +11,7 @@ class BottomSheetConfirm extends StatelessWidget {
     Key key,
     this.title,
     this.optChoice,
+    this.optColor = Colors.red,
     this.cancelText = "取消",
     @required this.onTapOpt,
   }) : super(key: key);
@@ -18,6 +19,7 @@ class BottomSheetConfirm extends StatelessWidget {
   final String title;
   final String optChoice;
   final String cancelText;
+  final Color optColor;
 
   final Function onTapOpt;
 
@@ -43,7 +45,7 @@ class BottomSheetConfirm extends StatelessWidget {
                   height: 54.0,
                   width: double.infinity,
                   child: FlatButton(
-                    textColor: Theme.of(context).errorColor,
+                    textColor: optColor,
                     child: Text(optChoice, style: TextStyle(fontSize: Dimens.font_sp14)),
                     onPressed: () {
                       NavigatorUtils.goBack(context);

@@ -56,10 +56,10 @@ class _TweetTypeSelectPage extends State<TweetTypeSelectPage> {
           isBack: true,
           actionName: "完成",
           onPressed: () {
-            NavigatorUtils.goBack(context);
             if (widget.callback != null) {
               widget.callback(widget.initFirst);
             }
+            NavigatorUtils.goBack(context);
           },
         ),
         body: SingleChildScrollView(

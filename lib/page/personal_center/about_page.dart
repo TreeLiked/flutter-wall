@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/update_dialog.dart';
+import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -44,7 +45,7 @@ class _AboutPageState extends State<AboutPage> {
                   borderRadius: BorderRadius.circular(10),
                   child: FadeInImage.assetNetwork(
                       placeholder: 'images/avatar.png',
-                      image: 'https://tva1.sinaimg.cn/large/006tNbRwgy1g9ytswh2jyj30cw0f4mz1.jpg',
+                      image: 'https://tva1.sinaimg.cn/large/006tNbRwgy1gbk9g49bfsj30u01hcnpd.jpg',
                       fit: BoxFit.fitWidth,
                       width: 100,
                       height: 100))),
@@ -58,9 +59,9 @@ class _AboutPageState extends State<AboutPage> {
               }),
           ClickItem(
               title: "作者",
-              content: 'IUTR',
+              content: 'iutr.tech',
               onTap: () {
-                NavigatorUtils.goWebViewPage(context, "作者博客", "https://weilu.blog.csdn.net");
+                NavigatorUtils.goWebViewPage(context, "作者Git", "https://gitee.com/treeliked");
               }),
 
           ClickItem(
@@ -71,8 +72,8 @@ class _AboutPageState extends State<AboutPage> {
             },
           ),
           ClickItem(
-            title: "帮助和反馈",
-            onTap: () {},
+            title: "问题反馈",
+            onTap: () => NavigatorUtils.goReportPage(context, ReportPage.REPORT_SYSTEM, "-1"),
           ),
         ],
       ),

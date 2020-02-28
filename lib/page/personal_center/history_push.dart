@@ -74,7 +74,7 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
           noMoreText: '没有更多了～',
           loadedText: '加载完成',
           loadFailedText: '加载失败',
-          loadingText: '正在加载',
+          loadingText: '正在加载...',
           loadText: '上滑加载',
           loadReadyText: '释放加载',
           showInfo: false,

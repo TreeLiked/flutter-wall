@@ -20,6 +20,7 @@ import 'package:iap_app/model/topic/add_topic.dart';
 import 'package:iap_app/model/topic/add_topic_reply.dart';
 import 'package:iap_app/model/topic/base_tr.dart';
 import 'package:iap_app/model/topic/topic.dart';
+import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/square/topic/topic_reply_card.dart';
 import 'package:iap_app/res/colors.dart';
@@ -193,16 +194,13 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                             left: 0,
                             bottom: 0,
                             child: Container(
-                                padding: EdgeInsets.only(
-                                    left: ScreenUtil().setHeight(10),
-                                    right: ScreenUtil().setHeight(10),
-                                    top:  ScreenUtil().setHeight(15),
-                                    bottom: ScreenUtil().setHeight(10)),
+                                padding: const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
                                 width: Application.screenWidth,
                                 alignment: Alignment.topCenter,
                                 height: ScreenUtil().setHeight(120),
                                 decoration: BoxDecoration(
                                   color: isDark ? Color(0xff363636) : Color(0xfff2f3f4),
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                                 ),
                                 child: Row(
                                   children: <Widget>[
@@ -211,6 +209,10 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                                         controller: _editController,
                                         hintText: _hintText,
                                         focusNode: _focusNode,
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(width: 0.0, style: BorderStyle.none),
+                                          borderRadius: BorderRadius.circular(11.5),
+                                        ),
                                         bgColor: !isDark ? Colors.white : Color(0xff454545),
                                         maxLength: 256,
                                         onSub: (String val) async {
@@ -602,8 +604,8 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
           color: Colors.grey,
         ),
         '举报', () {
-      ToastUtil.showToast(context, '举报成功');
-      Navigator.pop(context);
+      NavigatorUtils.goBack(context);
+      NavigatorUtils.goReportPage(context, ReportPage.REPORT_TOPIC, widget.topicId.toString());
     }));
     return items;
   }

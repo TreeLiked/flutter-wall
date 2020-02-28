@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:badges/badges.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
@@ -17,10 +18,12 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/notification_router.dart';
+import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/widget_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -34,9 +37,14 @@ class NotificationIndexPage extends StatefulWidget {
 
 class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
-  String iconSubPath = "notification/tag";
-  String iconContactPath = "notification/control";
-  String iconOfficialPath = "notification/bell";
+//  String iconSubPath = "notification/tag";
+//  String iconContactPath = "notification/control";
+//  String iconOfficialPath = "notification/bell";
+
+  String iconSubPath = "heart";
+  String iconContactPath = "wave";
+  String iconOfficialPath = "author";
+
   TabController _controller;
   int _currentIndex = 0;
   List<String> titleTabs = ['私信', "评论", "点赞", "通知"];
@@ -99,6 +107,14 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     ];
   }
 
+
+  _fetchLatestMessage() async{
+
+    await Future.delayed(Duration(seconds: 2));
+
+    _refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -154,44 +170,49 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 //          ),
 //          preferredSize: Size.fromHeight(38),
 //        ),
-        actions: _renderActions(),
+//        actions: _renderActions(),
       ),
       body: SafeArea(
         top: false,
         child: SmartRefresher(
-          controller: _refreshController,
-          enablePullDown: true,
-          enablePullUp: false,
-          child: Column(
-            children: <Widget>[
-              MainMessageItem(iconPath: iconSubPath, title: "订阅消息", body: "暂无订阅消息"),
-              Container(
-                margin: const EdgeInsets.only(left: 15),
-                child: Gaps.line,
+            controller: _refreshController,
+            enablePullDown: true,
+            enablePullUp: false,
+            header: MaterialClassicHeader(
+              color: Colors.pinkAccent,
+            ),
+            onRefresh: _fetchLatestMessage,
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  MainMessageItem(iconPath: iconSubPath, title: "订阅消息", body: "暂无订阅消息",color: Colors.lightBlue),
+                  Container(
+                    margin: const EdgeInsets.only(left: 15),
+                    child: Gaps.line,
+                  ),
+                  MainMessageItem(
+                    iconPath: iconContactPath,
+                    color: Colors.lightGreen,
+                    title: "互动消息",
+                    body: "暂无新通知",
+                    onTap: () => NavigatorUtils.push(context, NotificationRouter.interactiveMain),
+                  ),
+                  Gaps.vGap5,
+                  MainMessageItem(
+                    iconPath: iconOfficialPath,
+                    color: Colors.pinkAccent,
+                    title: "墙君",
+                    tagName: "官方",
+                    body: "面对新冠状病毒我们应该怎么办" * 2,
+                    count: 7,
+                    time: '上午 9:18',
+                    onTap: () {
+                      NavigatorUtils.push(context, NotificationRouter.systemMain);
+                    },
+                  ),
+                ],
               ),
-              MainMessageItem(
-                iconPath: iconContactPath,
-                color: Colors.lightGreen,
-                title: "互动消息",
-                body: "暂无新通知",
-                onTap: () => NavigatorUtils.push(context, NotificationRouter.interactiveMain),
-              ),
-              Gaps.vGap5,
-              MainMessageItem(
-                iconPath: iconOfficialPath,
-                color: Colors.pinkAccent,
-                title: "墙君",
-                tagName: "官方",
-                body: "面对新冠状病毒我们应该怎么办" * 2,
-                count: 7,
-                time: '上午 9:18',
-                onTap: () {
-                  NavigatorUtils.push(context, NotificationRouter.systemMain);
-                },
-              ),
-            ],
-          ),
-        ),
+            )),
 //        child: TabBarView(controller: _controller, children: [
 //          PersonalMessagePage(),
 //          PersonalMessagePage(),
@@ -202,6 +223,9 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     );
   }
 
+
+
+
   Text _getBadgeText(dynamic content) {
     return Text(
       content.toString(),
@@ -210,6 +234,22 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   }
 
   List<Widget> _renderActions() {
+    return [
+      IconButton(
+//        icon: LoadAssetIcon(
+//          "alert",
+//          key: const Key('message'),
+//          width: 24.0,
+//          height: 24.0,
+//          color: ThemeUtils.getIconColor(context),
+//        ),
+        icon: Icon(Icons.autorenew),
+        onPressed: () {
+          NavigatorUtils.push(context, SettingRouter.notificationSettingPage,
+              transitionType: TransitionType.fadeIn);
+        },
+      )
+    ];
     if (_currentIndex == 0) {
       return [IconButton(icon: Icon(Icons.notifications_none), onPressed: () {})];
     }

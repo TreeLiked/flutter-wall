@@ -22,29 +22,26 @@ final tweetTypeMap = {
 class TweetTypeUtil {
   static Map getFilterableTweetTypeMap() {
     final filteredMap = new Map.fromIterable(
-        tweetTypeMap.keys.where(
-            (k) => tweetTypeMap[k].filterable && tweetTypeMap[k].visible),
+        tweetTypeMap.keys.where((k) => tweetTypeMap[k].filterable && tweetTypeMap[k].visible),
         value: (k) => tweetTypeMap[k]);
     return filteredMap;
   }
 
   static Map<dynamic, TweetTypeEntity> getVisibleTweetTypeMap() {
-    final visibleMap = new Map.fromIterable(
-        tweetTypeMap.keys.where((k) => tweetTypeMap[k].visible),
+    final visibleMap = new Map.fromIterable(tweetTypeMap.keys.where((k) => tweetTypeMap[k].visible),
         value: (k) => tweetTypeMap[k]);
     return visibleMap;
   }
 
   static Map<dynamic, TweetTypeEntity> getPushableTweetTypeMap() {
-    final visibleMap = new Map.fromIterable(
-        tweetTypeMap.keys.where((k) => tweetTypeMap[k].pushable),
+    final visibleMap = new Map.fromIterable(tweetTypeMap.keys.where((k) => tweetTypeMap[k].pushable),
         value: (k) => tweetTypeMap[k]);
     return visibleMap;
   }
 
-  // static Map getAllTweetTypeMap() {
-  //   return Map.from(tweetTypeMap);
-  // }
+// static Map getAllTweetTypeMap() {
+//   return Map.from(tweetTypeMap);
+// }
 }
 
 class TweetTypeEntity {
@@ -58,10 +55,13 @@ class TweetTypeEntity {
 
   // 是否可以被本地筛选掉
   final bool filterable;
+
   // 是否用户可以选择此类型标签发布内容
   final bool pushable;
+
   // 是否可以被用户取消订阅
   final bool canUnSubscribe;
+
   // 是否用户可见
   final bool visible;
 
@@ -80,10 +80,10 @@ class TweetTypeEntity {
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
       iconData: Icons.favorite,
-      iconColor: Color(0xffFA8072),
+      iconColor: Colors.deepOrangeAccent,
       name: "LOVE_CONFESSION",
       zhTag: "表白",
-      color: Color(0xffFA8072),
+      color: Colors.deepOrangeAccent,
       intro: "对你何止一句中意",
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
@@ -106,10 +106,10 @@ class TweetTypeEntity {
 
   static const QUESTION_CONSULT = const TweetTypeEntity(
       iconData: Icons.local_library,
-      iconColor: Colors.deepOrangeAccent,
+      iconColor: Colors.blueGrey,
       name: "QUESTION_CONSULT",
       intro: "发布一下，你就知道",
-      color: Colors.deepOrangeAccent,
+      color: Colors.blueGrey,
       zhTag: "咨询");
 
   static const COMPLAINT = const TweetTypeEntity(
@@ -123,12 +123,11 @@ class TweetTypeEntity {
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_complaint.png");
   static const GOSSIP = const TweetTypeEntity(
       iconData: Icons.free_breakfast,
-      iconColor: Color(0xffEEB4B4),
+      iconColor: Color(0xffA2CD5A),
       intro: "多说话，多喝热水",
       name: "GOSSIP",
-      color: Color(0xffEEB4B4),
-      coverUrl:
-          'https://tva1.sinaimg.cn/large/006y8mN6ly1g870g0gah7j30qo0xbwl7.jpg',
+      color: Color(0xffA2CD5A),
+      coverUrl: 'https://tva1.sinaimg.cn/large/006y8mN6ly1g870g0gah7j30qo0xbwl7.jpg',
       zhTag: "闲聊");
 
   static const HAVE_FUN = const TweetTypeEntity(

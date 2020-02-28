@@ -72,8 +72,8 @@ class TweetCard2 extends StatelessWidget {
 
   Widget cardContainer2(BuildContext context) {
     Widget wd = Container(
-        padding: EdgeInsets.only(bottom: 10),
-        color: isDark?Colours.dark_bg_color:Colors.white,
+        padding: const EdgeInsets.only(bottom: 0, top: 5),
+        color: isDark ? Colours.dark_bg_color : Colors.white,
         child: GestureDetector(
           onTap: () => _forwardDetail(context),
           behavior: HitTestBehavior.translucent,
@@ -85,13 +85,18 @@ class TweetCard2 extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    TweetCardHeaderWrapper(tweet.account, tweet.anonymous, tweet.gmtCreated,
-                        canClick: upClickable),
+                    TweetCardHeaderWrapper(
+                      tweet.account,
+                      tweet.anonymous,
+                      tweet.gmtCreated,
+                      canClick: upClickable,
+                      official: tweet.type == TweetTypeEntity.OFFICIAL.name,
+                    ),
                     Gaps.vGap8,
                     _typeContainer(context),
                     Gaps.vGap5,
                     _bodyContainer(context),
-                    TweetImageWrapper(picUrls: tweet.picUrls),
+                    TweetMediaWrapper(medias: tweet.medias),
                     Gaps.vGap8,
                     displayPraise
                         ? TweetCardExtraWrapper(

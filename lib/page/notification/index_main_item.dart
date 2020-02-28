@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
@@ -57,8 +58,8 @@ class _MainMessageItemState extends State<MainMessageItem> {
                   color: widget.color,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: LoadAssetIcon(widget.iconPath),
+                  padding: const EdgeInsets.all(10),
+                  child:  LoadAssetSvg(widget.iconPath,color: Colors.white,height: 40,width: 40,),
                 )),
             Gaps.hGap15,
             Expanded(
@@ -77,18 +78,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                           maxLines: 1),
                     ),
                     widget.tagName != null
-                        ? Container(
-                            margin: const EdgeInsets.only(left: 5),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                            decoration: BoxDecoration(
-                                color: isDark ? Colours.dark_bg_color_darker : Color(0xfff1f0f1),
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20), bottom: Radius.circular(20))),
-                            child: Text(
-                              widget.tagName ?? "",
-                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w300, color: Colors.grey),
-                            ))
+                        ? SimpleTag(widget.tagName)
                         : Container(width: 0),
                     Expanded(
                         child: Container(

@@ -6,6 +6,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/component/bottom_sheet_confirm.dart';
+import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/component/tweet/tweet_image_wrapper.dart';
 import 'package:iap_app/component/tweet_delete_bottom_sheet.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -18,7 +20,9 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -82,6 +86,8 @@ class TweetDetailState extends State<TweetDetail> {
     print('TweetDETAIL state construct');
   }
 
+  TextStyle _replyBodyStyle;
+
   @override
   void initState() {
     super.initState();
@@ -109,6 +115,8 @@ class TweetDetailState extends State<TweetDetail> {
       ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
       return [];
     } else {
+      _replyBodyStyle =
+          MyDefaultTextStyle.getMainTextBodyStyle(isDark, fontSize: SizeConstant.TWEET_REPLY_FONT_SIZE);
       return replies;
     }
   }
@@ -140,46 +148,41 @@ class TweetDetailState extends State<TweetDetail> {
   Widget _spaceRow() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         // 头像
-        GestureDetector(
-            onTap: () => _forwardAccountProfile(true, widget._tweet.account),
-            child: AccountAvatar(
-                avatarUrl: !widget._tweet.anonymous
-                    ? widget._tweet.account.avatarUrl
-                    : PathConstant.ANONYMOUS_PROFILE,
-                size: SizeConstant.TWEET_PROFILE_SIZE + 1,
-                whitePadding: false)),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            GestureDetector(
+                onTap: () => _forwardAccountProfile(true, widget._tweet.account),
+                child: AccountAvatar(
+                    avatarUrl: !widget._tweet.anonymous
+                        ? widget._tweet.account.avatarUrl
+                        : PathConstant.ANONYMOUS_PROFILE,
+                    size: SizeConstant.TWEET_PROFILE_SIZE,
+                    whitePadding: false))
+          ],
+        ),
+        Gaps.hGap8,
         Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 8.0),
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.end,
-              children: <Widget>[
-                Container(
-                  // padding: EdgeInsets.only(bottom: 2),
-                  child: RichText(
-                    softWrap: true,
-                    text: TextSpan(children: [
-                      TextSpan(
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // goAccountDetail();
-                              _forwardAccountProfile(true, widget._tweet.account);
-                            },
-                          text: widget._tweet.account.nick,
-                          style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                              context, SizeConstant.TWEET_NICK_SIZE,
-                              anonymous: widget._tweet.anonymous)),
-                      TextSpan(
-                          text: " 发表于 " + TimeUtil.getShortTime(widget._tweet.gmtCreated),
-                          style: TextStyle(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
-                    ]),
-                  ),
-                )
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              RichText(
+                  softWrap: true,
+                  text: TextSpan(children: [
+                    TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => _forwardAccountProfile(true, widget._tweet.account),
+                        text: widget._tweet.account.nick,
+                        style: MyDefaultTextStyle.getTweetHeadNickStyle(
+                            context, SizeConstant.TWEET_NICK_SIZE + 3,
+                            anonymous: widget._tweet.anonymous)),
+                  ])),
+              Text(TimeUtil.getShortTime(widget._tweet.gmtCreated),
+                  style: TextStyle(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
+            ],
           ),
         )
       ],
@@ -249,23 +252,23 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _replyBodyContainer(String body) {
-    return Container(
-      padding: EdgeInsets.only(top: 5),
-      child: Wrap(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                  child: Text(body,
-                      softWrap: true,
-                      textAlign: TextAlign.left,
-                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
-                          fontSize: SizeConstant.TWEET_REPLY_FONT_SIZE)))
-            ],
-          ),
-        ],
-      ),
-    );
+    return GestureDetector(
+        onLongPress: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return BottomSheetConfirm(
+                  title: '评论操作',
+                  optChoice: '举报',
+                  optColor: Colors.redAccent,
+                  onTapOpt: () => NavigatorUtils.goReportPage(
+                      context, ReportPage.REPORT_TWEET_REPLY, widget._tweet.id.toString()));
+            },
+          );
+        },
+        child: Container(
+            padding: const EdgeInsets.only(top: 1.0),
+            child: Text(body ?? "", softWrap: true, textAlign: TextAlign.left, style: _replyBodyStyle)));
   }
 
   List<Widget> _getReplyList() {
@@ -488,6 +491,7 @@ class TweetDetailState extends State<TweetDetail> {
     double size = SizeConstant.TWEET_PROFILE_SIZE - 5;
     return GestureDetector(
       child: Container(
+//        alignment: Alignment.centerLeft,
           padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
           child: AccountAvatar(
             avatarUrl: (widget._tweet.anonymous && isAuthor || anonymous)
@@ -511,36 +515,61 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget _headContainer(TweetReply reply) {
     BaseTweet bt = widget._tweet;
-    bool authorReplyWithAnonymous = (reply.account.id == bt.account.id) && bt.anonymous;
+    bool isAuthorReply = reply.account.id == bt.account.id;
+    bool directReply = reply.type == 1;
+    bool authorReplyWithAnonymous = (isAuthorReply && bt.anonymous) || reply.anonymous;
     bool replyAuthorWithAnonymous =
-        (reply.tarAccount != null) && (reply.tarAccount.id == bt.account.id) && bt.anonymous;
+        (reply.tarAccount != null) && (reply.tarAccount.id == bt.account.id) && reply.anonymous;
 
-    bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
+    bool dirReplyAnonymous = directReply && reply.anonymous;
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      runAlignment: WrapAlignment.center,
       children: <Widget>[
         RichText(
+          softWrap: true,
           text: TextSpan(children: [
-            TextSpan(
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    if (!reply.anonymous) {
-                      _forwardAccountProfile(false, reply.account);
-                    }
-                  },
-                text: authorReplyWithAnonymous
-                    ? TextConstant.TWEET_AUTHOR_TEXT
-                    : dirReplyAnonymous ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK : reply.account.nick,
-                style: authorReplyWithAnonymous
-                    ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                        context, SizeConstant.TWEET_FONT_SIZE - 2)
-                    : MyDefaultTextStyle.getTweetNickStyle(context, SizeConstant.TWEET_FONT_SIZE - 2,
-                        bold: false)),
+            !isAuthorReply || directReply
+                ? TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        if (!reply.anonymous) {
+                          _forwardAccountProfile(false, reply.account);
+                        }
+                      },
+                    text: authorReplyWithAnonymous
+                        ? TextConstant.TWEET_AUTHOR_TEXT
+                        : dirReplyAnonymous ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK : reply.account.nick,
+                    style: authorReplyWithAnonymous
+                        ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
+                            context, SizeConstant.TWEET_REPLY_FONT_SIZE)
+                        : MyDefaultTextStyle.getTweetNickStyle(context, SizeConstant.TWEET_REPLY_FONT_SIZE,
+                            bold: false))
+                : WidgetSpan(
+                    child: SimpleTag(
+                    '作者',
+                    round: false,
+                    bgColor: Colours.app_main.withAlpha(200),
+                    textColor: Colors.white,
+                    verticalPadding: 0,
+                  )),
+            directReply && isAuthorReply
+                ? WidgetSpan(
+                    child: SimpleTag(
+                    '作者',
+                    round: false,
+                    bgColor: Colours.app_main.withAlpha(200),
+                    textColor: Colors.white,
+                    verticalPadding: 0,
+                    leftMargin: 5,
+                  ))
+                : TextSpan(text: ''),
             TextSpan(
                 text: reply.type == 1 || reply.tarAccount == null ? '' : ' 回复 ',
                 style: TextStyle(
-                    fontSize: SizeConstant.TWEET_TIME_SIZE, color: ColorConstant.getTweetTimeColor(context))),
+                    fontSize: SizeConstant.TWEET_REPLY_FONT_SIZE - 1,
+                    color: ColorConstant.getTweetTimeColor(context))),
             TextSpan(
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
@@ -553,8 +582,8 @@ class TweetDetailState extends State<TweetDetail> {
                     : (replyAuthorWithAnonymous ? TextConstant.TWEET_AUTHOR_TEXT : reply.tarAccount.nick),
                 style: replyAuthorWithAnonymous
                     ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(
-                        context, SizeConstant.TWEET_FONT_SIZE - 2)
-                    : MyDefaultTextStyle.getTweetNickStyle(context, SizeConstant.TWEET_FONT_SIZE - 2,
+                        context, SizeConstant.TWEET_REPLY_FONT_SIZE)
+                    : MyDefaultTextStyle.getTweetNickStyle(context, SizeConstant.TWEET_REPLY_FONT_SIZE,
                         bold: false))
           ]),
         ),
@@ -577,6 +606,7 @@ class TweetDetailState extends State<TweetDetail> {
   Widget replyWrapContainer(TweetReply reply, bool subDir, int parentId) {
     bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
     Widget wd = GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: !dirReplyAnonymous
             ? () {
                 curReply.parentId = parentId;
@@ -597,9 +627,7 @@ class TweetDetailState extends State<TweetDetail> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: subDir ? 10 : 0),
-            ),
+            subDir ? Container(width: 42) : Gaps.empty,
             _leftContainer(reply.account.avatarUrl, subDir, dirReplyAnonymous, reply.account,
                 isAuthor: reply.account.id == widget._tweet.account.id),
             Flexible(
@@ -607,7 +635,7 @@ class TweetDetailState extends State<TweetDetail> {
                 flex: 1,
                 child: Container(
                   padding: const EdgeInsets.only(right: 5, left: 2, top: 5),
-                  child: Column(children: <Widget>[
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
                     _headContainer(reply),
                     _replyBodyContainer(reply.body),
                     Row(children: <Widget>[
@@ -632,6 +660,7 @@ class TweetDetailState extends State<TweetDetail> {
   @override
   Widget build(BuildContext context) {
     isDark = ThemeUtils.isDark(context);
+
     sw = Application.screenWidth;
     return Scaffold(
         backgroundColor: !isDark
@@ -665,7 +694,7 @@ class TweetDetailState extends State<TweetDetail> {
                             _spaceRow(),
                             Gaps.vGap10,
                             _bodyContainer(),
-                            TweetImageWrapper(picUrls: widget._tweet.picUrls),
+                            TweetMediaWrapper(medias: widget._tweet.medias),
                             Gaps.vGap8,
                             _viewContainer(),
                             Gaps.vGap15,
@@ -771,15 +800,15 @@ class TweetDetailState extends State<TweetDetail> {
   List<BottomSheetItem> _getSheetItems() {
     List<BottomSheetItem> items = List();
 
-    items.add(BottomSheetItem(
-        Icon(
-          Icons.star,
-          color: Color(0xffEE9A49),
-        ),
-        '收藏', () {
-      ToastUtil.showToast(context, '收藏功能暂未开放');
-      Navigator.pop(context);
-    }));
+//    items.add(BottomSheetItem(
+//        Icon(
+//          Icons.star,
+//          color: Color(0xffEE9A49),
+//        ),
+//        '收藏', () {
+//      ToastUtil.showToast(context, '收藏功能暂未开放');
+//      Navigator.pop(context);
+//    }));
     String accountId = Application.getAccountId;
     if (!StringUtil.isEmpty(accountId) && accountId == widget._tweet.account.id) {
       // 作者自己的内容
@@ -794,8 +823,8 @@ class TweetDetailState extends State<TweetDetail> {
           color: Colors.grey,
         ),
         '举报', () {
-      ToastUtil.showToast(context, '举报成功');
-      Navigator.pop(context);
+      NavigatorUtils.goBack(context);
+      NavigatorUtils.goReportPage(context, ReportPage.REPORT_TWEET, widget._tweet.id.toString());
     }));
     return items;
   }
@@ -882,7 +911,9 @@ class TweetDetailState extends State<TweetDetail> {
                                 text: '${widget.hotRank}  ',
                                 style: TextStyle(
                                     fontSize: Dimens.font_sp16,
-                                    color: widget.hotRank < 5 ? Colors.redAccent : (ThemeUtils.isDark(context) ? Colors.grey : Colors.black)))
+                                    color: widget.hotRank < 5
+                                        ? Colors.redAccent
+                                        : (ThemeUtils.isDark(context) ? Colors.grey : Colors.black)))
                           ])),
                           getFires(widget.hotRank),
                           // Text(
@@ -961,6 +992,7 @@ class TweetDetailState extends State<TweetDetail> {
         for (int i = 0; i < count; i++) {
           list.add(Image.asset(
             PathConstant.ICON_FIRE,
+            color: Colors.amber,
             width: SizeConstant.TWEET_HOT_RANK_ICON_SIZE,
             height: SizeConstant.TWEET_HOT_RANK_ICON_SIZE,
           ));

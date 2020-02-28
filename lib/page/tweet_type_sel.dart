@@ -74,8 +74,8 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
                   list.add(k);
                 }
               });
-              Navigator.pop(context);
               widget.callback(list);
+              Navigator.pop(context);
             },
             icon: Text(widget.finishText, style: TextStyle(color: Theme.of(context).textTheme.title.color)),
           )

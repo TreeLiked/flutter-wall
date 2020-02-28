@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/model/media.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -10,31 +11,40 @@ import 'package:iap_app/util/widget_util.dart';
 
 import '../../application.dart';
 
-class TweetImageWrapper extends StatelessWidget {
+class TweetMediaWrapper extends StatelessWidget {
   double sw;
   double sh;
   final double _imgRightPadding = 1.5;
 
-  final List<String> picUrls;
+  final List<Media> medias;
+  List<String> picUrls;
 
-  TweetImageWrapper({this.picUrls}) {
+  TweetMediaWrapper({this.medias}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
+    if(medias != null) {
+      List<Media> temp = List.from(medias)..retainWhere((media) => media.mediaType == Media.TYPE_IMAGE);
+      picUrls = temp.map((f) => f.url).toList();
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return CollectionUtil.isListEmpty(picUrls)
+    return CollectionUtil.isListEmpty(medias)
         ? Gaps.empty
         : Container(
             padding: const EdgeInsets.only(top: 10),
             child: Wrap(
-                children: picUrls.length == 1
-                    ? <Widget>[_imgContainerSingle(context)]
-                    : _handleMultiPics(context)));
+                children:
+                    picUrls.length == 1 ? <Widget>[_imgContainerSingle(context)] : _handleMultiPics(context)));
   }
 
   Widget _imgContainerSingle(BuildContext context) {
+//    if (medias[0].mediaType != Media.TYPE_IMAGE) {
+//      // TODO
+//      return _handleVideo();
+//    }
     String imageUrl = "${picUrls[0]}${OssConstant.THUMBNAIL_SUFFIX}";
     return GestureDetector(
         onTap: () => open(context, 0),
@@ -53,6 +63,10 @@ class TweetImageWrapper extends StatelessWidget {
                         height: Application.screenWidth * 0.25,
                         child: LoadAssetImage(PathConstant.IAMGE_FAILED))),
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)))));
+  }
+
+  Widget _handleVideo() {
+    return Gaps.empty;
   }
 
   List<Widget> _handleMultiPics(BuildContext context) {

@@ -22,4 +22,7 @@ class Media {
   factory Media.fromJson(Map<String, dynamic> json) => _$MediaFromJson(json);
 
   Media();
+
+  Media.fromUrl(this.module, this.url,{this.name});
+
 }

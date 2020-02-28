@@ -29,6 +29,7 @@ class MyTextField extends StatefulWidget {
       this.onSub,
       this.isShowDelete = true,
       this.bgColor,
+      this.border,
       this.keyName})
       : super(key: key);
 
@@ -45,6 +46,7 @@ class MyTextField extends StatefulWidget {
   final onSub;
   final bool isShowDelete;
   final Color bgColor;
+  final InputBorder border;
 
   /// 用于集成测试寻找widget
   final String keyName;
@@ -129,14 +131,18 @@ class _MyTextFieldState extends State<MyTextField> {
             onChanged: (val) => widget.onChange(val),
             onSubmitted: (val) => widget.onSub != null ? widget.onSub(val) : null,
             decoration: InputDecoration(
+                border: widget.border?? null,
                 fillColor: widget.bgColor,
+//                fillColor: widget.bgColor,
                 filled: widget.bgColor != null,
+//                filled: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8),
                 hintText: widget.hintText,
                 hintStyle: TextStyles.textGray14,
                 counterText: "",
                 focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none)),
+                enabledBorder: widget.border != null ? null:InputBorder.none
+            )),
       ],
     );
   }

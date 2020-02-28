@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
@@ -19,25 +22,38 @@ class TweetCardHeaderWrapper extends StatelessWidget {
   final bool anonymous;
   final bool canClick;
   final DateTime tweetCreated;
+  final bool official;
 
-  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetCreated, {this.canClick = true});
+  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetCreated,
+      {this.canClick = true, this.official = false});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         _profileContainer(context),
         Expanded(
           child: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     _nickContainer(context),
+                    official
+                        ? SimpleTag(
+                            '官方',
+                            textColor: Colors.white,
+                            bgColor: TweetTypeEntity.OFFICIAL.color,
+                            round: false,
+                            leftMargin: 5,
+                          )
+                        : Gaps.empty,
                     Expanded(
                       child: Container(
                         alignment: Alignment.topRight,

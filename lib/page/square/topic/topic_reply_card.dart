@@ -3,10 +3,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/topic.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/topic/base_tr.dart';
+import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -68,22 +70,38 @@ class TopicReplyCardItem extends StatelessWidget {
                         style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp15)),
                   ),
                 ),
-                ExtendedText("${reply.body}",
-                    maxLines: 3,
-                    selectionEnabled: true,
-                    overFlowTextSpan: OverFlowTextSpan(children: [
-                      TextSpan(text: ' \u2026 '),
-                      TextSpan(
-                          text: "查看更多",
-                          style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
-                                onTap: () => NavigatorUtils.goBack(context)))
-                    ]),
-                    softWrap: true,
-                    overflow: TextOverflow.fade,
-                    style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
-                        fontSize: SizeConstant.TWEET_REPLY_FONT_SIZE)),
+                GestureDetector(
+                  child: ExtendedText("${reply.body}",
+                      maxLines: 3,
+                      selectionEnabled: true,
+                      overFlowTextSpan: OverFlowTextSpan(children: [
+                        TextSpan(text: ' \u2026 '),
+                        TextSpan(
+                            text: "查看更多",
+                            style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
+                                  onTap: () => NavigatorUtils.goBack(context)))
+                      ]),
+                      softWrap: true,
+                      overflow: TextOverflow.fade,
+                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
+                          fontSize: SizeConstant.TWEET_REPLY_FONT_SIZE)),
+//                  onLongPress: () {
+//                    print("daskldsad;sa=---------------------");
+//                    showModalBottomSheet(
+//                      context: context,
+//                      builder: (BuildContext context) {
+//                        return BottomSheetConfirm(
+//                            title: '操作',
+//                            optChoice: '举报',
+//                            optColor: Colors.redAccent,
+//                            onTapOpt: () => NavigatorUtils.goReportPage(
+//                                context, ReportPage.REPORT_TOPIC_REPLY, reply.topicId.toString()));
+//                      },
+//                    );
+//                  },
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
@@ -120,7 +138,8 @@ class TopicReplyCardItem extends StatelessWidget {
                                         ToastUtil.showToast(context, '没有更多回复');
                                         return;
                                       }
-                                      BottomSheetUtil.showBottomSheetSubTopicReplies(context, reply,closed, replies);
+                                      BottomSheetUtil.showBottomSheetSubTopicReplies(
+                                          context, reply, closed, replies);
                                     },
                                   text: '全部 ${reply.replyCount} 条回复',
                                   style: const TextStyle(color: Color(0xcc03489d))),

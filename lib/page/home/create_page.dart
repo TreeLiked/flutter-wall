@@ -11,6 +11,7 @@ import 'package:iap_app/common-widget/asset_image.dart';
 import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
@@ -104,15 +105,13 @@ class _CreatePageState extends State<CreatePage> {
       return;
     }
 
-    Utils.showDefaultLoadingWithBounds(context, text: '正在发布');
-    _focusNode.unfocus();
+    _focusNode?.unfocus();
     setState(() {
       this._isPushBtnEnabled = false;
       this._publishing = true;
     });
     BaseTweet _baseTweet = BaseTweet();
     bool hasError = false;
-    Navigator.pop(context);
     if (!CollectionUtil.isListEmpty(this.pics)) {
       Utils.showDefaultLoadingWithBounds(context, text: '上传媒体');
       for (int i = 0; i < this.pics.length; i++) {
@@ -126,10 +125,15 @@ class _CreatePageState extends State<CreatePage> {
           String result = await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List(),OssUtil.DEST_TWEET);
           print(result);
           if (result != "-1") {
-            if (_baseTweet.picUrls == null) {
-              _baseTweet.picUrls = List();
+            if (_baseTweet.medias == null) {
+              _baseTweet.medias = List();
             }
-            _baseTweet.picUrls.add(result);
+            // TODO MEDIA
+            Media m = new Media();
+            m.module = Media.MODULE_TWEET;
+            m.name = this.pics[i].name;
+            m.mediaType = Media.TYPE_IMAGE;
+            _baseTweet.medias.add(m);
           } else {
             hasError = true;
             break;
@@ -141,8 +145,8 @@ class _CreatePageState extends State<CreatePage> {
            print('第$i张图片上传完成');
         }
       }
+      Navigator.pop(context);
     }
-    Navigator.pop(context);
     Utils.showDefaultLoadingWithBounds(context, text: '正在发布');
     if (!hasError) {
       _baseTweet.type = _typeName;

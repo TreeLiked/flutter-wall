@@ -273,7 +273,7 @@ class BottomSheetUtil {
                       child: SingleChildScrollView(
                         child: Container(
                             padding:
-                                EdgeInsets.fromLTRB(10, !closed ? ScreenUtil().setHeight(110) : 10, 15, 50),
+                                EdgeInsets.fromLTRB(10, !closed ? ScreenUtil().setHeight(125) : 10, 15, 50),
                             child: Column(
                               children: <Widget>[
                                 Column(
@@ -324,71 +324,76 @@ class BottomSheetUtil {
                         left: 0,
                         top: 0,
                         child: Container(
-                            padding: const EdgeInsets.only(left: 10, right: 10,top: 5),
-                            width: Application.screenWidth,
-                            height: ScreenUtil().setHeight(105),
-                            decoration: BoxDecoration(
-                              color: isDark ? Colours.dark_bg_color : Color(0xffe1e2e3),
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(12),
-                                topRight: const Radius.circular(12),
-                              ),
+                          padding: const EdgeInsets.only(left: 10, right: 10, top: 7, bottom: 7),
+                          width: Application.screenWidth,
+                          height: ScreenUtil().setHeight(105),
+                          decoration: BoxDecoration(
+//                              color: isDark ? Colours.dark_bg_color : Color(0xffe1e2e3),
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(12),
+                              topRight: const Radius.circular(12),
                             ),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: MyTextField(
-                                    controller: _controller,
-                                    hintText: _hintText,
-                                    focusNode: _focusNode,
-                                    maxLength: 256,
-                                    bgColor: !isDark ? Colors.white : Color(0xff454545),
-                                    onSub: (String val) async {
-                                      if (val != null && val.trim().length > 0) {
-                                        Utils.showDefaultLoadingWithBounds(context);
-                                        Result r = await TopicApi.addReply(reply.topicId, myReply.refId,
-                                            myReply.child, myReply.tarAccId, val);
-                                        if (r == null) {
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: MyTextField(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(width: 0.0, style: BorderStyle.none),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  controller: _controller,
+                                  hintText: _hintText,
+                                  focusNode: _focusNode,
+                                  maxLength: 256,
+                                  bgColor: !isDark ? Colors.white : Color(0xff454545),
+                                  onSub: (String val) async {
+                                    if (val != null && val.trim().length > 0) {
+                                      Utils.showDefaultLoadingWithBounds(context);
+                                      Result r = await TopicApi.addReply(
+                                          reply.topicId, myReply.refId, myReply.child, myReply.tarAccId, val);
+                                      if (r == null) {
+                                        NavigatorUtils.goBack(context);
+                                        ToastUtil.showServiceExpToast(context);
+                                        return;
+                                      } else {
+                                        print("${r.isSuccess} --- ${r.message}");
+                                        if (r.isSuccess) {
+                                          _controller?.clear();
+                                          List<SubTopicReply> temp = await TopicApi.queryTopicSubReplies(
+                                              reply.topicId, reply.id, 1, 20);
                                           NavigatorUtils.goBack(context);
-                                          ToastUtil.showServiceExpToast(context);
-                                          return;
-                                        } else {
-                                          print("${r.isSuccess} --- ${r.message}");
-                                          if (r.isSuccess) {
-                                            _controller?.clear();
-                                            List<SubTopicReply> temp = await TopicApi.queryTopicSubReplies(
-                                                reply.topicId, reply.id, 1, 20);
-                                            NavigatorUtils.goBack(context);
-                                            if (temp == null || temp.length == 0) {
-                                              ToastUtil.showToast(context, '查询失败');
-                                              return;
-                                            } else {
-                                              setBottomSheetState(() {
-                                                {
-                                                  storage
-                                                    ..clear()
-                                                    ..addAll(temp);
-                                                  nextPage = 2;
-                                                  _hintText = "回复 ${reply.author.nick}";
-                                                  myReply.refId = reply.id;
-                                                  myReply.topicId = reply.topicId;
-                                                  myReply.child = true;
-                                                  myReply.tarAccId = reply.author.id;
-                                                }
-                                              });
-                                            }
+                                          if (temp == null || temp.length == 0) {
+                                            ToastUtil.showToast(context, '查询失败');
+                                            return;
                                           } else {
-                                            NavigatorUtils.goBack(context);
-                                            ToastUtil.showToast(context, '回复失败');
+                                            setBottomSheetState(() {
+                                              {
+                                                storage
+                                                  ..clear()
+                                                  ..addAll(temp);
+                                                nextPage = 2;
+                                                _hintText = "回复 ${reply.author.nick}";
+                                                myReply.refId = reply.id;
+                                                myReply.topicId = reply.topicId;
+                                                myReply.child = true;
+                                                myReply.tarAccId = reply.author.id;
+                                              }
+                                            });
                                           }
+                                        } else {
+                                          NavigatorUtils.goBack(context);
+                                          ToastUtil.showToast(context, '回复失败');
                                         }
                                       }
-                                    },
-                                  ),
-                                  flex: 1,
-                                )
-                              ],
-                            )))
+                                    }
+                                  },
+                                ),
+                                flex: 1,
+                              )
+                            ],
+                          ),
+                        ))
               ],
             );
           });

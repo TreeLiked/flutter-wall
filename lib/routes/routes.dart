@@ -37,6 +37,7 @@ class Routes {
   static String filter = "/home/filter";
   static String square = "/home/square";
   static String inputTextPage = "/iptxtPage";
+  static String reportPage = "/reportPage";
 
   // various detail
   static String tweetDetail = "/home/tweetDetail";
@@ -76,14 +77,15 @@ class Routes {
       return LoginPage();
     }));
 
-    router.define(index, handler: indexHander);
+    router.define(index, handler: indexHandler);
     router.define(home, handler: homeHandler);
     router.define(square, handler: squareHandler, transitionType: TransitionType.fadeIn);
 
     router.define(create, handler: createHandler);
     router.define(accountProfile, handler: accountProfileHandler);
 
-    router.define(inputTextPage, handler: inputPageHander);
+    router.define(inputTextPage, handler: inputPageHandler);
+    router.define(reportPage, handler: reportHandler);
 
     router.define(cardToGallery, handler: galleryViewHandler);
     router.define(detailToGallery, handler: galleryViewHandler);

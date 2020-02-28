@@ -58,11 +58,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
               ),
               onTap: () async {
                 Map<PermissionGroup, PermissionStatus> permissions =
-                    await PermissionHandler()
-                        .requestPermissions([PermissionGroup.camera]);
+                    await PermissionHandler().requestPermissions([PermissionGroup.camera]);
                 //校验权限
-                if (permissions[PermissionGroup.camera] !=
-                    PermissionStatus.granted) {
+                if (permissions[PermissionGroup.camera] != PermissionStatus.granted) {
                   showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -89,17 +87,12 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                   NavigatorUtils.pushResult(
                       context,
                       Routes.inputTextPage +
-                          Utils.packConvertArgs({
-                            'title': '修改昵称',
-                            'hintText': provider.account.nick,
-                            'limit': 16
-                          }), (res) {
+                          Utils.packConvertArgs(
+                              {'title': '修改昵称', 'hintText': provider.account.nick, 'limit': 16}), (res) {
                     if (!StringUtil.isEmpty(res.toString())) {
                       String content = res.toString();
                       if (content.trim().isNotEmpty) {
-                        _updateSomething(
-                            AccountEditParam(AccountEditKey.NICK, content),
-                            (success) {
+                        _updateSomething(AccountEditParam(AccountEditKey.NICK, content), (success) {
                           setState(() {
                             provider.account.nick = content;
                           });
@@ -120,16 +113,11 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                 NavigatorUtils.pushResult(
                     context,
                     Routes.inputTextPage +
-                        Utils.packConvertArgs({
-                          'title': '修改签名',
-                          'hintText': provider.account.signature ?? '',
-                          'limit': 64
-                        }), (res) {
+                        Utils.packConvertArgs(
+                            {'title': '修改签名', 'hintText': provider.account.signature ?? '', 'limit': 64}),
+                    (res) {
                   if (!StringUtil.isEmpty(res.toString())) {
-                    _updateSomething(
-                        AccountEditParam(
-                            AccountEditKey.SIGNATURE, res.toString()),
-                        (success) {
+                    _updateSomething(AccountEditParam(AccountEditKey.SIGNATURE, res.toString()), (success) {
                       setState(() {
                         provider.account.signature = res.toString();
                       });
@@ -141,29 +129,22 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
             ClickItem(
                 title: "公开信息",
                 onTap: () {
-                  NavigatorUtils.push(
-                      context, SettingRouter.accountPrivateInfoPage);
+                  NavigatorUtils.push(context, SettingRouter.accountPrivateInfoPage);
                 }),
             ClickItem(
                 title: "绑定信息",
                 onTap: () {
-                  NavigatorUtils.push(
-                      context, SettingRouter.accountBindInfoPage);
+                  NavigatorUtils.push(context, SettingRouter.accountBindInfoPage);
                 }),
             ClickItem(
                 title: "实名认证",
                 content: "未认证",
-
                 onTap: () {
-                  NavigatorUtils.push(
-                      context, SettingRouter.accountBindInfoPage);
+                  ToastUtil.showToast(context, '实名认证功能暂未开发');
                 }),
             InkWell(
               onTap: () {
-                showElasticDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => ExitDialog());
+                showElasticDialog(context: context, barrierDismissible: false, builder: (_) => ExitDialog());
               },
               child: Container(
                   margin: EdgeInsets.symmetric(vertical: 20),
@@ -185,16 +166,13 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       final cropKey = GlobalKey<CropState>();
-      File file = await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) =>
-              ImageCropContainer(cropKey: cropKey, file: image)));
+      File file = await Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
       if (file != null) {
         Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
-        String resultUrl =
-            await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);
+        String resultUrl = await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);
         if (resultUrl != "-1") {
-          Result r = await MemberApi.modAccount(
-              AccountEditParam(AccountEditKey.AVATAR, resultUrl));
+          Result r = await MemberApi.modAccount(AccountEditParam(AccountEditKey.AVATAR, resultUrl));
           if (r != null && r.isSuccess) {
             setState(() {
               provider.account.avatarUrl = resultUrl;

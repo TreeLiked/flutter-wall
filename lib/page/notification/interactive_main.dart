@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/member.dart';
+import 'package:iap_app/api/message.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
@@ -23,6 +24,10 @@ import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
 import 'package:iap_app/model/gender.dart';
+import 'package:iap_app/model/message/asbtract_message.dart';
+import 'package:iap_app/model/message/topic_reply_message.dart';
+import 'package:iap_app/model/message/tweet_praise_message.dart';
+import 'package:iap_app/model/message/tweet_reply_message.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -37,6 +42,7 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
+import 'package:iap_app/routes/square_router.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -50,6 +56,7 @@ import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class InteractiveNotificationMainPage extends StatefulWidget {
   @override
@@ -60,34 +67,79 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
     with AutomaticKeepAliveClientMixin<InteractiveNotificationMainPage> {
   bool isDark = false;
 
-  List<InteractiveCard> interMsgList;
+  List<Widget> interMsgList;
+
+  RefreshController _refreshController = RefreshController(initialRefresh: true);
+
+  int currentPage = 1;
+  int pageSize = 25;
 
   @override
   void initState() {
     super.initState();
-    this._fetchInteractiveMessages();
   }
 
   void _fetchInteractiveMessages() async {
-    List<BaseTweet> pbt =
-        await (TweetApi.queryTweets(PageParam(1, pageSize: 25, orgId: Application.getOrgId)));
-    List temp = pbt.map((tweet) {
-      return InteractiveCard(
-          optType: 'PRAISE',
-          cover: tweet.picUrls == null ? null : tweet.picUrls[0],
-          content: tweet.body,
-          jumpRefId: tweet.id.toString(),
-          jump: () {
-            NavigatorUtils.push(context, Routes.tweetDetail + "?tweetId=${tweet.id}");
-          },
-          isDark: isDark,
-          date: tweet.gmtCreated,
-          optAccount: tweet.account,
-          optAccountAnonymous: tweet.anonymous);
+    print('--------------------------请求互动消息---------------');
+    List<AbstractMessage> msgs = await getData(1, pageSize);
+    if (msgs == null || msgs.length == 0) {
+      setState(() {
+        if (this.interMsgList != null) {
+          this.interMsgList.clear();
+        }
+      });
+      _refreshController.refreshCompleted();
+      return;
+    }
+    List<Widget> cards = msgs.map((absMsg) {
+      print(absMsg.toJson());
+      switch (absMsg.messageType) {
+        case MessageType.TWEET_PRAISE:
+          return TweetPraiseCard(absMsg as TweetPraiseMessage);
+        case MessageType.TWEET_REPLY:
+          return TweetReplyCard(absMsg as TweetReplyMessage);
+        case MessageType.TOPIC_REPLY:
+          return TopicReplyCard(absMsg as TopicReplyMessage);
+        case MessageType.POPULAR:
+        case MessageType.PLAIN_SYSTEM:
+        case MessageType.REPORT:
+          return Gaps.empty;
+      }
+      return Gaps.empty;
     }).toList();
     setState(() {
-      this.interMsgList = temp;
+      if (this.interMsgList != null) {
+        this.interMsgList.clear();
+      } else {
+        this.interMsgList = List();
+      }
+      this.interMsgList.addAll(cards);
     });
+    _refreshController.refreshCompleted(resetFooterState: true);
+
+//    List<BaseTweet> pbt =
+//        await (MessageAPI.queryTestMsgs(PageParam(currentPage, pageSize: pageSize, orgId: Application.getOrgId)));
+//    List temp = pbt.map((tweet) {
+//      return InteractiveCard(
+//          optType: 'PRAISE',
+//          cover: tweet.medias == null ? null : tweet.medias[0].url,
+//          content: tweet.body,
+//          jumpRefId: tweet.id.toString(),
+//          jump: () {
+//            NavigatorUtils.push(context, Routes.tweetDetail + "?tweetId=${tweet.id}");
+//          },
+//          isDark: isDark,
+//          date: tweet.gmtCreated,
+//          optAccount: tweet.account,
+//          optAccountAnonymous: tweet.anonymous);
+//    }).toList();
+//    setState(() {
+//      this.interMsgList = temp;
+//    });
+  }
+
+  Future<List<AbstractMessage>> getData(int currentPage, int pageSize) async {
+    return await MessageAPI.queryInteractionMsg(currentPage, pageSize);
   }
 
   @override
@@ -102,15 +154,36 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
           actionName: '全部已读',
           onPressed: () {},
         ),
-        body: interMsgList != null && interMsgList.length > 0
-            ? SingleChildScrollView(
-                child: Column(children: interMsgList),
-              )
-            : Container(
-                alignment: Alignment.topCenter,
-                margin: const EdgeInsets.only(top: 50),
-                child: interMsgList == null ? CupertinoActivityIndicator() : Text('暂无消息'),
-              ));
+        body: SafeArea(
+            top: false,
+            child: SmartRefresher(
+                controller: _refreshController,
+                enablePullDown: true,
+                enablePullUp: true,
+                header: WaterDropHeader(
+                  waterDropColor: Colours.app_main,
+                  complete: const Text('刷新完成'),
+                ),
+                footer: ClassicFooter(
+                  loadingText: '正在加载更多消息...',
+                  canLoadingText: '释放以加载更多',
+                  noDataText: '没有更多消息了',
+                ),
+                onRefresh: _fetchInteractiveMessages,
+                child: SingleChildScrollView(
+                    child: interMsgList != null && interMsgList.length > 0
+                        ? Column(children: interMsgList)
+                        : _refreshController.isRefresh
+                            ? Gaps.empty
+                            : Container(
+                                alignment: Alignment.topCenter,
+                                margin: const EdgeInsets.only(top: 50),
+                                child: Text('暂无消息'),
+                              )))));
+//        body: interMsgList != null && interMsgList.length > 0
+//            ? SingleChildScrollView(
+//          child: Column(children: interMsgList),
+//        )
   }
 
   @override
@@ -118,31 +191,70 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
   bool get wantKeepAlive => true;
 }
 
-class InteractiveCard extends StatelessWidget {
-  final String optType;
-  final String cover;
-  final String content;
-  final String jumpRefId;
-  final Function jump;
-  final DateTime date;
+class TweetPraiseCard extends StatelessWidget {
+  final TweetPraiseMessage praiseMsg;
 
-  final bool isDark;
-  final Account optAccount;
-  final bool optAccountAnonymous;
-
-  InteractiveCard(
-      {this.optType,
-      this.cover,
-      this.content,
-      this.jumpRefId,
-      this.jump,
-      this.isDark = false,
-      this.date,
-      this.optAccount,
-      this.optAccountAnonymous = true});
+  TweetPraiseCard(this.praiseMsg);
 
   @override
   Widget build(BuildContext context) {
+    return InteractiveCard(praiseMsg, praiseMsg.praiser, false, "点赞", jump: () {
+      NavigatorUtils.push(context, Routes.tweetDetail + "?tweetId=${praiseMsg.tweetId}");
+    }, subContent: praiseMsg.tweetBody, coverUrl: praiseMsg.coverUrl);
+  }
+}
+
+class TweetReplyCard extends StatelessWidget {
+  final TweetReplyMessage replyMsg;
+
+  TweetReplyCard(this.replyMsg);
+
+  @override
+  Widget build(BuildContext context) {
+    return InteractiveCard(replyMsg, replyMsg.replier, replyMsg.anonymous, "评论", jump: () {
+      NavigatorUtils.push(context, Routes.tweetDetail + "?tweetId=${replyMsg.tweetId}");
+    }, mainContent: replyMsg.replyContent, subContent: replyMsg.tweetBody, coverUrl: replyMsg.coverUrl);
+  }
+}
+
+class TopicReplyCard extends StatelessWidget {
+  final TopicReplyMessage replyMsg;
+
+  TopicReplyCard(this.replyMsg);
+
+  @override
+  Widget build(BuildContext context) {
+    return InteractiveCard(replyMsg, replyMsg.replier, false, "评论", jump: () {
+      NavigatorUtils.push(context, SquareRouter.topicDetail + "?topicId=${replyMsg.topicId}");
+    }, mainContent: replyMsg.replyContent, subContent: replyMsg.topicBody);
+  }
+}
+
+class InteractiveCard extends StatelessWidget {
+  final AbstractMessage message;
+  final Account optAccount;
+  final accountAnonymous;
+
+  // 点赞，评论，回复
+  final String optType;
+
+  final Function jump;
+
+  // 回复内容
+  final String mainContent;
+
+  // 推文内容 ｜｜ 话题标题
+  final String subContent;
+
+  final String coverUrl;
+  bool isDark = false;
+
+  InteractiveCard(this.message, this.optAccount, this.accountAnonymous, this.optType,
+      {this.jump, this.mainContent, this.subContent, this.coverUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    isDark = ThemeUtils.isDark(context);
     return MyShadowCard(
         onClick: jump,
         child: Container(
@@ -175,44 +287,45 @@ class InteractiveCard extends StatelessWidget {
               Gaps.vGap8,
               Gaps.line,
               Gaps.vGap8,
-              content != null && content != "" ? _buildContent(context) : _buildCover()
+              subContent != null && subContent != "" ? _buildContent(context) : _buildCover()
             ],
           ),
         ));
   }
 
   _buildCover() {
-    return Container(
-      width: double.infinity,
-      constraints: BoxConstraints(
-        maxHeight: 180,
-      ),
-      child: ClipRRect(
-        child: CachedNetworkImage(
-          placeholder: (context, url) => CupertinoActivityIndicator(),
-          imageUrl: cover,
-          fit: BoxFit.cover,
-        ),
-        borderRadius: const BorderRadius.all(const Radius.circular(10)),
-      ),
-    );
+    return coverUrl != null
+        ? Container(
+            width: double.infinity,
+            constraints: BoxConstraints(
+              maxHeight: 180,
+            ),
+            child: ClipRRect(
+              child: CachedNetworkImage(
+                placeholder: (context, url) => CupertinoActivityIndicator(),
+                imageUrl: coverUrl,
+                fit: BoxFit.cover,
+              ),
+              borderRadius: const BorderRadius.all(const Radius.circular(10)),
+            ),
+          )
+        : Gaps.empty;
   }
 
   _buildTitle(context) {
-    String optStr =
-        optType == "PRAISE" ? "点赞" : (optType == "COMMENT" ? "评论" : (optType == "REPLY" ? "回复" : ""));
     return RichText(
       maxLines: 2,
       softWrap: true,
       overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
-            text: optAccountAnonymous
+            text: accountAnonymous
                 ? TextConstant.TWEET_ANONYMOUS_NICK
-                : (optAccount.nick ?? TextConstant.TEXT_UN_CATCH_ERROR),
+                : optAccount!= null? (optAccount.nick ?? TextConstant.TEXT_UN_CATCH_ERROR):"",
             style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp15)),
         TextSpan(
-            text: optStr == "" ? "" : "$optStr了你", style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,fontSize: Dimens.font_sp15))
+            text: " $optType了你",
+            style: MyDefaultTextStyle.getMainTextBodyStyle(isDark, fontSize: Dimens.font_sp15))
       ]),
     );
   }
@@ -223,17 +336,21 @@ class InteractiveCard extends StatelessWidget {
         child: RichText(
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-              children: [TextSpan(text: content, style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,fontSize: Dimens.font_sp15))]),
+          text: TextSpan(children: [
+            TextSpan(
+                text: subContent,
+                style: MyDefaultTextStyle.getMainTextBodyStyle(isDark, fontSize: Dimens.font_sp15))
+          ]),
         ));
   }
 
   _dateTimeContainer(context) {
-    return date != null
+    return message.sentTime != null
         ? Container(
             alignment: Alignment.topCenter,
             margin: const EdgeInsets.only(bottom: 10),
-            child: Text(TimeUtil.getShortTime(date), style: MyDefaultTextStyle.getTweetTimeStyle(context)),
+            child: Text(TimeUtil.getShortTime(message.sentTime),
+                style: MyDefaultTextStyle.getTweetTimeStyle(context)),
           )
         : Gaps.empty;
   }

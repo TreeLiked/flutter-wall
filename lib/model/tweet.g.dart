@@ -17,7 +17,10 @@ BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
         ? null
         : Account.fromJson(json['account'] as Map<String, dynamic>)
     ..enableReply = json['enableReply'] as bool
-    ..picUrls = (json['picUrls'] as List)?.map((e) => e as String)?.toList()
+    ..medias = (json['medias'] as List)
+        ?.map(
+            (e) => e == null ? null : Media.fromJson(e as Map<String, dynamic>))
+        ?.toList()
     ..hot = json['hot'] as int
     ..praise = json['praise'] as int
     ..views = json['views'] as int
@@ -48,7 +51,7 @@ Map<String, dynamic> _$BaseTweetToJson(BaseTweet instance) => <String, dynamic>{
       'anonymous': instance.anonymous,
       'account': instance.account,
       'enableReply': instance.enableReply,
-      'picUrls': instance.picUrls,
+      'picUrls': instance.medias,
       'hot': instance.hot,
       'praise': instance.praise,
       'views': instance.views,

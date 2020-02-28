@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/member.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
+import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -21,9 +23,33 @@ class AccountBindPage extends StatefulWidget {
 
 class _AccountBindPageState extends State<AccountBindPage> {
   String _unBindText = "未绑定";
+
+  String _mobile;
+
   @override
   void dispose() {
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAccountProfile();
+  }
+
+  void _fetchAccountProfile() async {
+    Account acc = await MemberApi.getAccountProfile(Application.getAccountId);
+    print(acc.toJson());
+    if (acc != null) {
+      setState(() {
+        _mobile = acc.mobile;
+      });
+    } else {
+      ToastUtil.showToast(Application.context, '信息加载失败');
+      setState(() {
+        _mobile = "加载失败";
+      });
+    }
   }
 
   @override
@@ -37,7 +63,7 @@ class _AccountBindPageState extends State<AccountBindPage> {
           children: <Widget>[
             ClickItem(
                 title: "手机",
-                content: provider.account.mobile ?? _unBindText,
+                content: _mobile ?? _unBindText,
                 onTap: () {
                   NavigatorUtils.pushResult(
                       context,
@@ -50,9 +76,7 @@ class _AccountBindPageState extends State<AccountBindPage> {
                           }), (res) {
                     String content = res.toString();
                     if (!StringUtil.isEmpty(content)) {
-                      _updateSomething(
-                          AccountEditParam(AccountEditKey.MOBILE, content),
-                          (success) {
+                      _updateSomething(AccountEditParam(AccountEditKey.MOBILE, content), (success) {
                         setState(() {
                           // provider.account.nick = content;
                         });
@@ -62,38 +86,38 @@ class _AccountBindPageState extends State<AccountBindPage> {
                     }
                   });
                 }),
-            ClickItem(
-              title: 'QQ',
-              content: provider.account.qq ?? _unBindText,
-              onTap: () {
-                NavigatorUtils.pushResult(
-                    context,
-                    Routes.inputTextPage +
-                        Utils.packConvertArgs({
-                          'title': '修改签名',
-                          'hintText': provider.account.signature ?? '',
-                          'limit': 64
-                        }), (res) {
-                  if (!StringUtil.isEmpty(res.toString())) {
-                    _updateSomething(
-                        AccountEditParam(
-                            AccountEditKey.SIGNATURE, res.toString()),
-                        (success) {
-                      setState(() {
-                        provider.account.signature = res.toString();
-                      });
-                    });
-                  }
-                });
-              },
-            ),
-            ClickItem(
-                title: "微信",
-                content: provider.account.weixin ?? _unBindText,
-                onTap: () {
-                  NavigatorUtils.push(
-                      context, SettingRouter.accountPrivateInfoPage);
-                }),
+//            ClickItem(
+//              title: 'QQ',
+//              content: provider.account.qq ?? _unBindText,
+//              onTap: () {
+//                NavigatorUtils.pushResult(
+//                    context,
+//                    Routes.inputTextPage +
+//                        Utils.packConvertArgs({
+//                          'title': '修改签名',
+//                          'hintText': provider.account.signature ?? '',
+//                          'limit': 64
+//                        }), (res) {
+//                  if (!StringUtil.isEmpty(res.toString())) {
+//                    _updateSomething(
+//                        AccountEditParam(
+//                            AccountEditKey.SIGNATURE, res.toString()),
+//                        (success) {
+//                      setState(() {
+//                        provider.account.signature = res.toString();
+//                      });
+//                    });
+//                  }
+//                });
+//              },
+//            ),
+//            ClickItem(
+//                title: "微信",
+//                content: provider.account.weixin ?? _unBindText,
+//                onTap: () {
+//                  NavigatorUtils.push(
+//                      context, SettingRouter.accountPrivateInfoPage);
+//                }),
           ],
         ),
       );

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix2;
+import 'package:iap_app/api/message.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
@@ -20,6 +21,7 @@ import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/home/second_floor.dart';
+import 'package:iap_app/page/index/index.dart';
 import 'package:iap_app/page/square/index.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -33,6 +35,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
@@ -81,10 +84,11 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   bool isDark = false;
 
+  int count = 1;
+
   @override
   void initState() {
     super.initState();
-
 
     tabIconsList.forEach((tab) {
       tab.isSelected = false;
@@ -102,6 +106,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 //
 //      }
     });
+
+    firstRefreshMessage();
+  }
+
+  void firstRefreshMessage() async {
+//    Future.delayed(Duration(seconds: 3)).then((val) {
+    MessageAPI.queryInteractionMessageCount().then((cnt) {
+        MessageUtil.setNotificationCnt(cnt);
+    }).whenComplete(() {
+      MessageUtil.startLoopQueryNotification();
+    });
+//    });
   }
 
   @override
@@ -133,7 +149,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   }
 
   Future<void> _onLoading() async {
-    print('loading more data');
     List<BaseTweet> temp = await getData(++_currentPage);
     tweetProvider.update(temp, append: true, clear: false);
     if (CollectionUtil.isListEmpty(temp)) {
@@ -150,6 +165,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
         pageSize: 5,
         orgId: Application.getOrgId,
         types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames))));
+
     return pbt;
   }
 

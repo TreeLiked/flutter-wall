@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/base_dialog.dart';
@@ -9,6 +12,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/fluro_navigator.dart' as prefix1;
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/http_util.dart';
 
 class ExitDialog extends StatefulWidget {
   ExitDialog({
@@ -34,18 +38,23 @@ class _ExitDialog extends State<ExitDialog> {
         if (Application.getDeviceId != null) {
           DeviceApi.removeDeviceInfo(Application.getAccountId, Application.getDeviceId);
         }
+        Application.setLocalAccountToken(null);
 
         Application.setAccount(null);
         Application.setAccountId(null);
 //        await prefix0.SpUtil.clear();
-        prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_TOKEN);
-        prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_ID);
+        await prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+        await prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_ID);
 
-        prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_ID);
-        prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_NAME);
+        await prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_ID);
+        await prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_NAME);
 
-        prefix0.SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
+        await prefix0.SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
+        httpUtil.clearAuthToken();
+        httpUtil2.clearAuthToken();
         prefix1.NavigatorUtils.goBack(context);
+//        await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+//        exit(0);
         NavigatorUtils.push(context, Routes.loginPage, clearStack: true);
       },
     );

@@ -75,6 +75,7 @@ class _SplashPageState extends State<SplashPage> {
 //            Application.setLocalAccountToken(storageToken);
             int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
             String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
+
             if (orgId == -1 || orgName == "") {
               University university = await UniversityApi.queryUnis(storageToken);
               if (university == null) {
@@ -128,7 +129,7 @@ class _SplashPageState extends State<SplashPage> {
     return Material(
         child: _status == 0
             ? CachedNetworkImage(
-                imageUrl: 'https://tva1.sinaimg.cn/large/0082zybpgy1gc5hcdn0jbj318y0u0no2.jpg',
+                imageUrl: 'https://tva1.sinaimg.cn/large/00831rSTgy1gcfmc98pkdj30u01hchdv.jpg',
                 width: double.infinity,
                 fit: BoxFit.cover,
                 height: double.infinity,

@@ -70,7 +70,8 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
 //                                Color(0xfffeada6),
                                 Color(0xffeef1f5),
 //                                Color(0xffe6e9f0),
-                                Color(0xfff5efef),
+//                                Color(0xfff5efef),
+                                Color(0xffdeecdd),
                               ]),
                   ),
 

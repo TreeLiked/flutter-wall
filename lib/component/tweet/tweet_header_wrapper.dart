@@ -21,10 +21,10 @@ class TweetCardHeaderWrapper extends StatelessWidget {
   final Account account;
   final bool anonymous;
   final bool canClick;
-  final DateTime tweetCreated;
+  final DateTime tweetSent;
   final bool official;
 
-  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetCreated,
+  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetSent,
       {this.canClick = true, this.official = false});
 
   @override
@@ -117,10 +117,10 @@ class TweetCardHeaderWrapper extends StatelessWidget {
   }
 
   Widget _timeContainer(BuildContext context) {
-    if (tweetCreated == null) {
+    if (tweetSent == null) {
       return Container(height: 0);
     }
-    return Text(TimeUtil.getShortTime(tweetCreated) ?? "未知",
+    return Text(TimeUtil.getShortTime(tweetSent) ?? "未知",
         style: MyDefaultTextStyle.getTweetTimeStyle(context));
   }
 

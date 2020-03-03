@@ -27,7 +27,13 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+
+
+//  TestWidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(AlmondDonuts());
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   // 透明状态栏
   if (Platform.isAndroid) {
@@ -51,9 +57,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     Routes.configureRoutes(router);
     Application.router = router;
 
-//    PaintingBinding.instance.imageCache.clear();
-//   DefaultCacheManger manager = new DefaultCacheManager();
-// manager.emtyCache();
   }
 
   @override

@@ -80,10 +80,10 @@ class TweetTypeEntity {
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
       iconData: Icons.favorite,
-      iconColor: Colors.deepOrangeAccent,
+      iconColor: Color(0xffcd9cf2),
       name: "LOVE_CONFESSION",
       zhTag: "表白",
-      color: Colors.deepOrangeAccent,
+      color: Color(0xffcd9cf2),
       intro: "对你何止一句中意",
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
@@ -123,10 +123,10 @@ class TweetTypeEntity {
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_complaint.png");
   static const GOSSIP = const TweetTypeEntity(
       iconData: Icons.free_breakfast,
-      iconColor: Color(0xffA2CD5A),
+      iconColor: Color(0xffaacca4),
       intro: "多说话，多喝热水",
       name: "GOSSIP",
-      color: Color(0xffA2CD5A),
+      color: Color(0xffaacca4),
       coverUrl: 'https://tva1.sinaimg.cn/large/006y8mN6ly1g870g0gah7j30qo0xbwl7.jpg',
       zhTag: "闲聊");
 
@@ -140,10 +140,10 @@ class TweetTypeEntity {
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
       iconData: Icons.local_florist,
-      iconColor: Colors.grey,
+      iconColor: Color(0xff485563),
       intro: "你不等我回家，我还能去哪",
       name: "LOST_AND_FOUND",
-      color: Colors.grey,
+      color: Color(0xff485563),
       zhTag: "寻物");
 
   static const HELP_AND_REWARD = const TweetTypeEntity(

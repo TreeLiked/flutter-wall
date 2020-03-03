@@ -1,3 +1,4 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -41,6 +42,7 @@ class BaseTweet {
 
   DateTime gmtModified;
   DateTime gmtCreated;
+  DateTime sentTime;
 
   // 是否点赞
   bool loved;

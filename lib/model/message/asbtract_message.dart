@@ -1,4 +1,6 @@
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/message/plain_system_message.dart';
+import 'package:iap_app/model/message/popular_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
 import 'package:iap_app/model/message/tweet_praise_message.dart';
 import 'package:iap_app/model/message/tweet_reply_message.dart';

@@ -111,6 +111,7 @@ class _CreatePageState extends State<CreatePage> {
       this._publishing = true;
     });
     BaseTweet _baseTweet = BaseTweet();
+    _baseTweet.sentTime = DateTime.now();
     bool hasError = false;
     if (!CollectionUtil.isListEmpty(this.pics)) {
       Utils.showDefaultLoadingWithBounds(context, text: '上传媒体');
@@ -122,7 +123,8 @@ class _CreatePageState extends State<CreatePage> {
           return;
         }
         try {
-          String result = await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List(),OssUtil.DEST_TWEET);
+          String result =
+              await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List(), OssUtil.DEST_TWEET);
           print(result);
           if (result != "-1") {
             if (_baseTweet.medias == null) {
@@ -133,6 +135,8 @@ class _CreatePageState extends State<CreatePage> {
             m.module = Media.MODULE_TWEET;
             m.name = this.pics[i].name;
             m.mediaType = Media.TYPE_IMAGE;
+            m.url = result;
+            m.index = i;
             _baseTweet.medias.add(m);
           } else {
             hasError = true;
@@ -142,7 +146,7 @@ class _CreatePageState extends State<CreatePage> {
           hasError = true;
           print(exp);
         } finally {
-           print('第$i张图片上传完成');
+          print('第$i张图片上传完成');
         }
       }
       Navigator.pop(context);
@@ -217,8 +221,9 @@ class _CreatePageState extends State<CreatePage> {
         maxImages: _maxImageCount,
         enableCamera: true,
         selectedAssets: pics,
-
-        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat",),
+        cupertinoOptions: CupertinoOptions(
+          takePhotoIcon: "chat",
+        ),
         materialOptions: MaterialOptions(
           actionBarColor: "#abcdef",
           actionBarTitle: "选择图片",

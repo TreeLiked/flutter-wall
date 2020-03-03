@@ -74,4 +74,98 @@ class MessageAPI {
     }
     return null;
   }
+
+  static Future<Result> readAllInteractionMessage() async {
+    String url = Api.API_MSG_READ_ALL_INTERACTION;
+    print(url);
+    Result r;
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      r.isSuccess = false;
+      r.message = error;
+      print(error);
+    }
+    return r;
+  }
+
+  static Future<Result> readThisMessage(int messageId) async {
+    String url = Api.API_MSG_READ_THIS + "?mId=$messageId";
+    print(url);
+    Result r;
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      r.isSuccess = false;
+      r.message = error;
+      print(error);
+    }
+    return r;
+  }
+
+  // 0 系统消息，1互动消息
+  static Future<AbstractMessage> fetchLatestMessage(int type) async {
+    if (type != 0 && type != 1) {
+      return null;
+    }
+    String url = Api.API_MSG_LATEST + "?c=${type == 0 ? 'SYSTEM' : 'INTERACTION'}";
+    print(url);
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      bool success = json["isSuccess"];
+      if (success) {
+        if (json['data'] == null) {
+          return null;
+        }
+        return AbstractMessage.fromJson(json['data']);
+      } else {
+        return null;
+      }
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      print(error);
+    }
+    return null;
+  }
+
+  static Future<Result> deleteInteractionMessage() async {
+    String url = Api.API_MSG_READ_ALL_INTERACTION;
+    print(url);
+    Result r;
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      r.isSuccess = false;
+      r.message = error;
+      print(error);
+    }
+    return r;
+  }
+
+  static Future<int> queryInteractionMessageCount() async {
+    String url = Api.API_MSG_INTERACTION_CNT;
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      Result r = Result.fromJson(json);
+      if (r.isSuccess) {
+        return json['data'];
+      }
+      return -1;
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      print(error);
+    }
+    return -1;
+  }
 }

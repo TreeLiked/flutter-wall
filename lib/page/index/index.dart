@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/bloc/count_bloc.dart';
 import 'package:iap_app/bottom_bar_navigation_pattern/animated_bottom_bar.dart';
 import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/navigation_icon_view.dart';
@@ -13,6 +14,7 @@ import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/message_util.dart';
 
 class Index extends StatefulWidget {
   @override
@@ -33,10 +35,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
 
   final pageController = PageController();
 
-  final StreamController<int> _notificationStreamCtrl = new StreamController<int>.broadcast();
-
   bool _showBottomNavBar = true;
-
 
   @override
   void initState() {
@@ -44,9 +43,18 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     initPageData();
   }
 
+  @override
+  void dispose() {
+    MessageUtil.close();
+//    _homePageStreamCntCtrl?.close();
+    super.dispose();
+  }
+
   void initPageData() {
     _navigationViews = <NavigationIconView>[
-      NavigationIconView(null,
+      NavigationIconView(MessageUtil.homePageStreamCntCtrl,
+          badgeAble: true,
+          pointType: true,
           icon: Icon(Icons.home, size: 20, color: Colors.grey),
           title: Container(
             child: MyDefaultTextStyle.getBottomNavTextItem('首页', Colors.indigo),
@@ -60,7 +68,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
             child: MyDefaultTextStyle.getBottomNavTextItem('热门', Colors.pinkAccent),
           ),
           vsync: this),
-      NavigationIconView(_notificationStreamCtrl,
+      NavigationIconView(MessageUtil.notificationStreamCntCtrl,
           badgeAble: true,
           icon: Icon(Icons.notifications, size: 20, color: Colors.grey),
           title: Container(
@@ -76,10 +84,6 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
           selColor: Colors.teal,
           vsync: this),
     ];
-    // 刷新视图
-    // _navigationViews.forEach((v) => {
-    //       // v.controller.addListener(_rebuild)
-    //     });
 
     _pageList = <StatefulWidget>[
       HomePage(pullDownCallBack: (_) => updateBottomBar(_)),
@@ -115,6 +119,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   }
 
   void pageOnTap(index) {
+    // index 0-3
     pageController.jumpToPage(index);
   }
 

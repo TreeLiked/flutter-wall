@@ -1,3 +1,4 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'account.dart';
@@ -28,6 +29,7 @@ class TweetReply {
 
   DateTime gmtModified;
   DateTime gmtCreated;
+  DateTime sentTime;
 
   TweetReply();
 

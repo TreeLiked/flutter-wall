@@ -80,7 +80,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                   options: Options(responseType: ResponseType.bytes));
               ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
               Navigator.pop(context);
-              Utils.vibrateOnceOrNotSupport();
+//              Utils.vibrateOnceOrNotSupport();
               ToastUtil.showToast(context, '已保存到手机相册');
             }),
             BottomSheetItem(

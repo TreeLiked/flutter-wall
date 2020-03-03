@@ -11,17 +11,11 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class MemberApi {
-  static String localAccountToken =
-      SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+
   static Future<Account> getMyAccount(String token) async {
     print(Api.API_QUERY_ACCOUNT + '-------------------');
     Response response;
     try {
-      if (httpUtil2.options.headers.containsKey("Authorization")) {
-        httpUtil2.options.headers.update('Authorization', (_) => token);
-      } else {
-        httpUtil2.options.headers.putIfAbsent('Authorization', () => token);
-      }
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       dynamic json2 = json["data"];
@@ -57,7 +51,6 @@ class MemberApi {
 
   static Future<Account> getAccountDisplayProfile(String accountId) async {
     print(Api.API_QUERY_FILTERED_ACCOUNT_PROFILE + '-------------------');
-    checkAuthorizationHeaders();
     Response response;
     try {
       response = await httpUtil2.dio.get(
@@ -81,7 +74,6 @@ class MemberApi {
   static Future<Result> modAccount(AccountEditParam param) async {
     Response response;
     try {
-      checkAuthorizationHeaders();
       response =
           await httpUtil2.dio.post(Api.API_ACCOUNT_MOD_BASIC, data: param);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -184,7 +176,6 @@ class MemberApi {
         "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
         (passiveAccountId ?? "");
     print(url);
-    checkAuthorizationHeaders();
     Response response;
     try {
       response = await httpUtil2.dio.get(url);
@@ -204,7 +195,6 @@ class MemberApi {
 
   static Future<Result> updateAccountSetting(String key, String value) async {
     Response response;
-    checkAuthorizationHeaders();
     print(Api.API_UPDATE_ACCOUNT_SETTING + "-------------------");
     try {
       var data = {"key": key, "value": value};
@@ -219,20 +209,4 @@ class MemberApi {
     return null;
   }
 
-  static void checkAuthorizationHeaders() {
-    bool update = false;
-    if (localAccountToken == null || localAccountToken == "") {
-      update = true;
-      localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
-    }
-    if (httpUtil2.options.headers.containsKey("Authorization")) {
-      if (update) {
-        httpUtil2.options.headers
-            .update('Authorization', (_) => localAccountToken);
-      }
-    } else {
-      httpUtil2.options.headers
-          .putIfAbsent('Authorization', () => localAccountToken);
-    }
-  }
 }

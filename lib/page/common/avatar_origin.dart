@@ -36,7 +36,6 @@ class AvatarOriginPage extends StatelessWidget {
                     NavigatorUtils.goBack(context);
                     NavigatorUtils.goBack(context);
                     if (success) {
-                      Utils.vibrateOnceOrNotSupport();
                       ToastUtil.showToast(context, '已保存到手机相册');
                     } else {
                       ToastUtil.showToast(context, '保存失败');

@@ -168,7 +168,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
     }
 
     if (displayCnt < GlobalConfig.MAX_DISPLAY_REPLY) {
-      list.add(_singleReplyContainer(null, false, true, showReplyCnt: widget.tweet.replyCount - displayCnt));
+//      list.add(_singleReplyContainer(null, false, true, showReplyCnt: widget.tweet.replyCount - displayCnt));
     } else if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY && widget.tweet.replyCount > displayCnt) {
       list.add(_singleReplyContainer(null, false, true,
           showReplyCnt: widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));

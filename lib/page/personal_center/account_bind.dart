@@ -42,7 +42,7 @@ class _AccountBindPageState extends State<AccountBindPage> {
     print(acc.toJson());
     if (acc != null) {
       setState(() {
-        _mobile = acc.mobile;
+        _mobile = acc.profile.mobile;
       });
     } else {
       ToastUtil.showToast(Application.context, '信息加载失败');
@@ -64,28 +64,29 @@ class _AccountBindPageState extends State<AccountBindPage> {
             ClickItem(
                 title: "手机",
                 content: _mobile ?? _unBindText,
-                onTap: () {
-                  NavigatorUtils.pushResult(
-                      context,
-                      Routes.inputTextPage +
-                          Utils.packConvertArgs({
-                            'title': '修改手机',
-                            'hintText': provider.account.mobile ?? _unBindText,
-                            'limit': 11,
-                            'kt': 1,
-                          }), (res) {
-                    String content = res.toString();
-                    if (!StringUtil.isEmpty(content)) {
-                      _updateSomething(AccountEditParam(AccountEditKey.MOBILE, content), (success) {
-                        setState(() {
-                          // provider.account.nick = content;
-                        });
-                      });
-                    } else {
-                      ToastUtil.showToast(context, '手机号格式错误');
-                    }
-                  });
-                }),
+//                onTap: () {
+//                  NavigatorUtils.pushResult(
+//                      context,
+//                      Routes.inputTextPage +
+//                          Utils.packConvertArgs({
+//                            'title': '修改手机',
+//                            'hintText': provider.account.mobile ?? _unBindText,
+//                            'limit': 11,
+//                            'kt': 1,
+//                          }), (res) {
+//                    String content = res.toString();
+//                    if (!StringUtil.isEmpty(content)) {
+//                      _updateSomething(AccountEditParam(AccountEditKey.MOBILE, content), (success) {
+//                        setState(() {
+//                          // provider.account.nick = content;
+//                        });
+//                      });
+//                    } else {
+//                      ToastUtil.showToast(context, '手机号格式错误');
+//                    }
+//                  });
+//                }
+                ),
 //            ClickItem(
 //              title: 'QQ',
 //              content: provider.account.qq ?? _unBindText,

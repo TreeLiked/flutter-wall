@@ -517,7 +517,7 @@ class TweetDetailState extends State<TweetDetail> {
     BaseTweet bt = widget._tweet;
     bool isAuthorReply = reply.account.id == bt.account.id;
     bool directReply = reply.type == 1;
-    bool authorReplyWithAnonymous = (isAuthorReply && bt.anonymous) || reply.anonymous;
+    bool authorReplyWithAnonymous = isAuthorReply && (bt.anonymous || reply.anonymous);
     bool replyAuthorWithAnonymous =
         (reply.tarAccount != null) && (reply.tarAccount.id == bt.account.id) && reply.anonymous;
 
@@ -577,7 +577,7 @@ class TweetDetailState extends State<TweetDetail> {
                       _forwardAccountProfile(false, reply.tarAccount);
                     }
                   },
-                text: reply.type == 1 || reply.tarAccount == null
+                text: directReply || reply.tarAccount == null
                     ? ''
                     : (replyAuthorWithAnonymous ? TextConstant.TWEET_AUTHOR_TEXT : reply.tarAccount.nick),
                 style: replyAuthorWithAnonymous
@@ -605,6 +605,7 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget replyWrapContainer(TweetReply reply, bool subDir, int parentId) {
     bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
+    bool isAuthor = reply.account.id == widget._tweet.account.id;
     Widget wd = GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: !dirReplyAnonymous
@@ -629,7 +630,7 @@ class TweetDetailState extends State<TweetDetail> {
           children: <Widget>[
             subDir ? Container(width: 42) : Gaps.empty,
             _leftContainer(reply.account.avatarUrl, subDir, dirReplyAnonymous, reply.account,
-                isAuthor: reply.account.id == widget._tweet.account.id),
+                isAuthor: isAuthor),
             Flexible(
                 fit: FlexFit.tight,
                 flex: 1,
@@ -642,7 +643,7 @@ class TweetDetailState extends State<TweetDetail> {
                       Container(
                           padding: EdgeInsets.only(top: 5),
                           child: Text(
-                            TimeUtil.getShortTime(reply.gmtCreated),
+                            TimeUtil.getShortTime(reply.sentTime),
                             style: TextStyle(
                                 fontSize: SizeConstant.TWEET_TIME_SIZE,
                                 color: ColorConstant.getTweetTimeColor(context)),

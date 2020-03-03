@@ -79,8 +79,15 @@ class Api {
 
   // notification message
   static const String API_MSG_LIST_INTERACTION = API_BASE_INF_URL + "/message/listInteractions.json";
+  static const String API_MSG_READ_ALL_INTERACTION = API_BASE_INF_URL + "/message/interactionsAllRead.do";
   static const String API_MSG_LIST_SYSTEM = API_BASE_INF_URL + "/message/listSystems.json";
   static const String API_MSG_READ_THIS = API_BASE_INF_URL + "/message/read.do";
+
+  static const String API_MSG_INTERACTION_CNT = API_BASE_INF_URL + "/message/interactionAlertCount.json";
+
+  static const String API_MSG_LATEST = API_BASE_INF_URL + "/message/latest.json";
+
+
 
   static Map<String, dynamic> convertResponse(Object responseData) {
     String jsonTemp = json.encode(responseData);

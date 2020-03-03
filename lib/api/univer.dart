@@ -29,7 +29,6 @@ class UniversityApi {
   static Future<University> queryUnis(String accountToken) async {
     Response response;
     String url = Api.API_QUERY_ORG;
-    MemberApi.checkAuthorizationHeaders();
     try {
       response = await httpUtil2.dio.post(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);

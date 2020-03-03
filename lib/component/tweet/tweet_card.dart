@@ -88,7 +88,7 @@ class TweetCard2 extends StatelessWidget {
                     TweetCardHeaderWrapper(
                       tweet.account,
                       tweet.anonymous,
-                      tweet.gmtCreated,
+                      tweet.sentTime,
                       canClick: upClickable,
                       official: tweet.type == TweetTypeEntity.OFFICIAL.name,
                     ),
@@ -162,10 +162,20 @@ class TweetCard2 extends StatelessWidget {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-            color: (!ThemeUtils.isDark(context)
-                    ? tweetTypeMap[tweet.type].color
-                    : tweetTypeMap[tweet.type].color.withAlpha(100)) ??
-                Colors.blueAccent,
+            gradient: new LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: ThemeUtils.isDark(context)
+                    ? [tweetTypeMap[tweet.type].color.withAlpha(100)]
+                    : [
+                        tweetTypeMap[tweet.type].color,
+                  tweetTypeMap[tweet.type].color.withAlpha(188),
+//                  Colors.white,
+                      ]),
+//            color: (!ThemeUtils.isDark(context)
+//                    ? tweetTypeMap[tweet.type].color
+//                    : tweetTypeMap[tweet.type].color.withAlpha(100)) ??
+//                Colors.blueAccent,
             borderRadius: BorderRadius.only(topRight: temp, bottomLeft: temp, bottomRight: temp)),
         child: Text(' # ' + (tweetTypeMap[tweet.type].zhTag ?? TextConstant.TEXT_UN_CATCH_TWEET_TYPE),
             style: MyDefaultTextStyle.getTweetTypeStyle(context)));

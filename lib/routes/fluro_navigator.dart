@@ -70,6 +70,17 @@ class NavigatorUtils {
                 {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
   }
 
+  static void goAccountProfile2(BuildContext context, Account account) {
+    if (account == null) {
+      return;
+    }
+    push(
+        context,
+        Routes.accountProfile +
+            Utils.packConvertArgs(
+                {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+  }
+
   static void goReportPage(BuildContext context, String type, String refId) {
     if (type == null || refId == null) {
       return;

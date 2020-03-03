@@ -24,6 +24,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
@@ -104,10 +105,19 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 已经存在账户，直接登录
         String token = res.message;
         // 设置token
-        SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
+        Application.setLocalAccountToken(token);
+        httpUtil.updateAuthToken(token);
+        httpUtil2.updateAuthToken(token);
+        await SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
+
         _loadStorageTweetTypes();
         // 查询账户信息
         Account acc = await MemberApi.getMyAccount(token);
+        if (acc == null) {
+          NavigatorUtils.goBack(context);
+          ToastUtil.showToast(context, '数据错误，请退出程序重试');
+          return;
+        }
         AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
         accountLocalProvider.setAccount(acc);
         print(accountLocalProvider.account.toJson());
@@ -132,6 +142,11 @@ class _SMSLoginPageState extends State<LoginPage> {
 //        NavigatorUtils.goBack(context);
         NavigatorUtils.push(context, Routes.splash, clearStack: true);
       } else {
+        if (res.code == "-1") {
+          NavigatorUtils.goBack(context);
+          ToastUtil.showToast(context, '错误的手机号，非法请求');
+          return;
+        }
         RegTemp.regTemp.phone = _phoneController.text;
         NavigatorUtils.goBack(context);
         NavigatorUtils.push(context, LoginRouter.loginInfoPage);
@@ -173,7 +188,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           _renderSubBody(),
           Gaps.vGap30,
           Container(
-            color: !isDark ?Color(0xfff7f8f8):Colours.dark_bg_color_darker,
+            color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
             child: Row(
               children: <Widget>[
                 Container(
@@ -196,7 +211,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           ),
           _showCodeInput
               ? Container(
-                  color: !isDark ?Color(0xfff7f8f8):Colours.dark_bg_color_darker,
+                  color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
                   margin: const EdgeInsets.only(top: 5),
                   child: Row(
                     children: <Widget>[
@@ -257,7 +272,7 @@ class _SMSLoginPageState extends State<LoginPage> {
   _renderGetCodeLine() {
     return Container(
         width: double.infinity,
-        color: _canGetCode ? Colors.lightBlue : (!isDark ?Color(0xffD7D6D9):Colours.dark_bg_color_darker),
+        color: _canGetCode ? Colors.lightBlue : (!isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker),
         margin: const EdgeInsets.only(top: 15),
         child: FlatButton(
           child: Text(!_codeWaiting ? '获取短信验证码' : '重新获取 $s(s)', style: TextStyle(color: Colors.white)),

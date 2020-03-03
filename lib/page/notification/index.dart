@@ -1,29 +1,26 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
-import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/api/message.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/model/message/asbtract_message.dart';
+import 'package:iap_app/model/message/plain_system_message.dart';
+import 'package:iap_app/model/message/popular_message.dart';
+import 'package:iap_app/model/message/topic_reply_message.dart';
+import 'package:iap_app/model/message/tweet_praise_message.dart';
+import 'package:iap_app/model/message/tweet_reply_message.dart';
 import 'package:iap_app/page/notification/index_main_item.dart';
-import 'package:iap_app/page/notification/pm_page.dart';
-import 'package:iap_app/page/notification/sn.page.dart';
-import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/setting_router.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
-import 'package:iap_app/util/widget_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -37,87 +34,90 @@ class NotificationIndexPage extends StatefulWidget {
 
 class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
-//  String iconSubPath = "notification/tag";
-//  String iconContactPath = "notification/control";
-//  String iconOfficialPath = "notification/bell";
-
   String iconSubPath = "heart";
   String iconContactPath = "wave";
   String iconOfficialPath = "author";
 
-  TabController _controller;
-  int _currentIndex = 0;
-  List<String> titleTabs = ['私信', "评论", "点赞", "通知"];
-
-  List<Widget> tabs;
+  final String noMessage = "暂无新通知";
 
   bool isDark = false;
 
-  RefreshController _refreshController = new RefreshController();
+  RefreshController _refreshController = new RefreshController(initialRefresh: true);
+
+  AbstractMessage _latestInteractionMsg;
+  AbstractMessage _latestSystemMsg;
+
+  SingleMessageControl interactionMsgCtrl = MessageUtil.interactionMsgControl;
 
   @override
   void initState() {
     super.initState();
+    _loopQueryInteraction(true);
+  }
 
-    _controller = TabController(vsync: this, length: titleTabs.length, initialIndex: _currentIndex)
-      ..addListener(() {
-        setState(() {
-          _currentIndex = _controller.index;
-        });
+  _fetchLatestMessage() async {
+    MessageAPI.fetchLatestMessage(0).then((msg) {
+      print('--------------有新消息${msg == null ? 'null' : msg.toJson()}');
+      setState(() {
+        this._latestSystemMsg = msg;
       });
+    }).whenComplete(() => _refreshController.refreshCompleted());
 
-    tabs = [
-      Badge(
-          badgeColor: Colours.dark_app_main,
-          position: BadgePosition.topRight(top: 0),
-          animationDuration: Duration(milliseconds: 300),
-          animationType: BadgeAnimationType.slide,
-          badgeContent: Text(
-            "11",
-            style: TextStyle(color: Colors.white),
-          ),
-          child: Tab(text: titleTabs[0])),
-      Badge(
-          badgeColor: Colours.dark_app_main,
-          position: BadgePosition.topRight(top: 0),
-          animationDuration: Duration(milliseconds: 300),
-          animationType: BadgeAnimationType.slide,
-          badgeContent: Text(
-            "11",
-            style: TextStyle(color: Colors.white),
-          ),
-          child: Tab(text: titleTabs[1])),
-      Badge(
-          badgeColor: Colours.dark_app_main,
-          position: BadgePosition.topRight(top: 0),
-          animationDuration: Duration(milliseconds: 300),
-          animationType: BadgeAnimationType.slide,
-          badgeContent: Text(
-            "11",
-            style: TextStyle(color: Colors.white),
-          ),
-          child: Tab(text: titleTabs[2])),
-      Badge(
-          badgeColor: Colours.dark_app_main,
-          position: BadgePosition.topRight(top: 0),
-          animationDuration: Duration(milliseconds: 300),
-          animationType: BadgeAnimationType.slide,
-          badgeContent: null,
-          child: Tab(text: titleTabs[3])),
-    ];
+    // 这里是查询互动消息!!!
+    MessageAPI.fetchLatestMessage(1).then((msg) {
+      print('--------------有新消息${msg == null ? 'null' : msg.toJson()}');
+      if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
+        _loopQueryInteraction(false);
+        setState(() {
+          this._latestInteractionMsg = msg;
+        });
+      }
+    }).whenComplete(() => _refreshController.refreshCompleted());
   }
 
-
-  _fetchLatestMessage() async{
-
-    await Future.delayed(Duration(seconds: 2));
-
-    _refreshController.refreshCompleted();
+  _loopQueryInteraction(bool loop) {
+    MessageAPI.queryInteractionMessageCount().then((count) {
+      if (count != -1) {
+        if (interactionMsgCtrl.localCount != count) {
+          interactionMsgCtrl.localCount = count;
+          print('发现新消息，开始刷新');
+          _refreshController.requestRefresh().then((_) {
+            // 刷新完成后增加小红点
+            interactionMsgCtrl.streamCount = count;
+          });
+        }
+      }
+    }).whenComplete(() {
+      if (loop) {
+        Future.delayed(Duration(seconds: 60)).then((_) {
+          _loopQueryInteraction(true);
+        });
+      }
+    });
   }
+
+//  _loopQuerySystem() {
+//    MessageAPI.queryInteractionMessageCount().then((count) {
+//      if (count != -1) {
+//        MessageUtil = count;
+//        if (this.interactionCount > 0) {
+//          print('发现新消息，开始刷新');
+//          _refreshController.requestRefresh();
+//        }
+//      }
+//    }).whenComplete(() {
+//      Future.delayed(Duration(seconds: 60)).then((_) {
+//        _loopQueryInteraction();
+//      });
+//    });
+//  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    print('notification build');
+    print('notification' + (ModalRoute.of(context).isCurrent ? "当前页面" : "不是当前页面"));
+
     checkAndRequestNotificationPermission();
     isDark = ThemeUtils.isDark(context);
     Color _badgeColor = isDark ? Colours.dark_app_main : Colours.app_main;
@@ -128,49 +128,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         automaticallyImplyLeading: false,
         title: Text('消息', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
         centerTitle: false,
-//        bottom: PreferredSize(
-//          child: TabBar(
-//            tabs: [
-//              Badge(
-//                  badgeColor: _badgeColor,
-//                  position: BadgePosition.topRight(top: 0),
-//                  animationDuration: Duration(milliseconds: 300),
-//                  animationType: BadgeAnimationType.slide,
-//                  badgeContent: _getBadgeText(9),
-//                  child: Tab(text: titleTabs[0])),
-//              Badge(
-//                  badgeColor: _badgeColor,
-//                  position: BadgePosition.topRight(top: 0),
-//                  animationDuration: Duration(milliseconds: 300),
-//                  animationType: BadgeAnimationType.slide,
-//                  badgeContent: _getBadgeText(5),
-//                  child: Tab(text: titleTabs[1])),
-//              Badge(
-//                  badgeColor: _badgeColor,
-//                  position: BadgePosition.topRight(top: 0),
-//                  animationDuration: Duration(milliseconds: 300),
-//                  animationType: BadgeAnimationType.slide,
-//                  badgeContent: _getBadgeText("99+"),
-//                  child: Tab(text: titleTabs[2])),
-//              Badge(
-//                  badgeColor: _badgeColor,
-//                  position: BadgePosition.topRight(top: 0),
-//                  animationDuration: Duration(milliseconds: 300),
-//                  animationType: BadgeAnimationType.slide,
-//                  badgeContent: null,
-//                  child: Tab(text: titleTabs[3])),
-//            ],
-//            controller: _controller,
-//            indicatorColor: Colours.app_main,
-//            labelColor: Colours.app_main,
-//            unselectedLabelColor: isDark ? Colours.dark_text : Colours.text,
-//            indicatorSize: TabBarIndicatorSize.label,
-//            labelStyle: TextStyle(fontSize: Dimens.font_sp14),
-//            unselectedLabelStyle: TextStyle(fontSize: Dimens.font_sp13),
-//          ),
-//          preferredSize: Size.fromHeight(38),
-//        ),
-//        actions: _renderActions(),
       ),
       body: SafeArea(
         top: false,
@@ -185,27 +142,35 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  MainMessageItem(iconPath: iconSubPath, title: "订阅消息", body: "暂无订阅消息",color: Colors.lightBlue),
+                  MainMessageItem(
+                      iconPath: iconSubPath, title: "订阅消息", body: "暂无订阅消息", color: Colors.lightBlue),
                   Container(
                     margin: const EdgeInsets.only(left: 15),
                     child: Gaps.line,
                   ),
                   MainMessageItem(
-                    iconPath: iconContactPath,
-                    color: Colors.lightGreen,
-                    title: "互动消息",
-                    body: "暂无新通知",
-                    onTap: () => NavigatorUtils.push(context, NotificationRouter.interactiveMain),
-                  ),
+                      iconPath: iconContactPath,
+                      color: Colors.lightGreen,
+                      title: "互动消息",
+                      body: _latestInteractionMsg == null ? noMessage : _getInteractionBody(),
+                      time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
+                      controller: MessageUtil.interactionMsgControl.controller,
+                      onTap: () {
+                        _latestInteractionMsg = null;
+                        interactionMsgCtrl.clear();
+                        MessageUtil.clearNotificationCnt();
+                        NavigatorUtils.push(context, NotificationRouter.interactiveMain);
+                      }),
                   Gaps.vGap5,
                   MainMessageItem(
                     iconPath: iconOfficialPath,
                     color: Colors.pinkAccent,
                     title: "墙君",
                     tagName: "官方",
-                    body: "面对新冠状病毒我们应该怎么办" * 2,
-                    count: 7,
-                    time: '上午 9:18',
+                    controller: MessageUtil.systemStreamCntCtrl,
+                    body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
+                    time: _latestSystemMsg == null ? null : _latestSystemMsg.sentTime,
+                    pointType: true,
                     onTap: () {
                       NavigatorUtils.push(context, NotificationRouter.systemMain);
                     },
@@ -213,18 +178,44 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                 ],
               ),
             )),
-//        child: TabBarView(controller: _controller, children: [
-//          PersonalMessagePage(),
-//          PersonalMessagePage(),
-//          PersonalMessagePage(),
-//          SystemNotificationPage(),
-//        ]),
       ),
     );
   }
 
+  String _getInteractionBody() {
+    if (_latestInteractionMsg == null) {
+      return noMessage;
+    } else {
+      if (_latestInteractionMsg.messageType == MessageType.TWEET_PRAISE) {
+        TweetPraiseMessage message = _latestInteractionMsg as TweetPraiseMessage;
+        return "${message.praiser.nick} 赞了你";
+      } else if (_latestInteractionMsg.messageType == MessageType.TWEET_REPLY) {
+        TweetReplyMessage message = _latestInteractionMsg as TweetReplyMessage;
+        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 评论了你: ${message.replyContent}";
+      } else if (_latestInteractionMsg.messageType == MessageType.TOPIC_REPLY) {
+        TopicReplyMessage message = _latestInteractionMsg as TopicReplyMessage;
+        return "${message.replier.nick} 评论了你: ${message.replyContent}";
+      } else {
+        return noMessage;
+      }
+    }
+  }
 
-
+  String _getSystemMsgBody() {
+    if (_latestSystemMsg == null) {
+      return noMessage;
+    } else {
+      if (_latestSystemMsg.messageType == MessageType.PLAIN_SYSTEM) {
+        PlainSystemMessage message = _latestInteractionMsg as PlainSystemMessage;
+        return "${message.title ?? message.content}";
+      } else if (_latestSystemMsg.messageType == MessageType.POPULAR) {
+        PopularMessage message = _latestInteractionMsg as PopularMessage;
+        return "恭喜，您发布的内容登上了热门排行榜";
+      } else {
+        return noMessage;
+      }
+    }
+  }
 
   Text _getBadgeText(dynamic content) {
     return Text(
@@ -250,19 +241,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         },
       )
     ];
-    if (_currentIndex == 0) {
-      return [IconButton(icon: Icon(Icons.notifications_none), onPressed: () {})];
-    }
-    if (_currentIndex == 3) {
-      return [
-        FlatButton(
-            child: Text('全部已读',
-                style:
-                    TextStyle(fontSize: Dimens.font_sp12, color: isDark ? Colours.dark_text : Colours.text)),
-            onPressed: () {})
-      ];
-    }
-    return [];
   }
 
   void checkAndRequestNotificationPermission() async {

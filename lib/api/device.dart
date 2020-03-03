@@ -25,7 +25,6 @@ class DeviceApi {
     String url = Api.API_REMOVE_DEVICE_INFO + "?deviceId=$regId";
     print(url);
     try {
-      TweetApi.checkAuthorizationHeaders();
       httpUtil.dio.get(url).then((res) {
         print('delete device info finished');
       });

@@ -13,30 +13,22 @@ TweetReply _$TweetReplyFromJson(Map<String, dynamic> json) {
     ..parentId = json['parentId'] as int
     ..type = json['type'] as int
     ..body = json['body'] as String
-    ..account = json['account'] == null
-        ? null
-        : Account.fromJson(json['account'] as Map<String, dynamic>)
-    ..tarAccount = json['tarAccount'] == null
-        ? null
-        : Account.fromJson(json['tarAccount'] as Map<String, dynamic>)
+    ..account = json['account'] == null ? null : Account.fromJson(json['account'] as Map<String, dynamic>)
+    ..tarAccount =
+        json['tarAccount'] == null ? null : Account.fromJson(json['tarAccount'] as Map<String, dynamic>)
     ..children = (json['children'] as List)
-        ?.map((e) =>
-            e == null ? null : TweetReply.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e == null ? null : TweetReply.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..anonymous = json['anonymous'] as bool
     ..hot = json['hot'] as int
     ..praise = json['praise'] as int
     ..replyCount = json['replyCount'] as int
-    ..gmtModified = json['gmtModified'] == null
-        ? null
-        : DateTime.parse(json['gmtModified'] as String)
-    ..gmtCreated = json['gmtCreated'] == null
-        ? null
-        : DateTime.parse(json['gmtCreated'] as String);
+    ..gmtModified = json['gmtModified'] == null ? null : DateTime.parse(json['gmtModified'] as String)
+    ..sentTime = json['sentTime'] == null ? null : DateTime.parse(json['sentTime'] as String)
+    ..gmtCreated = json['gmtCreated'] == null ? null : DateTime.parse(json['gmtCreated'] as String);
 }
 
-Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) => <String, dynamic>{
       'id': instance.id,
       'tweetId': instance.tweetId,
       'parentId': instance.parentId,
@@ -49,6 +41,8 @@ Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
       'hot': instance.hot,
       'praise': instance.praise,
       'replyCount': instance.replyCount,
+      'sentTime':
+          DateUtil.formatDate(instance.sentTime, format: 'yyyy-MM-dd HH:mm:ss'),
       'gmtModified': instance.gmtModified?.toIso8601String(),
       'gmtCreated': instance.gmtCreated?.toIso8601String()
     };

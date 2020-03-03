@@ -25,7 +25,6 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:vibrate/vibrate.dart';
 
 class Utils {
   static String packConvertArgs(Map<String, Object> args) {
@@ -254,9 +253,9 @@ class Utils {
     Clipboard.setData(ClipboardData(text: text));
   }
 
-  static void vibrateOnceOrNotSupport() async {
-    Vibrate.feedback(FeedbackType.medium);
-  }
+//  static void vibrateOnceOrNotSupport() async {
+//    Vibrate.feedback(FeedbackType.medium);
+//  }
 
   static void openPhotoView(
     BuildContext context,

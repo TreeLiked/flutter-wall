@@ -221,7 +221,6 @@ class TopicApi {
   static Future<List<BaseTweet>> queryAccountTweets(PageParam pageParam, String passiveAccountId,
       {bool needAnonymous = true}) async {
     String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
-    checkAuthorizationHeaders();
     Response response;
     var param = {
       'currentPage': pageParam.currentPage,
@@ -251,7 +250,6 @@ class TopicApi {
     String requestUrl =
         Api.API_TWEET_DELETE + "?" + SharedConstant.ACCOUNT_ID_IDENTIFIER + "=$accountId&tId=$tweetId";
     print(requestUrl);
-    checkAuthorizationHeaders();
     Response response;
     try {
       response = await httpUtil.dio.post(requestUrl);
@@ -366,18 +364,4 @@ class TopicApi {
     return HotTweet.fromJson(json);
   }
 
-  static void checkAuthorizationHeaders() {
-    bool update = false;
-//    if (localAccountToken == null || localAccountToken == "") {
-//      update = true;
-//      localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
-//    }
-//    if (httpUtil.options.headers.containsKey("Authorization")) {
-//      if (update) {
-//        httpUtil.options.headers.update('Authorization', (_) => localAccountToken);
-//      }
-//    } else {
-//      httpUtil.options.headers.putIfAbsent('Authorization', () => localAccountToken);
-//    }
-  }
 }

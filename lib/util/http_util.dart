@@ -4,11 +4,13 @@ import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/util/toast_util.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
 var httpUtil2 = HttpUtil(baseUrl: Api.API_BASE_MEMBER_URL, header: headersJson);
 
 //普通格式header
+
 Map<String, dynamic> headers = {
   "Accept": "application/json",
   "Content-Type": "application/x-www-form-urlencoded",
@@ -21,10 +23,45 @@ Map<String, dynamic> headersJson = {
 };
 
 class HttpUtil {
+  static final String authKey = "Authorization";
+
   Dio dio;
   BaseOptions options;
+  Map<String, dynamic> headers;
+
+//
+//  void resetToken(String token) {
+//    BaseOptions options = BaseOptions(
+//      // 请求基地址，一般为域名，可以包含路径
+//      // baseUrl: baseUrl,
+//      //连接服务器超时时间，单位是毫秒.
+//      connectTimeout: 10000,
+//
+//      //[如果返回数据是json(content-type)，dio默认会自动将数据转为json，无需再手动转](https://github.com/flutterchina/dio/issues/30)
+//      // responseType: ResponseType.plain,
+//
+//      ///  响应流上前后两次接受到数据的间隔，单位为毫秒。如果两次间隔超过[receiveTimeout]，
+//      ///  [Dio] 将会抛出一个[DioErrorType.RECEIVE_TIMEOUT]的异常.
+//      ///  注意: 这并不是接收数据的总时限.
+//      receiveTimeout: 30000,
+//      headers: this.headers,
+//    );
+//
+//    dio = new Dio(options);
+//
+//    String myToken = Application.getLocalAccountToken;
+//    if (myToken == null) {
+//      myToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+//      Application.setLocalAccountToken(myToken);
+//    }
+//    if (myToken == null) {
+//      ToastUtil.showToast(Application.context, '用户身份过期，请重新登录');
+//    }
+//    header.putIfAbsent("Authorization", () => myToken);
+//  }
 
   HttpUtil({String baseUrl = Api.API_BASE_INF_URL, Map<String, dynamic> header}) {
+    this.headers = header;
     options = BaseOptions(
       // 请求基地址，一般为域名，可以包含路径
       // baseUrl: baseUrl,
@@ -48,9 +85,38 @@ class HttpUtil {
       myToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
       Application.setLocalAccountToken(myToken);
     }
-    header.putIfAbsent("Authorization", () => myToken);
+    if (myToken == null) {
+      ToastUtil.showToast(Application.context, '用户身份过期，请重新登录');
+    }
+    header.putIfAbsent(authKey, () => myToken);
 
     // dio.interceptors.add(CookieManager(CookieJar()));
+  }
+
+  void updateAuthToken(String accountToken) {
+    if (headers.containsKey(authKey)) {
+      headers.update(authKey, (_) => accountToken);
+    } else {
+      headers.putIfAbsent(authKey, () => accountToken);
+    }
+    options = BaseOptions(
+      connectTimeout: 10000,
+      receiveTimeout: 30000,
+      headers: this.headers,
+    );
+    dio = new Dio(options);
+  }
+
+  void clearAuthToken() {
+    if (headers.containsKey(authKey)) {
+      headers.remove(authKey);
+    }
+    options = BaseOptions(
+      connectTimeout: 10000,
+      receiveTimeout: 30000,
+      headers: this.headers,
+    );
+    dio = new Dio(options);
   }
 
   Future<Result<T>> get<T>(url, {data, options, cancelToken}) async {

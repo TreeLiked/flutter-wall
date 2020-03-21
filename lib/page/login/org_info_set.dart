@@ -10,6 +10,7 @@ import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/university.dart';
@@ -24,6 +25,7 @@ import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
@@ -74,8 +76,16 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
       await prefix0.SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, _cId);
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, _cName);
+      Application.setLocalAccountToken(token);
+      httpUtil.updateAuthToken(token);
+      httpUtil2.updateAuthToken(token);
 
       Account acc = await MemberApi.getMyAccount(token);
+      if (acc == null) {
+        ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+        NavigatorUtils.goBack(context);
+        return;
+      }
       AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
       accountLocalProvider.setAccount(acc);
       _loadStorageTweetTypes();
@@ -116,7 +126,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                     padding: const EdgeInsets.symmetric(vertical: 1),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(5.0),
                       color: ThemeUtils.isDark(context) ? Color(0xff363636) : Color(0xfff2f2f2),
                     ),
                     margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
@@ -197,8 +207,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                       return Padding(
 //                                          alignment: Alignment.center,
                                           padding: const EdgeInsets.only(top: 37),
-                                          child: Text('没有满足条件的数据',
-                                              style: TextStyles.textGray14));
+                                          child: Text('没有满足条件的数据', style: TextStyles.textGray14));
                                     }
 
                                     return ListView.builder(

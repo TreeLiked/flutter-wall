@@ -59,6 +59,8 @@ class InteractionCardItem extends StatelessWidget {
       body = temp.tweetBody;
       cover = temp.coverUrl;
       refId = temp.tweetId;
+      accountAnonymous = false;
+      print("------" + temp.toJson().toString());
     } else if (mstT == MessageType.TWEET_REPLY) {
       // 推文回复
       TweetReplyMessage temp = message as TweetReplyMessage;
@@ -69,6 +71,7 @@ class InteractionCardItem extends StatelessWidget {
       cover = temp.coverUrl;
       refId = temp.tweetId;
       accountAnonymous = temp.anonymous;
+      print("------" + temp.toJson().toString());
     } else if (mstT == MessageType.TOPIC_REPLY) {
       // 话题回复
       TopicReplyMessage temp = message as TopicReplyMessage;
@@ -77,10 +80,12 @@ class InteractionCardItem extends StatelessWidget {
       replyBody = temp.replyContent;
       body = temp.topicBody;
       refId = temp.topicId;
+      accountAnonymous = false;
+      print("------" + temp.toJson().toString());
     } else {
       return Gaps.empty;
     }
-    if (account == null) {
+    if (account == null && !accountAnonymous) {
       return Gaps.empty;
     }
 
@@ -110,7 +115,7 @@ class InteractionCardItem extends StatelessWidget {
 //          );
 //        },
         child: Container(
-            margin: const EdgeInsets.only(left: 10.0, bottom: 5.0, right: 10.0, top: 5.0),
+            margin: const EdgeInsets.only(left: 10.0, bottom: 8.0, right: 10.0, top: 5.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -135,7 +140,7 @@ class InteractionCardItem extends StatelessWidget {
                         children: <Widget>[
                           Flexible(
                               child: GestureDetector(
-                            child: _buildNick(account.nick, accountAnonymous),
+                            child: _buildNick(account, accountAnonymous),
                             onTap: () => _handleGoAccount(context, account),
                           )),
                           Expanded(
@@ -157,7 +162,8 @@ class InteractionCardItem extends StatelessWidget {
                           optType == 0
                               ? const LoadAssetSvg('love_fill',
                                   width: 20, height: 20, color: Color(0xFFFF80AB))
-                              : const LoadAssetSvg('reply', width: 20, height: 20, color: Colors.blue),
+//                              : const LoadAssetSvg('list_choose', width: 20, height: 20, color: Colors.blue),
+                              : Gaps.empty,
                           optType == 0
                               ? const Text(' 赞了你', style: const TextStyle())
                               : Flexible(
@@ -166,7 +172,10 @@ class InteractionCardItem extends StatelessWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     text: TextSpan(children: [
-                                      TextSpan(text: ' 回复: ', style: const TextStyle(color: Colors.blue)),
+                                      TextSpan(
+                                          text: ' 回复: ',
+                                          style: const TextStyle(
+                                              color: Colors.blue, fontSize: Dimens.font_sp14)),
                                       TextSpan(
                                           text: '$replyBody',
                                           style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
@@ -191,10 +200,10 @@ class InteractionCardItem extends StatelessWidget {
             )));
   }
 
-  _buildNick(String nick, bool anonymous) {
+  _buildNick(Account account, bool anonymous) {
     return Container(
       child: Text(
-        anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : nick,
+        anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
         style: MyDefaultTextStyle.getTweetNickStyle(thisContext, Dimens.font_sp15),

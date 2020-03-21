@@ -95,7 +95,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "显示姓名",
+            title: "展示姓名",
             content:
                 _getOpenCloseText(settingMap[AccountSettingKeys.displayName]),
             onTap: () {
@@ -114,7 +114,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "显示性别",
+            title: "展示性别",
             content:
                 _getOpenCloseText(settingMap[AccountSettingKeys.displaySex]),
             onTap: () {
@@ -133,7 +133,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "显示年龄",
+            title: "展示年龄",
             content:
                 _getOpenCloseText(settingMap[AccountSettingKeys.displayAge]),
             onTap: () {
@@ -171,7 +171,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "显示手机号 [如果绑定]",
+            title: "展示手机号 [如果绑定]",
             content:
                 _getOpenCloseText(settingMap[AccountSettingKeys.displayPhone]),
             onTap: () {
@@ -190,7 +190,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "显示QQ [如果有]",
+            title: "展示QQ [如果有]",
             content:
                 _getOpenCloseText(settingMap[AccountSettingKeys.displayQQ]),
             onTap: () {
@@ -209,7 +209,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "显示微信 [如果有]",
+            title: "展示微信 [如果有]",
             content:
                 _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
             onTap: () {

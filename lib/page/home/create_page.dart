@@ -158,7 +158,7 @@ class _CreatePageState extends State<CreatePage> {
       _baseTweet.account = Application.getAccount;
       _baseTweet.enableReply = _enableReply;
       _baseTweet.anonymous = _anonymous;
-      _baseTweet.orgId = 1;
+      _baseTweet.orgId = Application.getOrgId;
       print(_baseTweet.toJson());
       TweetApi.pushTweet(_baseTweet).then((result) {
         Navigator.of(context).pop();

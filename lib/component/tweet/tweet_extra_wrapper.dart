@@ -156,11 +156,12 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       if (totalCnt == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
         break;
       }
-      list.add(_singleReplyContainer(dirTr, true, false, parentId: dirTr.id));
+      list.add(_singleReplyContainer(dirTr, false, false, parentId: dirTr.id));
       displayCnt++;
       totalCnt++;
-      if (!CollectionUtil.isListEmpty(dirTr.children)) {
-        dirTr.children.forEach((tr) {
+      List<TweetReply> subs = dirTr.children;
+      if (subs != null && subs.length > 0) {
+        subs.forEach((tr) {
           list.add(_singleReplyContainer(tr, true, false, parentId: dirTr.id));
           totalCnt++;
         });
@@ -169,27 +170,37 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
 
     if (displayCnt < GlobalConfig.MAX_DISPLAY_REPLY) {
 //      list.add(_singleReplyContainer(null, false, true, showReplyCnt: widget.tweet.replyCount - displayCnt));
-    } else if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY && widget.tweet.replyCount > displayCnt) {
-      list.add(_singleReplyContainer(null, false, true,
-          showReplyCnt: widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));
+    } else if (displayCnt >= GlobalConfig.MAX_DISPLAY_REPLY && widget.tweet.replyCount > displayCnt) {
+      list.add(_bottomMore(widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));
+//      list.add(_singleReplyContainer(null, false, true,
+//          showReplyCnt: widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));
     }
 
     return list;
   }
 
+  Widget _bottomMore(int displayCnt) {
+    return Padding(
+      padding: EdgeInsets.only(top: 5),
+      child: Text(
+        displayCnt > 0 ? "查看更多 $displayCnt 条回复 .." : "查看更多回复..",
+        style: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
+      ),
+    );
+  }
   Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom, {int parentId, int showReplyCnt}) {
     if (bottom) {
       return Padding(
         padding: EdgeInsets.only(top: 5),
         child: Text(
           showReplyCnt > 0 ? "查看更多 $showReplyCnt 条回复 .." : "查看更多回复..",
-          style: TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
+          style: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
         ),
       );
     }
     bool authorAnonymous = widget.tweet.anonymous;
     String accNick = AccountUtil.getNickFromAccount(reply.account, false);
-    bool isAuthorReply = reply.account!= null && (widget.tweet.account.id == reply.account.id);
+    bool isAuthorReply = reply.account != null && (widget.tweet.account.id == reply.account.id);
     if (isAuthorReply && authorAnonymous) {
       accNick = "作者";
       reply.account.nick = "作者";

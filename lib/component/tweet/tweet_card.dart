@@ -96,7 +96,7 @@ class TweetCard2 extends StatelessWidget {
                     _typeContainer(context),
                     Gaps.vGap5,
                     _bodyContainer(context),
-                    TweetMediaWrapper(medias: tweet.medias),
+                    TweetMediaWrapper(tweet.id, medias: tweet.medias),
                     Gaps.vGap8,
                     displayPraise
                         ? TweetCardExtraWrapper(
@@ -166,10 +166,13 @@ class TweetCard2 extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: ThemeUtils.isDark(context)
-                    ? [tweetTypeMap[tweet.type].color.withAlpha(100)]
+                    ? [
+                        Colors.white.withAlpha(180),
+                        tweetTypeMap[tweet.type].color.withAlpha(100),
+                      ]
                     : [
                         tweetTypeMap[tweet.type].color,
-                  tweetTypeMap[tweet.type].color.withAlpha(188),
+                        tweetTypeMap[tweet.type].color.withAlpha(188),
 //                  Colors.white,
                       ]),
 //            color: (!ThemeUtils.isDark(context)

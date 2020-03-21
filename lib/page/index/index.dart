@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iap_app/api/v_c.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/bloc/count_bloc.dart';
 import 'package:iap_app/bottom_bar_navigation_pattern/animated_bottom_bar.dart';
@@ -15,6 +17,9 @@ import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/message_util.dart';
+import 'package:iap_app/util/page_shared.widget.dart';
+import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/version_utils.dart';
 
 class Index extends StatefulWidget {
   @override
@@ -41,6 +46,8 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   void initState() {
     super.initState();
     initPageData();
+
+    checkUpdate();
   }
 
   @override
@@ -50,11 +57,17 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     super.dispose();
   }
 
+  void checkUpdate() async {
+    VersionUtils.checkUpdate().then((result) {
+      if (result != null) {
+        VersionUtils.displayUpdateDialog(result,slient: true);
+      }
+    });
+  }
+
   void initPageData() {
     _navigationViews = <NavigationIconView>[
-      NavigationIconView(MessageUtil.homePageStreamCntCtrl,
-          badgeAble: true,
-          pointType: true,
+      NavigationIconView(null,
           icon: Icon(Icons.home, size: 20, color: Colors.grey),
           title: Container(
             child: MyDefaultTextStyle.getBottomNavTextItem('首页', Colors.indigo),
@@ -113,6 +126,8 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   }
 
   void onPageChanged(int index) {
+    print('----------onpage changed');
+
     setState(() {
       _currentIndex = index;
     });
@@ -120,6 +135,13 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
 
   void pageOnTap(index) {
     // index 0-3
+    if (index == _currentIndex) {
+      if (index == 0) {
+        PageSharedWidget.homepageScrollController
+            .animateTo(.0, duration: Duration(milliseconds: 2000), curve: Curves.easeInOutQuint);
+      }
+      return;
+    }
     pageController.jumpToPage(index);
   }
 

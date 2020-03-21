@@ -7,25 +7,33 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/api/unlike.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/component/flexible_detail_bar.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
+import 'package:iap_app/component/tweet_delete_bottom_sheet.dart';
 import 'package:iap_app/component/widget_sliver_future_builder.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/account_display_info.dart';
 import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/account/account_setting.dart';
 import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/page_param.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/page/common/avatar_origin.dart';
+import 'package:iap_app/page/common/report_page.dart';
+import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
@@ -33,6 +41,7 @@ import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
+import 'package:provider/provider.dart';
 
 class AccountProfilePage extends StatefulWidget {
   final String nick;
@@ -106,26 +115,23 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
                 color: Colors.white,
               ),
               onPressed: () {
-                BottomSheetUtil.showBottomSheetView(context, [
-//                  BottomSheetItem(
-//                      Icon(
-//                        Icons.favorite,
-//                        color: Colors.redAccent,
-//                      ),
-//                      '关注', () async {
-//                    ToastUtil.showToast(context, '关注成功');
-//                    Navigator.pop(context);
-//                  }),
-                  BottomSheetItem(
-                      Icon(
-                        Icons.warning,
-                        color: Colors.grey,
-                      ),
-                      '举报', () {
-                    ToastUtil.showToast(context, '举报成功');
+                List<BottomSheetItem> items = List();
+                items.add(BottomSheetItem(
+                    Icon(
+                      Icons.warning,
+                      color: Colors.grey,
+                    ),
+                    '举报', () {
+                  Navigator.pop(context);
+                  NavigatorUtils.goReportPage(context, ReportPage.REPORT_ACCOUNT, widget.accountId, "账户举报");
+                }));
+                if (Application.getAccountId != null && Application.getAccountId != widget.accountId) {
+                  items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.red), '屏蔽此人', () {
                     Navigator.pop(context);
-                  }),
-                ]);
+                    _showShieldedAccountBottomSheet();
+                  }));
+                }
+                BottomSheetUtil.showBottomSheetView(context, items);
               },
             ),
           ],
@@ -162,6 +168,7 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
                             avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
                             whitePadding: true,
                             size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
+                            cache: true,
                             onTap: () {
                               Navigator.push(context, PageRouteBuilder(pageBuilder:
                                   (BuildContext context, Animation animation, Animation secondaryAnimation) {
@@ -193,6 +200,33 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
                   ]))))
     ];
   }
+
+  _showShieldedAccountBottomSheet() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleConfirmBottomSheet(
+            tip: "您确认屏蔽此用户，屏蔽后此用户的内容将对您不可见",
+            onTapDelete: () async {
+              Utils.showDefaultLoading(context);
+              Result r = await UnlikeAPI.unlikeAccount(widget.accountId.toString());
+              NavigatorUtils.goBack(context);
+              if (r == null) {
+                ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+              } else {
+                if (r.isSuccess) {
+                  final _tweetProvider = Provider.of<TweetProvider>(context);
+                  _tweetProvider.deleteByAccount(widget.accountId);
+                  ToastUtil.showToast(context, '屏蔽成功，您将不会在看到此用户的内容');
+                  NavigatorUtils.goBack(context);
+                } else {
+                  ToastUtil.showToast(context, "用户屏蔽失败");
+                }
+              }
+            });
+      },
+    );
+  }
 }
 
 class AccountProfileInfoPageView extends StatefulWidget {
@@ -211,8 +245,8 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
   double _iconSize = 25;
   Function _getProfileTask;
 
-  Future<Account> getProfileInfo(BuildContext context) async {
-    Account account = await MemberApi.getAccountDisplayProfile(widget.accountId);
+  Future<AccountDisplayInfo> getProfileInfo(BuildContext context) async {
+    AccountDisplayInfo account = await MemberApi.getAccountDisplayProfile(widget.accountId);
     return account;
   }
 
@@ -231,7 +265,10 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     );
   }
 
-  Widget _buildBody(Account account) {
+  Widget _buildBody(AccountDisplayInfo account) {
+    if (account == null) {
+      return Center(child: Text('用户信息获取失败'));
+    }
     return Scaffold(
       // backgroundColor: Color(0xff191970),
       // 设置没有高度的 appbar，目的是为了设置状态栏的颜色
@@ -244,26 +281,26 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           children: <Widget>[
             // _buildAvatarItem(account.avatarUrl),
             _titleItem('基础信息'),
-            _buildNick(account.nick, account.profile.gender),
+            _buildNick(account),
             Gaps.line,
             _buildSig(account.signature),
 
             Gaps.vGap30,
             _titleItem('个人档案'),
-            _buildPersonInfo('contact', Colors.blueGrey, account.profile.name, '姓名不可见'),
+            _buildPersonInfo('face_rec', Colors.brown, account.name, account.displayName),
             Gaps.line,
-            _buildPersonInfo('age', Colors.blueGrey,
-                account.profile.age > 0 ? account.profile.age.toString() : null, '年龄不可见'),
+            _buildPersonInfo('calendar_circle', Colors.lightBlue,
+                account.age > 0 ? account.age.toString() : null, account.displayAge),
             Gaps.line,
-            _buildPersonInfo('location', Colors.blueGrey, _getRegionText(account.profile), '地区不可见'),
+            _buildPersonInfo('location3', Colors.green, _getRegionText(account), account.displayRegion),
 
             Gaps.vGap30,
             _titleItem('社交信息'),
-            _buildContactItem('phone', Colors.blue, account.profile.mobile),
+            _buildContactItem('phone', Colors.brown, account.mobile, account.displayPhone),
             Gaps.line,
-            _buildContactItem('qq25', Colors.red, account.profile.qq),
+            _buildContactItem('qq25', Colors.lightBlue, account.qq, account.displayQQ),
             Gaps.line,
-            _buildContactItem('wechat', Colors.green, account.profile.wechat),
+            _buildContactItem('wechat', Colors.green, account.wechat, account.displayWeChat),
 
             // _buildItem('姓名', account.profile.name),
           ],
@@ -272,11 +309,11 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     );
   }
 
-  Widget _buildNick(String nick, String male) {
-    if (male != null) {
-      male = male.toUpperCase();
-      if (genderMap[male] == null) {
-        male = null;
+  Widget _buildNick(AccountDisplayInfo account) {
+    String male;
+    if (account.displaySex) {
+      if (account.gender != null) {
+        male = account.gender.toUpperCase();
       }
     }
     return Container(
@@ -294,7 +331,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 8,
-            child: Text(nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
+            child: Text(account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14)),
@@ -334,7 +371,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
                 softWrap: true,
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,
-                style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: Dimens.font_sp13p5)),
+                style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: Dimens.font_sp14)),
           ),
           _getCopyWidget(sig)
         ],
@@ -346,7 +383,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     return Container(child: Text(title, style: TextStyle(color: Colors.grey)));
   }
 
-  _buildPersonInfo(String svgName, Color color, String value, String nullText) {
+  _buildPersonInfo(String svgName, Color color, String value, bool display) {
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: Row(
@@ -356,7 +393,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 1,
-            child: Text(value ?? nullText,
+            child: Text(display ? (value ?? '用户未设置') : '不可见',
                 softWrap: true,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -370,7 +407,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     );
   }
 
-  String _getRegionText(AccountProfile profile) {
+  String _getRegionText(AccountDisplayInfo profile) {
     if (StringUtil.isEmpty(profile.province)) {
       return null;
     } else {
@@ -378,15 +415,15 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
         return profile.province;
       } else {
         if (StringUtil.isEmpty(profile.district)) {
-          return profile.province + " " + profile.city;
+          return profile.province + ", " + profile.city;
         } else {
-          return profile.province + " " + profile.city + " " + profile.district;
+          return profile.province + ", " + profile.city + ", " + profile.district;
         }
       }
     }
   }
 
-  _buildContactItem(String svgName, Color color, String value) {
+  _buildContactItem(String svgName, Color color, String value, bool display) {
     bool isNull = StringUtil.isEmpty(value);
     return Container(
       margin: EdgeInsets.only(top: 15),
@@ -403,7 +440,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 1,
-            child: Text(value ?? _nullText,
+            child: Text(!display ? '用户未开放' : value ?? _nullText,
                 softWrap: true,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -463,11 +500,11 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   EasyRefreshController _easyRefreshController;
 
   Future<Map<String, dynamic>> _getAccountSettingOrTweets(BuildContext context) async {
-    Map<String, dynamic> settings = await MemberApi.getAccountSetting(passiveAccountId: widget.accountId);
-    if (settings == null) {
+    AccountDisplayInfo info = await MemberApi.getAccountDisplayProfile(widget.accountId);
+    if (info == null) {
       return null;
     } else {
-      bool display = settings[AccountSettingKeys.displayHistoryTweet];
+      bool display = info.displayHistoryTweet;
       if (display == null || display != true) {
         return {
           'displayHistoryTweet': false,

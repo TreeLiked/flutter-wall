@@ -42,8 +42,8 @@ class Routes {
   // various detail
   static String tweetDetail = "/home/tweetDetail";
 
-  static String cardToGallery = "/home/cardTogallery";
-  static String detailToGallery = "/home/card/detailTogallery";
+//  static String cardToGallery = "/home/cardTogallery";
+//  static String detailToGallery = "/home/card/detailTogallery";
 
   static String accountProfile = "/home/accountProfile";
 
@@ -87,8 +87,8 @@ class Routes {
     router.define(inputTextPage, handler: inputPageHandler);
     router.define(reportPage, handler: reportHandler);
 
-    router.define(cardToGallery, handler: galleryViewHandler);
-    router.define(detailToGallery, handler: galleryViewHandler);
+//    router.define(cardToGallery, handler: galleryViewHandler);
+//    router.define(detailToGallery, handler: galleryViewHandler);
 
     // router.define(hot,
     //     handler: demoRouteHandler, transitionType: TransitionType.inFromLeft);

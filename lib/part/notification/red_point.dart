@@ -5,7 +5,8 @@ import 'package:iap_app/res/gaps.dart';
 class RedPoint extends StatefulWidget {
   final AbstractMessage message;
 
-  RedPoint(this.message);
+  final Color color;
+  RedPoint(this.message, {this.color = Colors.red});
 
 //  final RedPoint
 
@@ -30,7 +31,7 @@ class _RedPoint extends State<RedPoint> {
               height: 8.0,
               width: 8.0,
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: widget.color,
                 borderRadius: BorderRadius.circular(4.0),
               ),
             )

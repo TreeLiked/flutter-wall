@@ -69,10 +69,10 @@ class _SplashPageState extends State<SplashPage> {
             _goLogin();
           } else {
             AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+            print("${acc.toJson()}");
             accountLocalProvider.setAccount(acc);
             Application.setAccount(acc);
             Application.setAccountId(acc.id);
-//            Application.setLocalAccountToken(storageToken);
             int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
             String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
 
@@ -129,10 +129,12 @@ class _SplashPageState extends State<SplashPage> {
     return Material(
         child: _status == 0
             ? CachedNetworkImage(
-                imageUrl: 'https://tva1.sinaimg.cn/large/00831rSTgy1gcfmc98pkdj30u01hchdv.jpg',
+                imageUrl:
+                    'https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/app_launch_img.png',
                 width: double.infinity,
                 fit: BoxFit.cover,
                 height: double.infinity,
+                fadeInCurve: Curves.linear,
               )
             : Index());
   }

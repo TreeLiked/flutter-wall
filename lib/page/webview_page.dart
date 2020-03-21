@@ -20,7 +20,7 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  Completer<WebViewController>();
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +47,9 @@ class _WebViewPageState extends State<WebViewPage> {
                 body: WebView(
                   initialUrl: widget.url,
                   javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) {
+                  onWebViewCreated: (WebViewController webViewController) async{
                     _controller.complete(webViewController);
+                    print((await webViewController.getTitle()).toString());
                   },
                 )),
           );

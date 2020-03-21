@@ -5,11 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix2;
+import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/university.dart';
@@ -253,9 +255,11 @@ class _SMSLoginPageState extends State<LoginPage> {
           maxLines: 3,
           text: TextSpan(children: [
             TextSpan(text: "登录即表示同意 ", style: TextStyles.textGray14),
-            TextSpan(text: "Wall用户协议", style: TextStyles.textClickable),
-            TextSpan(text: " 和 ", style: TextStyles.textGray14),
-            TextSpan(text: "隐私协议", style: TextStyles.textClickable),
+            TextSpan(
+                text: "Wall服务协议",
+                style: TextStyles.textClickable,
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => NavigatorUtils.goWebViewPage(context, "WALL服务协议", Api.API_AGREEMENT)),
           ]),
         ));
   }
@@ -287,6 +291,9 @@ class _SMSLoginPageState extends State<LoginPage> {
                     Utils.showDefaultLoadingWithBounds(context);
                     Result res = await MemberApi.sendPhoneVerificationCode(_phoneController.text);
                     NavigatorUtils.goBack(context);
+                    if(res == null) {
+                      ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+                    }
                     if (res.isSuccess) {
                       ToastUtil.showToast(context, '发送成功');
                       _nodeText1.unfocus();

@@ -25,6 +25,10 @@ class PathConstant {
 
   static const String ANONYMOUS_PROFILE =
       "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/annoymous_profile.png";
+
+  static const String DEFAULT_PROFILE =
+      "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/default_profile.png";
+
   static const String HOT_COVER_URL =
       "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/hot_cover.jpg";
 
@@ -38,4 +42,6 @@ class PathConstant {
 
   // nav
   static const String ICON_GO_BACK_ARROW = "assets/icons/ic_back_black.png";
+
+
 }

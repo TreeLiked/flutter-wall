@@ -70,13 +70,11 @@ class MessageUtil extends BaseBloc {
   static final SingleMessageControl interactionMsgControl = new SingleMessageControl();
   static final SingleMessageControl systemMsgControl = new SingleMessageControl();
 
-  static final StreamController<int> _homePageStreamCntCtrl = new StreamController<int>.broadcast();
 
   static final StreamController<int> _notificationStreamCntCtrl = new StreamController<int>.broadcast();
   static final StreamController<int> _interactionStreamCntCtrl = new StreamController<int>.broadcast();
   static final StreamController<int> _systemStreamCntCtrl = new StreamController<int>.broadcast();
 
-  static get homePageStreamCntCtrl => _homePageStreamCntCtrl;
 
   static get notificationStreamCntCtrl => _notificationStreamCntCtrl;
 
@@ -117,13 +115,11 @@ class MessageUtil extends BaseBloc {
   static void close() {
     _notificationStreamCntCtrl?.close();
     _interactionStreamCntCtrl?.close();
-    _homePageStreamCntCtrl?.close();
     _systemStreamCntCtrl?.close();
   }
 
   @override
   void dispose() {
-    _homePageStreamCntCtrl?.close();
     _notificationStreamCntCtrl?.close();
   }
 }

@@ -59,7 +59,7 @@ class _SimpleConfirm extends State<SimpleConfirmDialog> {
       showCancel: showCancel,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Text(widget.content ?? "未知错误", style: TextStyles.textSize16),
+        child: Text(widget.content ?? "未知错误", style: TextStyles.textSize14),
       ),
       leftText: widget.leftItem == null ? "取消" : widget.leftItem.text,
       rightText: widget.rightItem == null ? "确认" : widget.rightItem.text,

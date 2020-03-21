@@ -49,19 +49,25 @@ class _OtherSettingState extends State<OtherSetting> {
               onTap: () {
                 imageCache.clear();
                 ToastUtil.showToast(context, '清除成功');
+              }),
+          ClickItem(
+              title: "恢复已屏蔽内容",
+              onTap: () async {
+                await flutter_stars.SpUtil.remove(SharedConstant.MY_UN_LIKED);
+                ToastUtil.showToast(context, '恢复成功，请手动刷新');
               })
         ],
       ),
     );
   }
 
-  // void _showUpdateDialog() {
-  //   showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (BuildContext context) {
-  //         return UpdateDialog();
-  //       }
-  //   );
-  // }
+// void _showUpdateDialog() {
+//   showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (BuildContext context) {
+//         return UpdateDialog();
+//       }
+//   );
+// }
 }

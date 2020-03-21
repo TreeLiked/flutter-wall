@@ -77,6 +77,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
         child: Container(
             margin: EdgeInsets.only(right: 10),
             child: AccountAvatar(
+              cache: true,
               avatarUrl: !anonymous
                   ? (account.avatarUrl ?? PathConstant.AVATAR_FAILED)
                   : PathConstant.ANONYMOUS_PROFILE,

@@ -5,8 +5,10 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iap_app/model/version/pub_v.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/image_utils.dart';
@@ -14,6 +16,11 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/version_utils.dart';
 
 class UpdateDialog extends StatefulWidget {
+  final PubVersion version;
+  final bool forceUpdate;
+
+  UpdateDialog(this.version, this.forceUpdate);
+
   @override
   _UpdateDialogState createState() => _UpdateDialogState();
 }
@@ -33,10 +40,16 @@ class _UpdateDialogState extends State<UpdateDialog> {
 
   @override
   Widget build(BuildContext context) {
+//    if(widget.version == null) {
+//      return Gaps.empty;
+//    }
     Color primaryColor = Theme.of(context).primaryColor;
     return WillPopScope(
       onWillPop: () async {
         /// 使用false禁止返回键返回，达到强制升级目的
+        if (widget.forceUpdate) {
+          return false;
+        }
         return true;
       },
       child: Scaffold(
@@ -51,6 +64,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                 width: 280.0,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Container(
@@ -58,76 +72,106 @@ class _UpdateDialogState extends State<UpdateDialog> {
                         width: 280.0,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
-                              topLeft: const Radius.circular(8.0),
-                              topRight: const Radius.circular(8.0)),
+                              topLeft: const Radius.circular(8.0), topRight: const Radius.circular(8.0)),
                           image: DecorationImage(
-                            image: ImageUtils.getAssetImage("update_head",
-                                format: 'jpg'),
+                            image: ImageUtils.getAssetImage("update_head", format: 'jpg'),
                             fit: BoxFit.cover,
                           ),
                         )),
-                    const Padding(
-                      padding: const EdgeInsets.only(
-                          left: 15.0, right: 15.0, top: 16.0),
-                      child: const Text("新版本更新", style: TextStyles.textSize16),
-                    ),
+                    Container(
+                        padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 16.0, bottom: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const Text("新版本更新", style: TextStyles.textSize16),
+                            Text(widget.version.mark ?? "",
+                                style: TextStyle(color: Colors.blue, fontSize: Dimens.font_sp15))
+                          ],
+                        )),
+                    widget.forceUpdate
+                        ? Container(
+                            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 5.0),
+                            child: Text("您必须升级到此版本，否则服务将不可用",
+                                softWrap: true,
+                                maxLines: 2,
+                                style: TextStyle(color: Colors.red, fontWeight: FontWeight.w400)),
+                          )
+                        : Gaps.empty,
+                    Container(
+                        constraints: BoxConstraints(
+                          maxHeight: 200,
+                        ),
+//                      alignment: Alignment.centerLeft,
+                        width: double.infinity,
+                        child: Scrollbar(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                              child: Text("${widget.version.updateDesc}"),
+                            ),
+                          ),
+                        )),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15.0, vertical: 10.0),
-                      child: Text("1.又双叒修复了一大堆bug。\n\n2.祭天了多名程序猿。"),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 15.0, left: 15.0, right: 15.0, top: 5.0),
+                      padding: const EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0, top: 5.0),
                       child: _isDownload
-                          ? LinearProgressIndicator(
-                              backgroundColor: Colours.line,
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  primaryColor),
-                              value: _value,
+                          ? Column(
+                              children: <Widget>[
+                                LinearProgressIndicator(
+                                  backgroundColor: Colours.line,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                                  value: _value,
+                                ),
+                                Gaps.vGap10,
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: Text('${(_value * 100).toStringAsFixed(2)}%',
+                                      style: TextStyle(
+                                          color: Colors.lightBlueAccent, fontSize: Dimens.font_sp14)),
+                                )
+                              ],
                             )
                           : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
+                                !widget.forceUpdate
+                                    ? Container(
+                                        width: 110.0,
+                                        height: 36.0,
+                                        margin: const EdgeInsets.only(right: 10),
+                                        child: FlatButton(
+                                          onPressed: () {
+                                            NavigatorUtils.goBack(context);
+                                          },
+                                          textColor: primaryColor,
+                                          color: Colors.transparent,
+                                          disabledTextColor: Colors.white,
+                                          disabledColor: Colours.text_gray_c,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(18.0),
+                                              side: BorderSide(
+                                                color: primaryColor,
+                                                width: 0.8,
+                                              )),
+                                          child: Text(
+                                            "残忍拒绝",
+                                            style: TextStyle(fontSize: Dimens.font_sp16),
+                                          ),
+                                        ),
+                                      )
+                                    : Gaps.empty,
                                 Container(
                                   width: 110.0,
                                   height: 36.0,
                                   child: FlatButton(
                                     onPressed: () {
-                                      NavigatorUtils.goBack(context);
-                                    },
-                                    textColor: primaryColor,
-                                    color: Colors.transparent,
-                                    disabledTextColor: Colors.white,
-                                    disabledColor: Colours.text_gray_c,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(18.0),
-                                        side: BorderSide(
-                                          color: primaryColor,
-                                          width: 0.8,
-                                        )),
-                                    child: Text(
-                                      "残忍拒绝",
-                                      style:
-                                          TextStyle(fontSize: Dimens.font_sp16),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: 110.0,
-                                  height: 36.0,
-                                  child: FlatButton(
-                                    onPressed: () {
-                                      if (defaultTargetPlatform ==
-                                          TargetPlatform.iOS) {
+                                      if (defaultTargetPlatform == TargetPlatform.iOS) {
                                         NavigatorUtils.goBack(context);
                                         VersionUtils.jumpAppStore();
                                       } else {
                                         setState(() {
                                           _isDownload = true;
                                         });
-                                        _download();
+                                        _download(widget.version.versionId);
                                       }
                                     },
                                     textColor: Colors.white,
@@ -139,8 +183,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                     ),
                                     child: Text(
                                       "立即更新",
-                                      style:
-                                          TextStyle(fontSize: Dimens.font_sp16),
+                                      style: TextStyle(fontSize: Dimens.font_sp16),
                                     ),
                                   ),
                                 )
@@ -154,27 +197,26 @@ class _UpdateDialogState extends State<UpdateDialog> {
   }
 
   ///下载apk
-  _download() async {
+  _download(int versionId) async {
     try {
       await DirectoryUtil.getInstance();
       DirectoryUtil.createStorageDirSync(category: 'apk');
-      String path = DirectoryUtil.getStoragePath(
-          fileName: 'deer', category: 'apk', format: 'apk');
+      String path = DirectoryUtil.getStoragePath(fileName: 'deer', category: 'apk', format: 'apk');
       File file = File(path);
 
       /// 链接可能会失效
       await Dio().download(
-        "http://oss.pgyer.com/094e0de740d62b7e95ba5d5f65ed3e99.apk?auth_key=1565257974-a4efb6d2f1f192f992c1bbcbe5097af8-0-aaa223d92592e2c753e522e028cc2fc0&response-content-disposition=attachment%3B+filename%3Dapp-release.apk",
+        widget.version.apkUrl,
         file.path,
         cancelToken: _cancelToken,
         onReceiveProgress: (int count, int total) {
           if (total != -1) {
-            _value = count / total;
-            setState(() {});
             if (count == total) {
               NavigatorUtils.goBack(context);
               VersionUtils.install(path);
             }
+            _value = count / total;
+            setState(() {});
           }
         },
       );

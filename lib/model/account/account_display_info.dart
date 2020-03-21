@@ -1,0 +1,40 @@
+import 'package:iap_app/model/account/account_role.dart';
+import 'package:iap_app/model/gender.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'account_display_info.g.dart';
+
+@JsonSerializable()
+class AccountDisplayInfo {
+  bool displayHistoryTweet;
+  String nick;
+  String signature;
+
+  AccountRole role;
+
+  String avatarUrl;
+  String email;
+  bool displayName = false;
+  String name;
+  bool displaySex = false;
+  String gender;
+  bool displayAge = false;
+  int age;
+  bool displayQQ = false;
+  String qq;
+  bool displayWeChat = false;
+  String wechat;
+  bool displayPhone = false;
+  String mobile;
+  bool displayRegion = false;
+  String province;
+  String city;
+  String district;
+
+  AccountDisplayInfo();
+
+  Map<String, dynamic> toJson() => _$AccountDisplayInfoToJson(this);
+
+  factory AccountDisplayInfo.fromJson(Map<String, dynamic> json) =>
+      _$AccountDisplayInfoFromJson(json);
+}

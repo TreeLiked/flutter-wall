@@ -18,8 +18,9 @@ class TweetMediaWrapper extends StatelessWidget {
 
   final List<Media> medias;
   List<String> picUrls;
+  final int tweetId;
 
-  TweetMediaWrapper({this.medias}) {
+  TweetMediaWrapper(this.tweetId, {this.medias}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
     if(medias != null) {
@@ -108,6 +109,6 @@ class TweetMediaWrapper extends StatelessWidget {
   }
 
   void open(BuildContext context, final int index) {
-    Utils.openPhotoView(context, picUrls, index);
+    Utils.openPhotoView(context, picUrls, index,tweetId);
   }
 }

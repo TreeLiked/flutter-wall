@@ -72,8 +72,9 @@ var inputPageHandler = Handler(handlerFunc: (BuildContext context, Map<String, L
 var reportHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   String type = params['type'].first;
   String refId = params['refId'].first;
+  String title = params['title'].first;
 
-  return ReportPage(type, refId);
+  return ReportPage(type, refId, title);
 });
 
 var accountProfileHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
@@ -87,20 +88,20 @@ var accountProfileHandler = Handler(handlerFunc: (BuildContext context, Map<Stri
   return AccountProfilePage(accountId, nick, avatarUrl);
 });
 
-var galleryViewHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-  List<String> picUrls = params['urls'];
-  int index = int.parse(params['index'].first);
-  List<PhotoWrapItem> items =
-      picUrls.map((f) => PhotoWrapItem(index: index, url: Uri.decodeComponent(f))).toList();
-  return GalleryPhotoViewWrapper(
-    usePageViewWrapper: true,
-    galleryItems: items,
-    backgroundDecoration: const BoxDecoration(
-      color: Colors.black,
-    ),
-    initialIndex: index,
-  );
-});
+//var galleryViewHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+//  List<String> picUrls = params['urls'];
+//  int index = int.parse(params['index'].first);
+//  List<PhotoWrapItem> items =
+//      picUrls.map((f) => PhotoWrapItem(index: index, url: Uri.decodeComponent(f))).toList();
+//  return GalleryPhotoViewWrapper(
+//    usePageViewWrapper: true,
+//    galleryItems: items,
+//    backgroundDecoration: const BoxDecoration(
+//      color: Colors.black,
+//    ),
+//    initialIndex: index,
+//  );
+//});
 
 // var demoRouteHandler = Handler(
 //     handlerFunc: (BuildContext context, Map<String, List<String>> params) {

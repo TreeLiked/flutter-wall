@@ -58,6 +58,9 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         : Alignment.center,
                     width: double.infinity,
                     child: Text(title.isEmpty ? centerTitle : title,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: TextStyle(
                           fontSize: 18,
                           color: _overlayStyle == SystemUiOverlayStyle.light

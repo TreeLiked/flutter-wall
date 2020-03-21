@@ -48,22 +48,30 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   AbstractMessage _latestSystemMsg;
 
   SingleMessageControl interactionMsgCtrl = MessageUtil.interactionMsgControl;
+  SingleMessageControl sysMsgCtrl = MessageUtil.systemMsgControl;
 
   @override
   void initState() {
     super.initState();
     _loopQueryInteraction(true);
+    _loopQuerySystem(true);
   }
 
   _fetchLatestMessage() async {
+    _fetchLatestSystemMsg();
+    _fetchLatestInteractionMsg();
+  }
+
+  Future<void> _fetchLatestSystemMsg() async {
     MessageAPI.fetchLatestMessage(0).then((msg) {
-      print('--------------有新消息${msg == null ? 'null' : msg.toJson()}');
+      print('--------------有新系统消息${msg == null ? 'null' : msg.toJson()}');
       setState(() {
         this._latestSystemMsg = msg;
       });
     }).whenComplete(() => _refreshController.refreshCompleted());
+  }
 
-    // 这里是查询互动消息!!!
+  Future<void> _fetchLatestInteractionMsg() async {
     MessageAPI.fetchLatestMessage(1).then((msg) {
       print('--------------有新消息${msg == null ? 'null' : msg.toJson()}');
       if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
@@ -81,7 +89,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         if (interactionMsgCtrl.localCount != count) {
           interactionMsgCtrl.localCount = count;
           print('发现新消息，开始刷新');
-          _refreshController.requestRefresh().then((_) {
+          _fetchLatestSystemMsg().then((_) {
             // 刷新完成后增加小红点
             interactionMsgCtrl.streamCount = count;
           });
@@ -91,6 +99,26 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
       if (loop) {
         Future.delayed(Duration(seconds: 60)).then((_) {
           _loopQueryInteraction(true);
+        });
+      }
+    });
+  }
+
+  _loopQuerySystem(bool loop) {
+    MessageAPI.querySystemMessageCount().then((count) {
+      if (count != -1) {
+        if (sysMsgCtrl.localCount != count) {
+          sysMsgCtrl.localCount = count;
+          print('发现新消息，开始刷新');
+          _fetchLatestInteractionMsg().then((_) {
+            sysMsgCtrl.streamCount = count;
+          });
+        }
+      }
+    }).whenComplete(() {
+      if (loop) {
+        Future.delayed(Duration(minutes: 30)).then((_) {
+          _loopQuerySystem(true);
         });
       }
     });
@@ -209,7 +237,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         PlainSystemMessage message = _latestInteractionMsg as PlainSystemMessage;
         return "${message.title ?? message.content}";
       } else if (_latestSystemMsg.messageType == MessageType.POPULAR) {
-        PopularMessage message = _latestInteractionMsg as PopularMessage;
+        PopularMessage message = _latestSystemMsg as PopularMessage;
         return "恭喜，您发布的内容登上了热门排行榜";
       } else {
         return noMessage;

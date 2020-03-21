@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:iap_app/application.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 
 class Api {
   static const bool devInf = false;
   static const bool devMem = false;
-  static const String API_BASE_AL = "http://almond-donuts.iutr.tech:8088";
-  static const String API_BASE_TR = "https://member.iutr.tech:9002";
+  static const String API_BASE_AL = "https://almond-donuts.iutr.tech";
+  static const String API_BASE_TR = "https://member.iutr.tech";
 
   static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
   static const String API_BASE_MEM_DEV = "http://127.0.0.1:9001";
@@ -32,6 +34,7 @@ class Api {
   static const String API_TWEET_DELETE = API_BASE_INF_URL + "/tweet/d.do";
   static const String API_TWEET_QUERY_SIN = "/tweet/listSingle.json";
   static const String API_TWEET_QUERY = "/tweet/list.json";
+  static const String API_TWEET_QUERY2 = "/tweet/listUni.json";
   static const String API_TWEET_MEDIA_UPLOAD_REQUEST = "/tweet/media/generate.json";
 
   // tweet operation
@@ -52,6 +55,7 @@ class Api {
 
   // member start --------
   static const String API_QUERY_ACCOUNT = API_BASE_MEMBER_URL + "/account/getAccInfo.json";
+
   static const String API_QUERY_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
 
   static const String API_QUERY_FILTERED_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getShowInfo.json";
@@ -79,14 +83,22 @@ class Api {
 
   // notification message
   static const String API_MSG_LIST_INTERACTION = API_BASE_INF_URL + "/message/listInteractions.json";
-  static const String API_MSG_READ_ALL_INTERACTION = API_BASE_INF_URL + "/message/interactionsAllRead.do";
   static const String API_MSG_LIST_SYSTEM = API_BASE_INF_URL + "/message/listSystems.json";
+  static const String API_MSG_READ_ALL_INTERACTION = API_BASE_INF_URL + "/message/interactionsAllRead.do";
+  static const String API_MSG_READ_ALL_SYSTEM = API_BASE_INF_URL + "/message/systemsAllRead.do";
   static const String API_MSG_READ_THIS = API_BASE_INF_URL + "/message/read.do";
 
   static const String API_MSG_INTERACTION_CNT = API_BASE_INF_URL + "/message/interactionAlertCount.json";
+  static const String API_MSG_SYSTEM_CNT = API_BASE_INF_URL + "/message/systemAlertCount.json";
 
   static const String API_MSG_LATEST = API_BASE_INF_URL + "/message/latest.json";
 
+  // version update
+
+  static const String API_CHECK_UPDATE = API_BASE_INF_URL + "/version/checkUpdate";
+  static const String API_CHECK_AVAILABLE = API_BASE_INF_URL + "/version/available";
+  static const String API_AGREEMENT = "https://almond-donuts.iutr.tech/terms.html";
+  static const String API_SHARE = "https://almond-donuts.iutr.tech/download.html";
 
 
   static Map<String, dynamic> convertResponse(Object responseData) {
@@ -96,6 +108,7 @@ class Api {
 
   static String formatError(DioError e) {
     print(e);
+    NavigatorUtils.goBack(Application.context);
     if (e.type == DioErrorType.CONNECT_TIMEOUT) {
       // It occurs when url is opened timeout.
       print("连接超时");

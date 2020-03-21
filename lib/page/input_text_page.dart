@@ -49,7 +49,7 @@ class _InputTextPageState extends State<InputTextPage> {
         ),
         body: Container(
             margin: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
-            padding: const EdgeInsets.only(left: 5.0,right: 5.0, bottom: 10.0),
+            padding: const EdgeInsets.only(left: 5.0, right: 5.0, bottom: 10.0),
             decoration: BoxDecoration(
                 color: ThemeUtils.isDark(context)
                     ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
@@ -66,12 +66,12 @@ class _InputTextPageState extends State<InputTextPage> {
 
                 //style: TextStyles.textDark14,
 
-                style: TextStyle(height: 1.6, fontSize: Dimens.font_sp14, letterSpacing: 1.5),
+                style: TextStyle(height: 1.6, fontSize: Dimens.font_sp15, letterSpacing: 1.3),
                 decoration: InputDecoration(
                   hintText: widget.hintText,
                   border: InputBorder.none,
                   hintMaxLines: 3,
-                  hintStyle: TextStyle(height: 1.6, fontSize: Dimens.font_sp14, letterSpacing: 1.4),
+                  hintStyle: TextStyle(height: 1.6, fontSize: Dimens.font_sp15, letterSpacing: 1.3),
 //                  hintStyle: MyDefaultTextStyle.getTweetBodyStyle(ThemeUtils.isDark(context)).copyWith(color:null),
 
                   //hintStyle: TextStyles.textGrayC14

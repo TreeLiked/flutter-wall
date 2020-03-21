@@ -42,7 +42,6 @@ class _ExitDialog extends State<ExitDialog> {
 
         Application.setAccount(null);
         Application.setAccountId(null);
-//        await prefix0.SpUtil.clear();
         await prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_TOKEN);
         await prefix0.SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_ID);
 
@@ -50,6 +49,8 @@ class _ExitDialog extends State<ExitDialog> {
         await prefix0.SpUtil.remove(SharedConstant.LOCAL_ORG_NAME);
 
         await prefix0.SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
+        await prefix0.SpUtil.remove(SharedConstant.MY_UN_LIKED);
+        await prefix0.SpUtil.clear();
         httpUtil.clearAuthToken();
         httpUtil2.clearAuthToken();
         prefix1.NavigatorUtils.goBack(context);

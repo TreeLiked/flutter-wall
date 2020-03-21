@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
+import 'package:iap_app/page/common/report_page.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -23,6 +25,7 @@ class GalleryPhotoViewWrapper extends StatefulWidget {
       this.maxScale,
       this.initialIndex,
       this.fromNetwork = true,
+      this.refId,
       @required this.galleryItems})
       : pageController = PageController(initialPage: initialIndex);
 
@@ -36,6 +39,7 @@ class GalleryPhotoViewWrapper extends StatefulWidget {
   final bool usePageViewWrapper;
 
   final bool fromNetwork;
+  final String refId;
 
   @override
   State<StatefulWidget> createState() {
@@ -89,8 +93,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                   color: Colors.grey,
                 ),
                 '举报', () {
-              ToastUtil.showToast(context, '举报成功');
               Navigator.pop(context);
+              NavigatorUtils.goReportPage(
+                  context, ReportPage.REPORT_TWEET_IMAGE, widget.galleryItems[currentIndex].url, "图片举报");
             }),
           ]);
         } else {
@@ -111,8 +116,8 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                   color: Colors.grey,
                 ),
                 '举报', () {
-              ToastUtil.showToast(context, '举报成功');
               Navigator.pop(context);
+              ToastUtil.showToast(context, '举报成功');
             }),
           ]);
         }

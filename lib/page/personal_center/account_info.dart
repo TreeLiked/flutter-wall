@@ -195,7 +195,11 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
     if (r != null && r.isSuccess) {
       callback(true);
     } else {
-      ToastUtil.showToast(context, '修改失败，请稍候重试');
+      if (param.key == AccountEditKey.NICK) {
+        ToastUtil.showToast(context, '昵称重复，换一个试试吧');
+      } else {
+        ToastUtil.showToast(context, '修改失败，请稍候重试');
+      }
     }
     Navigator.pop(context);
   }

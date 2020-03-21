@@ -92,7 +92,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
       return;
     }
     List<Widget> cards = msgs.map((absMsg) {
-      print(absMsg.toJson());
+//      print(absMsg.toJson());
       return InteractionCardItem(absMsg);
     }).toList();
     setState(() {
@@ -163,7 +163,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
                 enablePullDown: true,
                 enablePullUp: true,
                 header: WaterDropHeader(
-                  waterDropColor: Colours.app_main,
+                  waterDropColor: Color(0xff80d0c7),
                   complete: const Text('刷新完成'),
                 ),
                 footer: ClassicFooter(

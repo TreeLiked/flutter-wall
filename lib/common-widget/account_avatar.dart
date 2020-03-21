@@ -32,7 +32,7 @@ class AccountAvatar extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: ClipOval(
-              child: cache
+              child: !cache
                   ? FadeInImage.assetNetwork(
                       image: avatarUrl,
                       width: double.infinity,

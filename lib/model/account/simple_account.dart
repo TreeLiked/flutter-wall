@@ -11,12 +11,7 @@ class SimpleAccount {
 
   // User user;
   String avatarUrl;
-
-
   String gender;
-
-
-
   SimpleAccount();
 
   SimpleAccount.fromId(String id) {

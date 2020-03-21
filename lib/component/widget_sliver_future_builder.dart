@@ -68,20 +68,14 @@ class _CustomFutureBuilderState<T> extends State<CustomSliverFutureBuilder<T>> {
                         height: ScreenUtil().setWidth(300),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            CupertinoActivityIndicator(),
-                            Gaps.vGap16,
-                            Text('正在加载')
-                          ],
+                          children: <Widget>[CupertinoActivityIndicator(), Gaps.vGap16, Text('正在加载')],
                         )),
                   );
                 case ConnectionState.done:
                   if (snapshot.hasData) {
                     return widget.builder(context, snapshot.data);
                   } else if (snapshot.hasError) {
-                    print(
-                        '=====================================================');
-                    return Center(child: Text('${snapshot.error}'));
+                    return Center(child: Text('服务错误'));
                   }
               }
               return Container();

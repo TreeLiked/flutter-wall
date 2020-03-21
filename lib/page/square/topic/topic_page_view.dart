@@ -182,9 +182,9 @@ class _TopicPageView extends State<TopicPageView>
     return GestureDetector(
         onTap: () => _forwardTopicDetail(context, topic),
         child: Container(
-          child: MyShadowCard(
-              child: Container(
-            padding: const EdgeInsets.only(top: 5.0, left: 2.0, bottom: 10.0),
+//          child: MyShadowCard(
+//              child: Container(
+            padding: const EdgeInsets.only(top: 5.0, left: 5.0, bottom: 10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -196,7 +196,7 @@ class _TopicPageView extends State<TopicPageView>
                 _buildAuthorInfoRow(topic),
               ],
             ),
-          )),
+//          )),
         ));
   }
 

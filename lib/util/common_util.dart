@@ -96,7 +96,7 @@ class Utils {
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
     list.add(
-        SpinKitChasingDots(color: Colors.cyan, size: size),
+      SpinKitChasingDots(color: Colors.cyan, size: size),
     );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
@@ -261,6 +261,7 @@ class Utils {
     BuildContext context,
     List<String> urls,
     int initialIndex,
+    int refId,
   ) {
     if (CollectionUtil.isListEmpty(urls)) {
       return;
@@ -278,6 +279,7 @@ class Utils {
                     color: Colors.black,
                   ),
                   initialIndex: initialIndex,
+                  refId: refId.toString(),
                 ),
             maintainState: true));
     // Application.router.navigateTo(

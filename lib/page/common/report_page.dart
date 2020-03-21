@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iap_app/api/report.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 
 class ReportPage extends StatelessWidget {
   static const REPORT_TWEET = "TWEET";
+  static const REPORT_TWEET_IMAGE = "TWEET_IMAGE";
   static const REPORT_TWEET_REPLY = "TWEET_TYPE";
   static const REPORT_TOPIC = "TOPIC";
   static const REPORT_TOPIC_REPLY = "TOPIC_REPLY";
@@ -17,8 +22,9 @@ class ReportPage extends StatelessWidget {
 
   final String type;
   final String refId;
+  final String title;
 
-  ReportPage(this.type, this.refId);
+  ReportPage(this.type, this.refId, this.title);
 
   TextEditingController _controller = new TextEditingController();
 
@@ -28,8 +34,8 @@ class ReportPage extends StatelessWidget {
     return Scaffold(
       appBar: MyAppBar(
         isBack: true,
-        title: '问题反馈',
-        centerTitle: '问题反馈',
+        title: title ?? "问题反馈",
+        centerTitle: title ?? '问题反馈',
         actionName: "发送",
         onPressed: () => sendReport(context),
       ),
@@ -55,7 +61,7 @@ class ReportPage extends StatelessWidget {
                 maxLines: 8,
                 style: const TextStyle(height: 1.5, fontSize: Dimens.font_sp15),
                 decoration: new InputDecoration(
-                  hintText: '请输入反馈详情',
+                  hintText: '请具体描述',
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.all(5),
                 ),
@@ -73,8 +79,19 @@ class ReportPage extends StatelessWidget {
       ToastUtil.showToast(context, '请描述具体反馈信息');
       return;
     } else {
-      // TODO
-      ToastUtil.showToast(context, '反馈成功，有结果我们会第一时间通知您');
+      Utils.showDefaultLoading(context);
+      ReportAPI.sendReport(type, refId, text).then((res) {
+        NavigatorUtils.goBack(context);
+        if (res == null) {
+          ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+        } else {
+          if (res.isSuccess) {
+            ToastUtil.showToast(context, '反馈成功，有结果我们会第一时间通知您');
+          } else {
+            ToastUtil.showToast(context, '反馈失败');
+          }
+        }
+      });
     }
   }
 }

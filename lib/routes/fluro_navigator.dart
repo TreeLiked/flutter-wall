@@ -81,10 +81,11 @@ class NavigatorUtils {
                 {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
   }
 
-  static void goReportPage(BuildContext context, String type, String refId) {
+  static void goReportPage(BuildContext context, String type, String refId, String title) {
     if (type == null || refId == null) {
       return;
     }
-    push(context, Routes.reportPage + "?refId=" + refId + "&type=" + type);
+    push(context,
+        Routes.reportPage + "?refId=" + Uri.encodeComponent(refId) + "&type=" + type + "&title=" + Uri.encodeComponent(title));
   }
 }

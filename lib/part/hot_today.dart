@@ -13,6 +13,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/media.dart';
+import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
@@ -37,7 +38,7 @@ class HotToday extends StatefulWidget {
 class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin {
   double _expandedHeight = ScreenUtil().setWidth(380);
 
-  HotTweet hotTweet;
+  UniHotTweet hotTweet;
 
   // 连接通知器
   LinkHeaderNotifier _headerNotifier;
@@ -60,7 +61,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   }
 
   Future<void> getData() async {
-    HotTweet ht = await TweetApi.queryOrgHotTweets(Application.getOrgId);
+    UniHotTweet ht = await TweetApi.queryOrgHotTweets(Application.getOrgId);
 
     if (ht == null) {
       ToastUtil.showToast(context, '数据加载错误');
@@ -71,6 +72,9 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     }
     setState(() {
       this.hotTweet = ht;
+      if (ht.tweets != null) {
+        ht.tweets.forEach((f) => print(f.toJson()));
+      }
     });
     ToastUtil.showToast(context, '更新完成');
   }
@@ -80,21 +84,17 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     if (hotTweet == null) {
       return baseUrl;
     }
-    List<BaseTweet> bts = hotTweet.tweets;
+    List<HotTweet> bts = hotTweet.tweets;
     if (CollectionUtil.isListEmpty(bts)) {
       return baseUrl;
     }
-    List<Media> firstMedias = bts[0].medias;
+    Media firstMedia = bts[0].cover;
 
-    if (firstMedias == null || firstMedias.length == 0) {
-      return baseUrl;
-    }
-    Media firstImg = firstMedias.firstWhere((m) => m.mediaType == Media.TYPE_IMAGE);
-    if (firstImg == null) {
+    if (firstMedia == null || firstMedia.mediaType != Media.TYPE_IMAGE) {
       return baseUrl;
     }
 
-    return firstImg.url + OssConstant.THUMBNAIL_SUFFIX;
+    return firstMedia.url + OssConstant.THUMBNAIL_SUFFIX;
   }
 
   @override
@@ -175,7 +175,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     );
   }
 
-  List<Widget> _getRenderList(HotTweet ht) {
+  List<Widget> _getRenderList(UniHotTweet ht) {
     print('hot card render .................................');
     if (hotTweet != null && !CollectionUtil.isListEmpty(hotTweet.tweets)) {
       print(ht.toJson());
@@ -212,33 +212,35 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     }
   }
 
-  _forwardDetail(BaseTweet bt, int rank) {
+  _forwardDetail(int tweetId, int rank) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TweetDetail(bt, hotRank: rank), maintainState: true),
+      MaterialPageRoute(
+          builder: (context) => TweetDetail(null, tweetId: tweetId, hotRank: rank), maintainState: true),
     );
   }
 
-  _buildHotTweetCard(BaseTweet bt, int index) {
+  _buildHotTweetCard(HotTweet bt, int index) {
+    if (!bt.anonymous && bt.account == null) {
+      return Gaps.empty;
+    }
     index = index + 1;
     String idxStr = index.toString();
     if (index < 10) {
       idxStr = '0$index';
     }
+
+    String nick;
     if (bt.anonymous) {
-      bt.account.nick = TextConstant.TWEET_ANONYMOUS_NICK;
+      nick = TextConstant.TWEET_ANONYMOUS_NICK;
+    } else {
+      nick = bt.account.nick;
     }
 
-    String coverUrl = null;
-    if (!CollectionUtil.isListEmpty(bt.medias)) {
-      Media m = bt.medias.firstWhere((media) => media.mediaType == Media.TYPE_IMAGE);
-      if (m != null) {
-        coverUrl = m.url;
-      }
-    }
+    String oriCoverUrl = (bt.cover != null && bt.cover.mediaType == Media.TYPE_IMAGE) ? bt.cover.url : null;
     bool hasBody = !StringUtil.isEmpty(bt.body);
     return GestureDetector(
-        onTap: () => _forwardDetail(bt, index),
+        onTap: () => _forwardDetail(bt.id, index),
         behavior: HitTestBehavior.translucent,
         child: Column(
           children: <Widget>[
@@ -308,20 +310,18 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                                     overflow: TextOverflow.ellipsis,
                                     text: TextSpan(children: [
                                       TextSpan(
-                                          text: !bt.anonymous
-                                              ? bt.account.nick
-                                              : TextConstant.TWEET_ANONYMOUS_NICK,
+                                          text: nick,
                                           style: MyDefaultTextStyle.getTweetNickStyle(
                                               context, Dimens.font_sp13p5,
                                               bold: false, anonymous: bt.anonymous)),
                                       TextSpan(
-                                          text: '发表于',
+                                          text: ' 发表于${TimeUtil.getShortTime(bt.sentTime)}',
                                           style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13)),
-                                      TextSpan(
-                                          text: TimeUtil.getShortTime(bt.gmtCreated),
-                                          style: TextStyle(
-                                              color: ColorConstant.TWEET_TIME_COLOR,
-                                              fontSize: Dimens.font_sp13)),
+//                                      TextSpan(
+//                                          text: TimeUtil.getShortTime(bt.sentTime),
+//                                          style: TextStyle(
+//                                              color: ColorConstant.TWEET_TIME_COLOR,
+//                                              fontSize: Dimens.font_sp13)),
                                     ]),
                                   ),
                                   Container(
@@ -339,7 +339,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                                           Padding(
                                               padding: const EdgeInsets.only(right: 20),
                                               child: Text(
-                                                ' ${bt.hot}',
+                                                '热度 ${bt.hot}',
                                                 style:
                                                     TextStyle(color: Colors.grey, fontSize: Dimens.font_sp12),
                                               ))
@@ -353,7 +353,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                       ],
                     ),
                   ),
-                  coverUrl != null
+                  oriCoverUrl != null
                       ? Expanded(
                           flex: 2,
                           child: Container(
@@ -364,7 +364,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                               child: AspectRatio(
                                 aspectRatio: 1,
                                 child: CachedNetworkImage(
-                                  imageUrl: coverUrl + OssConstant.THUMBNAIL_SUFFIX,
+                                  imageUrl: oriCoverUrl + OssConstant.THUMBNAIL_SUFFIX,
                                   placeholder: (context, url) => CupertinoActivityIndicator(),
                                   fit: BoxFit.cover,
                                   errorWidget: (context, url, error) => Icon(Icons.error),

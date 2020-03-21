@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Allow Arbitrary Loads</key>
+	<true/>
 	<key>BundleIdentifier</key>
 	<string>com.iutr.wall</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -30,12 +32,17 @@
 	<string>ffb43a335bbf8c05197d2aad6fb2fbc1</string>
 	<key>MOBAppkey</key>
 	<string>2cff181741564</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSCameraUsageDescription</key>
-	<string>“Wall”请求在您使用期间获取您的相机权限</string>
+	<string>“Wall”请求在您使用期间获取您的相机权限，以上传头像或发送图片</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -45,7 +52,7 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>“Wall”请求在您使用期间获取您的相册权限</string>
+	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像或发送图片</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Not Used</string>
 	<key>UILaunchStoryboardName</key>

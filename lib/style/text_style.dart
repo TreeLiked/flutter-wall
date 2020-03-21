@@ -37,9 +37,9 @@ class MyDefaultTextStyle {
 
   static TextStyle getTweetReplyAnonymousNickStyle(BuildContext context, double fontSize) {
     return TextStyle(
-        color: ThemeUtils.isDark(context) ? Colors.grey : Color(0xff363636),
+        color: Colors.grey,
         fontSize: fontSize,
-        fontWeight: FontWeight.w500);
+        fontWeight: FontWeight.w400);
   }
 
   static TextStyle getTweetHeadNickStyle(BuildContext context, double fontSize,

@@ -89,11 +89,11 @@ class TweetTypeEntity {
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
   static const ASK_FOR_MARRIAGE = const TweetTypeEntity(
       iconData: Icons.people,
-      iconColor: Colors.red,
+      iconColor: Color(0xffee9ca7),
       name: "ASK_FOR_MARRIAGE",
       zhTag: "征婚",
       intro: "我想早恋，但已经晚了",
-      color: Colors.red,
+      color: Color(0xffee9ca7),
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_marriage.png");
   static const SOMEONE_FIND = const TweetTypeEntity(
@@ -163,7 +163,7 @@ class TweetTypeEntity {
       zhTag: "交易");
 
   static const OTHER = const TweetTypeEntity(
-      iconData: Icons.public,
+      iconData: Icons.all_inclusive,
       iconColor: Color(0xffB0C4DE),
       intro: "没有别的就选这个吧！",
       name: "OTHER",
@@ -182,9 +182,9 @@ class TweetTypeEntity {
 
   static const AD = const TweetTypeEntity(
       iconData: Icons.school,
-      iconColor: Color(0xff8B008B),
+      iconColor: Color(0xff68e0cf),
       name: "AD",
-      color: Color(0xff8B008B),
+      color: Color(0xff68e0cf),
       zhTag: "广告",
       canUnSubscribe: false,
       pushable: false,

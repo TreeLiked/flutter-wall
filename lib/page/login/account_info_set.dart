@@ -143,22 +143,24 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Container(
             alignment: Alignment.center,
             child: _avatarFile == null
-                ? Container(
+                ?
+            GestureDetector(
+                onTap: _goChoiceAvatar,
+                child: Container(
                     padding: const EdgeInsets.all(25.0),
-                    decoration: BoxDecoration(
-                        color: Color(0xfff1f2f3),
+                  decoration: BoxDecoration(
+                      color: Color(0xfff1f2f3),
 //                  borderRadius: BorderRadius.all((Radius.circular(100))),
-                        shape: BoxShape.circle),
-                    child: GestureDetector(
-                        onTap: _goChoiceAvatar,
-                        child: LoadAssetImage(
-                          "profile_sel",
-                          format: 'png',
-                          width: SizeConstant.TWEET_PROFILE_SIZE,
-                          fit: BoxFit.cover,
-                          color: Colors.grey,
-                        )),
-                  )
+                      shape: BoxShape.circle),
+
+
+                    child: LoadAssetImage(
+                      "profile_sel",
+                      format: 'png',
+                      width: SizeConstant.TWEET_PROFILE_SIZE,
+                      fit: BoxFit.cover,
+                      color: Colors.grey,
+                )))
                 : GestureDetector(
                     onTap: _goChoiceAvatar,
                     child: ClipOval(
@@ -171,7 +173,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                     ))),
           ),
           Container(
-            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(10.0)),
+            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(1.0)),
             padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.only(top: 25),
             child: Row(
@@ -203,7 +205,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Gaps.vGap15,
           Gaps.line,
           Gaps.vGap16,
-          Text('请选择一张图片作为您的头像并且起一个响亮的昵称吧～', maxLines: 5, softWrap: true, style: TextStyles.textGray14)
+          Text('请选择一张图片作为您的头像并设计一个个性的昵称吧～', maxLines: 5, softWrap: true, style: TextStyles.textGray14)
         ],
       ),
     );

@@ -20,7 +20,7 @@ class TweetApi {
   static String localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
 
   static Future<List<BaseTweet>> queryTweets(PageParam param) async {
-    String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY2;
     print(url);
     Response response;
     try {
@@ -31,6 +31,17 @@ class TweetApi {
         return new List<BaseTweet>();
       }
       List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+//      tweetList.forEach((tw){
+//        if(tw.dirReplies != null) {
+//          tw.dirReplies.forEach((tr) {
+//            if(tr.children != null) {
+//              tr.children.forEach((subTr){
+//
+//              });
+//            }
+//          });
+//        }
+//      });
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -138,6 +149,7 @@ class TweetApi {
     String url = Api.API_BASE_INF_URL + Api.API_TWEET_OPERATION + '?acId=' + Application.getAccountId;
     print(url);
     httpUtil.dio.post(url, data: param);
+
   }
 
   static Future<List<TweetReply>> queryTweetReply(int tweetId, bool needSub) async {
@@ -191,24 +203,28 @@ class TweetApi {
   //   return Result.fromJson(json);
   // }
 
-  static Future<HotTweet> queryOrgHotTweets(int orgId) async {
+  static Future<UniHotTweet> queryOrgHotTweets(int orgId) async {
     try {
       String url =
           Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?orgId=$orgId&acId=' + Application.getAccountId;
+      print(url);
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      return HotTweet.fromJson(json);
+//      String json = response.data;
+      prefix1.print(json);
+      return UniHotTweet.fromJson(json);
+//      return null;
     } on DioError catch (e) {
       Api.formatError(e);
     }
     return null;
   }
 
-  static Future<HotTweet> queryPraise(int tweetId) async {
+  static Future<UniHotTweet> queryPraise(int tweetId) async {
     print(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY);
     Response response =
         await httpUtil.dio.get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?tId=$tweetId');
     Map<String, dynamic> json = Api.convertResponse(response.data);
-    return HotTweet.fromJson(json);
+    return UniHotTweet.fromJson(json);
   }
 }

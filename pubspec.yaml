@@ -76,7 +76,7 @@ dependencies:
   # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
   oktoast: ^2.2.0
   # WebView插件 https://github.com/flutter/plugins/tree/master/packages/webview_flutter
-  webview_flutter: 0.3.15+1
+  webview_flutter: ^0.3.19+9
 
   # 键盘增强工具
   keyboard_actions: ^2.1.2
@@ -137,6 +137,8 @@ dependencies:
 
   # 轮播图 https://github.com/jzoom/flutter_swiper
   flutter_swiper: ^1.1.6
+
+  install_plugin: ^2.0.1
 
 
 

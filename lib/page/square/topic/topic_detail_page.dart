@@ -328,7 +328,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   }
 
   void open(BuildContext context, final int index) {
-    Utils.openPhotoView(context, topic.medias.map((m) => m.url).toList(), index);
+    Utils.openPhotoView(context, topic.medias.map((m) => m.url).toList(), index, topic.id);
   }
 
   Widget _buildAuthInfo() {
@@ -605,7 +605,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
         ),
         '举报', () {
       NavigatorUtils.goBack(context);
-      NavigatorUtils.goReportPage(context, ReportPage.REPORT_TOPIC, widget.topicId.toString());
+      NavigatorUtils.goReportPage(context, ReportPage.REPORT_TOPIC, widget.topicId.toString(), "话题举报");
     }));
     return items;
   }

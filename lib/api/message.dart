@@ -41,29 +41,57 @@ class MessageAPI {
         List<AbstractMessage> msgList = jsonData.map((m) {
           return AbstractMessage.fromJson(m);
         }).toList();
-        msgList.forEach((msg) {
-          MessageType mst = msg.messageType;
-          switch (mst) {
-            case MessageType.TOPIC_REPLY:
-              print((msg as TopicReplyMessage).toJson());
-              break;
-            case MessageType.TWEET_PRAISE:
-              print((msg as TweetPraiseMessage).toJson());
-              break;
-            case MessageType.TWEET_REPLY:
-              print((msg as TweetReplyMessage).toJson());
-              break;
-            case MessageType.POPULAR:
-              // TODO: Handle this case.
-              break;
-            case MessageType.PLAIN_SYSTEM:
-              // TODO: Handle this case.
-              break;
-            case MessageType.REPORT:
-              // TODO: Handle this case.
-              break;
-          }
-        });
+//        msgList.forEach((msg) {
+//          MessageType mst = msg.messageType;
+//          switch (mst) {
+//            case MessageType.TOPIC_REPLY:
+//              print((msg as TopicReplyMessage).toJson());
+//              break;
+//            case MessageType.TWEET_PRAISE:
+//              print((msg as TweetPraiseMessage).toJson());
+//              break;
+//            case MessageType.TWEET_REPLY:
+//              print((msg as TweetReplyMessage).toJson());
+//              break;
+//            case MessageType.POPULAR:
+//              // TODO: Handle this case.
+//              break;
+//            case MessageType.PLAIN_SYSTEM:
+//              // TODO: Handle this case.
+//              break;
+//            case MessageType.REPORT:
+//              // TODO: Handle this case.
+//              break;
+//          }
+//        });
+        return msgList;
+      } else {
+        return null;
+      }
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      print(error);
+    }
+    return null;
+  }
+
+
+  static Future<List<AbstractMessage>> querySystemMsg(int currentPage, int pageSize) async {
+    String url = Api.API_MSG_LIST_SYSTEM + "?currentPage=$currentPage";
+    print(url);
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      bool success = json["isSuccess"];
+      if (success) {
+        Map<String, dynamic> pageData = json["data"];
+        List<dynamic> jsonData = pageData["data"];
+        if (jsonData == null || jsonData.length <= 0) {
+          return [];
+        }
+        List<AbstractMessage> msgList = jsonData.map((m) {
+          return AbstractMessage.fromJson(m);
+        }).toList();
         return msgList;
       } else {
         return null;
@@ -154,6 +182,23 @@ class MessageAPI {
 
   static Future<int> queryInteractionMessageCount() async {
     String url = Api.API_MSG_INTERACTION_CNT;
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      Result r = Result.fromJson(json);
+      if (r.isSuccess) {
+        return json['data'];
+      }
+      return -1;
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      print(error);
+    }
+    return -1;
+  }
+
+  static Future<int> querySystemMessageCount() async {
+    String url = Api.API_MSG_SYSTEM_CNT;
     try {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);

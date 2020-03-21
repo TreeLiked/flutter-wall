@@ -29,9 +29,9 @@ BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
     ..latestPraise = (json['latestPraise'] as List)
         ?.map((e) => e == null ? null : Account.fromJson(e as Map<String, dynamic>))
         ?.toList()
-    ..sentTime = json['sentTime'] == null ? null : DateTime.parse(json['sentTime'] as String)
     ..gmtModified = json['gmtModified'] == null ? null : DateTime.parse(json['gmtModified'] as String)
     ..gmtCreated = json['gmtCreated'] == null ? null : DateTime.parse(json['gmtCreated'] as String)
+    ..sentTime = json['sentTime'] == null ? null : DateTime.parse(json['sentTime'] as String)
     ..loved = json['loved'] as bool;
 }
 
@@ -51,8 +51,8 @@ Map<String, dynamic> _$BaseTweetToJson(BaseTweet instance) => <String, dynamic>{
       'upTrend': instance.upTrend,
       'dirReplies': instance.dirReplies,
       'latestPraise': instance.latestPraise,
-      'sentTime': DateUtil.formatDate(instance.sentTime, format: 'yyyy-MM-dd HH:mm:ss'),
       'gmtModified': instance.gmtModified?.toIso8601String(),
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
+      'sentTime': DateUtil.formatDate(instance.sentTime, format: 'yyyy-MM-dd HH:mm:ss'),
       'loved': instance.loved
     };

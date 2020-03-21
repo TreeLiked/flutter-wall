@@ -43,6 +43,7 @@ void main() {
 }
 
 class AlmondDonuts extends StatefulWidget {
+  static const  bool inProduction = const bool.fromEnvironment("dart.vm.product");
   @override
   State<StatefulWidget> createState() {
     return AlmondDonutsState();
@@ -64,7 +65,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     super.initState();
 
     initPlatformState();
-    print('------------------main--------------------------');
+    print('------------------main 生产环境=${AlmondDonuts.inProduction}--------------------------');
     _jPush.getRegistrationID().then((rid) {
       if (rid != null && rid.length != 0) {
         Application.setDeviceId(rid);
@@ -152,8 +153,8 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       appKey: "2541d486ffc85cf504572f6e",
       channel: "developer-default",
 //      channel: "flutter_channel",
-      production: false,
-      debug: true,
+      production: AlmondDonuts.inProduction,
+      debug: !AlmondDonuts.inProduction,
     );
     if (Platform.isIOS) {
       _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));

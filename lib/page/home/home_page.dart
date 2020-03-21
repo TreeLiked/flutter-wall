@@ -13,6 +13,7 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/main.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -36,6 +37,7 @@ import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
+import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
@@ -56,9 +58,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<HomePage> {
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-  ScrollController _scrollController = ScrollController();
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
+
+  ScrollController _scrollController = PageSharedWidget.homepageScrollController;
 
   final commentWrapperKey = GlobalKey<HomeCommentWrapperState>();
 
@@ -95,17 +98,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     });
     tabIconsList[0].isSelected = true;
 
-    _scrollController.addListener(() {
-      // TODO 自动加载更多
-//      ScrollNotification scroll = notification as ScrollNotification;
-//      // 当前滑动距离
-//      double currentExtent = scroll.metrics.pixels;
-//      double maxExtent = scroll.metrics.maxScrollExtent;
-//      if (maxExtent - currentExtent > widget.startLoadMoreOffset) {
-//        // 开始加载更多
-//
-//      }
-    });
+//    _scrollController.addListener(() {
+//      // TODO 自动加载更多
+////      ScrollNotification scroll = notification as ScrollNotification;
+////      // 当前滑动距离
+////      double currentExtent = scroll.metrics.pixels;
+////      double maxExtent = scroll.metrics.maxScrollExtent;
+////      if (maxExtent - currentExtent > widget.startLoadMoreOffset) {
+////        // 开始加载更多
+////
+////      }
+//    });
 
     firstRefreshMessage();
   }
@@ -113,7 +116,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   void firstRefreshMessage() async {
 //    Future.delayed(Duration(seconds: 3)).then((val) {
     MessageAPI.queryInteractionMessageCount().then((cnt) {
-        MessageUtil.setNotificationCnt(cnt);
+      MessageUtil.setNotificationCnt(cnt);
     }).whenComplete(() {
       MessageUtil.startLoopQueryNotification();
     });
@@ -162,7 +165,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   Future getData(int page) async {
     print('get data ------$page------');
     List<BaseTweet> pbt = await (TweetApi.queryTweets(PageParam(page,
-        pageSize: 5,
+        pageSize: 10,
         orgId: Application.getOrgId,
         types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames))));
 
@@ -285,6 +288,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                     loadingText: '正在加载...',
                     canLoadingText: '释放以加载更多',
                     noDataText: '到底了哦',
+                    idleText: '继续上滑',
                   ),
                   // footer: Wat,
                   child: CustomScrollView(
@@ -333,17 +337,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
           ),
           onDoubleTap: () {
             _scrollController.animateTo(.0,
-                duration: Duration(milliseconds: 2000), curve: Curves.fastLinearToSlowEaseIn);
+                duration: Duration(milliseconds: 2000), curve: Curves.easeInOutQuint);
           },
         ),
-        elevation: 0.3,
+        elevation: 1,
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.blur_on),
-            onPressed: () {
-              NavigatorUtils.push(context, Routes.square, transitionType: TransitionType.fadeIn);
-            },
-          ),
+//          IconButton(
+//            icon: Icon(Icons.blur_on),
+//            onPressed: () {
+//              NavigatorUtils.push(context, Routes.square, transitionType: TransitionType.fadeIn);
+//            },
+//          ),
           IconButton(
               key: _menuKey,
               icon: Icon(Icons.add),

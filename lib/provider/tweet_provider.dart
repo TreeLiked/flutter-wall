@@ -1,5 +1,7 @@
+import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -15,7 +17,11 @@ class TweetProvider extends ChangeNotifier {
   }
 
   void delete(int tweetId) {
-    _displayTweets.removeWhere((t) => t.id == tweetId);
+    _displayTweets.removeWhere((t) => t != null && t.id == tweetId);
+  }
+
+  void deleteByAccount(String accountId) {
+    _displayTweets.removeWhere((t) => t != null && !t.anonymous && t.account.id == accountId);
   }
 
   void updateReply(BuildContext context, TweetReply tr) {
@@ -55,6 +61,10 @@ class TweetProvider extends ChangeNotifier {
     if (tweets == null) {
       _displayTweets = null;
     } else {
+      List<String> unlikes = SpUtil.getStringList(SharedConstant.MY_UN_LIKED);
+      if (unlikes != null && unlikes.length > 0) {
+        tweets.removeWhere((tweet) => unlikes.indexOf(tweet.id.toString()) != -1);
+      }
       if (clear) {
         _displayTweets = List();
         _displayTweets.addAll(tweets);

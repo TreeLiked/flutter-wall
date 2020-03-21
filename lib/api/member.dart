@@ -5,13 +5,13 @@ import 'package:flustars/flustars.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/account_display_info.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
 import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class MemberApi {
-
   static Future<Account> getMyAccount(String token) async {
     print(Api.API_QUERY_ACCOUNT + '-------------------');
     Response response;
@@ -23,6 +23,7 @@ class MemberApi {
         return null;
       }
       Account account = Account.fromJson(json2);
+      print(account.toJson());
       return account;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -49,21 +50,19 @@ class MemberApi {
     return null;
   }
 
-  static Future<Account> getAccountDisplayProfile(String accountId) async {
+  static Future<AccountDisplayInfo> getAccountDisplayProfile(String accountId) async {
     print(Api.API_QUERY_FILTERED_ACCOUNT_PROFILE + '-------------------');
     Response response;
     try {
       response = await httpUtil2.dio.get(
-          Api.API_QUERY_FILTERED_ACCOUNT_PROFILE +
-              "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
-              accountId);
+          Api.API_QUERY_FILTERED_ACCOUNT_PROFILE + "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" + accountId);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       print(json);
       dynamic json2 = json["data"];
       if (json2 == null) {
         return null;
       }
-      Account account = Account.fromJson(json2);
+      AccountDisplayInfo account = AccountDisplayInfo.fromJson(json2);
       return account;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -74,8 +73,7 @@ class MemberApi {
   static Future<Result> modAccount(AccountEditParam param) async {
     Response response;
     try {
-      response =
-          await httpUtil2.dio.post(Api.API_ACCOUNT_MOD_BASIC, data: param);
+      response = await httpUtil2.dio.post(Api.API_ACCOUNT_MOD_BASIC, data: param);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       print(json);
       return Result.fromJson(json);
@@ -100,8 +98,7 @@ class MemberApi {
     return null;
   }
 
-  static Future<Result> checkVerificationCode(
-      String phone, String vCode) async {
+  static Future<Result> checkVerificationCode(String phone, String vCode) async {
     Response response;
     String url = Api.API_CHECK_VERIFICATION_CODE + "?p=$phone&c=$vCode";
     print(url);
@@ -131,8 +128,7 @@ class MemberApi {
     return null;
   }
 
-  static Future<Result> register(
-      String phone, String nick, String avatarUrl, int orgId) async {
+  static Future<Result> register(String phone, String nick, String avatarUrl, int orgId) async {
     Response response;
     String url = Api.API_REGISTER_BY_PHONE;
     var data = {
@@ -170,8 +166,7 @@ class MemberApi {
     return null;
   }
 
-  static Future<Map<String, dynamic>> getAccountSetting(
-      {String passiveAccountId}) async {
+  static Future<Map<String, dynamic>> getAccountSetting({String passiveAccountId}) async {
     String url = Api.API_QUERY_ACCOUNT_SETTING +
         "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
         (passiveAccountId ?? "");
@@ -198,8 +193,7 @@ class MemberApi {
     print(Api.API_UPDATE_ACCOUNT_SETTING + "-------------------");
     try {
       var data = {"key": key, "value": value};
-      response =
-          await httpUtil2.dio.post(Api.API_UPDATE_ACCOUNT_SETTING, data: data);
+      response = await httpUtil2.dio.post(Api.API_UPDATE_ACCOUNT_SETTING, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       print(json);
       return Result.fromJson(json);
@@ -208,5 +202,4 @@ class MemberApi {
     }
     return null;
   }
-
 }

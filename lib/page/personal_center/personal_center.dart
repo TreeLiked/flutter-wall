@@ -9,6 +9,7 @@ import 'package:iap_app/component/up_down_item.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/page/common/avatar_origin.dart';
 import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -68,11 +69,14 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
 //                                Color(0xffc4c5c7),
 //                                Color(0xffebebeb),
 //                                Color(0xfffeada6),
-                                Color(0xffeef1f5),
+//                                Color(0xffeef1f5),
+                                Color(0xfffffeff),
 //                                Color(0xffe6e9f0),
 //                                Color(0xfff5efef),
-                                Color(0xffdeecdd),
-                              ]),
+//                                Color(0xffD7FFFE),
+                          Color(0xffdeecdd),
+
+                        ]),
                   ),
 
                   child: Column(
@@ -112,7 +116,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                               Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(top: ScreenUtil().setHeight(15)),
-                                child: Text(provider.account.signature,
+                                child: Text(provider.account.signature??'',
                                     softWrap: true,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -220,7 +224,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                                 NavigatorUtils.push(context, SettingRouter.privateSettingPage);
                               },
                             ),
-
                             ClickItem(
                               title: '其他设置',
                               onTap: () {

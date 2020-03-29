@@ -54,8 +54,6 @@ class _ExitDialog extends State<ExitDialog> {
         httpUtil.clearAuthToken();
         httpUtil2.clearAuthToken();
         prefix1.NavigatorUtils.goBack(context);
-//        await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-//        exit(0);
         NavigatorUtils.push(context, Routes.loginPage, clearStack: true);
       },
     );

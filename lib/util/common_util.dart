@@ -57,13 +57,29 @@ class Utils {
     );
   }
 
-  static void showDefaultLoading(BuildContext context, {double size = 30}) {
+  static void showDefaultLoading(BuildContext context, {double size = 30, Function call}) {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
           return SpinKitChasingDots(color: Color(0xff3489ff), size: size);
         });
+    if (call != null) {
+      call();
+      NavigatorUtils.goBack(context);
+    }
+  }
+
+  static void showDefaultLoadingWithAsyncCall(
+    BuildContext context,
+    Function call, {
+    double size = 30,
+  }) async {
+    showDefaultLoading(context, size: size);
+    if (call != null) {
+      await call();
+      NavigatorUtils.goBack(context);
+    }
   }
 
   static void showDefaultLoadingWithBounds(BuildContext context, {double size = 25, String text = ""}) {

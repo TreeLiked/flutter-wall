@@ -100,10 +100,12 @@ class Api {
   static const String API_AGREEMENT = "https://almond-donuts.iutr.tech/terms.html";
   static const String API_SHARE = "https://almond-donuts.iutr.tech/download.html";
 
-
   static Map<String, dynamic> convertResponse(Object responseData) {
-    String jsonTemp = json.encode(responseData);
-    return json.decode(jsonTemp);
+    try {
+      String jsonTemp = json.encode(responseData);
+      return json.decode(jsonTemp);
+    } on Error {}
+    return null;
   }
 
   static String formatError(DioError e) {

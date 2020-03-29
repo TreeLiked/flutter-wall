@@ -64,7 +64,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     UniHotTweet ht = await TweetApi.queryOrgHotTweets(Application.getOrgId);
 
     if (ht == null) {
-      ToastUtil.showToast(context, '数据加载错误');
+      ToastUtil.showToast(context, '当前访问过多，请稍后重试');
       setState(() {
         this.hotTweet = null;
       });
@@ -176,7 +176,6 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   }
 
   List<Widget> _getRenderList(UniHotTweet ht) {
-    print('hot card render .................................');
     if (hotTweet != null && !CollectionUtil.isListEmpty(hotTweet.tweets)) {
       print(ht.toJson());
       List<Widget> list = new List();
@@ -317,11 +316,6 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                                       TextSpan(
                                           text: ' 发表于${TimeUtil.getShortTime(bt.sentTime)}',
                                           style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13)),
-//                                      TextSpan(
-//                                          text: TimeUtil.getShortTime(bt.sentTime),
-//                                          style: TextStyle(
-//                                              color: ColorConstant.TWEET_TIME_COLOR,
-//                                              fontSize: Dimens.font_sp13)),
                                     ]),
                                   ),
                                   Container(

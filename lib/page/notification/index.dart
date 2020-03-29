@@ -73,7 +73,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 
   Future<void> _fetchLatestInteractionMsg() async {
     MessageAPI.fetchLatestMessage(1).then((msg) {
-      print('--------------有新消息${msg == null ? 'null' : msg.toJson()}');
       if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
         _loopQueryInteraction(false);
         setState(() {
@@ -89,6 +88,9 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         if (interactionMsgCtrl.localCount != count) {
           interactionMsgCtrl.localCount = count;
           print('发现新消息，开始刷新');
+          if (!_refreshController.isRefresh) {
+            _refreshController.requestRefresh();
+          }
           _fetchLatestSystemMsg().then((_) {
             // 刷新完成后增加小红点
             interactionMsgCtrl.streamCount = count;
@@ -109,10 +111,14 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
       if (count != -1) {
         if (sysMsgCtrl.localCount != count) {
           sysMsgCtrl.localCount = count;
-          print('发现新消息，开始刷新');
-          _fetchLatestInteractionMsg().then((_) {
-            sysMsgCtrl.streamCount = count;
-          });
+          if (!_refreshController.isRefresh) {
+            _refreshController.requestRefresh();
+          }
+          sysMsgCtrl.streamCount = count;
+
+//          print('发现新消息，开始刷新');
+//          _fetchLatestInteractionMsg().then((_) {
+//          });
         }
       }
     }).whenComplete(() {
@@ -123,22 +129,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
       }
     });
   }
-
-//  _loopQuerySystem() {
-//    MessageAPI.queryInteractionMessageCount().then((count) {
-//      if (count != -1) {
-//        MessageUtil = count;
-//        if (this.interactionCount > 0) {
-//          print('发现新消息，开始刷新');
-//          _refreshController.requestRefresh();
-//        }
-//      }
-//    }).whenComplete(() {
-//      Future.delayed(Duration(seconds: 60)).then((_) {
-//        _loopQueryInteraction();
-//      });
-//    });
-//  }
 
   @override
   Widget build(BuildContext context) {

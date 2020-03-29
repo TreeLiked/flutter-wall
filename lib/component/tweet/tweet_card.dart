@@ -1,3 +1,5 @@
+import 'package:extended_text/extended_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
@@ -14,6 +16,7 @@ import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
@@ -146,12 +149,19 @@ class TweetCard2 extends StatelessWidget {
             child: Wrap(children: <Widget>[
             Row(children: <Widget>[
               Expanded(
-                  child: Text(body.trim(),
-                      softWrap: true,
+                  child: ExtendedText("${body.trim()}",
+                      maxLines: 5,
                       textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 10,
-                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark)))
+                      selectionEnabled: false,
+                      overFlowTextSpan: OverFlowTextSpan(children: [
+                        TextSpan(text: ' \u2026 '),
+                        TextSpan(
+                            text: "查看全部",
+                            style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp15),
+                            recognizer: TapGestureRecognizer()..onTap = () => _forwardDetail(context))
+                      ]),
+                      softWrap: true,
+                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark))),
             ])
           ]))
         : Container(height: 0);

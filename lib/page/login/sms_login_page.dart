@@ -120,28 +120,28 @@ class _SMSLoginPageState extends State<LoginPage> {
           ToastUtil.showToast(context, '数据错误，请退出程序重试');
           return;
         }
+        // 绑定账户信息到本地账户数据提供器
         AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
         accountLocalProvider.setAccount(acc);
         print(accountLocalProvider.account.toJson());
         Application.setAccount(acc);
         Application.setAccountId(acc.id);
 
+        // 获取用户所在的大学信息
         University university = await UniversityApi.queryUnis(token);
         if (university == null) {
           // 错误，有账户无组织
-          print("--------------ERROR--------------");
           ToastUtil.showToast(context, '数据错误');
           return;
         } else {
+          // 验证成功，写入用户相关信息到本地
           SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
           SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, university.name);
           Application.setOrgName(university.name);
           Application.setOrgId(university.id);
         }
         _subscription?.cancel();
-//        _phoneController?.removeListener(() {});
-//        _vCodeController?.removeListener(() {});
-//        NavigatorUtils.goBack(context);
+        // 跳转到首页
         NavigatorUtils.push(context, Routes.splash, clearStack: true);
       } else {
         if (res.code == "-1") {
@@ -291,7 +291,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                     Utils.showDefaultLoadingWithBounds(context);
                     Result res = await MemberApi.sendPhoneVerificationCode(_phoneController.text);
                     NavigatorUtils.goBack(context);
-                    if(res == null) {
+                    if (res == null) {
                       ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
                     }
                     if (res.isSuccess) {

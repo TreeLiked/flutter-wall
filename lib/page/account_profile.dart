@@ -34,6 +34,7 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
@@ -204,23 +205,23 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
   _showShieldedAccountBottomSheet() async {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return SimpleConfirmBottomSheet(
             tip: "您确认屏蔽此用户，屏蔽后此用户的内容将对您不可见",
             onTapDelete: () async {
-              Utils.showDefaultLoading(context);
+              Utils.showDefaultLoading(Application.context);
               Result r = await UnlikeAPI.unlikeAccount(widget.accountId.toString());
-              NavigatorUtils.goBack(context);
+              NavigatorUtils.goBack(Application.context);
               if (r == null) {
-                ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+                ToastUtil.showToast(Application.context, TextConstant.TEXT_SERVICE_ERROR);
               } else {
                 if (r.isSuccess) {
-                  final _tweetProvider = Provider.of<TweetProvider>(context);
+                  final _tweetProvider = Provider.of<TweetProvider>(Application.context);
                   _tweetProvider.deleteByAccount(widget.accountId);
-                  ToastUtil.showToast(context, '屏蔽成功，您将不会在看到此用户的内容');
-                  NavigatorUtils.goBack(context);
+                  ToastUtil.showToast(Application.context, '屏蔽成功，您将不会在看到此用户的内容');
+                  NavigatorUtils.goBack(Application.context);
                 } else {
-                  ToastUtil.showToast(context, "用户屏蔽失败");
+                  ToastUtil.showToast(Application.context, "用户屏蔽失败");
                 }
               }
             });

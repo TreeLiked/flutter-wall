@@ -48,11 +48,12 @@ import '../application.dart';
 class TweetDetail extends StatefulWidget {
   BaseTweet _tweet;
   final int hotRank;
+  final bool accountMore;
 
   int tweetId;
   bool _fromHot = false;
 
-  TweetDetail(this._tweet, {this.tweetId, this.hotRank = -1}) {
+  TweetDetail(this._tweet, {this.tweetId, this.hotRank = -1, this.accountMore = false}) {
     if (this.hotRank > 0) {
       _fromHot = true;
     }
@@ -155,6 +156,7 @@ class TweetDetailState extends State<TweetDetail> {
   }
 
   Widget _spaceRow() {
+    BaseTweet t = widget._tweet;
     return Row(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,11 +166,9 @@ class TweetDetailState extends State<TweetDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             GestureDetector(
-                onTap: () => _forwardAccountProfile(true, widget._tweet.account),
+                onTap: () => _forwardAccountProfile(true, t.account),
                 child: AccountAvatar(
-                    avatarUrl: !widget._tweet.anonymous
-                        ? widget._tweet.account.avatarUrl
-                        : PathConstant.ANONYMOUS_PROFILE,
+                    avatarUrl: !t.anonymous ? t.account.avatarUrl : PathConstant.ANONYMOUS_PROFILE,
                     size: SizeConstant.TWEET_PROFILE_SIZE,
                     cache: true,
                     whitePadding: false))
@@ -184,11 +184,11 @@ class TweetDetailState extends State<TweetDetail> {
                   text: TextSpan(children: [
                     TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = () => _forwardAccountProfile(true, widget._tweet.account),
-                        text: widget._tweet.account.nick,
+                          ..onTap = () => _forwardAccountProfile(true, t.account),
+                        text: t.anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : (t.account.nick ?? ""),
                         style: MyDefaultTextStyle.getTweetHeadNickStyle(
                             context, SizeConstant.TWEET_NICK_SIZE + 3,
-                            anonymous: widget._tweet.anonymous)),
+                            anonymous: t.anonymous)),
                   ])),
               Text(TimeUtil.getShortTime(widget._tweet.sentTime),
                   style: TextStyle(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
@@ -712,20 +712,8 @@ class TweetDetailState extends State<TweetDetail> {
                             _viewContainer(),
                             Gaps.vGap15,
                             Divider(),
-                            // _loveContainer(),
                             _templateWidget(_praiseTitleContainer(), _praiseFutureContainer()),
                             _templateWidget(_replyTitleContainer(), _replyFutureContainer()),
-                            // Divider(),
-
-                            // _praiseContainer(),
-
-                            // _replyFutureContainer(),
-                            // Container(
-                            //     height: widget.hotRank > 0
-                            //         ? widget._tweet.dirReplies == null
-                            //             ? 200
-                            //             : (6 - widget._tweet.dirReplies.length * 60)
-                            //         : 0)
                           ],
                         ),
                       ))
@@ -831,11 +819,12 @@ class TweetDetailState extends State<TweetDetail> {
         _showDeleteBottomSheet();
       }));
     } else {
-      // 非自己的弄荣
+      // 非自己
       items.add(BottomSheetItem(Icon(Icons.do_not_disturb_alt, color: Colors.deepOrange), '屏蔽此内容', () {
         Navigator.pop(context);
         _showShieldedBottomSheet();
       }));
+
       items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.red), '屏蔽此人', () {
         Navigator.pop(context);
         _showShieldedAccountBottomSheet();
@@ -1003,7 +992,7 @@ class TweetDetailState extends State<TweetDetail> {
           TweetReply newReply = TweetReply.fromJson(result.data);
           if (newReply != null) {
             if (newReply.type == 1) {
-              // 设置到��接回复
+              // 设置到直接回复
               setState(() {
                 widget._tweet.replyCount++;
                 if (tweet.dirReplies == null) {
@@ -1074,7 +1063,7 @@ class TweetDetailState extends State<TweetDetail> {
         return SimpleConfirmBottomSheet(
             tip: "您确认屏蔽此条内容，屏蔽后我们将会减少类似推荐",
             onTapDelete: () async {
-              Utils.showDefaultLoading(context);
+              Utils.showDefaultLoading(Application.context);
               List<String> unlikeList = SpUtil.getStringList(SharedConstant.MY_UN_LIKED, defValue: List());
               if (unlikeList == null) {
                 unlikeList = List();
@@ -1082,11 +1071,11 @@ class TweetDetailState extends State<TweetDetail> {
               unlikeList.add(widget._tweet.id.toString());
               await SpUtil.putStringList(SharedConstant.MY_UN_LIKED, unlikeList);
 
-              final _tweetProvider = Provider.of<TweetProvider>(context);
+              final _tweetProvider = Provider.of<TweetProvider>(Application.context);
               _tweetProvider.delete(widget._tweet.id);
-              NavigatorUtils.goBack(context);
-              ToastUtil.showToast(context, '屏蔽成功');
-              NavigatorUtils.goBack(context);
+              NavigatorUtils.goBack(Application.context);
+              ToastUtil.showToast(Application.context, '屏蔽成功');
+              NavigatorUtils.goBack(Application.context);
             });
       },
     );
@@ -1099,18 +1088,18 @@ class TweetDetailState extends State<TweetDetail> {
         return SimpleConfirmBottomSheet(
             tip: "您确认屏蔽此用户，屏蔽后此用户的内容将对您不可见",
             onTapDelete: () async {
-              Utils.showDefaultLoading(context);
+              Utils.showDefaultLoading(Application.context);
               Result r = await UnlikeAPI.unlikeAccount(widget._tweet.account.id.toString());
-              NavigatorUtils.goBack(context);
+              NavigatorUtils.goBack(Application.context);
               if (r == null) {
-                ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+                ToastUtil.showToast(Application.context, TextConstant.TEXT_SERVICE_ERROR);
               } else {
                 if (r.isSuccess) {
-                  final _tweetProvider = Provider.of<TweetProvider>(context);
+                  final _tweetProvider = Provider.of<TweetProvider>(Application.context);
                   _tweetProvider.delete(widget._tweet.id);
-                  NavigatorUtils.goBack(context);
+                  NavigatorUtils.goBack(Application.context);
                 } else {
-                  ToastUtil.showToast(context, "用户屏蔽失败");
+                  ToastUtil.showToast(Application.context, "用户屏蔽失败");
                 }
               }
             });

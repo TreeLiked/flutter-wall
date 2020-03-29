@@ -72,6 +72,8 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
               ),
             ))));
     List<Account> praiseList = widget.tweet.latestPraise;
+    print("-----------------------");
+    print(praiseList);
     if (!CollectionUtil.isListEmpty(praiseList)) {
       for (int i = 0; i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE; i++) {
         Account account = praiseList[i];
@@ -188,6 +190,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       ),
     );
   }
+
   Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom, {int parentId, int showReplyCnt}) {
     if (bottom) {
       return Padding(

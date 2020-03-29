@@ -67,14 +67,16 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 设置token
         prefix0.SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
         _loadStorageTweetTypes();
+        // 获取账户信息
         Account acc = await MemberApi.getMyAccount(token);
+        // 绑定账户数据到本地账户数据提供器
         AccountLocalProvider accountLocalProvider =
             Provider.of<AccountLocalProvider>(context);
         accountLocalProvider.setAccount(acc);
-        print(accountLocalProvider.account.toJson());
         Application.setAccount(acc);
         Application.setAccountId(acc.id);
         NavigatorUtils.goBack(context);
+        // 页面跳转到首页
         NavigatorUtils.push(context, Routes.index, clearStack: true);
       } else {
         RegTemp.regTemp.phone = _phoneController.text;

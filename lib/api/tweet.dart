@@ -149,7 +149,6 @@ class TweetApi {
     String url = Api.API_BASE_INF_URL + Api.API_TWEET_OPERATION + '?acId=' + Application.getAccountId;
     print(url);
     httpUtil.dio.post(url, data: param);
-
   }
 
   static Future<List<TweetReply>> queryTweetReply(int tweetId, bool needSub) async {
@@ -211,9 +210,9 @@ class TweetApi {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
 //      String json = response.data;
-      prefix1.print(json);
-      return UniHotTweet.fromJson(json);
-//      return null;
+      if (json != null) {
+        return UniHotTweet.fromJson(json);
+      }
     } on DioError catch (e) {
       Api.formatError(e);
     }

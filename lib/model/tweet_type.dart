@@ -11,6 +11,7 @@ final tweetTypeMap = {
   "COMPLAINT": TweetTypeEntity.COMPLAINT,
   "GOSSIP": TweetTypeEntity.GOSSIP,
   "HAVE_FUN": TweetTypeEntity.HAVE_FUN,
+  "SHARE": TweetTypeEntity.SHARE,
   "LOST_AND_FOUND": TweetTypeEntity.LOST_AND_FOUND,
   "HELP_AND_REWARD": TweetTypeEntity.HELP_AND_REWARD,
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
@@ -137,6 +138,14 @@ class TweetTypeEntity {
       name: "HAVE_FUN",
       color: Color(0xffDEB887),
       zhTag: "娱乐");
+
+  static const SHARE = const TweetTypeEntity(
+      iconData: Icons.share,
+      iconColor: Color(0xff0acffe),
+      intro: "快乐就要分享，分享了就能乘N",
+      name: "HAVE_FUN",
+      color: Color(0xff0acffe),
+      zhTag: "分享");
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
       iconData: Icons.local_florist,

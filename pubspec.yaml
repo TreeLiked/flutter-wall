@@ -64,7 +64,7 @@ dependencies:
   image_picker_saver: ^0.3.0
 
   # 单图选择
-  image_picker: ^0.6.1+11
+  image_picker: ^0.6.3+4
 
   # 扩展图片预览
   extended_image: ^0.6.8

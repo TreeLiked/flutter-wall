@@ -66,17 +66,9 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                                 Color(0xff363636),
                               ]
                             : [
-//                                Color(0xffc4c5c7),
-//                                Color(0xffebebeb),
-//                                Color(0xfffeada6),
-//                                Color(0xffeef1f5),
                                 Color(0xfffffeff),
-//                                Color(0xffe6e9f0),
-//                                Color(0xfff5efef),
-//                                Color(0xffD7FFFE),
-                          Color(0xffdeecdd),
-
-                        ]),
+                                Color(0xffdfe9f3),
+                              ]),
                   ),
 
                   child: Column(
@@ -116,7 +108,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                               Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(top: ScreenUtil().setHeight(15)),
-                                child: Text(provider.account.signature??'',
+                                child: Text(provider.account.signature ?? '',
                                     softWrap: true,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -128,32 +120,13 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                           )),
                     ],
                   ),
-                  // title: Text('Demo'),
-                  // collapseMode: CollapseMode.pin,
                 )),
             SliverToBoxAdapter(
               child: Container(
                 margin: EdgeInsets.only(top: 5),
                 child: Column(
                   children: <Widget>[
-//                    Container(
-//                      // color: Theme.of(context).scaffoldBackgroundColor,
-//                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-//                      child: Row(
-//                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                        children: <Widget>[
-//                          UpDownItem(const LoadAssetIcon(PathConstant.ICON_ARTICLE, width: 25, height: 25),
-//                              Text('发布'), () => NavigatorUtils.push(context, SettingRouter.historyPushPage)),
-//                          UpDownItem(const LoadAssetIcon(PathConstant.ICON_LOVE_PLUS, width: 25, height: 25),
-//                              Text('点赞'), () {}),
-//                          UpDownItem(const LoadAssetIcon(PathConstant.ICON_STAR, width: 25, height: 25),
-//                              Text('收藏'), () => ToastUtil.showToast(context, '收藏功能暂未开放')),
-//                        ],
-//                      ),
-//                    ),
                     Container(
-                      // color: Colors.white,
-
                       child: Column(
                         children: <Widget>[
                           _getGroupSetting("组织", [
@@ -170,10 +143,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                                 //           'hintText': '点击搜索'
                                 //         }));
                               },
-                            ),
-                            ClickItem(
-                              title: '我的身份',
-                              content: '普通用户',
                             ),
                             ClickItem(
                               title: '我的发布',
@@ -210,7 +179,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
 ////                              },
 ////                            ),
 //                          ]),
-
                           _getGroupSetting("设置", [
                             ClickItem(
                               title: '个人资料',
@@ -237,22 +205,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                               onTap: () => NavigatorUtils.push(context, SettingRouter.aboutPage),
                             )
                           ]),
-                          // _getGroupSetting([
-                          //   _getSettingItem(
-                          //     ListTile(
-                          //       title: Text(
-                          //         "退出登录",
-                          //         style: TextStyle(color: Colors.redAccent),
-                          //       ),
-                          //       onTap: () {
-                          //         showDialog(
-                          //             context: context,
-                          //             barrierDismissible: false,
-                          //             builder: (_) => ExitDialog());
-                          //       },
-                          //     ),
-                          //   ),
-                          // ])
                         ],
                       ),
                     ),
@@ -265,35 +217,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
       );
     });
   }
-
-  // void showOverlayProfile(BuildContext context) {
-  //   Future.delayed(Duration(milliseconds: 200)).then((val) {
-  //     OverlayState overlayState = Overlay.of(context);
-  //     OverlayEntry entry = new OverlayEntry(builder: (context) {
-  //       return Positioned(
-  //         top: ScreenUtil.statusBarHeight + 15,
-  //         left: (ScreenUtil.screenWidthDp -
-  //                 SizeConstant.PERSONAL_CENTER_PROFILE_SIZE) /
-  //             2,
-  //         child: Container(
-  //           decoration: BoxDecoration(
-  //             border: Border.all(width: 2, color: Colors.white),
-  //             borderRadius: BorderRadius.all((Radius.circular(50))),
-  //           ),
-  //           child: ClipOval(
-  //             child: Image.network(
-  //               "https://tva1.sinaimg.cn/large/006y8mN6ly1g8oaz0rsjrj30u011ijvq.jpg",
-  //               width: SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
-  //               height: SizeConstant.PERSONAL_CENTER_PROFILE_SIZE,
-  //               fit: BoxFit.cover,
-  //             ),
-  //           ),
-  //         ),
-  //       );
-  //     });
-  //     overlayState.insert(entry);
-  //   });
-  // }
 
   Widget _getSettingItem(ListTile lst) {
     return Container(

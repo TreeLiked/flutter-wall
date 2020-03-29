@@ -327,7 +327,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     return <Widget>[
       SliverAppBar(
         centerTitle: true,
-        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
+        backgroundColor: isDark ? Colours.dark_bg_color : Color(0xfffafbfc),
         //标题居中
 
         title: GestureDetector(
@@ -340,7 +340,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                 duration: Duration(milliseconds: 2000), curve: Curves.easeInOutQuint);
           },
         ),
-        elevation: 1,
+        elevation: 10,
         actions: <Widget>[
 //          IconButton(
 //            icon: Icon(Icons.blur_on),

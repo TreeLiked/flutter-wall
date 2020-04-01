@@ -44,7 +44,7 @@ class TweetApi {
 //      });
       return tweetList;
     } on DioError catch (e) {
-      Api.formatError(e);
+      Api.formatError(e, pop: false);
     }
     return [];
   }
@@ -214,7 +214,7 @@ class TweetApi {
         return UniHotTweet.fromJson(json);
       }
     } on DioError catch (e) {
-      Api.formatError(e);
+      Api.formatError(e, pop: false);
     }
     return null;
   }

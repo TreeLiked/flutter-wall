@@ -140,10 +140,10 @@ class TweetTypeEntity {
       zhTag: "娱乐");
 
   static const SHARE = const TweetTypeEntity(
-      iconData: Icons.share,
+      iconData: Icons.star_half,
       iconColor: Color(0xff0acffe),
-      intro: "快乐就要分享，分享了就能乘N",
-      name: "HAVE_FUN",
+      intro: "快乐就要分享，分享了就更快乐",
+      name: "SHARE",
       color: Color(0xff0acffe),
       zhTag: "分享");
 

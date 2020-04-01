@@ -7,6 +7,7 @@ import 'package:iap_app/api/api.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/update_dialog.dart';
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/version/pub_v.dart';
 import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -77,14 +78,12 @@ class _AboutPageState extends State<AboutPage> {
               onTap: () {
                 print(Api.API_AGREEMENT);
                 NavigatorUtils.goWebViewPage(
-                    context, "WALL服务协议", "http://almond-donuts.iutr.tech:8088/terms.html");
+                    context, "Wall服务协议", "http://almond-donuts.iutr.tech:8088/terms.html");
               }),
           ClickItem(
             title: '检查更新',
-            content: 'v1.0.0',
+            content: 'v${SharedConstant.VERSION_REMARK}',
             onTap: () async {
-//              ToastUtil.showToast(context, '恭喜，您已经是最新版本');
-//              _showUpdateDialog();
               Utils.showDefaultLoadingWithBounds(context);
               VersionUtils.checkUpdate(context: context).then((result) {
                 NavigatorUtils.goBack(context);

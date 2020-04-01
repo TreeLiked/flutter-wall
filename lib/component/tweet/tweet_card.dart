@@ -169,6 +169,10 @@ class TweetCard2 extends StatelessWidget {
 
   Widget _typeContainer(BuildContext context) {
     const Radius temp = Radius.circular(7.5);
+    bool unKnownType = tweetTypeMap[tweet.type] == null;
+    if (unKnownType) {
+      tweet.type = "OTHER";
+    }
     return Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
@@ -183,14 +187,10 @@ class TweetCard2 extends StatelessWidget {
                     : [
                         tweetTypeMap[tweet.type].color,
                         tweetTypeMap[tweet.type].color.withAlpha(188),
-//                  Colors.white,
                       ]),
-//            color: (!ThemeUtils.isDark(context)
-//                    ? tweetTypeMap[tweet.type].color
-//                    : tweetTypeMap[tweet.type].color.withAlpha(100)) ??
-//                Colors.blueAccent,
             borderRadius: BorderRadius.only(topRight: temp, bottomLeft: temp, bottomRight: temp)),
-        child: Text(' # ' + (tweetTypeMap[tweet.type].zhTag ?? TextConstant.TEXT_UN_CATCH_TWEET_TYPE),
+        child: Text(
+            ' # ' + (!unKnownType ? tweetTypeMap[tweet.type].zhTag : TextConstant.TEXT_UN_CATCH_TWEET_TYPE),
             style: MyDefaultTextStyle.getTweetTypeStyle(context)));
   }
 }

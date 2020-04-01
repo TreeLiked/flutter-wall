@@ -259,7 +259,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                 text: "Wall服务协议",
                 style: TextStyles.textClickable,
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () => NavigatorUtils.goWebViewPage(context, "WALL服务协议", Api.API_AGREEMENT)),
+                  ..onTap = () => NavigatorUtils.goWebViewPage(context, "Wall服务协议", Api.API_AGREEMENT)),
           ]),
         ));
   }

@@ -108,9 +108,11 @@ class Api {
     return null;
   }
 
-  static String formatError(DioError e) {
+  static String formatError(DioError e, {pop = true}) {
     print(e);
-    NavigatorUtils.goBack(Application.context);
+    if (pop) {
+      NavigatorUtils.goBack(Application.context);
+    }
     if (e.type == DioErrorType.CONNECT_TIMEOUT) {
       // It occurs when url is opened timeout.
       print("连接超时");

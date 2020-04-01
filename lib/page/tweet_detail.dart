@@ -201,6 +201,10 @@ class TweetDetailState extends State<TweetDetail> {
 
   Widget _viewContainer() {
     const Radius temp = Radius.circular(7.0);
+    bool unKnownType = tweetTypeMap[widget._tweet.type] == null;
+    if (unKnownType) {
+      widget._tweet.type = "OTHER";
+    }
     return Container(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -232,7 +236,10 @@ class TweetDetailState extends State<TweetDetail> {
                         bottomLeft: temp,
                         // bottomRight: temp,
                       )),
-                  child: Text('# ' + tweetTypeMap[widget._tweet.type].zhTag,
+                  child: Text(
+                      '# ' + (!unKnownType
+                          ? tweetTypeMap[widget._tweet.type].zhTag
+                          : TextConstant.TEXT_UN_CATCH_TWEET_TYPE),
                       style: MyDefaultTextStyle.getTweetTypeStyle(context)),
                 )
               ],

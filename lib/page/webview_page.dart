@@ -1,7 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
@@ -19,11 +27,14 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
 
   @override
   Widget build(BuildContext context) {
+    SystemUiOverlayStyle _overlayStyle =
+        ThemeData.estimateBrightnessForColor(ThemeUtils.getBackgroundColor(context)) == Brightness.dark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark;
     return FutureBuilder<WebViewController>(
         future: _controller.future,
         builder: (context, snapshot) {
@@ -41,13 +52,41 @@ class _WebViewPageState extends State<WebViewPage> {
               return Future.value(true);
             },
             child: Scaffold(
-                appBar: MyAppBar(
-                  centerTitle: widget.title,
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: Text("${widget.title}"),
+                  leading: IconButton(
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.maybePop(context);
+                    },
+                    tooltip: 'Back',
+                    padding: const EdgeInsets.all(12.0),
+                    icon: Image.asset(
+                      PathConstant.ICON_GO_BACK_ARROW,
+                      color: _overlayStyle == SystemUiOverlayStyle.light ? Colours.dark_text : Colours.text,
+                      width: 23.9,
+                    ),
+                  ),
+                  actions: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.more_vert),
+                      onPressed: () => {
+                        BottomSheetUtil.showBottomSheetView(context, [
+                          BottomSheetItem(Icon(Icons.content_copy), "复制链接", () {
+                            ToastUtil.showToast(context, '已复制');
+                            NavigatorUtils.goBack(context);
+                            Utils.copyTextToClipBoard(widget.url);
+                          }),
+                        ])
+                      },
+                    )
+                  ],
                 ),
                 body: WebView(
                   initialUrl: widget.url,
                   javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) async{
+                  onWebViewCreated: (WebViewController webViewController) async {
                     _controller.complete(webViewController);
                     print((await webViewController.getTitle()).toString());
                   },

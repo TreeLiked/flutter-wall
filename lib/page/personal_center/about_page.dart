@@ -58,7 +58,7 @@ class _AboutPageState extends State<AboutPage> {
                     'wall_logo',
                     width: _logoWidth,
                     height: _logoWidth,
-                    color: !isDark ? Colors.black12 : Colors.indigo,
+                    color: !isDark ? Colors.black12 : Colors.amberAccent[200],
                   ))),
 
           Gaps.vGap10,

@@ -13,6 +13,7 @@ class ImageContainer extends StatelessWidget {
   final double maxWidth;
   final double maxHeight;
   final EdgeInsetsGeometry padding;
+  final Widget errorWidget;
   final callback;
 
   const ImageContainer(
@@ -22,6 +23,7 @@ class ImageContainer extends StatelessWidget {
       this.callback,
       this.padding,
       this.maxWidth,
+      this.errorWidget,
       this.maxHeight});
 
   @override
@@ -42,10 +44,12 @@ class ImageContainer extends StatelessWidget {
                     imageUrl: url,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => CupertinoActivityIndicator(),
-                    errorWidget: (context, url, error) => SizedBox(
+                    errorWidget: (context, url, error) =>
+                        errorWidget ??
+                        SizedBox(
                           width: Application.screenWidth * 0.25,
                           height: Application.screenWidth * 0.25,
-                          child: LoadAssetImage(PathConstant.IAMGE_FAILED),
+                          child: LoadAssetImage(PathConstant.IMAGE_FAILED),
                         )),
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)))));
   }

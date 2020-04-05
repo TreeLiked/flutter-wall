@@ -40,12 +40,9 @@ class VersionUtils {
     if (result != null) {
       if (!result.isSuccess) {
         // 当前版本不可用，必须更新
-        if (result.data == null) {
-          ToastUtil.showToast(context ?? Application.context, '当前版本不可用，您必须更新才能继续使用',
-              length: Toast.LENGTH_LONG);
-          return;
+        if (result.data != null) {
+          VersionUtils.showUpdateDialog(context ?? Application.context, result.data, true);
         }
-        VersionUtils.showUpdateDialog(context ?? Application.context, result.data, true);
       } else {
         // 当前版本可以继续使用
         if (result.data != null) {

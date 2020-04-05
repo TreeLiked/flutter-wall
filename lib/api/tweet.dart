@@ -49,22 +49,20 @@ class TweetApi {
     return [];
   }
 
-  static Future<BaseTweet> queryTweetById(int tweetId) async {
+  static Future<BaseTweet> queryTweetById(int tweetId, {bool pop = false}) async {
     String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY_SIN + "?id=$tweetId";
     print(url);
-
     Response response;
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       if (json['isSuccess'] == true) {
         dynamic jsonData = json["data"];
         return BaseTweet.fromJson(jsonData);
       }
       return null;
     } on DioError catch (e) {
-      Api.formatError(e);
+      Api.formatError(e,pop: pop);
     }
     return null;
   }

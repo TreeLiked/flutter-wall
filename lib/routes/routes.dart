@@ -70,7 +70,7 @@ class Routes {
 
     router.define(tweetDetail, handler: Handler(handlerFunc: (_, params) {
       int tweetId = int.parse(params['tweetId'].first);
-      return TweetDetail(null, tweetId: tweetId);
+      return TweetDetail(null, tweetId: tweetId, hotRank: -1, newLink: true);
     }));
 
     router.define(loginPage, handler: Handler(handlerFunc: (_, params) {

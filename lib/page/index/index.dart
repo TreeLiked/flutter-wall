@@ -38,7 +38,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   // 所有页面
   // 当前页面
 
-  final pageController = PageController();
+  final pageController = PageController(keepPage: true);
 
   bool _showBottomNavBar = true;
 
@@ -60,7 +60,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   void checkUpdate() async {
     VersionUtils.checkUpdate().then((result) {
       if (result != null) {
-        VersionUtils.displayUpdateDialog(result,slient: true);
+        VersionUtils.displayUpdateDialog(result, slient: true);
       }
     });
   }
@@ -126,8 +126,6 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   }
 
   void onPageChanged(int index) {
-    print('----------onpage changed');
-
     setState(() {
       _currentIndex = index;
     });
@@ -138,7 +136,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     if (index == _currentIndex) {
       if (index == 0) {
         PageSharedWidget.homepageScrollController
-            .animateTo(.0, duration: Duration(milliseconds: 2000), curve: Curves.easeInOutQuint);
+            .animateTo(.0, duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
       }
       return;
     }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+final String fallbackTweetType = "FALLBACK";
 final tweetTypeMap = {
   "LOVE_CONFESSION": TweetTypeEntity.LOVE_CONFESSION,
   "ASK_FOR_MARRIAGE": TweetTypeEntity.ASK_FOR_MARRIAGE,
@@ -17,6 +18,7 @@ final tweetTypeMap = {
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
   "OTHER": TweetTypeEntity.OTHER,
   "OFFICIAL": TweetTypeEntity.OFFICIAL,
+  "FALLBACK": TweetTypeEntity.FALLBACK,
   "AD": TweetTypeEntity.AD,
 };
 
@@ -107,10 +109,10 @@ class TweetTypeEntity {
 
   static const QUESTION_CONSULT = const TweetTypeEntity(
       iconData: Icons.local_library,
-      iconColor: Colors.blueGrey,
+      iconColor: Color(0xffFF82AB),
       name: "QUESTION_CONSULT",
       intro: "发布一下，你就知道",
-      color: Colors.blueGrey,
+      color: Color(0xffFF82AB),
       zhTag: "咨询");
 
   static const COMPLAINT = const TweetTypeEntity(
@@ -124,10 +126,10 @@ class TweetTypeEntity {
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_complaint.png");
   static const GOSSIP = const TweetTypeEntity(
       iconData: Icons.free_breakfast,
-      iconColor: Color(0xffaacca4),
+      iconColor: Color(0xff99bb93),
       intro: "多说话，多喝热水",
       name: "GOSSIP",
-      color: Color(0xffaacca4),
+      color: Color(0xff99bb93),
       coverUrl: 'https://tva1.sinaimg.cn/large/006y8mN6ly1g870g0gah7j30qo0xbwl7.jpg',
       zhTag: "闲聊");
 
@@ -149,18 +151,18 @@ class TweetTypeEntity {
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
       iconData: Icons.local_florist,
-      iconColor: Color(0xff485563),
+      iconColor: Color(0xffCDB5CD),
       intro: "你不等我回家，我还能去哪",
       name: "LOST_AND_FOUND",
-      color: Color(0xff485563),
+      color: Color(0xffCDB5CD),
       zhTag: "寻物");
 
   static const HELP_AND_REWARD = const TweetTypeEntity(
       iconData: Icons.transfer_within_a_station,
-      iconColor: Color(0xff778899),
+      iconColor: Color(0xff87CEFF),
       name: "HELP_AND_REWARD",
       intro: "送人玫瑰，手有余香",
-      color: Color(0xff778899),
+      color: Color(0xff87CEFF),
       zhTag: "帮助");
 
   static const SECOND_HAND_TRANSACTION = const TweetTypeEntity(
@@ -188,6 +190,17 @@ class TweetTypeEntity {
       canUnSubscribe: false,
       pushable: false,
       filterable: false);
+
+  static const FALLBACK = const TweetTypeEntity(
+      iconData: Icons.blur_circular,
+      iconColor: Color(0xffFF6EB4),
+      name: "FALLBACK",
+      color: Color(0xffFF6EB4),
+      zhTag: "内测",
+      canUnSubscribe: false,
+      pushable: false,
+      filterable: false,
+      visible: false);
 
   static const AD = const TweetTypeEntity(
       iconData: Icons.school,

@@ -96,7 +96,7 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   void _assembleAndPushTweet() async {
-    if (_controller.text.length >= 256) {
+    if (_controller.text.length >= GlobalConfig.TWEET_MAX_LENGTH) {
       ToastUtil.showToast(context, '内容超出最大字符限制');
       return;
     }

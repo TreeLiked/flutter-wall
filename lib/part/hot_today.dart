@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
+import 'package:iap_app/component/tweet/tweet_hot_card.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
@@ -100,6 +101,8 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    bool loadingOrRedisInit = hotTweet == null;
+    bool noData = !loadingOrRedisInit && CollectionUtil.isListEmpty(hotTweet.tweets);
     return Scaffold(
       body: EasyRefresh.custom(
           header: LinkHeader(
@@ -142,10 +145,10 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          '精选20条最热门的内容，每小时更新一次',
+                          '精选20条校园最热门的内容，每小时更新一次',
                           softWrap: true,
                           maxLines: 2,
-                          style: TextStyle(fontSize: 14, color: Colors.white70),
+                          style: TextStyle(fontSize: Dimens.font_sp14, color: Colors.white70),
                         ),
                         Text(
                           '上次更新时间：' +
@@ -162,218 +165,56 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               expandedHeight: _expandedHeight,
               title: '校园热门',
             ),
-            MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: SliverList(
-                delegate: SliverChildListDelegate(_getRenderList(hotTweet)),
-              ),
-            )
+            new SliverFixedExtentList(
+              itemExtent: loadingOrRedisInit ? 0 : !noData ? 100 : Application.screenHeight,
+              delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
+                //创建列表项
+                if (hotTweet == null) {
+                  return Gaps.empty;
+                }
+                var tweets = hotTweet.tweets;
+                if (tweets == null || tweets.length == 0) {
+                  return _noDataView();
+                }
+                return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1));
+              }, childCount: loadingOrRedisInit ? 0 : !noData ? hotTweet.tweets.length : 1),
+            ),
           ],
           onRefresh: _onRefresh,
           onLoad: null),
     );
   }
 
-  List<Widget> _getRenderList(UniHotTweet ht) {
-    if (hotTweet != null && !CollectionUtil.isListEmpty(hotTweet.tweets)) {
-      print(ht.toJson());
-      List<Widget> list = new List();
-      for (int i = 0; i < hotTweet.tweets.length; i++) {
-        list.add(_buildHotTweetCard(ht.tweets[i], i));
-      }
-      return list;
-    } else if (hotTweet != null) {
-      // 加载完成无数据
-      return <Widget>[
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: ScreenUtil().setHeight(100),
-            ),
-            SizedBox(
-                width: ScreenUtil().setHeight(210),
-                child: LoadAssetImage(
-                  'no_data',
-                  fit: BoxFit.cover,
-                  width: 100,
-                )),
-//             Text('暂无数据', style: Theme.of(context).textTheme.subhead),
-          ],
+  _noDataView() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          height: ScreenUtil().setHeight(100),
         ),
-      ];
-    } else {
-      // 正在加载过程
-      return <Widget>[];
-    }
+        SizedBox(
+            width: ScreenUtil().setHeight(210),
+            child: LoadAssetImage(
+              'no_data',
+              fit: BoxFit.cover,
+              width: 100,
+            )),
+        Gaps.vGap10,
+        Text('暂无数据', style: Theme.of(context).textTheme.subhead),
+        Gaps.vGap8,
+        Text('快去发布内容抢占热门吧!', style: Theme.of(context).textTheme.subhead),
+      ],
+    );
   }
 
   _forwardDetail(int tweetId, int rank) {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => TweetDetail(null, tweetId: tweetId, hotRank: rank), maintainState: true),
+          builder: (context) => TweetDetail(null, tweetId: tweetId, hotRank: rank, newLink: true)),
     );
-  }
-
-  _buildHotTweetCard(HotTweet bt, int index) {
-    if (!bt.anonymous && bt.account == null) {
-      return Gaps.empty;
-    }
-    index = index + 1;
-    String idxStr = index.toString();
-    if (index < 10) {
-      idxStr = '0$index';
-    }
-
-    String nick;
-    if (bt.anonymous) {
-      nick = TextConstant.TWEET_ANONYMOUS_NICK;
-    } else {
-      nick = bt.account.nick;
-    }
-
-    String oriCoverUrl = (bt.cover != null && bt.cover.mediaType == Media.TYPE_IMAGE) ? bt.cover.url : null;
-    bool hasBody = !StringUtil.isEmpty(bt.body);
-    return GestureDetector(
-        onTap: () => _forwardDetail(bt.id, index),
-        behavior: HitTestBehavior.translucent,
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: index == 0 ? 0 : 5),
-              padding: const EdgeInsets.only(top: 5, bottom: 10),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                      flex: 2,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            child: Text(
-                              idxStr,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: Dimens.font_sp16,
-                                  color: index <= 3
-                                      ? Colors.red
-                                      : (index <= 6
-                                          ? Colors.amber
-                                          : Theme.of(context).textTheme.overline.color)),
-                            ),
-                          ),
-                          Container(
-                              child: bt.upTrend
-                                  ? Icon(
-                                      Icons.arrow_upward,
-                                      color: Colors.redAccent,
-                                      size: 16,
-                                    )
-                                  : Icon(
-                                      Icons.arrow_downward,
-                                      color: Colors.lightGreen,
-                                      size: 16,
-                                    )),
-                        ],
-                      )),
-                  Expanded(
-                    flex: 6,
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  hasBody
-                                      ? Text(
-                                          bt.body,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: true,
-                                          style: TextStyle(fontSize: Dimens.font_sp15),
-                                        )
-                                      : Gaps.empty,
-                                  Gaps.vGap4,
-                                  RichText(
-                                    softWrap: true,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                          text: nick,
-                                          style: MyDefaultTextStyle.getTweetNickStyle(
-                                              context, Dimens.font_sp13p5,
-                                              bold: false, anonymous: bt.anonymous)),
-                                      TextSpan(
-                                          text: ' 发表于${TimeUtil.getShortTime(bt.sentTime)}',
-                                          style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13)),
-                                    ]),
-                                  ),
-                                  Container(
-                                      padding: const EdgeInsets.only(bottom: 2, top: 3),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Text(
-                                            '# ' + tweetTypeMap[bt.type].zhTag.toString(),
-                                            style: TextStyle(
-                                                color: tweetTypeMap[bt.type].color,
-                                                fontSize: Dimens.font_sp12,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Padding(
-                                              padding: const EdgeInsets.only(right: 20),
-                                              child: Text(
-                                                '热度 ${bt.hot}',
-                                                style:
-                                                    TextStyle(color: Colors.grey, fontSize: Dimens.font_sp12),
-                                              ))
-                                        ],
-                                      )),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  oriCoverUrl != null
-                      ? Expanded(
-                          flex: 2,
-                          child: Container(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: ClipRRect(
-                              clipBehavior: Clip.antiAlias,
-                              borderRadius: BorderRadius.circular(5),
-                              child: AspectRatio(
-                                aspectRatio: 1,
-                                child: CachedNetworkImage(
-                                  imageUrl: oriCoverUrl + OssConstant.THUMBNAIL_SUFFIX,
-                                  placeholder: (context, url) => CupertinoActivityIndicator(),
-                                  fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                ),
-                              ),
-                            ),
-                          ))
-                      : Expanded(flex: 2, child: Gaps.empty),
-                  Divider()
-                ],
-              ),
-            ),
-            Divider()
-          ],
-        ));
   }
 
   @override

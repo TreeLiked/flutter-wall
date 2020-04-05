@@ -61,6 +61,7 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
   int pageSize = 25;
 
   List<Widget> sysMsgList;
+  List<AbstractMessage> sysMsgs;
 
   @override
   void initState() {
@@ -74,22 +75,18 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
     if (msgs == null || msgs.length == 0) {
       _refreshController.refreshCompleted(resetFooterState: true);
       setState(() {
-        this.sysMsgList = [];
+        this.sysMsgs = [];
       });
       return;
     }
 
-    List<Widget> cards = msgs.map((absMsg) {
-      print(absMsg.toJson());
-      return SystemCardItem(absMsg);
-    }).toList();
     setState(() {
-      if (this.sysMsgList != null) {
-        this.sysMsgList.clear();
+      if (this.sysMsgs != null) {
+        this.sysMsgs.clear();
       } else {
-        this.sysMsgList = List();
+        this.sysMsgs = List();
       }
-      this.sysMsgList.addAll(cards);
+      this.sysMsgs.addAll(msgs);
     });
     _refreshController.refreshCompleted(resetFooterState: true);
   }
@@ -100,15 +97,11 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
       _refreshController.loadNoData();
       return;
     }
-    List<Widget> cards = msgs.map((absMsg) {
-      print(absMsg.toJson());
-      return SystemCardItem(absMsg);
-    }).toList();
     setState(() {
-      if (this.sysMsgList == null) {
-        this.sysMsgList = List();
+      if (this.sysMsgs == null) {
+        this.sysMsgs = List();
       }
-      this.sysMsgList.addAll(cards);
+      this.sysMsgs.addAll(msgs);
     });
     _refreshController.loadComplete();
   }
@@ -144,16 +137,16 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
                 ),
                 onLoading: _loadMore,
                 onRefresh: _fetchSystemMessages,
-                child: SingleChildScrollView(
-                    child: sysMsgList != null && sysMsgList.length > 0
-                        ? Column(children: sysMsgList)
-                        : sysMsgList == null
-                            ? Gaps.empty
-                            : Container(
-                                alignment: Alignment.topCenter,
-                                margin: const EdgeInsets.only(top: 50),
-                                child: Text('暂无消息'),
-                              )))));
+                child: sysMsgs  == null ? Gaps.empty:sysMsgs.length == 0 ? Container(
+                  alignment: Alignment.topCenter,
+                  margin: const EdgeInsets.only(top: 50),
+                  child: Text('暂无消息'),
+                ):ListView.builder(
+                    itemCount: sysMsgs.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return SystemCardItem(sysMsgs[index]);
+                    }))));
   }
 }
 

@@ -40,6 +40,7 @@ import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
@@ -245,6 +246,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
   String _nullText = "未知";
   double _iconSize = 25;
   Function _getProfileTask;
+  bool isDark;
 
   Future<AccountDisplayInfo> getProfileInfo(BuildContext context) async {
     AccountDisplayInfo account = await MemberApi.getAccountDisplayProfile(widget.accountId);
@@ -260,6 +262,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    isDark = ThemeUtils.isDark(context);
     return CustomSliverFutureBuilder(
       futureFunc: (context) => _getProfileTask(context),
       builder: (context, data) => _buildBody(data),
@@ -288,12 +291,15 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
 
             Gaps.vGap30,
             _titleItem('个人档案'),
-            _buildPersonInfo('face_rec', Colors.brown, account.name, account.displayName),
+            _buildPersonInfo('line_in_circle', Colors.brown, account.name, account.displayName,
+                fallbackText: "姓名不可见"),
             Gaps.line,
-            _buildPersonInfo('calendar_circle', Colors.lightBlue,
-                account.age > 0 ? account.age.toString() : null, account.displayAge),
+            _buildPersonInfo('voice', Colors.lightBlue, account.age > 0 ? account.age.toString() : null,
+                account.displayAge,
+                fallbackText: "年龄不可见"),
             Gaps.line,
-            _buildPersonInfo('location3', Colors.green, _getRegionText(account), account.displayRegion),
+            _buildPersonInfo('search', Colors.green, _getRegionText(account), account.displayRegion,
+                fallbackText: "地区不可见"),
 
             Gaps.vGap30,
             _titleItem('社交信息'),
@@ -335,7 +341,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             child: Text(account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14)),
+                style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: context)),
           ),
           Gaps.hGap10,
           (male == null || male == "UNKNOWN")
@@ -360,9 +366,9 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           _wrapIcon(LoadAssetSvg(
-            'vote',
-            width: _iconSize - 4,
-            height: _iconSize - 4,
+            'wenjian',
+            width: _iconSize,
+            height: _iconSize,
             color: Colors.lightBlue,
           )),
           Gaps.hGap10,
@@ -370,11 +376,10 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             flex: 1,
             child: Text(sig ?? '未设置',
                 softWrap: true,
-                maxLines: 6,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: Dimens.font_sp14)),
+                style: MyDefaultTextStyle.getSubTextBodyStyle(isDark, fontSize: Dimens.font_sp14)),
           ),
-          _getCopyWidget(sig)
         ],
       ),
     );
@@ -384,7 +389,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     return Container(child: Text(title, style: TextStyle(color: Colors.grey)));
   }
 
-  _buildPersonInfo(String svgName, Color color, String value, bool display) {
+  _buildPersonInfo(String svgName, Color color, String value, bool display, {String fallbackText = "不可见"}) {
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: Row(
@@ -394,7 +399,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 1,
-            child: Text(display ? (value ?? '用户未设置') : '不可见',
+            child: Text(display ? (value ?? '用户未设置') : fallbackText,
                 softWrap: true,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -601,24 +606,14 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
             enableHapticFeedback: true,
             enableInfiniteLoad: true),
         onLoad: _loadMoreData,
-        child: Container(
-          margin: const EdgeInsets.only(top: 15.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children:
-                  _accountTweets.map((f) => TweetCard2(f, upClickable: false, downClickable: true)).toList(),
-            ),
-          ),
-        ));
-    // return SingleChildScrollView(
-    //     // child: EasyRefresh(
-    //     //     footer: MaterialFooter(),
-    //     //     onLoad: () => _getTweets(true),
-    //     //     child:
-    //     child:
-    // )
-    //     // ),
-    //     );
+        child: ListView.builder(
+            primary: false,
+            shrinkWrap: true,
+            itemCount: tweets.length,
+            itemBuilder: (context, index) {
+              return TweetCard2(_accountTweets[index],
+                  upClickable: false, downClickable: true, displayPraise: true);
+            }));
   }
 
   @override

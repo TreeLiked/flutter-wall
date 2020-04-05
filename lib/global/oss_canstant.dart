@@ -22,4 +22,5 @@ class OssConstant {
       "http://iutr-media.oss-cn-hangzhou.aliyuncs.com";
 
   static const String THUMBNAIL_SUFFIX = "?x-oss-process=style/image_thumbnail";
+  static const String PREVIEW_SUFFIX = "?x-oss-process=style/image_preview";
 }

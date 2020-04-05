@@ -173,7 +173,7 @@ class InteractionCardItem extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     text: TextSpan(children: [
                                       TextSpan(
-                                          text: ' 回复: ',
+                                          text: ' 回复了你: ',
                                           style: const TextStyle(
                                               color: Colors.blue, fontSize: Dimens.font_sp14)),
                                       TextSpan(
@@ -206,7 +206,7 @@ class InteractionCardItem extends StatelessWidget {
         anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
-        style: MyDefaultTextStyle.getTweetNickStyle(thisContext, Dimens.font_sp15),
+        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp15,context: thisContext),
       ),
     );
   }

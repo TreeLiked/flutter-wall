@@ -14,6 +14,7 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/model/result_code.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/page/login/reg_temp.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -103,9 +104,9 @@ class _SMSLoginPageState extends State<LoginPage> {
       return;
     }
     MemberApi.login(_phoneController.text).then((res) async {
-      if (res.isSuccess && res.code == "1") {
+      if (res.isSuccess) {
         // 已经存在账户，直接登录
-        String token = res.message;
+        String token = res.data ?? res.message;
         // 设置token
         Application.setLocalAccountToken(token);
         httpUtil.updateAuthToken(token);
@@ -144,14 +145,19 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 跳转到首页
         NavigatorUtils.push(context, Routes.splash, clearStack: true);
       } else {
-        if (res.code == "-1") {
+        if (res.code == MemberResultCode.INVALID_PHONE) {
           NavigatorUtils.goBack(context);
           ToastUtil.showToast(context, '错误的手机号，非法请求');
           return;
         }
-        RegTemp.regTemp.phone = _phoneController.text;
-        NavigatorUtils.goBack(context);
-        NavigatorUtils.push(context, LoginRouter.loginInfoPage);
+        if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
+          RegTemp.regTemp.phone = _phoneController.text;
+          NavigatorUtils.goBack(context);
+          NavigatorUtils.push(context, LoginRouter.loginInfoPage);
+        } else {
+          NavigatorUtils.goBack(context);
+          ToastUtil.showServiceExpToast(context);
+        }
       }
     });
   }

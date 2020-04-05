@@ -46,6 +46,7 @@ import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/routes/square_router.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/oss_util.dart';
@@ -68,7 +69,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
     with AutomaticKeepAliveClientMixin<InteractiveNotificationMainPage> {
   bool isDark = false;
 
-  List<Widget> interMsgList;
+  List<AbstractMessage> msgs;
 
   RefreshController _refreshController = RefreshController(initialRefresh: true);
 
@@ -81,27 +82,23 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
   }
 
   void _fetchInteractiveMessages() async {
-    print('--------------------------请求互动消息---------------');
+    print("fetch---------------------");
     currentPage = 1;
     List<AbstractMessage> msgs = await getData(1, pageSize);
     if (msgs == null || msgs.length == 0) {
       setState(() {
-        this.interMsgList = [];
+        this.msgs = [];
       });
       _refreshController.refreshCompleted(resetFooterState: true);
       return;
     }
-    List<Widget> cards = msgs.map((absMsg) {
-//      print(absMsg.toJson());
-      return InteractionCardItem(absMsg);
-    }).toList();
     setState(() {
-      if (this.interMsgList != null) {
-        this.interMsgList.clear();
+      if (this.msgs != null) {
+        this.msgs.clear();
       } else {
-        this.interMsgList = List();
+        this.msgs = List();
       }
-      this.interMsgList.addAll(cards);
+      this.msgs.addAll(msgs);
     });
     _refreshController.refreshCompleted(resetFooterState: true);
   }
@@ -112,15 +109,11 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
       _refreshController.loadNoData();
       return;
     }
-    List<Widget> cards = msgs.map((absMsg) {
-      print(absMsg.toJson());
-      return InteractionCardItem(absMsg);
-    }).toList();
     setState(() {
-      if (this.interMsgList == null) {
-        this.interMsgList = List();
+      if (this.msgs == null) {
+        this.msgs = List();
       }
-      this.interMsgList.addAll(cards);
+      this.msgs.addAll(msgs);
     });
     _refreshController.loadComplete();
   }
@@ -130,14 +123,14 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
   }
 
   void _readAll() async {
-    if (interMsgList == null || interMsgList.length == 0) {
+    if (msgs == null || msgs.length == 0) {
       ToastUtil.showToast(context, '暂无消息');
       return;
     }
     Utils.showDefaultLoadingWithBounds(context);
-    Result r = await MessageAPI.readAllInteractionMessage();
+    Result r = await MessageAPI.readAllInteractionMessage(pop: false);
     NavigatorUtils.goBack(context);
-    if (r.isSuccess) {
+    if (r != null && r.isSuccess) {
       _refreshController.requestRefresh();
     } else {
       ToastUtil.showToast(context, r.message);
@@ -154,7 +147,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
           centerTitle: "互动消息",
           isBack: true,
           actionName: '全部已读',
-          onPressed: _readAll,
+          onPressed: CollectionUtil.isListEmpty(msgs) ? null : _readAll,
         ),
         body: SafeArea(
             top: false,
@@ -174,16 +167,20 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
                 ),
                 onLoading: _loadMore,
                 onRefresh: _fetchInteractiveMessages,
-                child: SingleChildScrollView(
-                    child: interMsgList != null && interMsgList.length > 0
-                        ? Column(children: interMsgList)
-                        : interMsgList == null
-                            ? Gaps.empty
-                            : Container(
-                                alignment: Alignment.topCenter,
-                                margin: const EdgeInsets.only(top: 50),
-                                child: Text('暂无消息'),
-                              )))));
+                child: msgs == null
+                    ? Gaps.empty
+                    : msgs.length == 0
+                        ? Container(
+                            alignment: Alignment.topCenter,
+                            margin: const EdgeInsets.only(top: 50),
+                            child: Text('暂无消息'),
+                          )
+                        : ListView.builder(
+                            itemCount: msgs.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return InteractionCardItem(msgs[index]);
+                            }))));
   }
 
   @override

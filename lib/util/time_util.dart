@@ -47,13 +47,13 @@ class TimeUtil {
 
   static String timeInDay(int hour) {
     if (hour < 6) {
-      return "凌晨";
+      return "凌晨 ";
     } else if (hour < 12) {
-      return "上午";
+      return "上午 ";
     } else if (hour < 21) {
-      return "下午";
+      return "下午 ";
     } else {
-      return "晚上";
+      return "晚上 ";
     }
   }
 

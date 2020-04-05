@@ -17,10 +17,7 @@ class TweetCommentWrapper extends StatefulWidget {
   // 点击回复框，回调home page textField
   final displayReplyContainerCallback;
 
-
-
-  TweetCommentWrapper(this.tweet,
-      {this.displayReplyContainerCallback});
+  TweetCommentWrapper(this.tweet, {this.displayReplyContainerCallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -35,18 +32,15 @@ class _TweetCommentWrapper extends State<TweetCommentWrapper> {
   }
 
   Widget _commentContainer() {
-    if (widget.tweet.enableReply &&
-        widget.displayReplyContainerCallback != null) {
+    if (widget.tweet.enableReply && widget.displayReplyContainerCallback != null) {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => _sendReply(1, widget.tweet.id, widget.tweet.account.id),
         child: Container(
           decoration: BoxDecoration(
-              color: ThemeUtils.isDark(context)
-                  ? Color(0xff363738)
-                  : Color(0xfff2f3f4),
-              borderRadius: const BorderRadius.all(const Radius.circular(10))),
-          padding: EdgeInsets.all(9),
+              color: ThemeUtils.isDark(context) ? Color(0xff363738) : Color(0xfff2f3f4),
+              borderRadius: const BorderRadius.all(const Radius.circular(6.6))),
+          padding: const EdgeInsets.all(8.8),
           child: Row(
             children: <Widget>[
               AccountAvatar(
@@ -56,12 +50,11 @@ class _TweetCommentWrapper extends State<TweetCommentWrapper> {
               Expanded(
                 child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: Text(
-                      TextConstant.TWEET_CARD_REPLY_HINT,
-                      style: TextStyle(
+                    child: Text(TextConstant.TWEET_CARD_REPLY_HINT,
+                        style: TextStyle(
                           fontSize: SizeConstant.TWEET_TIME_SIZE - 1,
                           color: ColorConstant.getTweetSigColor(context),
-                    ))),
+                        ))),
               ),
             ],
           ),
@@ -83,42 +76,6 @@ class _TweetCommentWrapper extends State<TweetCommentWrapper> {
     tr.parentId = parentId;
     tr.anonymous = false;
     tr.tarAccount = Account.fromId(tarAccId);
-    widget.displayReplyContainerCallback(
-        tr, tarAccNick, tarAccId, _sendReplyCallback);
-  }
-
-  /*
-   * 发送了评论，结果回调
-   */
-  _sendReplyCallback(TweetReply tr) {
-    if (tr == null) {
-      ToastUtil.showToast(
-        context,
-        '回复失败，请稍后重试',
-        gravity: ToastGravity.TOP,
-      );
-    } else {
-      if (tr.type == 1) {
-        // 设置到直接回复
-        setState(() {
-          if (widget.tweet.dirReplies == null) {
-            widget.tweet.dirReplies = List();
-          }
-          widget.tweet.dirReplies.add(tr);
-        });
-      } else {
-        // 子回复
-        int parentId = tr.parentId;
-        setState(() {
-          TweetReply tr2 = widget.tweet.dirReplies
-              .where((dirReply) => dirReply.id == parentId)
-              .first;
-          if (tr2.children == null) {
-            tr2.children = List();
-          }
-          tr2.children.add(tr);
-        });
-      }
-    }
+    widget.displayReplyContainerCallback(tr, tarAccNick, tarAccId);
   }
 }

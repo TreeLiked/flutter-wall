@@ -75,7 +75,6 @@ class MessageAPI {
     return null;
   }
 
-
   static Future<List<AbstractMessage>> querySystemMsg(int currentPage, int pageSize) async {
     String url = Api.API_MSG_LIST_SYSTEM + "?currentPage=$currentPage";
     print(url);
@@ -103,7 +102,7 @@ class MessageAPI {
     return null;
   }
 
-  static Future<Result> readAllInteractionMessage() async {
+  static Future<Result> readAllInteractionMessage({bool pop = false}) async {
     String url = Api.API_MSG_READ_ALL_INTERACTION;
     print(url);
     Result r;
@@ -112,7 +111,7 @@ class MessageAPI {
       Map<String, dynamic> json = Api.convertResponse(response.data);
       return Result.fromJson(json);
     } on DioError catch (e) {
-      String error = Api.formatError(e);
+      String error = Api.formatError(e, pop: pop);
       r.isSuccess = false;
       r.message = error;
       print(error);

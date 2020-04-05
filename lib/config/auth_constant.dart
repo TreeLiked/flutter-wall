@@ -18,8 +18,8 @@ class SharedConstant {
   static const String THEME = "APP_THEME";
 
   /// 每个版本都应该维护并且更新的版本号
-  static const int VERSION_ID = 2;
-  static const String VERSION_REMARK = "1.0.2";
+  static const int VERSION_ID = 4;
+  static const String VERSION_REMARK = "1.1.4";
 
   /// 维护本地屏蔽列表
   static const String MY_UN_LIKED = "MY_UNLIKED";

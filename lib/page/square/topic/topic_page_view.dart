@@ -170,7 +170,7 @@ class _TopicPageView extends State<TopicPageView>
             child: GestureDetector(
                 onTap: onPress,
                 child: Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                  Text(moreText, style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp13p5)),
+//                  Text(moreText, style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp13p5)),
                   suffixIcon,
                 ])))
       ],
@@ -251,11 +251,11 @@ class _TopicPageView extends State<TopicPageView>
               Gaps.hGap4,
               RichText(
                 text: TextSpan(children: [
-                  TextSpan(
-                      text: topic.author.nick,
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => NavigatorUtils.goAccountProfile(context, topic.author),
-                      style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp13p5)),
+//                  TextSpan(
+//                      text: topic.author.nick,
+//                      recognizer: TapGestureRecognizer()
+//                        ..onTap = () => NavigatorUtils.goAccountProfile(context, topic.author),
+//                      style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp13p5)),
                   TextSpan(
                       text: ' 创建于 ${TimeUtil.getShortTime(topic.sentTime)}',
                       style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13p5))

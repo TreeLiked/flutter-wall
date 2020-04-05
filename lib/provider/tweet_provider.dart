@@ -2,8 +2,10 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 
 class TweetProvider extends ChangeNotifier {
@@ -49,6 +51,34 @@ class TweetProvider extends ChangeNotifier {
           tr2.children = List();
         }
         tr2.children.add(tr);
+      }
+      notifyListeners();
+    }
+  }
+
+  void updatePraise(BuildContext context, Account account, int tweetId, bool praise) {
+    BaseTweet targetTweet = displayTweets.firstWhere((tweet) => tweet.id == tweetId);
+    if (targetTweet == null) {
+      ToastUtil.showToast(
+        context,
+        '内容不存在，请刷新后重试',
+        gravity: ToastGravity.TOP,
+      );
+      return;
+    } else {
+      targetTweet.loved = praise;
+
+      if (praise) {
+        targetTweet.praise++;
+        if (targetTweet.latestPraise == null) {
+          targetTweet.latestPraise = List();
+        }
+        targetTweet.latestPraise.add(account);
+      } else {
+        targetTweet.praise--;
+        if (targetTweet.latestPraise != null) {
+          targetTweet.latestPraise.removeWhere((acc) => acc.id == account.id);
+        }
       }
       notifyListeners();
     }

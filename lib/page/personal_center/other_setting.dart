@@ -1,5 +1,6 @@
 import 'package:flustars/flustars.dart' as flutter_stars;
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/config/auth_constant.dart';
@@ -46,8 +47,10 @@ class _OtherSettingState extends State<OtherSetting> {
               }),
           ClickItem(
               title: "清除缓存",
-              onTap: () {
-                imageCache.clear();
+              onTap: () async {
+                PaintingBinding.instance.imageCache.clear();
+                var defaultCacheManager = DefaultCacheManager();
+                defaultCacheManager.emptyCache();
                 ToastUtil.showToast(context, '清除成功');
               }),
           ClickItem(

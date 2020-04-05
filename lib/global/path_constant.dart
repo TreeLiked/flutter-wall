@@ -4,7 +4,8 @@ class PathConstant {
   static const String IAMGE_HOLDER = "img_holder";
   static const String AVATAR_HOLDER = "assets/images/avatar_holder.png";
 
-  static const String IAMGE_FAILED = "img_failed";
+  static const String IMAGE_FAILED = "img_failed";
+  static const String IMAGE_LINK= "link";
   static const String AVATAR_FAILED = "avatar_failed";
 
   static const String ICON_CHECKBOX_SEL = "cbx_ck";
@@ -30,7 +31,7 @@ class PathConstant {
       "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/default_profile.png";
 
   static const String HOT_COVER_URL =
-      "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/hot_cover.jpg";
+      "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/hot_cover.jpg";
 
   static const String ICON_FIRE = "assets/icons/fire.png";
   static const String ICON_CHAMPIN = "assets/icons/champin.png";

@@ -6,10 +6,14 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/component/text_field.dart';
+import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/topic/add_topic_reply.dart';
 import 'package:iap_app/model/topic/base_tr.dart';
+import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/page/square/topic/topic_reply_card.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -228,6 +232,100 @@ class BottomSheetUtil {
                                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
                                               fontSize: Dimens.font_sp15)
                                           .copyWith(height: 1.8)),
+                                )
+                              ],
+                            )),
+                      ),
+                    )),
+              ],
+            );
+          });
+        });
+  }
+
+  static void showBottomSheetSingleTweetReplyDetail(
+      BuildContext context, TweetReply reply, bool dirAnon, bool isAuthorAndTweetAnon,
+      {Function onTap}) {
+    bool isDark = ThemeUtils.isDark(context);
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        context: context,
+        builder: (builder) {
+          return StatefulBuilder(builder: (context1, state) {
+            return Stack(
+              children: <Widget>[
+                Container(
+                    height: Application.screenHeight / 1.8,
+                    decoration: BoxDecoration(
+                        color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
+                    child: Scrollbar(
+                      child: SingleChildScrollView(
+                        child: Container(
+                            padding: const EdgeInsets.fromLTRB(10, 15, 15, 50),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 1,
+                                      child: Gaps.empty,
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                            alignment: Alignment.center,
+                                            child: Text('回复详情', style: TextStyles.textBold16))),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          alignment: Alignment.centerRight,
+                                          child: GestureDetector(
+                                            child: Icon(Icons.close, color: ThemeUtils.getIconColor(context)),
+                                            onTap: onTap ?? () => {NavigatorUtils.goBack(context)},
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                                Gaps.vGap16,
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.end,
+                                  children: <Widget>[
+                                    AccountAvatar(
+                                      avatarUrl: dirAnon || isAuthorAndTweetAnon
+                                          ? PathConstant.ANONYMOUS_PROFILE
+                                          : reply.account.avatarUrl,
+                                      size: 35,
+                                      onTap: dirAnon || isAuthorAndTweetAnon
+                                          ? null
+                                          : () => NavigatorUtils.goAccountProfile2(context, reply.account),
+                                    ),
+                                    RichText(
+                                      softWrap: true,
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                            text: dirAnon
+                                                ? " " + TextConstant.TWEET_ANONYMOUS_REPLY_NICK
+                                                : isAuthorAndTweetAnon
+                                                    ? " " + TextConstant.TWEET_AUTHOR_TEXT
+                                                    : "  ${reply.account.nick}",
+                                            style: TextStyle(
+                                                fontSize: Dimens.font_sp16, color: Colours.app_main)),
+                                        TextSpan(
+                                            text: " 回复于 ${TimeUtil.getShortTime(reply.sentTime)}",
+                                            style: TextStyle(fontSize: Dimens.font_sp16, color: Colors.grey)),
+                                      ]),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: Text("${reply.body}",
+                                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
+                                              fontSize: Dimens.font_sp18)
+                                          .copyWith(height: 2.0)),
                                 )
                               ],
                             )),

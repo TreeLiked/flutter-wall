@@ -7,9 +7,10 @@ class MyShadowCard extends StatelessWidget {
       {Key key,
       @required this.child,
       this.color,
-      this.dotColor ,
+      this.dotColor,
       this.shadowColor,
       this.margin = const EdgeInsets.only(top: 6.0),
+      this.radius = 11.0,
       this.onClick})
       : super(key: key);
 
@@ -19,6 +20,7 @@ class MyShadowCard extends StatelessWidget {
   final Color shadowColor;
   final EdgeInsetsGeometry margin;
   final Function onClick;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class MyShadowCard extends StatelessWidget {
     if (shadowColor == null) {
       _shadowColor = isDark ? Colors.transparent : const Color(0x80DCE7FA);
     } else {
-      _shadowColor = isDark ? Colors.transparent : shadowColor;
+      _shadowColor = isDark ? shadowColor : shadowColor;
     }
 
     return onClick != null
@@ -44,18 +46,18 @@ class MyShadowCard extends StatelessWidget {
                 margin: margin,
                 decoration: BoxDecoration(
                     color: _backgroundColor,
-                    borderRadius: BorderRadius.circular(11.0),
+                    borderRadius: BorderRadius.circular(radius),
                     boxShadow: [
                       BoxShadow(
-                          color: _shadowColor, offset: Offset(0.0, 2.0), blurRadius: 8.0, spreadRadius: 0.0),
+                          color: _shadowColor, offset: Offset(0.0, 1.0), blurRadius: 8.0, spreadRadius: 0.0),
                     ]),
                 child: child),
           )
         : Container(
             margin: margin,
             decoration:
-                BoxDecoration(color: _backgroundColor, borderRadius: BorderRadius.circular(11.0), boxShadow: [
-              BoxShadow(color: _shadowColor, offset: Offset(0.0, 2.0), blurRadius: 8.0, spreadRadius: 0.0),
+                BoxDecoration(color: _backgroundColor, borderRadius: BorderRadius.circular(radius), boxShadow: [
+              BoxShadow(color: _shadowColor, offset: Offset(0.0, 1.0), blurRadius: 8.0, spreadRadius: 0.0),
             ]),
             child: child);
   }

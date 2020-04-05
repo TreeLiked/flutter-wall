@@ -1,9 +1,16 @@
+import 'dart:async';
+import 'package:html/dom.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
+import 'package:flutter/widgets.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/model/web_link.dart';
+import 'package:iap_app/util/html_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
@@ -20,6 +27,8 @@ Map<String, dynamic> headersJson = {
   "Accept": "application/json",
   "Content-Type": "application/json; charset=UTF-8",
   "INDENTIFY-ID": "",
+  "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 };
 
 class HttpUtil {
@@ -162,5 +171,21 @@ class HttpUtil {
       print('post请求发生错误：$e');
     }
     return result;
+  }
+
+  static Future<WebLinkModel> loadHtml(BuildContext context, String url) async {
+    if (url.startsWith("www")) {
+      url = "http://" + url;
+    }
+    Response<dynamic> resp = await httpUtil.dio.get(url);
+    if (resp != null) {
+      String html = resp.data;
+      if (!StringUtil.isEmpty(html)) {
+        Document doc = HtmlUtils.parseDocument(html);
+
+        return WebLinkModel(url, HtmlUtils.getDocTitle(doc), HtmlUtils.getDocFaviconPath(doc));
+      }
+    }
+    return null;
   }
 }

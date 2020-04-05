@@ -2,6 +2,8 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
+import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
 
@@ -85,7 +87,21 @@ class NavigatorUtils {
     if (type == null || refId == null) {
       return;
     }
-    push(context,
-        Routes.reportPage + "?refId=" + Uri.encodeComponent(refId) + "&type=" + type + "&title=" + Uri.encodeComponent(title));
+    push(
+        context,
+        Routes.reportPage +
+            "?refId=" +
+            Uri.encodeComponent(refId) +
+            "&type=" +
+            type +
+            "&title=" +
+            Uri.encodeComponent(title));
+  }
+
+  static void goTweetDetail(BuildContext context, BaseTweet tweet) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TweetDetail(tweet)),
+    );
   }
 }

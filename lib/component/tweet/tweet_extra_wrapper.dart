@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
+import 'package:iap_app/component/tweet/praise/tweet_praise_wrapper.dart';
+import 'package:iap_app/component/tweet/reply/tweet_reply_wrapper_simple.dart';
+import 'package:iap_app/component/tweet/tweet_statistics_wrapper.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
@@ -26,11 +30,17 @@ import 'package:iap_app/util/widget_util.dart';
 
 class TweetCardExtraWrapper extends StatefulWidget {
   final BaseTweet tweet;
+  final bool displayPraise;
+  final bool displayCommnet;
 
   // 点击某一条评论回调 homepage textField
   final displayReplyContainerCallback;
 
-  const TweetCardExtraWrapper({this.tweet, this.displayReplyContainerCallback});
+  const TweetCardExtraWrapper(
+      {this.tweet,
+      this.displayReplyContainerCallback,
+      this.displayPraise = false,
+      this.displayCommnet = false});
 
   @override
   State<StatefulWidget> createState() {
@@ -41,261 +51,26 @@ class TweetCardExtraWrapper extends StatefulWidget {
 class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
   @override
   Widget build(BuildContext context) {
+    BaseTweet tweet = widget.tweet;
+    if (tweet == null) {
+      return Gaps.empty;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[_extraContainer(), Gaps.vGap8, _praiseContainer(), Gaps.vGap8, _replyContainer()],
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        TweetStatisticsWrapper(tweet.views, tweet.praise),
+        Gaps.vGap8,
+        widget.displayPraise ? TweetPraiseWrapper(tweet, prefixIcon: true) : Gaps.empty,
+        widget.displayPraise ? Gaps.vGap8 : Gaps.empty,
+        widget.displayCommnet
+            ? TweetReplyWrapperSimple(tweet, widget.displayReplyContainerCallback)
+            : Gaps.empty,
+      ],
     );
   }
 
-  Widget _praiseContainer() {
-    // 最近点赞的人数
-    List<Widget> items = List();
-
-    List<InlineSpan> spans = List();
-    spans.add(WidgetSpan(
-        alignment: PlaceholderAlignment.middle,
-        child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              updatePraise();
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: LoadAssetIcon(
-                widget.tweet.loved
-                    ? PathConstant.ICON_PRAISE_ICON_PRAISE
-                    : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
-                width: 17,
-                height: 17,
-//                color: widget.tweet.loved ? Colors.lightBlue : Colors.grey
-              ),
-            ))));
-    List<Account> praiseList = widget.tweet.latestPraise;
-    print("-----------------------");
-    print(praiseList);
-    if (!CollectionUtil.isListEmpty(praiseList)) {
-      for (int i = 0; i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE; i++) {
-        Account account = praiseList[i];
-        spans.add(TextSpan(
-            text: "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
-            style: MyDefaultTextStyle.getTweetNickStyle(context, 13, bold: false),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                goAccountDetail(account, false);
-              }));
-      }
-
-      if (praiseList.length > GlobalConfig.MAX_DISPLAY_PRAISE) {
-        int diff = praiseList.length - GlobalConfig.MAX_DISPLAY_PRAISE;
-        items.add(Text(
-          " 等共$diff人刚刚赞过",
-          style: TextStyle(fontSize: 13),
-        ));
-      }
-    }
-    Widget widgetT = RichText(
-      text: TextSpan(children: spans),
-      softWrap: true,
-    );
-    items.add(widgetT);
-
-    return Wrap(
-        alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items);
-  }
-
-  void updatePraise() async {
-    if (widget.tweet.latestPraise == null) {
-      widget.tweet.latestPraise = List();
-    }
-    setState(() {
-      widget.tweet.loved = !widget.tweet.loved;
-      if (widget.tweet.loved) {
-        Utils.showFavoriteAnimation(context);
-        Future.delayed(Duration(seconds: 2)).then((_) => Navigator.pop(context));
-        widget.tweet.praise++;
-        widget.tweet.latestPraise.insert(0, Application.getAccount);
-      } else {
-        widget.tweet.praise--;
-        widget.tweet.latestPraise.removeWhere((account) => account.id == Application.getAccountId);
-      }
-    });
-    TweetApi.operateTweet(widget.tweet.id, 'PRAISE', widget.tweet.loved);
-  }
-
-  Widget _replyContainer() {
-    if (widget.tweet.enableReply) {
-      if (!CollectionUtil.isListEmpty(widget.tweet.dirReplies)) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: _getReplyList()),
-            )
-          ],
-        );
-      } else {
-        return Container(height: 0.0);
-      }
-    } else {
-      // 评论关闭
-      return Text('评论关闭', style: MyDefaultTextStyle.getTweetTimeStyle(context));
-    }
-  }
-
-  List<Widget> _getReplyList() {
-    if (CollectionUtil.isListEmpty(widget.tweet.dirReplies)) {
-      return [];
-    }
-    List<Widget> list = new List();
-
-    int displayCnt = 0;
-    int totalCnt = 0;
-    for (var dirTr in widget.tweet.dirReplies) {
-      if (displayCnt == GlobalConfig.MAX_DISPLAY_REPLY) {
-        break;
-      }
-      if (totalCnt == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
-        break;
-      }
-      list.add(_singleReplyContainer(dirTr, false, false, parentId: dirTr.id));
-      displayCnt++;
-      totalCnt++;
-      List<TweetReply> subs = dirTr.children;
-      if (subs != null && subs.length > 0) {
-        subs.forEach((tr) {
-          list.add(_singleReplyContainer(tr, true, false, parentId: dirTr.id));
-          totalCnt++;
-        });
-      }
-    }
-
-    if (displayCnt < GlobalConfig.MAX_DISPLAY_REPLY) {
-//      list.add(_singleReplyContainer(null, false, true, showReplyCnt: widget.tweet.replyCount - displayCnt));
-    } else if (displayCnt >= GlobalConfig.MAX_DISPLAY_REPLY && widget.tweet.replyCount > displayCnt) {
-      list.add(_bottomMore(widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));
-//      list.add(_singleReplyContainer(null, false, true,
-//          showReplyCnt: widget.tweet.replyCount - GlobalConfig.MAX_DISPLAY_REPLY));
-    }
-
-    return list;
-  }
-
-  Widget _bottomMore(int displayCnt) {
-    return Padding(
-      padding: EdgeInsets.only(top: 5),
-      child: Text(
-        displayCnt > 0 ? "查看更多 $displayCnt 条回复 .." : "查看更多回复..",
-        style: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
-      ),
-    );
-  }
-
-  Widget _singleReplyContainer(TweetReply reply, bool isSub, bool bottom, {int parentId, int showReplyCnt}) {
-    if (bottom) {
-      return Padding(
-        padding: EdgeInsets.only(top: 5),
-        child: Text(
-          showReplyCnt > 0 ? "查看更多 $showReplyCnt 条回复 .." : "查看更多回复..",
-          style: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR),
-        ),
-      );
-    }
-    bool authorAnonymous = widget.tweet.anonymous;
-    String accNick = AccountUtil.getNickFromAccount(reply.account, false);
-    bool isAuthorReply = reply.account != null && (widget.tweet.account.id == reply.account.id);
-    if (isAuthorReply && authorAnonymous) {
-      accNick = "作者";
-      reply.account.nick = "作者";
-    }
-
-    bool replyAuthor = reply.tarAccount == null || (widget.tweet.account.id == reply.tarAccount.id);
-    String tarNick = AccountUtil.getNickFromAccount(reply.tarAccount, false);
-    if (replyAuthor && authorAnonymous) {
-      tarNick = "作者";
-      if (reply.tarAccount != null) {
-        reply.tarAccount.nick = "作者";
-      }
-    }
-
-    bool dirReplyAnonymous = (reply.type == 1 && reply.anonymous);
-    if (dirReplyAnonymous) {
-      // 直接回复匿名
-      reply.account.nick = TextConstant.TWEET_ANONYMOUS_REPLY_NICK;
-    }
-    // if (!replyAuthor) {
-
-    return Container(
-        width: double.infinity,
-        padding: EdgeInsets.only(bottom: 5),
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: !dirReplyAnonymous
-              ? () {
-                  // 只要点击评论中的某一行，都是它的子回复
-                  _sendReply(2, parentId, reply.account.id, tarAccNick: accNick);
-                }
-              : () {
-                  ToastUtil.showToast(context, '匿名评论不可回复');
-                },
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.start,
-            children: <Widget>[
-              RichText(
-                maxLines: 5,
-                overflow: TextOverflow.fade,
-                softWrap: true,
-                text: TextSpan(children: [
-                  TextSpan(
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          if (!dirReplyAnonymous) {
-                            goAccountDetail(reply.account, false);
-                          }
-                        },
-                      text: dirReplyAnonymous ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK : accNick,
-                      style: isAuthorReply && authorAnonymous
-                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(context, Dimens.font_sp14)
-                          : MyDefaultTextStyle.getTweetReplyNickStyle(context)),
-                  TextSpan(
-                      text: reply.type == 2 ? ' 回复 ' : '',
-                      style: TextStyle(color: Theme.of(context).textTheme.subtitle.color)),
-                  TextSpan(
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          if (replyAuthor && authorAnonymous) {
-                            goAccountDetail(reply.account, false);
-                          }
-                        },
-                      text: reply.type == 2 ? tarNick : '',
-                      style: replyAuthor && authorAnonymous
-                          ? MyDefaultTextStyle.getTweetReplyAnonymousNickStyle(context, Dimens.font_sp14)
-                          : MyDefaultTextStyle.getTweetReplyNickStyle(context)),
-                  TextSpan(
-                    text: ': ',
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.subtitle.color, fontSize: Dimens.font_sp14),
-                  ),
-                  TextSpan(
-                    text: reply.body,
-                    style: TextStyle(
-                        color: !ThemeUtils.isDark(context)
-                            ? Theme.of(context).textTheme.subhead.color
-                            : ColorConstant.TWEET_TIME_COLOR_DARK,
-                        fontSize: Dimens.font_sp14,
-                        fontWeight: FontWeight.w400),
-                    // recognizer: MultiTapGestureRecognizer()
-                    //   ..onLongTapDown = (_, __) {
-                    //     Utils.copyTextToClipBoard(reply.body);
-                    //     ToastUtil.showToast(context, '内容已复制到粘贴板');
-                    // }
-                  ),
-                ]),
-              ),
-            ],
-          ),
-        ));
-  }
 
   void goAccountDetail(Account account, bool up) {
     NavigatorUtils.push(
@@ -303,71 +78,5 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
         Routes.accountProfile +
             Utils.packConvertArgs(
                 {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
-  }
-
-  _sendReply(int type, int parentId, String tarAccId, {String tarAccNick}) {
-    if (widget.displayReplyContainerCallback != null) {
-      TweetReply tr = new TweetReply();
-      tr.tweetId = widget.tweet.id;
-      tr.type = type;
-      tr.parentId = parentId;
-      tr.anonymous = false;
-      tr.tarAccount = Account.fromId(tarAccId);
-
-      widget.displayReplyContainerCallback(tr, tarAccNick, tarAccId, _sendReplyCallback);
-    }
-  }
-
-  _sendReplyCallback(TweetReply tr) {
-    print('评论回复结果回调 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！');
-    if (tr == null) {
-      ToastUtil.showToast(
-        context,
-        '回复失败，请稍后重试',
-        gravity: ToastGravity.TOP,
-      );
-    } else {
-      if (tr.type == 1) {
-        // 设置到直接回复
-        setState(() {
-          if (widget.tweet.dirReplies == null) {
-            widget.tweet.dirReplies = List();
-          }
-          widget.tweet.dirReplies.add(tr);
-        });
-      } else {
-        // 子回复
-        int parentId = tr.parentId;
-        setState(() {
-          TweetReply tr2 = widget.tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
-          if (tr2.children == null) {
-            tr2.children = List();
-          }
-          tr2.children.add(tr);
-        });
-      }
-    }
-  }
-
-  Widget _extraContainer() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(right: 10),
-                child: Text(
-                  '${widget.tweet.views}次浏览 , ${widget.tweet.praise}人觉得很赞',
-                  style: TextStyle(
-                      fontSize: SizeConstant.TWEET_EXTRA_SIZE,
-                      color: ColorConstant.getTweetSigColor(context)),
-                )),
-          ],
-        )
-      ],
-    );
   }
 }

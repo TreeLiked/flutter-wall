@@ -24,13 +24,32 @@ class WebViewPage extends StatefulWidget {
 
   @override
   _WebViewPageState createState() => _WebViewPageState();
+
+
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   final Completer<WebViewController> _controller = Completer<WebViewController>();
 
+
+  WebView wv;
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    wv = WebView(
+      initialUrl: widget.url,
+      javascriptMode: JavascriptMode.unrestricted,
+      onWebViewCreated: (WebViewController webViewController) async {
+        _controller.complete(webViewController);
+        print((await webViewController.getTitle()).toString());
+      },
+    );
+
     SystemUiOverlayStyle _overlayStyle =
         ThemeData.estimateBrightnessForColor(ThemeUtils.getBackgroundColor(context)) == Brightness.dark
             ? SystemUiOverlayStyle.light
@@ -57,8 +76,7 @@ class _WebViewPageState extends State<WebViewPage> {
                   title: Text("${widget.title}"),
                   leading: IconButton(
                     onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      Navigator.maybePop(context);
+                      NavigatorUtils.goBack(context);
                     },
                     tooltip: 'Back',
                     padding: const EdgeInsets.all(12.0),
@@ -83,14 +101,7 @@ class _WebViewPageState extends State<WebViewPage> {
                     )
                   ],
                 ),
-                body: WebView(
-                  initialUrl: widget.url,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) async {
-                    _controller.complete(webViewController);
-                    print((await webViewController.getTitle()).toString());
-                  },
-                )),
+                body: wv),
           );
         });
   }

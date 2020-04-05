@@ -6,8 +6,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/application.dart';
+import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/common/report_page.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -64,64 +67,13 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    double sw = MediaQuery.of(context).size.width;
 
     return Scaffold(
         body: GestureDetector(
       onTap: () {
         Navigator.of(context).pop();
       },
-      onLongPress: () {
-        if (widget.fromNetwork) {
-          BottomSheetUtil.showBottomSheetView(context, [
-            BottomSheetItem(
-                Icon(
-                  Icons.file_download,
-                  color: Colors.lightBlue,
-                ),
-                '保存到本地', () async {
-              var response = await Dio().get(widget.galleryItems[currentIndex].url,
-                  options: Options(responseType: ResponseType.bytes));
-              ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
-              Navigator.pop(context);
-//              Utils.vibrateOnceOrNotSupport();
-              ToastUtil.showToast(context, '已保存到手机相册');
-            }),
-            BottomSheetItem(
-                Icon(
-                  Icons.warning,
-                  color: Colors.grey,
-                ),
-                '举报', () {
-              Navigator.pop(context);
-              NavigatorUtils.goReportPage(
-                  context, ReportPage.REPORT_TWEET_IMAGE, widget.galleryItems[currentIndex].url, "图片举报");
-            }),
-          ]);
-        } else {
-          BottomSheetUtil.showBottomSheetView(context, [
-            BottomSheetItem(
-                Icon(
-                  Icons.delete,
-                  color: Colors.lightBlue,
-                ),
-                '删除', () async {
-              setState(() {
-                widget.galleryItems.removeAt(currentIndex);
-              });
-            }),
-            BottomSheetItem(
-                Icon(
-                  Icons.warning,
-                  color: Colors.grey,
-                ),
-                '举报', () {
-              Navigator.pop(context);
-              ToastUtil.showToast(context, '举报成功');
-            }),
-          ]);
-        }
-      },
+      onLongPress: () => displayOptions(),
       child: Container(
           decoration: widget.backgroundDecoration,
           constraints: BoxConstraints.expand(
@@ -144,44 +96,102 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               ),
               Positioned(
                   // left: sw / 2,
-                  width: 100,
                   top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(0),
-                  left: (sw - 100) / 2,
+                  left: 10,
                   child: Container(
-                    width: 100,
-                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15),
-                          ),
+                    width: Application.screenWidth - 20,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+//                      color: Colors.white10,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                    child: Row(children: <Widget>[
+                      Flexible(
+                        flex: 1,
+                        child: Container(),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: Container(
+                          alignment: Alignment.center,
+//                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                          child: Text(
+                              widget.galleryItems.length != 1
+                                  ? '${currentIndex + 1} / ${widget.galleryItems.length}'
+                                  : '',
+                              style: TextStyle(color: Colors.white70, fontSize: 16)),
                         ),
-                        child: Text(
-                            widget.galleryItems.length != 1
-                                ? '${currentIndex + 1} / ${widget.galleryItems.length}'
-                                : '',
-                            style: TextStyle(color: Colors.white70, fontSize: 16)),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: Container(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                                child: Icon(
+                                  Icons.more_horiz,
+                                  color: Colors.grey,
+                                ),
+                                onTap: () => displayOptions())),
                       ),
                     ]),
                   )),
-              // widget.usePageViewWrapper
-              //     ? Container(
-              //         child: Text("das;dasda"),
-              //       )
-              //     : Container(
-              //         padding: const EdgeInsets.all(20.0),
-              //         child: Text(
-              //           "Image ${currentIndex + 1}",
-              //           style: const TextStyle(
-              //               color: Colors.white,
-              //               fontSize: 17.0,
-              //               decoration: null),
-              //         ),
-              //       )
             ],
           )),
     ));
+  }
+
+  void displayOptions() {
+    if (widget.fromNetwork) {
+      BottomSheetUtil.showBottomSheetView(context, [
+        BottomSheetItem(
+            Icon(
+              Icons.file_download,
+              color: Colors.lightBlue,
+            ),
+            '保存到本地', () async {
+          var response = await Dio()
+              .get(widget.galleryItems[currentIndex].url, options: Options(responseType: ResponseType.bytes));
+          ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
+          Navigator.pop(context);
+//              Utils.vibrateOnceOrNotSupport();
+          ToastUtil.showToast(context, '已保存到手机相册');
+        }),
+        BottomSheetItem(
+            Icon(
+              Icons.warning,
+              color: Colors.grey,
+            ),
+            '举报', () {
+          Navigator.pop(context);
+          NavigatorUtils.goReportPage(
+              context, ReportPage.REPORT_TWEET_IMAGE, widget.galleryItems[currentIndex].url, "图片举报");
+        }),
+      ]);
+    } else {
+      BottomSheetUtil.showBottomSheetView(context, [
+        BottomSheetItem(
+            Icon(
+              Icons.delete,
+              color: Colors.lightBlue,
+            ),
+            '删除', () async {
+          setState(() {
+            widget.galleryItems.removeAt(currentIndex);
+          });
+        }),
+        BottomSheetItem(
+            Icon(
+              Icons.warning,
+              color: Colors.grey,
+            ),
+            '举报', () {
+          Navigator.pop(context);
+          ToastUtil.showToast(context, '举报成功');
+        }),
+      ]);
+    }
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
@@ -189,7 +199,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     return PhotoViewGalleryPageOptions(
       imageProvider: widget.fromNetwork
           ? CachedNetworkImageProvider(
-              item.url,
+              item.url + OssConstant.PREVIEW_SUFFIX,
             )
           : Image.file(new File(item.url), fit: BoxFit.cover),
       initialScale: PhotoViewComputedScale.contained,

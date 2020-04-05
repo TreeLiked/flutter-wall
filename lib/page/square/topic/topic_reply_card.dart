@@ -67,7 +67,8 @@ class TopicReplyCardItem extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => _forwardAccountDetail(context, reply.author),
                     child: Text('${reply.author.nick ?? ""}',
-                        style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp15)),
+//                        style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp15)
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -202,14 +203,14 @@ class TopicReplyCardItem extends StatelessWidget {
                       text: TextSpan(children: [
                         TextSpan(
                           text: "${subTopicReply.author.nick}",
-                          style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14),
+//                          style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => _forwardAccountDetail(context, subTopicReply.author),
                         ),
                         TextSpan(text: " 回复 ", style: TextStyles.textGray14),
                         TextSpan(
                           text: "${subTopicReply.tarAccount.nick}",
-                          style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14),
+//                          style: MyDefaultTextStyle.getTweetNickStyle(context, Dimens.font_sp14),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => _forwardAccountDetail(context, subTopicReply.tarAccount),
                         ),

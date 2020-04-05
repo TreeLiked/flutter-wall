@@ -46,7 +46,7 @@ class AccountAvatar extends StatelessWidget {
                       height: double.infinity,
                       fit: BoxFit.cover,
                       errorWidget: (context, url, error) => LoadAssetImage(
-                            PathConstant.IAMGE_FAILED,
+                            PathConstant.IMAGE_FAILED,
                             width: SizeConstant.TWEET_PROFILE_SIZE,
                             height: SizeConstant.TWEET_PROFILE_SIZE,
                             fit: BoxFit.fitHeight,

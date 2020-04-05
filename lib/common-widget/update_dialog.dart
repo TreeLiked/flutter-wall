@@ -91,7 +91,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                     widget.forceUpdate
                         ? Container(
                             padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 5.0),
-                            child: Text("您必须升级到此版本，否则服务将不可用",
+                            child: Text("您必须升级到此版本，否则服务将出现异常",
                                 softWrap: true,
                                 maxLines: 2,
                                 style: TextStyle(color: Colors.red, fontWeight: FontWeight.w400)),

@@ -343,7 +343,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
               recognizer: TapGestureRecognizer()
                 ..onTap = () => NavigatorUtils.goAccountProfile(context, topic.author),
               text: topic.author.nick,
-              style: MyDefaultTextStyle.getTweetNickStyle(context, SizeConstant.TWEET_TIME_SIZE)),
+              style: MyDefaultTextStyle.getTweetNickStyle(SizeConstant.TWEET_TIME_SIZE, context: context)),
           TextSpan(
               text: ' 发布于 ${TimeUtil.getShortTime(topic.sentTime)}',
               style: MyDefaultTextStyle.getTweetTimeStyle(context))

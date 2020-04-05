@@ -21,6 +21,7 @@ import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -35,6 +36,7 @@ class NotificationIndexPage extends StatefulWidget {
 class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
   String iconSubPath = "heart";
+  String iconSchoolPath = "hat";
   String iconContactPath = "wave";
   String iconOfficialPath = "author";
 
@@ -161,11 +163,22 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
               child: Column(
                 children: <Widget>[
                   MainMessageItem(
-                      iconPath: iconSubPath, title: "订阅消息", body: "暂无订阅消息", color: Colors.lightBlue),
-                  Container(
-                    margin: const EdgeInsets.only(left: 15),
-                    child: Gaps.line,
+                    iconPath: iconSubPath,
+                    title: "订阅消息",
+                    body: "暂无订阅消息",
+                    color: Colors.lightBlue,
+                    onTap: () => ToastUtil.showToast(context, "当前没有订阅内容"),
                   ),
+                  MainMessageItem(
+                      iconPath: iconSchoolPath,
+                      title: "校园通知",
+                      tagName: "官方",
+                      body: "暂无通知",
+                      pointType: true,
+                      onTap: () {
+                        NavigatorUtils.push(context, NotificationRouter.campusMain);
+                      },
+                      color: Colors.amber),
                   MainMessageItem(
                       iconPath: iconContactPath,
                       color: Colors.lightGreen,

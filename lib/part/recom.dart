@@ -4,10 +4,12 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
+import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
@@ -57,63 +59,31 @@ class RecommendationState extends State<Recommendation> with AutomaticKeepAliveC
     super.build(context);
     print('recom build');
 
-
-
     return Consumer<TweetProvider>(builder: (context, provider, _) {
-      return Stack(
-        children: <Widget>[
-          Container(
-              child: provider.displayTweets == null
-                  ? (Center(
-                      child: WidgetUtil.getLoadingAnimation(),
-                    ))
-                  : (provider.displayTweets.length != 0
-                      ? Column(
-                          // children: children,
-                          children: provider.displayTweets
-                              .map((f) => TweetCard2(
-                                    f,
-                                    displayReplyContainerCallback: (TweetReply tr, String destAccountNick,
-                                            String destAccountId, callback) =>
-                                        showReplyContainer(tr, destAccountNick, destAccountId, callback),
-                                  ))
-                              .toList())
-                      : Center(
-                          child: Container(
-                          padding: EdgeInsets.only(top: ScreenUtil().setHeight(200)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                color: Colors.transparent,
-                                child: Image.asset(
-                                  ImageUtils.getImgPath("no_data", format: "png"),
-                                  fit: BoxFit.cover,
-                                  width: MediaQuery.of(context).size.width * 0.25,
-                                ),
-                              ),
-                              Gaps.vGap15,
-                              Text('暂无数据', style: TextStyle(letterSpacing: 2)),
-                              Gaps.vGap10,
-                              GestureDetector(
-                                onTap: () {
-                                  if (widget.refreshController != null) {
-                                    widget.refreshController.resetNoData();
-                                    widget.refreshController.requestRefresh();
-                                  }
-                                },
-                                child: Text(
-                                  '点击重新加载',
-                                  style: TextStyle(color: Colors.blueAccent),
-                                ),
-                              )
-                            ],
-                          ),
-                        )))),
-        ],
-      );
+      var tweets = provider.displayTweets;
+      if (tweets == null) {
+        return Center(
+          child: WidgetUtil.getLoadingAnimation(),
+        );
+      }
+      if (tweets.length == 0) {
+        return TweetNoDataView(onTapReload: () {
+          if (widget.refreshController != null) {
+            widget.refreshController.resetNoData();
+            widget.refreshController.requestRefresh();
+          }
+        });
+      }
+      return ListView.builder(
+          itemCount: tweets.length,
+          itemBuilder: (context, index) {
+            return TweetCard2(
+              tweets[index],
+              displayReplyContainerCallback:
+                  (TweetReply tr, String destAccountNick, String destAccountId, callback) =>
+                      showReplyContainer(tr, destAccountNick, destAccountId, callback),
+            );
+          });
     });
   }
 

@@ -24,7 +24,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
   final DateTime tweetSent;
   final bool official;
 
-  TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetSent,
+  const TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetSent,
       {this.canClick = true, this.official = false});
 
   @override

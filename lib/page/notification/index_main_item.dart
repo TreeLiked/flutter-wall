@@ -89,11 +89,17 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1),
                                 ),
-                                widget.tagName != null ? SimpleTag(widget.tagName,leftMargin: 5,) : Container(width: 0),
+                                widget.tagName != null
+                                    ? SimpleTag(
+                                        widget.tagName,
+                                        leftMargin: 5.0,
+                                      )
+                                    : Container(width: 0),
                                 Expanded(
                                     child: Container(
                                   alignment: Alignment.centerRight,
-                                  child: Text('${widget.time == null ? '': TimeUtil.getShortTime(widget.time)}',
+                                  child: Text(
+                                      '${widget.time == null ? '' : TimeUtil.getShortTime(widget.time)}',
                                       style: MyDefaultTextStyle.getTweetTimeStyle(context)),
                                 ))
                               ],
@@ -185,7 +191,12 @@ class _MainMessageItemState extends State<MainMessageItem> {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1),
                     ),
-                    widget.tagName != null ? SimpleTag(widget.tagName) : Container(width: 0),
+                    widget.tagName != null
+                        ? SimpleTag(
+                            widget.tagName,
+                            leftMargin: 5.0,
+                          )
+                        : Gaps.empty,
                     Expanded(
                         child: Container(
                       alignment: Alignment.centerRight,

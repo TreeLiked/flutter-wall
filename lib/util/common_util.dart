@@ -128,32 +128,33 @@ class Utils {
     return list;
   }
 
-  static void showFavoriteAnimation(BuildContext context, {double size = 30}) {
+  static void showFavoriteAnimation(BuildContext context, {double size = 30, Key key}) {
+//    "assets/flrs/firework1.flr",// Play
+
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
           return Material(
+            key: key,
             type: MaterialType.transparency,
             child: Center(
                 child: SizedBox(
-                    width: ScreenUtil().setWidth(200),
-                    height: ScreenUtil().setWidth(200),
                     child: Container(
-                      alignment: Alignment.center,
-                      child: FlareActor(
-                        "assets/flrs/favorite.flr",
-                        alignment: Alignment.center,
-                        animation: "favorite",
-                        fit: BoxFit.cover,
-                      ),
-                      // child: FlareActor(
-                      //   "assets/flrs/favorite2.flr",
-                      //   alignment: Alignment.center,
-                      //   animation: "Animations",
-                      //   fit: BoxFit.cover,
-                      // ),
-                    ))),
+              alignment: Alignment.center,
+              child: FlareActor(
+                "assets/flrs/firework1.flr",
+                alignment: Alignment.center,
+                animation: "Play",
+                fit: BoxFit.fitWidth,
+              ),
+//                       child: FlareActor(
+//                         "assets/flrs/favorite2.flr",
+//                         alignment: Alignment.center,
+//                         animation: "Animations",
+//                         fit: BoxFit.cover,
+//                       ),
+            ))),
           );
         });
   }
@@ -298,11 +299,6 @@ class Utils {
                   refId: refId.toString(),
                 ),
             maintainState: true));
-    // Application.router.navigateTo(
-    //   context,
-    //   Routes.cardToGallery + "?index=$initialIndex" + buffer.toString(),
-    //   transition: TransitionType.fadeIn,
-    // );
   }
 }
 

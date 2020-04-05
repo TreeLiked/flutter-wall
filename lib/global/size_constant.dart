@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:iap_app/res/dimens.dart';
 
 class SizeConstant {
   static const double TWEET_REPLY_ICON_SIZE = 20;
@@ -15,7 +16,13 @@ class SizeConstant {
 
   static const double TWEET_TIME_SIZE = 13;
 
-  static const double TWEET_EXTRA_SIZE = 14;
+  /// tweet 相关
+  
+  
+  // 推文统计数据字体大小
+  static const double TWEET_STATISTICS_SIZE = 14;
+  // 评论关闭字体大小
+  static const double TWEET_DISABLE_REPLY_SIZE = Dimens.font_sp13p5;
 
   // static const double TWEET_TIME_SIZE = 14;
 

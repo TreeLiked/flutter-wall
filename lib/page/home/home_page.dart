@@ -1,7 +1,11 @@
-import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as dom;
 
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
+import 'package:iap_app/component/tweet/tweet_card.dart';
+import 'package:iap_app/util/widget_util.dart' as wu;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,6 +15,7 @@ import 'package:iap_app/api/message.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
+import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/main.dart';
@@ -36,6 +41,8 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/html_util.dart';
+import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -69,8 +76,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   List<String> tweetQueryTypes = List();
 
-  Function sendCallback;
-
   AccountLocalProvider accountLocalProvider;
   TweetTypesFilterProvider typesFilterProvider;
   TweetProvider tweetProvider;
@@ -97,18 +102,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
       tab.isSelected = false;
     });
     tabIconsList[0].isSelected = true;
-
-//    _scrollController.addListener(() {
-//      // TODO 自动加载更多
-////      ScrollNotification scroll = notification as ScrollNotification;
-////      // 当前滑动距离
-////      double currentExtent = scroll.metrics.pixels;
-////      double maxExtent = scroll.metrics.maxScrollExtent;
-////      if (maxExtent - currentExtent > widget.startLoadMoreOffset) {
-////        // 开始加载更多
-////
-////      }
-//    });
 
     firstRefreshMessage();
   }
@@ -214,32 +207,12 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                   subScribe: false,
                   initFirst: _getFilterTypes(),
                   callback: (resultNames) async {
-                    print("callbacl result names");
                     await SpUtil.putStringList(SharedConstant.LOCAL_FILTER_TYPES, resultNames);
                     typesFilterProvider.updateTypeNames();
                     _refreshController.requestRefresh();
                     print(resultNames);
                   },
-
-                  // callback: (_) {
-                  //   // _refreshController.requestRefresh();
-                  //   _esRefreshController.resetLoadState();
-                  //   _esRefreshController.callRefresh();
-                  // },
                 )));
-    // MaterialPageRoute(
-    //     builder: (context) => TweetTypeSelect(
-    //           title: "过滤内容类型",
-    //           multi: true,
-    //           backText: "编辑",
-    //           finishText: "完成",
-    //           initNames: typesFilterProvider.selTypeNames,
-    //           callback: (_) {
-    //             // _refreshController.requestRefresh();
-    //             _esRefreshController.resetLoadState();
-    //             _esRefreshController.callRefresh();
-    //           },
-    //         )));
   }
 
   void updateHeader(bool next) {}
@@ -257,70 +230,75 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     }
     firstBuild = false;
 
-    return Stack(
-      children: <Widget>[
-        NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
-          body: Listener(
-              onPointerDown: (_) {
-                // if (_replyContainerHeight == 0) {
-                hideReplyContainer();
-                startY = _.position.dy;
-                // }
-              },
-              onPointerUp: (_) {
-                if (widget.pullDownCallBack != null) {
-                  widget.pullDownCallBack((_.position.dy - startY) > 0);
-                }
-              },
-              child: Scrollbar(
-                controller: _scrollController,
-                child: SmartRefresher(
-                  enablePullUp: true,
-                  enablePullDown: true,
-                  scrollController: _scrollController,
-                  controller: _refreshController,
-                  header: WaterDropHeader(
-                    waterDropColor: Colors.lightBlue,
-                    complete: const Text('刷新完成'),
-                  ),
-                  footer: ClassicFooter(
-                    loadingText: '正在加载...',
-                    canLoadingText: '释放以加载更多',
-                    noDataText: '到底了哦',
-                    idleText: '继续上滑',
-                  ),
-                  // footer: Wat,
-                  child: CustomScrollView(
+    return Consumer<TweetProvider>(builder: (context, provider, _) {
+      var tweets = provider.displayTweets;
+      return Stack(
+        children: <Widget>[
+          NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
+            body: Listener(
+                onPointerDown: (_) {
+                  hideReplyContainer();
+                  startY = _.position.dy;
+                },
+                onPointerUp: (_) {
+                  if (widget.pullDownCallBack != null) {
+                    widget.pullDownCallBack((_.position.dy - startY) > 0);
+                  }
+                },
+                child: Scrollbar(
+                  controller: _scrollController,
+                  child: SmartRefresher(
+                    enablePullUp: true,
+                    enablePullDown: tweets != null && tweets.length > 0,
                     primary: false,
-                    slivers: <Widget>[
-                      SliverToBoxAdapter(
-                        child: Recommendation(
-                          callback: (a, b, c, d) {
-                            showReplyContainer(a, b, c);
-                            sendCallback = d;
-                          },
-                          refreshController: _refreshController,
-                        ),
-                      )
-                    ],
+                    scrollController: _scrollController,
+                    controller: _refreshController,
+                    header: WaterDropHeader(
+                      waterDropColor: Colors.lightBlue,
+                      complete: const Text('刷新完成'),
+                    ),
+                    footer: ClassicFooter(
+                      loadingText: '正在加载...',
+                      canLoadingText: '释放以加载更多',
+                      noDataText: '到底了哦',
+                      idleText: '继续上滑',
+                    ),
+                    child: tweets == null
+                        ? Align(
+                            alignment: Alignment.topCenter,
+                            child: wu.WidgetUtil.getLoadingAnimation(),
+                          )
+                        : tweets.length == 0
+                            ? TweetNoDataView(onTapReload: () {
+                                if (_refreshController != null) {
+                                  _refreshController.resetNoData();
+                                  _refreshController.requestRefresh();
+                                }
+                              })
+                            : ListView.builder(
+                                primary: true,
+                                itemCount: tweets.length,
+                                itemBuilder: (context, index) {
+                                  return TweetCard2(
+                                    tweets[index],
+                                    displayExtra: true,
+                                    displayPraise: true,
+                                    displayComment: true,
+                                    displayReplyContainerCallback:
+                                        (TweetReply tr, String destAccountNick, String destAccountId) =>
+                                            showReplyContainer(tr, destAccountNick, destAccountId),
+                                  );
+                                }),
+                    onRefresh: () => _onRefresh(context),
+                    onLoading: _onLoading,
                   ),
-                  onRefresh: () => _onRefresh(context),
-//                  onLoad: _onLoading,
-                  onLoading: _onLoading,
-                ),
-              )),
-        ),
-        // StatelessWdigetWrapper(Text('data')),
-        Positioned(
-            left: 0,
-            bottom: 0,
-            child: HomeCommentWrapper(
-              key: commentWrapperKey,
-              sendCallback: (reply) => sendCallback(reply),
-            )),
-      ],
-    );
+                )),
+          ),
+          Positioned(left: 0, bottom: 0, child: HomeCommentWrapper(key: commentWrapperKey)),
+        ],
+      );
+    });
   }
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
@@ -331,16 +309,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
         //标题居中
 
         title: GestureDetector(
-          child: Text(
-            Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
-            style: TextStyle(fontSize: Dimens.font_sp15),
-          ),
-          onDoubleTap: () {
-            _scrollController.animateTo(.0,
-                duration: Duration(milliseconds: 2000), curve: Curves.easeInOutQuint);
-          },
-        ),
-        elevation: 10,
+            child: Text(
+              Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
+              style: TextStyle(fontSize: Dimens.font_sp15),
+            ),
+            onTap: () => PageSharedWidget.homepageScrollController
+                .animateTo(.0, duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint)),
+        elevation: 0.3,
         actions: <Widget>[
 //          IconButton(
 //            icon: Icon(Icons.blur_on),
@@ -362,12 +337,12 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
         floating: false,
         pinned: true,
         snap: false,
-        // flexibleSpace: FlexibleSpaceBar(
-        //     background: CachedNetworkImage(
-        //   imageUrl:
-        //       'https://cdn.pixabay.com/photo/2018/09/05/04/21/flowers-3655451__480.jpg',
-        //   fit: BoxFit.cover,
-        // )),
+//         flexibleSpace: FlexibleSpaceBar(
+//             background: CachedNetworkImage(
+//           imageUrl:
+//               'https://tva1.sinaimg.cn/large/00831rSTgy1gdf8bz0p5xj31hc0u0n01.jpgs',
+//           fit: BoxFit.cover,
+//         )),
       ),
     ];
   }

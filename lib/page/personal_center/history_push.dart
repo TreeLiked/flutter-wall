@@ -82,15 +82,13 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
           enableInfiniteLoad: true),
       onLoad: _loadMoreData,
       child: !CollectionUtil.isListEmpty(_accountTweets)
-          ? SingleChildScrollView(
-              child: Column(
-                  children: _accountTweets
-                      .map((f) => TweetCard2(f,
-                          upClickable: false,
-                          downClickable: true,
-                          displayPraise: false,
-                          displayComment: false))
-                      .toList()))
+          ? ListView.builder(
+              itemCount: _accountTweets.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return TweetCard2(_accountTweets[index],
+                    upClickable: false, downClickable: true, displayPraise: false, displayComment: false);
+              })
           : Center(
               child: Padding(
                   padding: const EdgeInsets.only(top: 40),

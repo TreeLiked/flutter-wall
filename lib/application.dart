@@ -13,6 +13,7 @@ class Application {
 
   static String _localAccountToken;
 
+
   // static GetIt getIt = GetIt.instance;
 
   static int _ordId;

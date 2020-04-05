@@ -4,6 +4,7 @@ import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/media.dart';
+import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -19,26 +20,44 @@ class TweetMediaWrapper extends StatelessWidget {
   final List<Media> medias;
   List<String> picUrls;
   final int tweetId;
+  final BaseTweet tweet;
 
-  TweetMediaWrapper(this.tweetId, {this.medias}) {
+  TweetMediaWrapper(this.tweetId, {this.medias, this.tweet}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
-    if(medias != null) {
+    if (medias != null) {
       List<Media> temp = List.from(medias)..retainWhere((media) => media.mediaType == Media.TYPE_IMAGE);
       picUrls = temp.map((f) => f.url).toList();
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return CollectionUtil.isListEmpty(medias)
-        ? Gaps.empty
-        : Container(
+    if (medias == null || medias.length == 0) {
+      return Gaps.empty;
+    } else {
+//      if (tweet != null) {
+//        if (tweet.mediaWrapper != null) {
+//          print("cache image");
+//          return tweet.mediaWrapper;
+//        } else {
+//          tweet.mediaWrapper = Container(
+//              padding: const EdgeInsets.only(top: 10),
+//              child: Wrap(
+//                  children: picUrls.length == 1
+//                      ? <Widget>[_imgContainerSingle(context)]
+//                      : _handleMultiPics(context)));
+//          return tweet.mediaWrapper;
+//        }
+//      } else {
+        return Container(
             padding: const EdgeInsets.only(top: 10),
             child: Wrap(
-                children:
-                    picUrls.length == 1 ? <Widget>[_imgContainerSingle(context)] : _handleMultiPics(context)));
+                children: picUrls.length == 1
+                    ? <Widget>[_imgContainerSingle(context)]
+                    : _handleMultiPics(context)));
+      }
+//    }
   }
 
   Widget _imgContainerSingle(BuildContext context) {
@@ -62,7 +81,7 @@ class TweetMediaWrapper extends StatelessWidget {
                     errorWidget: (context, url, error) => SizedBox(
                         width: Application.screenWidth * 0.25,
                         height: Application.screenWidth * 0.25,
-                        child: LoadAssetImage(PathConstant.IAMGE_FAILED))),
+                        child: LoadAssetImage(PathConstant.IMAGE_FAILED))),
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)))));
   }
 
@@ -109,6 +128,6 @@ class TweetMediaWrapper extends StatelessWidget {
   }
 
   void open(BuildContext context, final int index) {
-    Utils.openPhotoView(context, picUrls, index,tweetId);
+    Utils.openPhotoView(context, picUrls, index, tweetId);
   }
 }

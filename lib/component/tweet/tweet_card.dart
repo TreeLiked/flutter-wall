@@ -1,18 +1,27 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/TweetRichWrapper.dart';
+import 'package:iap_app/common-widget/my_future_builder.dart';
+import 'package:iap_app/common-widget/tweet_link_text.dart';
+import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
+import 'package:iap_app/component/tweet/tweet_body_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_comment_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_extra_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_header_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_image_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_link_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_type_wrapper.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/model/web_link.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/recom.dart';
 import 'package:iap_app/res/colors.dart';
@@ -22,6 +31,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
@@ -57,8 +67,8 @@ class TweetCard2 extends StatelessWidget {
       this.downClickable = true,
       this.displayReplyContainerCallback,
       this.sendReplyCallback,
-      this.displayPraise = true,
-      this.displayComment = true,
+      this.displayPraise = false,
+      this.displayComment = false,
       this.displayExtra = true,
       this.moreWidget}) {
     this.sw = Application.screenWidth;
@@ -75,48 +85,43 @@ class TweetCard2 extends StatelessWidget {
 
   Widget cardContainer2(BuildContext context) {
     Widget wd = Container(
-        padding: const EdgeInsets.only(bottom: 0, top: 5),
+        padding: const EdgeInsets.only(bottom: 5.0, top: 10.0, left: 5.0, right: 5.0),
         color: isDark ? Colours.dark_bg_color : Colors.white,
         child: GestureDetector(
           onTap: () => _forwardDetail(context),
           behavior: HitTestBehavior.translucent,
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    TweetCardHeaderWrapper(
-                      tweet.account,
-                      tweet.anonymous,
-                      tweet.sentTime,
-                      canClick: upClickable,
-                      official: tweet.type == TweetTypeEntity.OFFICIAL.name,
-                    ),
-                    Gaps.vGap8,
-                    _typeContainer(context),
-                    Gaps.vGap5,
-                    _bodyContainer(context),
-                    TweetMediaWrapper(tweet.id, medias: tweet.medias),
-                    Gaps.vGap8,
-                    displayPraise
-                        ? TweetCardExtraWrapper(
-                            tweet: tweet, displayReplyContainerCallback: displayReplyContainerCallback)
-                        : VEmptyView(0),
-                    Gaps.vGap8,
-                    displayComment && tweet.enableReply
-                        ? TweetCommentWrapper(
-                            tweet,
-                            displayReplyContainerCallback: displayReplyContainerCallback,
-                          )
-                        : VEmptyView(0),
-                    displayComment ? Gaps.vGap30 : Gaps.vGap10,
-                    Gaps.line
-                  ],
-                ),
+              TweetCardHeaderWrapper(
+                tweet.account,
+                tweet.anonymous,
+                tweet.sentTime,
+                canClick: upClickable,
+                official: tweet.type == TweetTypeEntity.OFFICIAL.name,
               ),
+              Gaps.vGap8,
+              TweetTypeWrapper(tweet.type),
+              Gaps.vGap5,
+              TweetBodyWrapper(tweet.body, maxLine: 5, fontSize: Dimens.font_sp15, height: 1.6),
+              TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
+              TweetLinkWrapper(tweet),
+              Gaps.vGap8,
+              displayExtra
+                  ? TweetCardExtraWrapper(
+                      displayPraise: displayPraise,
+                      displayCommnet: displayComment,
+                      tweet: tweet,
+                      displayReplyContainerCallback: displayReplyContainerCallback)
+                  : Gaps.empty,
+              displayComment && tweet.enableReply
+                  ? TweetCommentWrapper(
+                      tweet,
+                      displayReplyContainerCallback: displayReplyContainerCallback,
+                    )
+                  : Gaps.empty,
+              displayComment ? Gaps.vGap25 : Gaps.vGap10,
+              Gaps.line
             ],
           ),
         ));
@@ -126,9 +131,7 @@ class TweetCard2 extends StatelessWidget {
   void _forwardDetail(BuildContext context) {
     Navigator.push(
       context,
-
       MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
-//      MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
     );
   }
 
@@ -140,57 +143,5 @@ class TweetCard2 extends StatelessWidget {
               Utils.packConvertArgs(
                   {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
     }
-  }
-
-  Widget _bodyContainer(BuildContext context) {
-    String body = tweet.body;
-    return !StringUtil.isEmpty(body)
-        ? Container(
-            child: Wrap(children: <Widget>[
-            Row(children: <Widget>[
-              Expanded(
-                  child: ExtendedText("${body.trim()}",
-                      maxLines: 5,
-                      textAlign: TextAlign.left,
-                      selectionEnabled: false,
-                      overFlowTextSpan: OverFlowTextSpan(children: [
-                        TextSpan(text: ' \u2026 '),
-                        TextSpan(
-                            text: "查看全部",
-                            style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp15),
-                            recognizer: TapGestureRecognizer()..onTap = () => _forwardDetail(context))
-                      ]),
-                      softWrap: true,
-                      style: MyDefaultTextStyle.getMainTextBodyStyle(isDark))),
-            ])
-          ]))
-        : Container(height: 0);
-  }
-
-  Widget _typeContainer(BuildContext context) {
-    const Radius temp = Radius.circular(7.5);
-    bool unKnownType = tweetTypeMap[tweet.type] == null;
-    if (unKnownType) {
-      tweet.type = "OTHER";
-    }
-    return Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        decoration: BoxDecoration(
-            gradient: new LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: ThemeUtils.isDark(context)
-                    ? [
-                        Colors.white.withAlpha(180),
-                        tweetTypeMap[tweet.type].color.withAlpha(100),
-                      ]
-                    : [
-                        tweetTypeMap[tweet.type].color,
-                        tweetTypeMap[tweet.type].color.withAlpha(188),
-                      ]),
-            borderRadius: BorderRadius.only(topRight: temp, bottomLeft: temp, bottomRight: temp)),
-        child: Text(
-            ' # ' + (!unKnownType ? tweetTypeMap[tweet.type].zhTag : TextConstant.TEXT_UN_CATCH_TWEET_TYPE),
-            style: MyDefaultTextStyle.getTweetTypeStyle(context)));
   }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
+import 'package:iap_app/part/notification/my_sn_card.dart';
+import 'package:iap_app/res/gaps.dart';
 
 class FutureBuilderWidget<T> extends StatefulWidget {
   final Widget loadingWidget;
@@ -8,10 +11,7 @@ class FutureBuilderWidget<T> extends StatefulWidget {
   final LoadDataFuture<T> loadData;
 
   FutureBuilderWidget(
-      {@required this.commonWidget,
-      @required this.loadData,
-      this.loadingWidget,
-      this.errorWidget});
+      {@required this.commonWidget, @required this.loadData, this.loadingWidget, this.errorWidget});
 
   @override
   State<StatefulWidget> createState() => _FutureBuilderWidgetState<T>();
@@ -27,8 +27,10 @@ class _FutureBuilderWidgetState<T> extends State<FutureBuilderWidget<T>> {
 
   ///默认加载界面
   final defaultLoading = Center(
-    child: CircularProgressIndicator(),
-  );
+      child: new SpinKitThreeBounce(
+        color: Colors.lightBlue,
+        size: 18,
+      ));
 
   ///默认出错界面
   Widget _defaultError(dynamic error) {
@@ -44,17 +46,26 @@ class _FutureBuilderWidgetState<T> extends State<FutureBuilderWidget<T>> {
         builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
-              break;
+              return Container(child: Text("加载失败"),);
             case ConnectionState.waiting:
             case ConnectionState.active:
               return widget.loadingWidget ?? defaultLoading;
             case ConnectionState.done:
               if (snapshot.hasError) {
                 ///网络出错
-                return Container();
+                print(snapshot.error);
+                return Gaps.empty;
+                return MyShadowCard(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
+                    alignment: Alignment.center,
+                    child: Text("网站加载失败"),),
+                );
+                return Container(child: Text(snapshot.error.toString()),);
               }
-              return widget.commonWidget.buildContainer(snapshot.data);
+              return widget.commonWidget.buildContainer(context, snapshot.data);
           }
+          return Gaps.empty;
         });
   }
 
@@ -76,9 +87,9 @@ abstract class NetNormalWidget<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return buildContainer(bean);
+    return buildContainer(context, bean);
   }
 
   ///给定义Widget赋值
-  Widget buildContainer(T t);
+  Widget buildContainer(BuildContext context, T t);
 }

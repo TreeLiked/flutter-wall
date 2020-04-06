@@ -249,8 +249,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                 child: Scrollbar(
                   controller: _scrollController,
                   child: SmartRefresher(
-                    enablePullUp: true,
-                    enablePullDown: tweets != null && tweets.length > 0,
+                    enablePullUp: tweets != null && tweets.length > 0,
+                    enablePullDown: true,
                     primary: false,
                     scrollController: _scrollController,
                     controller: _refreshController,
@@ -285,6 +285,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                                     displayExtra: true,
                                     displayPraise: true,
                                     displayComment: true,
+                                    displayLink: true,
                                     displayReplyContainerCallback:
                                         (TweetReply tr, String destAccountNick, String destAccountId) =>
                                             showReplyContainer(tr, destAccountNick, destAccountId),

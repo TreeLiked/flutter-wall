@@ -11,7 +11,7 @@ class Api {
   static const String API_BASE_TR = "https://member.iutr.tech";
 
   static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
-  static const String API_BASE_MEM_DEV = "http://127.0.0.1:9001";
+  static const String API_BASE_MEM_DEV = "http://127.0.0.1:9002";
 
   static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
   static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";

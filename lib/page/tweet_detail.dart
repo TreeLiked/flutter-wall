@@ -326,7 +326,7 @@ class TweetDetailState extends State<TweetDetail> {
                     ? SingleChildScrollView(
                         child: Container(
                         decoration: BoxDecoration(
-                            color: ThemeUtils.isDark(context)
+                            color: isDark
                                 ? Colours.dark_bg_color
                                 : widget._fromHot ? Color(0xfff0f0f0) : null,
                             borderRadius: const BorderRadius.all(Radius.circular(18))),

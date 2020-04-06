@@ -42,6 +42,10 @@ class VersionUtils {
         // 当前版本不可用，必须更新
         if (result.data != null) {
           VersionUtils.showUpdateDialog(context ?? Application.context, result.data, true);
+        } else {
+          if (!slient) {
+            ToastUtil.showToast(context, "测试版本");
+          }
         }
       } else {
         // 当前版本可以继续使用

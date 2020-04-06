@@ -93,6 +93,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
       return;
     }
     setState(() {
+
       if (this.msgs != null) {
         this.msgs.clear();
       } else {

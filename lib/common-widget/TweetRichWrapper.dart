@@ -17,8 +17,9 @@ import 'package:iap_app/util/widget_util.dart';
 
 class TweetRichWrapper extends NetNormalWidget<WebLinkModel> {
   final BaseTweet tweet;
+  final bool fromHot;
 
-  TweetRichWrapper({this.tweet});
+  TweetRichWrapper({this.tweet, this.fromHot = false});
 
   @override
   Widget buildContainer(BuildContext context, WebLinkModel t) {
@@ -43,7 +44,6 @@ class TweetRichWrapper extends NetNormalWidget<WebLinkModel> {
         onClick: () => NavigatorUtils.goWebViewPage(context, t.title, t.url),
         radius: 10.0,
         child: Container(
-//          color: isDark ? Colors.black12 : Colors.pink[200],
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0),
           child: Row(
             mainAxisSize: MainAxisSize.min,

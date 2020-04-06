@@ -145,7 +145,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          '精选20条校园最热门的内容，每小时更新一次',
+                          '精选20条校园最热门的内容，每半小时更新一次',
                           softWrap: true,
                           maxLines: 2,
                           style: TextStyle(fontSize: Dimens.font_sp14, color: Colors.white70),
@@ -202,8 +202,6 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               width: 100,
             )),
         Gaps.vGap10,
-        Text('暂无数据', style: Theme.of(context).textTheme.subhead),
-        Gaps.vGap8,
         Text('快去发布内容抢占热门吧!', style: Theme.of(context).textTheme.subhead),
       ],
     );

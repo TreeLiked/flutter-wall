@@ -14,8 +14,10 @@ import 'package:iap_app/util/http_util.dart';
 class VCAPI {
   /// 检查当前的版本是否仍然可用
   static Future<Result> checkThisVersionAvailable() async {
+    bool ios = Platform.isIOS;
     Response response;
-    String url = Api.API_CHECK_AVAILABLE + "?versionId=${SharedConstant.VERSION_ID}";
+    String url = Api.API_CHECK_AVAILABLE +
+        "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}";
     print(url);
     try {
       response = await httpUtil.dio.get(url);
@@ -28,9 +30,10 @@ class VCAPI {
   }
 
   static Future<Result<PubVersion>> fetchLatestVersion() async {
+    bool ios = Platform.isIOS;
     Response response;
     String url = Api.API_CHECK_UPDATE +
-        "?versionId=${SharedConstant.VERSION_ID}&platform=${Platform.isIOS ? 'IOS' : 'ANDROID'}";
+        "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}&platform=${ios ? 'IOS' : 'ANDROID'}";
     print(url);
     try {
       response = await httpUtil.dio.get(url);

@@ -56,6 +56,7 @@ class TweetCard2 extends StatelessWidget {
 
   final bool displayPraise;
   final bool displayComment;
+  final bool displayLink;
   final bool displayExtra;
   final Widget moreWidget;
 
@@ -68,6 +69,7 @@ class TweetCard2 extends StatelessWidget {
       this.displayReplyContainerCallback,
       this.sendReplyCallback,
       this.displayPraise = false,
+      this.displayLink = false,
       this.displayComment = false,
       this.displayExtra = true,
       this.moreWidget}) {
@@ -105,7 +107,7 @@ class TweetCard2 extends StatelessWidget {
               Gaps.vGap5,
               TweetBodyWrapper(tweet.body, maxLine: 5, fontSize: Dimens.font_sp15, height: 1.6),
               TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
-              TweetLinkWrapper(tweet),
+              displayLink ? TweetLinkWrapper(tweet) : Gaps.empty,
               Gaps.vGap8,
               displayExtra
                   ? TweetCardExtraWrapper(
@@ -131,7 +133,11 @@ class TweetCard2 extends StatelessWidget {
   void _forwardDetail(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TweetDetail(this.tweet)),
+      MaterialPageRoute(
+          builder: (context) => TweetDetail(
+                this.tweet,
+                newLink: !displayLink,
+              )),
     );
   }
 

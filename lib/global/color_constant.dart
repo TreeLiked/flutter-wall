@@ -28,7 +28,7 @@ class ColorConstant {
   static const Color TWEET_REPLY_ANONYMOUS_NICK_COLOR_DARK = Color(0xff666666);
 
   // 推文查看更多回复颜色
-  static const Color TWEET_REPLY_REPLY_MORE_COLOR = Color(0xff1E90FF);
+  static const Color TWEET_REPLY_REPLY_MORE_COLOR = Color(0xff696d7d);
   static const Color TWEET_REPLY_REPLY_MORE_COLOR_DARK = Color(0xff696969);
 
   // sub text 副文本颜色

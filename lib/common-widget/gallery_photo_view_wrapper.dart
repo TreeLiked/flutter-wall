@@ -127,6 +127,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                       Flexible(
                         flex: 1,
                         child: Container(
+                          margin: const EdgeInsets.only(top: 20),
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                                 child: Icon(

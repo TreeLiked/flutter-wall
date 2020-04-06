@@ -35,7 +35,7 @@ class TweetLinkWrapper extends StatelessWidget {
     if (link == null || link == "") {
       return Gaps.empty;
     }
-    final wrapper = TweetRichWrapper(tweet: tweet);
+    final wrapper = TweetRichWrapper(tweet: tweet,fromHot: fromHot);
     tweet.linkWrapper = wrapper;
 
     return Container(
@@ -76,7 +76,7 @@ class _TweetLinkWrapper2 extends State<TweetLinkWrapper2> {
     if (link == null || link == "") {
       return Gaps.empty;
     }
-    final wrapper = TweetRichWrapper(tweet: tweet);
+    final wrapper = TweetRichWrapper(tweet: tweet,fromHot: true);
 
     return Container(
       child: FutureBuilderWidget<WebLinkModel>(

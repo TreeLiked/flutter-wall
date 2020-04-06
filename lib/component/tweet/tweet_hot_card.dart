@@ -133,7 +133,7 @@ class TweetHotCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           text: TextSpan(children: [
             TextSpan(
-                text: !anonymous ? ht.account.nick ?? "" : "",
+                text: !anonymous ? ht.account.nick ?? "" : TextConstant.TWEET_ANONYMOUS_NICK,
                 style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp13p5,
                     bold: false, anonymous: anonymous, context: context)),
             TextSpan(

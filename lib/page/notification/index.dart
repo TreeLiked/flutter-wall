@@ -135,8 +135,8 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    print('notification build');
-    print('notification' + (ModalRoute.of(context).isCurrent ? "当前页面" : "不是当前页面"));
+//    print('notification build');
+//    print('notification' + (ModalRoute.of(context).isCurrent ? "当前页面" : "不是当前页面"));
 
     checkAndRequestNotificationPermission();
     isDark = ThemeUtils.isDark(context);

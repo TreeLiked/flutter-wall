@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class _AboutPageState extends State<AboutPage> {
     print('about page state build');
 
     final bool isDark = ThemeUtils.isDark(context);
+    bool ios = Platform.isIOS;
     return Scaffold(
       appBar: const MyAppBar(
         title: "关于我们",
@@ -82,7 +84,7 @@ class _AboutPageState extends State<AboutPage> {
               }),
           ClickItem(
             title: '检查更新',
-            content: 'v${SharedConstant.VERSION_REMARK}',
+            content: 'v${ios?SharedConstant.VERSION_REMARK_IOS:SharedConstant.VERSION_REMARK_ANDROID}',
             onTap: () async {
               Utils.showDefaultLoadingWithBounds(context);
               VersionUtils.checkUpdate(context: context).then((result) {

@@ -18,8 +18,11 @@ class SharedConstant {
   static const String THEME = "APP_THEME";
 
   /// 每个版本都应该维护并且更新的版本号
-  static const int VERSION_ID = 4;
-  static const String VERSION_REMARK = "1.1.4";
+  /// 同时更新 android/app/src/build.gradle
+  static const int VERSION_ID_ANDROID = 5;
+  static const int VERSION_ID_IOS = 5;
+  static const String VERSION_REMARK_ANDROID = "1.1.5";
+  static const String VERSION_REMARK_IOS = "1.1.5";
 
   /// 维护本地屏蔽列表
   static const String MY_UN_LIKED = "MY_UNLIKED";

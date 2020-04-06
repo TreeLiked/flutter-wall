@@ -13,6 +13,7 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
@@ -29,46 +30,29 @@ class TweetCardHeaderWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Container(
+        child: Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        _profileContainer(context),
         Expanded(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    _nickContainer(context),
-                    official
-                        ? SimpleTag(
-                            '官方',
-                            textColor: Colors.white,
-                            bgColor: TweetTypeEntity.OFFICIAL.color,
-                            round: false,
-                            leftMargin: 5,
-                          )
-                        : Gaps.empty,
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: _timeContainer(context),
-                      ),
-                    )
-                  ],
-                ),
-                _signatureContainer(context),
-              ],
-            ),
+          flex: -1,
+          child: _profileContainer(context),
+        ),
+        Expanded(
+          flex: 6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _nickContainer(context),
+              _signatureContainer(context),
+            ],
           ),
         ),
+        Container(child: _timeContainer(context))
       ],
-    );
+    ));
   }
 
   Widget _profileContainer(BuildContext context) {
@@ -110,7 +94,8 @@ class TweetCardHeaderWrapper extends StatelessWidget {
             onTap: () => anonymous ? null : goAccountDetail(context, account, true),
             child: Container(
               child: Text(
-                account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
+                account.nick  ?? TextConstant.TEXT_UN_CATCH_ERROR,
+                softWrap: true,
                 style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
                     bold: true),
               ),
@@ -121,22 +106,24 @@ class TweetCardHeaderWrapper extends StatelessWidget {
     if (tweetSent == null) {
       return Container(height: 0);
     }
-    return Text(TimeUtil.getShortTime(tweetSent) ?? "未知",
-        style: MyDefaultTextStyle.getTweetTimeStyle(context));
+    return Text(
+      TimeUtil.getShortTime(tweetSent) ?? "未知",
+      maxLines: 2,
+      softWrap: true,
+      style: MyDefaultTextStyle.getTweetTimeStyle(context),
+    );
   }
 
   Widget _signatureContainer(BuildContext context) {
-    if (StringUtil.isEmpty(account.signature)) {
-      return Container(height: 0);
-    }
     return Container(
-        margin: EdgeInsets.only(right: 20),
         child: Text(
-          !anonymous ? account.signature : TextConstant.TWEET_ANONYMOUS_SIG,
-          style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: SizeConstant.TWEET_TIME_SIZE),
-          overflow: TextOverflow.ellipsis,
-          softWrap: true,
-          maxLines: 2,
-        ));
+      !anonymous
+          ? (StringUtil.isEmpty(account.signature) ? "" : account.signature)
+          : TextConstant.TWEET_ANONYMOUS_SIG,
+      style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: SizeConstant.TWEET_TIME_SIZE),
+      overflow: TextOverflow.ellipsis,
+      softWrap: true,
+      maxLines: 2,
+    ));
   }
 }

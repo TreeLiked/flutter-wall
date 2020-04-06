@@ -341,7 +341,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             child: Text(account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: context)),
+                style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: context,bold: false)),
           ),
           Gaps.hGap10,
           (male == null || male == "UNKNOWN")
@@ -497,48 +497,63 @@ class AccountProfileTweetPageView extends StatefulWidget {
 
 class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<AccountProfileTweetPageView> {
-  Function _getSettingTask;
+  Function _onLoad;
 
   int _currentPage = 1;
 
-  List<BaseTweet> _accountTweets;
+  bool display = false;
+  bool initialing = true;
+  List<BaseTweet> _accountTweets = List();
 
   EasyRefreshController _easyRefreshController;
 
-  Future<Map<String, dynamic>> _getAccountSettingOrTweets(BuildContext context) async {
+  void fetchAndSetAccountSetting() async {
+    print("fetch---------------$_currentPage");
     AccountDisplayInfo info = await MemberApi.getAccountDisplayProfile(widget.accountId);
     if (info == null) {
-      return null;
+      setState(() {
+        this.initialing = false;
+      });
     } else {
-      bool display = info.displayHistoryTweet;
-      if (display == null || display != true) {
-        return {
-          'displayHistoryTweet': false,
-        };
-      } else {
-        List<BaseTweet> tweets = await _getTweets();
-        if (!CollectionUtil.isListEmpty(tweets)) {
-          _currentPage++;
-          setState(() {
-            this._accountTweets.addAll(tweets);
-          });
-          return {'displayHistoryTweet': true, 'tweets': tweets};
-        }
-        return {'displayHistoryTweet': true, 'tweets': <BaseTweet>[]};
+      bool display = info.displayHistoryTweet != null && info.displayHistoryTweet == true;
+      if (display) {
+        await _initRefresh();
       }
+      setState(() {
+        this.initialing = false;
+        this.display = display;
+      });
     }
   }
 
   Future<List<BaseTweet>> _getTweets() async {
     List<BaseTweet> tweets = await TweetApi.queryAccountTweets(
-        PageParam(_currentPage, pageSize: 6), widget.accountId,
+        PageParam(_currentPage, pageSize: 7), widget.accountId,
         needAnonymous: false);
 
     return tweets;
   }
 
-  Future<void> _loadMoreData() async {
+  Future<void> _initRefresh() async {
+    setState(() {
+      _currentPage = 1;
+    });
     List<BaseTweet> tweets = await _getTweets();
+    if (!CollectionUtil.isListEmpty(tweets)) {
+      _currentPage++;
+      setState(() {
+        this._accountTweets.addAll(tweets);
+      });
+      _easyRefreshController.finishRefresh(success: true, noMore: false);
+    } else {
+      _easyRefreshController.finishRefresh(success: true, noMore: true);
+    }
+  }
+
+  void _loadMoreData() async {
+    print("loadmore---------$_currentPage");
+    List<BaseTweet> tweets = await _getTweets();
+    print("${tweets.length}");
     if (!CollectionUtil.isListEmpty(tweets)) {
       _currentPage++;
       setState(() {
@@ -553,9 +568,11 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   @override
   void initState() {
     super.initState();
+
+    fetchAndSetAccountSetting();
     _accountTweets = new List();
     _easyRefreshController = EasyRefreshController();
-    _getSettingTask = _getAccountSettingOrTweets;
+    _onLoad = _loadMoreData;
   }
 
   @override
@@ -568,26 +585,15 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return CustomSliverFutureBuilder(
-        futureFunc: _getSettingTask, builder: (context, data) => _buildBody(data));
-  }
-
-  _buildBody(Map<String, dynamic> dataMap) {
-    bool displayHistoryTweet = dataMap[AccountSettingKeys.displayHistoryTweet];
-    if (!displayHistoryTweet) {
+    if (initialing) {
+      return WidgetUtil.getLoadingAnimation();
+    }
+    if (!display) {
       return Container(
           margin: EdgeInsets.only(top: 50),
           alignment: Alignment.topCenter,
           constraints: BoxConstraints(maxHeight: 100),
           child: Text('该用户关闭了显示历史内容'));
-    }
-    List<BaseTweet> tweets = dataMap['tweets'];
-    if (tweets == null || tweets.length == 0) {
-      return Container(
-          margin: EdgeInsets.only(top: 50),
-          alignment: Alignment.topCenter,
-          constraints: BoxConstraints(maxHeight: 100),
-          child: Text('该用户暂未发布过内容'));
     }
 
     return EasyRefresh(
@@ -605,15 +611,21 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
             showInfo: false,
             enableHapticFeedback: true,
             enableInfiniteLoad: true),
-        onLoad: _loadMoreData,
-        child: ListView.builder(
-            primary: false,
-            shrinkWrap: true,
-            itemCount: tweets.length,
-            itemBuilder: (context, index) {
-              return TweetCard2(_accountTweets[index],
-                  upClickable: false, downClickable: true, displayPraise: true);
-            }));
+        onLoad: () => _onLoad(),
+        child: _accountTweets == null || _accountTweets.length == 0
+            ? Container(
+                margin: EdgeInsets.only(top: 50),
+                alignment: Alignment.topCenter,
+                constraints: BoxConstraints(maxHeight: 100),
+                child: Text('该用户暂未发布过内容'))
+            : ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                itemCount: _accountTweets.length,
+                itemBuilder: (context, index) {
+                  return TweetCard2(_accountTweets[index],
+                      displayLink: false, upClickable: false, downClickable: true, displayPraise: true);
+                }));
   }
 
   @override

@@ -4,7 +4,9 @@ import 'package:iap_app/page/personal_center/about_page.dart';
 import 'package:iap_app/page/personal_center/account_bind.dart';
 import 'package:iap_app/page/personal_center/account_info.dart';
 import 'package:iap_app/page/personal_center/account_public_info.dart';
+import 'package:iap_app/page/personal_center/account_school_info.dart';
 import 'package:iap_app/page/personal_center/history_push.dart';
+import 'package:iap_app/page/personal_center/invitation.dart';
 import 'package:iap_app/page/personal_center/notification_page.dart';
 import 'package:iap_app/page/personal_center/other_setting.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
@@ -16,11 +18,13 @@ import 'package:iap_app/util/fluro_convert_utils.dart';
 class SettingRouter implements IRouterProvider {
   static String settingPage = "/pc";
   static String aboutPage = "/pc/about";
+  static String invitePage = "/pc/invite";
   static String privateSettingPage = "/pc/private";
 
   static String accountInfoPage = "/pc/info";
 
   static String accountPrivateInfoPage = "/pc/info/private";
+  static String accountSchoolInfoPage = "/pc/info/school";
   static String accountBindInfoPage = "/pc/info/bind";
 
   static String otherSettingPage = "/pc/other";
@@ -41,6 +45,9 @@ class SettingRouter implements IRouterProvider {
     router.define(aboutPage,
         handler: Handler(handlerFunc: (_, params) => AboutPage()));
 
+    router.define(invitePage,
+        handler: Handler(handlerFunc: (_, params) => InvitationPage()));
+
     router.define(otherSettingPage,
         handler: Handler(handlerFunc: (_, params) => OtherSetting()));
     router.define(themePage,
@@ -51,6 +58,9 @@ class SettingRouter implements IRouterProvider {
 
     router.define(accountPrivateInfoPage,
         handler: Handler(handlerFunc: (_, params) => AccountPrivateInfoPage()));
+
+    router.define(accountSchoolInfoPage,
+        handler: Handler(handlerFunc: (_, params) => AccountSchoolInfoPage()));
 
     router.define(accountBindInfoPage,
         handler: Handler(handlerFunc: (_, params) => AccountBindPage()));

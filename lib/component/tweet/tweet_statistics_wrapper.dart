@@ -10,18 +10,15 @@ class TweetStatisticsWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Text(
-              "$viewCnt次浏览${praiseCnt == 0 ? '' : '，$praiseCnt人觉得很赞'}",
-              style: const TextStyle(
-                  fontSize: SizeConstant.TWEET_STATISTICS_SIZE, color: ColorConstant.TWEET_STATISTICS_COLOR),
-            )),
-      ],
+    return Container(
+      padding: const EdgeInsets.only(right: 10),
+      child: Text(
+        "$viewCnt次浏览${praiseCnt == 0 ? '' : '，$praiseCnt人觉得很赞'}",
+        softWrap: true,
+        maxLines: 2,
+        style: const TextStyle(
+            fontSize: SizeConstant.TWEET_STATISTICS_SIZE, color: ColorConstant.TWEET_STATISTICS_COLOR),
+      ),
     );
   }
 }

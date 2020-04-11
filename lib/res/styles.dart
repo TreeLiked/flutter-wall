@@ -28,6 +28,10 @@ class TextStyles {
     fontSize: Dimens.font_sp14,
     color: Colours.text_gray,
   );
+  static const TextStyle textGray16 = const TextStyle(
+    fontSize: Dimens.font_sp16,
+    color: Colours.text_gray,
+  );
   static const TextStyle textDarkGray14 = const TextStyle(
     fontSize: Dimens.font_sp14,
     color: Colours.dark_text_gray,

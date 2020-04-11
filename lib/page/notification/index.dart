@@ -46,8 +46,8 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 
   RefreshController _refreshController = new RefreshController(initialRefresh: true);
 
-  AbstractMessage _latestInteractionMsg;
-  AbstractMessage _latestSystemMsg;
+  dynamic _latestInteractionMsg;
+  dynamic _latestSystemMsg;
 
   SingleMessageControl interactionMsgCtrl = MessageUtil.interactionMsgControl;
   SingleMessageControl sysMsgCtrl = MessageUtil.systemMsgControl;
@@ -240,7 +240,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         PlainSystemMessage message = _latestInteractionMsg as PlainSystemMessage;
         return "${message.title ?? message.content}";
       } else if (_latestSystemMsg.messageType == MessageType.POPULAR) {
-        PopularMessage message = _latestSystemMsg as PopularMessage;
+//        PopularMessage message = _latestSystemMsg as PopularMessage;
         return "恭喜，您发布的内容登上了热门排行榜";
       } else {
         return noMessage;

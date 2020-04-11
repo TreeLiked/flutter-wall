@@ -1,24 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart' as dom;
-
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
-import 'package:iap_app/component/tweet/tweet_card.dart';
-import 'package:iap_app/util/widget_util.dart' as wu;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix2;
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
+import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
-import 'package:iap_app/main.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -26,30 +18,23 @@ import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
-import 'package:iap_app/page/home/second_floor.dart';
-import 'package:iap_app/page/index/index.dart';
-import 'package:iap_app/page/square/index.dart';
-import 'package:iap_app/part/recom.dart';
+import 'package:iap_app/platform/platform_appbar.dart';
+import 'package:iap_app/platform/platform_scaffold.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/html_util.dart';
-import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:iap_app/component/link_header.dart' as prefix1;
+import 'package:iap_app/util/widget_util.dart' as wu;
 
 class HomePage extends StatefulWidget {
   final pullDownCallBack;
@@ -233,7 +218,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     return Consumer<TweetProvider>(builder: (context, provider, _) {
       var tweets = provider.displayTweets;
       return Stack(
-        children: <Widget>[
+          children: <Widget>[
           NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
             body: Listener(
@@ -248,57 +233,61 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
                 },
                 child: Scrollbar(
                   controller: _scrollController,
-                  child: SmartRefresher(
-                    enablePullUp: tweets != null && tweets.length > 0,
-                    enablePullDown: true,
-                    primary: false,
-                    scrollController: _scrollController,
-                    controller: _refreshController,
-                    header: WaterDropHeader(
-                      waterDropColor: Colors.lightBlue,
-                      complete: const Text('刷新完成'),
+                  child: SafeArea(
+                    top: false,
+                    bottom: true,
+                    child: SmartRefresher(
+                      enablePullUp: tweets != null && tweets.length > 0,
+                      enablePullDown: true,
+                      primary: false,
+                      scrollController: _scrollController,
+                      controller: _refreshController,
+                      header: WaterDropHeader(
+                        waterDropColor: Colors.lightBlue,
+                        complete: const Text('刷新完成'),
+                      ),
+                      footer: ClassicFooter(
+                        loadingText: '正在加载...',
+                        canLoadingText: '释放以加载更多',
+                        noDataText: '到底了哦',
+                        idleText: '继续上滑',
+                      ),
+                      child: tweets == null
+                          ? Align(
+                        alignment: Alignment.topCenter,
+                        child: wu.WidgetUtil.getLoadingAnimation(),
+                      )
+                          : tweets.length == 0
+                          ? TweetNoDataView(onTapReload: () {
+                        if (_refreshController != null) {
+                          _refreshController.resetNoData();
+                          _refreshController.requestRefresh();
+                        }
+                      })
+                          : ListView.builder(
+                          primary: true,
+                          itemCount: tweets.length,
+                          itemBuilder: (context, index) {
+                            return TweetCard2(
+                              tweets[index],
+                              displayExtra: true,
+                              displayPraise: true,
+                              displayComment: true,
+                              displayLink: true,
+                              displayReplyContainerCallback:
+                                  (TweetReply tr, String destAccountNick, String destAccountId) =>
+                                  showReplyContainer(tr, destAccountNick, destAccountId),
+                            );
+                          }),
+                      onRefresh: () => _onRefresh(context),
+                      onLoading: _onLoading,
                     ),
-                    footer: ClassicFooter(
-                      loadingText: '正在加载...',
-                      canLoadingText: '释放以加载更多',
-                      noDataText: '到底了哦',
-                      idleText: '继续上滑',
-                    ),
-                    child: tweets == null
-                        ? Align(
-                            alignment: Alignment.topCenter,
-                            child: wu.WidgetUtil.getLoadingAnimation(),
-                          )
-                        : tweets.length == 0
-                            ? TweetNoDataView(onTapReload: () {
-                                if (_refreshController != null) {
-                                  _refreshController.resetNoData();
-                                  _refreshController.requestRefresh();
-                                }
-                              })
-                            : ListView.builder(
-                                primary: true,
-                                itemCount: tweets.length,
-                                itemBuilder: (context, index) {
-                                  return TweetCard2(
-                                    tweets[index],
-                                    displayExtra: true,
-                                    displayPraise: true,
-                                    displayComment: true,
-                                    displayLink: true,
-                                    displayReplyContainerCallback:
-                                        (TweetReply tr, String destAccountNick, String destAccountId) =>
-                                            showReplyContainer(tr, destAccountNick, destAccountId),
-                                  );
-                                }),
-                    onRefresh: () => _onRefresh(context),
-                    onLoading: _onLoading,
-                  ),
+                  )
                 )),
           ),
-          Positioned(left: 0, bottom: 0, child: HomeCommentWrapper(key: commentWrapperKey)),
-        ],
-      );
+            Positioned(left: 0, bottom: 0, child: HomeCommentWrapper(key: commentWrapperKey)),
+          ],
+        );
     });
   }
 
@@ -306,13 +295,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     return <Widget>[
       SliverAppBar(
         centerTitle: true,
-        backgroundColor: isDark ? Colours.dark_bg_color : Color(0xfffafbfc),
+        backgroundColor: isDark ? Colours.dark_bg_color : Color(0xfff4f5f6),
         //标题居中
 
         title: GestureDetector(
             child: Text(
               Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
-              style: TextStyle(fontSize: Dimens.font_sp15),
+              style: TextStyle(fontSize: Dimens.font_sp15,fontWeight: FontWeight.w400),
             ),
             onTap: () => PageSharedWidget.homepageScrollController
                 .animateTo(.0, duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint)),

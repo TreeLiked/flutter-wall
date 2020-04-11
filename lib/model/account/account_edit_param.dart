@@ -26,4 +26,10 @@ class AccountEditKey {
   static const String QQ = "QQ";
   static const String WECHAT = "WECHAT";
   static const String BIRTHDAY = "BIRTHDAY";
+
+  static const String INSTITUTE = "INSTITUTE";
+  static const String GRADE = "GRADE";
+  static const String MAJOR = "MAJOR";
+  static const String CLA = "CLA";
+  static const String STU_ID = "STU_ID";
 }

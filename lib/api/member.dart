@@ -8,6 +8,7 @@ import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_display_info.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
 import 'package:iap_app/model/account/account_profile.dart';
+import 'package:iap_app/model/account/school/account_campus_profile.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 
@@ -44,6 +45,25 @@ class MemberApi {
       }
       Account account = Account.fromJson(json2);
       return account;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<AccountCampusProfile> getAccountCampusProfile(String accountId) async {
+    print(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE + '-------------------');
+    Response response;
+    try {
+      response = await httpUtil2.dio.get(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
+      dynamic json2 = json["data"];
+      if (json2 == null) {
+        return null;
+      }
+      AccountCampusProfile profile = AccountCampusProfile.fromJson(json2);
+      return profile;
     } on DioError catch (e) {
       Api.formatError(e);
     }
@@ -128,7 +148,7 @@ class MemberApi {
     return null;
   }
 
-  static Future<Result> register(String phone, String nick, String avatarUrl, int orgId) async {
+  static Future<Result> register(String phone, String nick, String avatarUrl, int orgId, String iCode) async {
     Response response;
     String url = Api.API_REGISTER_BY_PHONE;
     var data = {
@@ -136,7 +156,10 @@ class MemberApi {
       'nick': nick,
       'avatarUrl': avatarUrl,
       'orgId': orgId,
+      'iCode': iCode,
     };
+    print(data);
+    print(url);
     try {
       response = await httpUtil2.dio.post(url, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);

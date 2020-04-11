@@ -21,6 +21,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -69,7 +70,7 @@ class TweetDetail extends StatefulWidget {
   }
 }
 
-class TweetDetailState extends State<TweetDetail> {
+class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientMixin<TweetDetail> {
   Future _getPraiseTask;
   Future _getReplyTask;
   Future _getLinkTask;
@@ -180,7 +181,7 @@ class TweetDetailState extends State<TweetDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             GestureDetector(
-                onTap: t.anonymous ? null : () => _forwardAccountProfile(true, t.account),
+                onTap: t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
                 child: AccountAvatar(
                     avatarUrl: !t.anonymous ? t.account.avatarUrl : PathConstant.ANONYMOUS_PROFILE,
                     size: SizeConstant.TWEET_PROFILE_SIZE,
@@ -198,7 +199,7 @@ class TweetDetailState extends State<TweetDetail> {
                   text: TextSpan(children: [
                     TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = t.anonymous ? null : () => _forwardAccountProfile(true, t.account),
+                          ..onTap = t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
                         text: t.anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : (t.account.nick ?? ""),
                         style: MyDefaultTextStyle.getTweetHeadNickStyle(
                             context, SizeConstant.TWEET_NICK_SIZE + 3,
@@ -283,6 +284,16 @@ class TweetDetailState extends State<TweetDetail> {
     }
   }
 
+  _forwardAccountProfile3(bool up, TweetAccount account, {bool forceForbid = false}) {
+    if (((up && !widget._tweet.anonymous) || !up) && !forceForbid) {
+      NavigatorUtils.push(
+          context,
+          Routes.accountProfile +
+              Utils.packConvertArgs(
+                  {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     isDark = ThemeUtils.isDark(context);
@@ -326,9 +337,8 @@ class TweetDetailState extends State<TweetDetail> {
                     ? SingleChildScrollView(
                         child: Container(
                         decoration: BoxDecoration(
-                            color: isDark
-                                ? Colours.dark_bg_color
-                                : widget._fromHot ? Color(0xfff0f0f0) : null,
+                            color:
+                                isDark ? Colours.dark_bg_color : widget._fromHot ? Color(0xfff0f0f0) : null,
                             borderRadius: const BorderRadius.all(Radius.circular(18))),
                         padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
                         child: Column(
@@ -483,7 +493,12 @@ class TweetDetailState extends State<TweetDetail> {
                   onTap: () {
                     curReply.parentId = widget._tweet.id;
                     curReply.type = 1;
-                    curReply.tarAccount = widget._tweet.account;
+                    Account acc = new Account();
+                    TweetAccount ta = widget._tweet.account;
+                    acc.id = ta.id;
+                    acc.nick = ta.nick;
+                    acc.avatarUrl = ta.avatarUrl;
+                    curReply.tarAccount = acc;
                     curReply.anonymous = false;
                     showReplyContainer("", widget._tweet.account.id, false);
                   })
@@ -791,4 +806,8 @@ class TweetDetailState extends State<TweetDetail> {
       },
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

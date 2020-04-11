@@ -136,12 +136,6 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                 onTap: () {
                   NavigatorUtils.push(context, SettingRouter.accountBindInfoPage);
                 }),
-            ClickItem(
-                title: "实名认证",
-                content: "未认证",
-                onTap: () {
-                  ToastUtil.showToast(context, '实名认证功能暂未开发');
-                }),
             InkWell(
               onTap: () {
                 showElasticDialog(context: context, barrierDismissible: false, builder: (_) => ExitDialog());

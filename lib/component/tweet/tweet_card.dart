@@ -9,6 +9,7 @@ import 'package:iap_app/common-widget/tweet_link_text.dart';
 import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/component/tweet/tweet_body_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_campus_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_comment_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_extra_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_header_wrapper.dart';
@@ -58,6 +59,7 @@ class TweetCard2 extends StatelessWidget {
   final bool displayComment;
   final bool displayLink;
   final bool displayExtra;
+  final bool displayInstitute;
   final Widget moreWidget;
 
   BuildContext context;
@@ -71,6 +73,7 @@ class TweetCard2 extends StatelessWidget {
       this.displayPraise = false,
       this.displayLink = false,
       this.displayComment = false,
+      this.displayInstitute = false,
       this.displayExtra = true,
       this.moreWidget}) {
     this.sw = Application.screenWidth;
@@ -109,6 +112,8 @@ class TweetCard2 extends StatelessWidget {
               TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
               displayLink ? TweetLinkWrapper(tweet) : Gaps.empty,
               Gaps.vGap8,
+//              TweetCampusWrapper("计算机工程学院","网嵌181"),
+
               displayExtra
                   ? TweetCardExtraWrapper(
                       displayPraise: displayPraise,

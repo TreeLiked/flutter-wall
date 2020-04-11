@@ -62,29 +62,60 @@ class TweetApi {
       }
       return null;
     } on DioError catch (e) {
-      Api.formatError(e,pop: pop);
+      Api.formatError(e, pop: pop);
     }
     return null;
   }
 
-  static Future<List<BaseTweet>> queryAccountTweets(PageParam pageParam, String passiveAccountId,
+  static Future<List<BaseTweet>> querySelfTweets(PageParam pageParam, String passiveAccountId,
       {bool needAnonymous = true}) async {
-    String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY;
+    String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY_SELF;
     Response response;
     var param = {
       'currentPage': pageParam.currentPage,
       'pageSize': pageParam.pageSize,
-      'accountIds': [passiveAccountId],
-      'needAnonymous': needAnonymous
     };
     try {
-      response = await httpUtil.dio.post(requestUrl, data: param);
+      response = await httpUtil.dio.get(requestUrl, queryParameters: param);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      List<dynamic> jsonData = json["data"];
-      if (CollectionUtil.isListEmpty(jsonData)) {
+      dynamic pageData = json["data"];
+      if (pageData == null) {
         return new List<BaseTweet>();
       }
-      List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+      List<dynamic> tweetData = pageData["data"];
+      if (CollectionUtil.isListEmpty(tweetData)) {
+        return new List<BaseTweet>();
+      }
+      List<BaseTweet> tweetList = tweetData.map((m) => BaseTweet.fromJson(m)).toList();
+      print(tweetList.length);
+      return tweetList;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
+
+  static Future<List<BaseTweet>> queryOtherTweets(PageParam pageParam, String passiveAccountId) async {
+    String requestUrl = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY_PUBLIC;
+    Response response;
+    var param = {
+      'currentPage': pageParam.currentPage,
+      'pageSize': pageParam.pageSize,
+      'accId': passiveAccountId,
+    };
+    try {
+      response = await httpUtil.dio.get(requestUrl, queryParameters: param);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      dynamic pageData = json["data"];
+      if (pageData == null) {
+        return new List<BaseTweet>();
+      }
+      List<dynamic> tweetData = pageData["data"];
+      if (tweetData == null || tweetData.length == 0) {
+        return new List<BaseTweet>();
+      }
+      prefix1.print(tweetData.length.toString() + "=================================");
+      List<BaseTweet> tweetList = tweetData.map((m) => BaseTweet.fromJson(m)).toList();
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e);

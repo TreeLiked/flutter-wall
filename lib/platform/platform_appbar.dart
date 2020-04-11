@@ -1,22 +1,22 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:iap_app/base/base_plf_widget.dart';
+import 'package:iap_app/platform/base_platform_widget.dart';
 
-/*
- * AppBar
- */
-class PlatformAppBar
-    extends BasePlatformWidget<AppBar, CupertinoNavigationBar> {
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+class PlatformAppBar extends BasePlatformWidget<AppBar, CupertinoNavigationBar> {
   final Widget title;
   final Widget leading;
+  final Widget action;
 
-  PlatformAppBar({this.title, this.leading});
+  PlatformAppBar({this.title, this.leading,this.action});
 
   @override
   AppBar createAndroidWidget(BuildContext context) {
     return new AppBar(
       leading: leading,
       title: title,
+      actions: <Widget>[
+        action
+      ],
     );
   }
 
@@ -25,6 +25,7 @@ class PlatformAppBar
     return new CupertinoNavigationBar(
       leading: leading,
       middle: title,
+      trailing: action,
     );
   }
 }

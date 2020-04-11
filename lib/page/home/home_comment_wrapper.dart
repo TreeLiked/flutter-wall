@@ -74,6 +74,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                               child: TextField(
                                 controller: _controller,
                                 focusNode: _focusNode,
+
                                 maxLength: 512,
                                 maxLines: 1,
                                 maxLengthEnforced: false,

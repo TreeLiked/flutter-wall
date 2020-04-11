@@ -137,7 +137,7 @@ class MessageAPI {
   }
 
   // 0 系统消息，1互动消息
-  static Future<AbstractMessage> fetchLatestMessage(int type) async {
+  static Future<dynamic> fetchLatestMessage(int type) async {
     if (type != 0 && type != 1) {
       return null;
     }

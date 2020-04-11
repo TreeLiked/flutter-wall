@@ -35,6 +35,8 @@ class Api {
   static const String API_TWEET_QUERY_SIN = "/tweet/listSingle.json";
   static const String API_TWEET_QUERY = "/tweet/list.json";
   static const String API_TWEET_QUERY2 = "/tweet/listUni.json";
+  static const String API_TWEET_QUERY_SELF = "/tweet/account/pushed.json";
+  static const String API_TWEET_QUERY_PUBLIC = "/tweet/account/publicPushed.json";
   static const String API_TWEET_MEDIA_UPLOAD_REQUEST = "/tweet/media/generate.json";
 
   // tweet operation
@@ -57,6 +59,7 @@ class Api {
   static const String API_QUERY_ACCOUNT = API_BASE_MEMBER_URL + "/account/getAccInfo.json";
 
   static const String API_QUERY_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
+  static const String API_QUERY_ACCOUNT_CAMPUS_PROFILE = API_BASE_MEMBER_URL + "/account/getCampusProfile.json";
 
   static const String API_QUERY_FILTERED_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getShowInfo.json";
 
@@ -71,6 +74,11 @@ class Api {
   static const String API_REGISTER_BY_PHONE = API_BASE_MEMBER_URL + "/auth/rbp.do";
 
   static const String API_LOGIN_BY_PHONE = API_BASE_MEMBER_URL + "/auth/lbp.do";
+
+  // 内测邀请相关
+  static const String API_IS_ON_INVITATION = API_BASE_MEMBER_URL + "/auth/i";
+  static const String API_CHECK_INVITATION_CODE = API_BASE_MEMBER_URL + "/auth/checkICode";
+  static const String API_MY_INVITATION = API_BASE_MEMBER_URL + "/auth/iCode";
 
   // university
   static const String API_BLUR_QUERY_UNIVERSITY = API_BASE_MEMBER_URL + "/un/blurQuery.json";
@@ -108,7 +116,7 @@ class Api {
     return null;
   }
 
-  static String formatError(DioError e, {pop = true}) {
+  static String formatError(DioError e, {pop = false}) {
     print(e);
     if (pop) {
       NavigatorUtils.goBack(Application.context);

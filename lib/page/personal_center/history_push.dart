@@ -27,7 +27,7 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
   int _currentPage = 1;
 
   Future<List<BaseTweet>> _getTweets(BuildContext context) async {
-    List<BaseTweet> tweets = await TweetApi.queryAccountTweets(
+    List<BaseTweet> tweets = await TweetApi.querySelfTweets(
         PageParam(_currentPage, pageSize: 6), Application.getAccountId,
         needAnonymous: true);
 

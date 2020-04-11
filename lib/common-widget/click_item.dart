@@ -133,6 +133,9 @@ class ClickItemCommon extends StatelessWidget {
             prefixWidget ?? Gaps.empty,
             Text(
               title,
+              maxLines: 1,
+              softWrap: true,
+              overflow: TextOverflow.fade,
             ),
             const Spacer(),
             Expanded(

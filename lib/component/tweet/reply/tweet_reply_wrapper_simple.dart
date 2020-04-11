@@ -83,7 +83,7 @@ class TweetReplyWrapperSimple extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8.0),
               child: GestureDetector(
                 onTap: () => NavigatorUtils.goTweetDetail(context, tweet),
-                child: Text('查看更多${tweet.replyCount - totalCount}条评论 ..',
+                child: Text('查看更多${tweet.replyCount - replyCount}条评论 ..',
                     style: MyDefaultTextStyle.getTweetReplyMoreTextStyle(Dimens.font_sp14, context: context)),
               ),
             )

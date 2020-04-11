@@ -15,7 +15,6 @@ class UniversityApi {
     try {
       response = await httpUtil2.dio.get(url);
       List<dynamic> temp = response.data;
-      print(temp);
       if (CollectionUtil.isListEmpty(temp)) {
         return [];
       }

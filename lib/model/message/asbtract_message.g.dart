@@ -33,7 +33,7 @@ AbstractMessage _$AbstractMessageFromJson(Map<String, dynamic> json) {
         : Account.fromJson(json['receiver'] as Map<String, dynamic>)
     ..readStatus = _$enumDecodeNullable(_$ReadStatusEnumMap, json['readStatus'])
     ..messageType =
-        _$enumDecodeNullable(_$MessageTypeEnumMap, json['messageType'])
+    _$enumDecodeNullable(_$MessageTypeEnumMap, json['messageType'])
     ..id = json['id'] as int
     ..gmtCreated = json['gmtCreated'] == null
         ? null
@@ -61,8 +61,8 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
   }
   return enumValues.entries
       .singleWhere((e) => e.value == source,
-          orElse: () => throw ArgumentError(
-              '`$source` is not one of the supported values: '
+      orElse: () => throw ArgumentError(
+          '`$source` is not one of the supported values: '
               '${enumValues.values.join(', ')}'))
       .key;
 }

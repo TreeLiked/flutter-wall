@@ -1,5 +1,6 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/web_link.dart';
@@ -17,7 +18,7 @@ class BaseTweet {
   String type;
   bool anonymous;
 
-  Account account;
+  TweetAccount account;
 
   bool enableReply;
 
@@ -33,11 +34,12 @@ class BaseTweet {
   int replyCount;
   bool upTrend;
 
+  @JsonKey(ignore: true, required: false, nullable: true, includeIfNull: false)
   Widget linkWrapper;
+  @JsonKey(ignore: true, required: false, nullable: true, includeIfNull: false)
   WebLinkModel wlm;
-
+  @JsonKey(ignore: true, required: false, nullable: true, includeIfNull: false)
   Widget mediaWrapper;
-
 
   /*
    * 直接回复
@@ -57,7 +59,6 @@ class BaseTweet {
   bool loved;
 
   BaseTweet();
-
 
   Map<String, dynamic> toJson() => _$BaseTweetToJson(this);
 

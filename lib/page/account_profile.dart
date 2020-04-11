@@ -341,7 +341,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             child: Text(account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: context,bold: false)),
+                style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: context, bold: false)),
           ),
           Gaps.hGap10,
           (male == null || male == "UNKNOWN")
@@ -507,29 +507,9 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
 
   EasyRefreshController _easyRefreshController;
 
-  void fetchAndSetAccountSetting() async {
-    print("fetch---------------$_currentPage");
-    AccountDisplayInfo info = await MemberApi.getAccountDisplayProfile(widget.accountId);
-    if (info == null) {
-      setState(() {
-        this.initialing = false;
-      });
-    } else {
-      bool display = info.displayHistoryTweet != null && info.displayHistoryTweet == true;
-      if (display) {
-        await _initRefresh();
-      }
-      setState(() {
-        this.initialing = false;
-        this.display = display;
-      });
-    }
-  }
-
   Future<List<BaseTweet>> _getTweets() async {
-    List<BaseTweet> tweets = await TweetApi.queryAccountTweets(
-        PageParam(_currentPage, pageSize: 7), widget.accountId,
-        needAnonymous: false);
+    List<BaseTweet> tweets =
+        await TweetApi.queryOtherTweets(PageParam(_currentPage, pageSize: 5), widget.accountId);
 
     return tweets;
   }
@@ -542,10 +522,14 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
     if (!CollectionUtil.isListEmpty(tweets)) {
       _currentPage++;
       setState(() {
+        this.initialing = false;
         this._accountTweets.addAll(tweets);
       });
       _easyRefreshController.finishRefresh(success: true, noMore: false);
     } else {
+      setState(() {
+        this.initialing = false;
+      });
       _easyRefreshController.finishRefresh(success: true, noMore: true);
     }
   }
@@ -568,9 +552,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   @override
   void initState() {
     super.initState();
-
-    fetchAndSetAccountSetting();
-    _accountTweets = new List();
+    _initRefresh();
     _easyRefreshController = EasyRefreshController();
     _onLoad = _loadMoreData;
   }
@@ -588,12 +570,15 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
     if (initialing) {
       return WidgetUtil.getLoadingAnimation();
     }
-    if (!display) {
+    if (_accountTweets == null || _accountTweets.length == 0) {
       return Container(
           margin: EdgeInsets.only(top: 50),
           alignment: Alignment.topCenter,
           constraints: BoxConstraints(maxHeight: 100),
-          child: Text('该用户关闭了显示历史内容'));
+          child: Text(
+            '用户关闭历史或未发布过内容',
+            style: const TextStyle(fontSize: Dimens.font_sp14),
+          ));
     }
 
     return EasyRefresh(

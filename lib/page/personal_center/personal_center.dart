@@ -2,6 +2,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/api/invite.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
@@ -30,6 +31,24 @@ class PersonalCenter extends StatefulWidget {
 }
 
 class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveClientMixin<PersonalCenter> {
+  bool onInvite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkOnInvite();
+  }
+
+  checkOnInvite() {
+    InviteAPI.checkIsInInvitation().then((res) {
+      if (res != null && res.isSuccess) {
+        setState(() {
+          this.onInvite = true;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -203,7 +222,13 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                             ClickItem(
                               title: '关于我们',
                               onTap: () => NavigatorUtils.push(context, SettingRouter.aboutPage),
-                            )
+                            ),
+                            onInvite
+                                ? ClickItem(
+                                    title: '内测',
+                                    onTap: () => NavigatorUtils.push(context, SettingRouter.invitePage),
+                                  )
+                                : Gaps.empty,
                           ]),
                         ],
                       ),

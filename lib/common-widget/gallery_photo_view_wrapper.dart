@@ -10,6 +10,7 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/common/report_page.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
@@ -67,7 +68,6 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         body: GestureDetector(
       onTap: () {
@@ -91,12 +91,10 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                 pageController: widget.pageController,
                 onPageChanged: onPageChanged,
                 enableRotation: false,
-
-                // usePageViewWrapper: false,
               ),
               Positioned(
                   // left: sw / 2,
-                  top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(0),
+                  top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(10),
                   left: 10,
                   child: Container(
                     width: Application.screenWidth - 20,
@@ -117,17 +115,37 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                         child: Container(
                           alignment: Alignment.center,
 //                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                          child: Text(
-                              widget.galleryItems.length != 1
-                                  ? '${currentIndex + 1} / ${widget.galleryItems.length}'
-                                  : '',
-                              style: TextStyle(color: Colors.white70, fontSize: 16)),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: _renderDots(currentIndex)
+//                            <Widget>[
+//                              _genDot(realColor: Colors.yellow),
+//                              _genDot(),
+//                              Text(
+//                                "${currentIndex + 1}",
+//                                style: const TextStyle(
+//                                    color: Colors.yellow,
+//                                    fontWeight: FontWeight.w400,
+//                                    fontStyle: FontStyle.italic,
+//                                    fontSize: Dimens.font_sp18 * 2),
+//                              ),
+//                              Text(" / ", style: const TextStyle(color: Colors.white70, fontSize: 16)),
+//                              Text("${widget.galleryItems.length}",
+//                                  style: const TextStyle(color: Colors.white70, fontSize: 16)),
+////                              Text(
+////                                  widget.galleryItems.length != 1
+////                                      ? '${currentIndex + 1} / ${widget.galleryItems.length}'
+////                                      : '',
+////                                  style: TextStyle(color: Colors.white70, fontSize: 16))
+//                            ],
+                              ),
                         ),
                       ),
                       Flexible(
                         flex: 1,
                         child: Container(
-                          margin: const EdgeInsets.only(top: 20),
+                            margin: EdgeInsets.only(top: 0, right: 20.0),
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                                 child: Icon(
@@ -143,6 +161,33 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     ));
   }
 
+  List<Widget> _renderDots(int currentIndex) {
+    int len = widget.galleryItems.length;
+    if (len < 2) {
+      return [];
+    }
+    List<Widget> dots = List();
+    for (int i = 0; i < len; i++) {
+      dots.add(
+          _genDot(margin: 3.0, size: 8.0, realColor: currentIndex == i ? Colors.white : Color(0xff343434)));
+    }
+    return dots;
+  }
+
+  Widget _genDot(
+      {Color realColor = Colors.transparent,
+      Color borderColor = Colors.transparent,
+      double size = 5.0,
+      double margin = 1.0}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+          color: realColor, shape: BoxShape.circle, border: Border.all(color: borderColor, width: 0.5)),
+      margin: EdgeInsets.all(margin),
+    );
+  }
+
   void displayOptions() {
     if (widget.fromNetwork) {
       BottomSheetUtil.showBottomSheetView(context, [
@@ -152,11 +197,14 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               color: Colors.lightBlue,
             ),
             '保存到本地', () async {
+          Utils.showDefaultLoadingWithBounds(context, text: "正在保存");
           var response = await Dio()
               .get(widget.galleryItems[currentIndex].url, options: Options(responseType: ResponseType.bytes));
-          ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
+          var path = await ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
+          Navigator.pop(context);
           Navigator.pop(context);
 //              Utils.vibrateOnceOrNotSupport();
+          if (path == null) {}
           ToastUtil.showToast(context, '已保存到手机相册');
         }),
         BottomSheetItem(

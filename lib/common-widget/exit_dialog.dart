@@ -13,6 +13,7 @@ import 'package:iap_app/routes/fluro_navigator.dart' as prefix1;
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
+import 'package:iap_app/util/message_util.dart';
 
 class ExitDialog extends StatefulWidget {
   ExitDialog({
@@ -51,6 +52,9 @@ class _ExitDialog extends State<ExitDialog> {
         await prefix0.SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
         await prefix0.SpUtil.remove(SharedConstant.MY_UN_LIKED);
         await prefix0.SpUtil.clear();
+        MessageUtil.interactionMsgControl.dispose();
+        MessageUtil.systemMsgControl.dispose();
+        await MessageUtil.notificationStreamCntCtrl.close();
         httpUtil.clearAuthToken();
         httpUtil2.clearAuthToken();
         prefix1.NavigatorUtils.goBack(context);

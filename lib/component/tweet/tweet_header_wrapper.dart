@@ -7,6 +7,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -19,7 +20,7 @@ import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/time_util.dart';
 
 class TweetCardHeaderWrapper extends StatelessWidget {
-  final Account account;
+  final TweetAccount account;
   final bool anonymous;
   final bool canClick;
   final DateTime tweetSent;
@@ -69,7 +70,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
             )));
   }
 
-  void goAccountDetail(BuildContext context, Account account, bool up) {
+  void goAccountDetail(BuildContext context, TweetAccount account, bool up) {
     if (canClick) {
       NavigatorUtils.push(
           context,

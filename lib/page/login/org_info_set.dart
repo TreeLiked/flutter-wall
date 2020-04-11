@@ -13,6 +13,7 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/model/result_code.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/page/login/reg_temp.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -70,9 +71,10 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
     Utils.showDefaultLoadingWithBounds(context, text: '正在生成');
     RegTemp.regTemp.orgId = _cId;
     RegTemp rt = RegTemp.regTemp;
-    Result res = await MemberApi.register(rt.phone, rt.nick, rt.avatarUrl, rt.orgId);
-    if (res != null && res.isSuccess && res.code == "1") {
-      String token = res.message;
+    Result res = await MemberApi.register(rt.phone, rt.nick, rt.avatarUrl, rt.orgId, rt.invitationCode);
+
+    if (res != null && res.isSuccess) {
+      String token = res.data;
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
       await prefix0.SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, _cId);
       await prefix0.SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, _cName);
@@ -97,10 +99,28 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
       NavigatorUtils.push(context, Routes.splash, clearStack: true);
     } else {
       NavigatorUtils.goBack(context);
-      ToastUtil.showToast(context, '该手机号已被注册，请登录');
-      Future.delayed(Duration(seconds: 2)).then((_) {
-        NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
-      });
+      if (res != null) {
+        if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
+          ToastUtil.showToast(context, '该手机号已被注册，请登录');
+          await Future.delayed(Duration(seconds: 1)).then((_) {
+            NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
+          });
+          return;
+        }
+        if (res.code == MemberResultCode.ERROR_REGISTER) {
+          ToastUtil.showToast(context, '注册失败');
+          NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
+          return;
+        }
+
+        if (res.code == MemberResultCode.INVALID_INVOCATION_CODE) {
+          ToastUtil.showToast(context, '邀请码无效');
+          NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
+          return;
+        }
+      }
+      ToastUtil.showServiceExpToast(context);
+      NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
     }
   }
 

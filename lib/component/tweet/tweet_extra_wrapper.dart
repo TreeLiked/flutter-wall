@@ -6,6 +6,7 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
 import 'package:iap_app/component/tweet/praise/tweet_praise_wrapper.dart';
 import 'package:iap_app/component/tweet/reply/tweet_reply_wrapper_simple.dart';
+import 'package:iap_app/component/tweet/tweet_campus_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_statistics_wrapper.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';

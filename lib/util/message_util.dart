@@ -70,11 +70,9 @@ class MessageUtil extends BaseBloc {
   static final SingleMessageControl interactionMsgControl = new SingleMessageControl();
   static final SingleMessageControl systemMsgControl = new SingleMessageControl();
 
-
   static final StreamController<int> _notificationStreamCntCtrl = new StreamController<int>.broadcast();
   static final StreamController<int> _interactionStreamCntCtrl = new StreamController<int>.broadcast();
   static final StreamController<int> _systemStreamCntCtrl = new StreamController<int>.broadcast();
-
 
   static get notificationStreamCntCtrl => _notificationStreamCntCtrl;
 
@@ -83,7 +81,7 @@ class MessageUtil extends BaseBloc {
   static get systemStreamCntCtrl => _systemStreamCntCtrl;
 
   static void setNotificationCnt(int count) {
-    if (notificationCnt != count) {
+    if (notificationCnt != count && _notificationStreamCntCtrl != null) {
       notificationCnt = count;
 //      NotificationIndexPage
       _notificationStreamCntCtrl.sink.add(count);

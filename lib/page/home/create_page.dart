@@ -11,6 +11,8 @@ import 'package:iap_app/common-widget/asset_image.dart';
 import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -155,7 +157,10 @@ class _CreatePageState extends State<CreatePage> {
     if (!hasError) {
       _baseTweet.type = _typeName;
       _baseTweet.body = _controller.text;
-      _baseTweet.account = Application.getAccount;
+      TweetAccount ta = TweetAccount();
+      Account temp = Application.getAccount;
+      ta.id = temp.id ?? "";
+      _baseTweet.account = ta;
       _baseTweet.enableReply = _enableReply;
       _baseTweet.anonymous = _anonymous;
       _baseTweet.orgId = Application.getOrgId;

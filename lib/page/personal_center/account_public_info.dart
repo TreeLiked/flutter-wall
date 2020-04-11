@@ -23,6 +23,7 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -81,7 +82,7 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
           builder: (context, AsyncSnapshot<Account> async) {
             if (async.connectionState == ConnectionState.active ||
                 async.connectionState == ConnectionState.waiting) {
-              return new Center(
+              return Container(
                 child: const SpinKitThreeBounce(
                   color: Colors.lightBlue,
                   size: 18,
@@ -99,7 +100,10 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
                 return _renderProfileContainer();
               }
             }
-            return Container();
+            return Container(
+                alignment: Alignment.topCenter,
+                margin: const EdgeInsets.only(top: 50.0),
+                child: Text("暂无可设置的资料", style: const TextStyle(fontSize: Dimens.font_sp16)));
           },
           future: _getAccountProfileTask),
     );
@@ -324,6 +328,11 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
                   ToastUtil.showToast(context, '微信格式错误');
                 }
               });
+            }),
+        ClickItem(
+            title: "学校信息",
+            onTap: () {
+              NavigatorUtils.push(context, SettingRouter.accountSchoolInfoPage);
             }),
       ],
     );

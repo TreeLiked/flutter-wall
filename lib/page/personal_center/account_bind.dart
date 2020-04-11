@@ -87,6 +87,12 @@ class _AccountBindPageState extends State<AccountBindPage> {
 //                  });
 //                }
                 ),
+            ClickItem(
+                title: "实名认证",
+                content: "未认证",
+                onTap: () {
+                  ToastUtil.showToast(context, '实名认证功能暂未开发');
+                }),
 //            ClickItem(
 //              title: 'QQ',
 //              content: provider.account.qq ?? _unBindText,

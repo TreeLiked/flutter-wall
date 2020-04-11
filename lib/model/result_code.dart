@@ -19,4 +19,5 @@ class MemberResultCode {
 
   /// 注册失败
   static const String ERROR_REGISTER = "525";
+
 }

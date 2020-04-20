@@ -9,6 +9,7 @@ import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/page/index/index.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -131,7 +132,7 @@ class _SplashPageState extends State<SplashPage> {
         child: _status == 0
             ? CachedNetworkImage(
                 imageUrl:
-                    'https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/app_launch_img.png',
+                    PathConstant.APP_LAUNCH_IMAGE,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 height: double.infinity,

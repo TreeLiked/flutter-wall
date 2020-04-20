@@ -22,6 +22,30 @@ class TweetProvider extends ChangeNotifier {
     _displayTweets.removeWhere((t) => t != null && t.id == tweetId);
   }
 
+  void deleteReply(int tweetId, int parentId, int replyId, int type) {
+    if (displayTweets == null) {
+      return;
+    }
+    BaseTweet t = _displayTweets.firstWhere((t) => t.id == tweetId, orElse: () => null);
+    if (t != null) {
+      List<TweetReply> trs = t.dirReplies;
+      if (trs != null && trs.length > 0) {
+        if (type == 1) {
+          // 删除直接回复
+          trs.removeWhere((dirReply) => dirReply.id == replyId);
+        } else if (type == 2) {
+          TweetReply parentReply = trs.firstWhere((dirReply) => dirReply.id == parentId,orElse: () => null);
+          if (parentReply != null) {
+            List<TweetReply> subTrs = parentReply.children;
+            if (subTrs != null && subTrs.length > 0) {
+              subTrs.removeWhere((subReply) => subReply.id == replyId);
+            }
+          }
+        }
+      }
+    }
+  }
+
   void deleteByAccount(String accountId) {
     _displayTweets.removeWhere((t) => t != null && !t.anonymous && t.account.id == accountId);
   }

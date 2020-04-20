@@ -34,11 +34,10 @@ class TweetReplyWrapperSimple extends StatelessWidget {
       return Gaps.empty;
     }
     int len = dirReplies.length;
-    int replyCount = 0;
     int totalCount = 0;
     List<Widget> trWs = new List();
     for (int i = 0; i < len; i++) {
-      if (replyCount == GlobalConfig.MAX_DISPLAY_REPLY || totalCount == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
+      if (totalCount == GlobalConfig.MAX_DISPLAY_REPLY) {
         break;
       }
       TweetReply dirTr = dirReplies[i];
@@ -48,25 +47,23 @@ class TweetReplyWrapperSimple extends StatelessWidget {
           reply: dirTr,
           parentId: dirTr.id,
           onTapReply: (displayNick) => _sendReply(2, dirTr.id, dirTr.account.id, tarAccNick: displayNick)));
-      replyCount++;
       totalCount++;
-      if (replyCount == GlobalConfig.MAX_DISPLAY_REPLY || totalCount == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
-        break;
-      }
       if (!CollectionUtil.isListEmpty(dirTr.children)) {
         dirTr.children.forEach((tr) {
-          totalCount++;
-          trWs.add(TweetReplyItemSimple(
-            tweetAccountId: tweet.account.id,
-            tweetAnonymous: tweet.anonymous,
-            reply: tr,
-            parentId: dirTr.id,
-            onTapReply: (displayNick) => _sendReply(2, dirTr.id, dirTr.account.id, tarAccNick: displayNick),
-          ));
+          if (totalCount != GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
+            totalCount++;
+            trWs.add(TweetReplyItemSimple(
+              tweetAccountId: tweet.account.id,
+              tweetAnonymous: tweet.anonymous,
+              reply: tr,
+              parentId: dirTr.id,
+              onTapReply: (displayNick) => _sendReply(2, dirTr.id, tr.account.id, tarAccNick: displayNick),
+            ));
+          }
         });
       }
     }
-    if (replyCount < tweet.replyCount) {
+    if (totalCount < tweet.replyCount) {
       return Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -83,7 +80,7 @@ class TweetReplyWrapperSimple extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8.0),
               child: GestureDetector(
                 onTap: () => NavigatorUtils.goTweetDetail(context, tweet),
-                child: Text('查看更多${tweet.replyCount - replyCount}条评论 ..',
+                child: Text('查看更多${tweet.replyCount - totalCount}条评论 ..',
                     style: MyDefaultTextStyle.getTweetReplyMoreTextStyle(Dimens.font_sp14, context: context)),
               ),
             )

@@ -15,4 +15,6 @@ class TextConstant {
   static const String TEXT_UN_CATCH_ERROR = "未知错误";
   static const String TEXT_SERVICE_ERROR = "服务异常";
   static const String TEXT_UN_CATCH_TWEET_TYPE = "未知类型";
+
+  static const String TEXT_TWEET_REPLY_DELETED = "该评论已删除";
 }

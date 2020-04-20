@@ -10,9 +10,9 @@ class AccountSettingKeys {
   static String displayOrg = "displayOrg";
   static String displayContact = "displayContact";
 
-  static String displayInstitute = "displayContact";
-  static String displayMajor = "displayContact";
-  static String displayGrade = "displayContact";
-  static String displayCla = "displayContact";
+  static String displayInstitute = "displayInstitute";
+  static String displayMajor = "displayMajor";
+  static String displayGrade = "displayGrade";
+  static String displayCla = "displayCla";
   static String displayStuId = "displayContact";
 }

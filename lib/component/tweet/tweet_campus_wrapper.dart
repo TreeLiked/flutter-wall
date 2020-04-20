@@ -15,17 +15,21 @@ class TweetCampusWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (StringUtil.isEmpty(institute) && StringUtil.isEmpty(cla)) {
+    bool insEmpty = StringUtil.isEmpty(institute);
+    bool claEmpty = StringUtil.isEmpty(cla);
+
+    if (insEmpty && claEmpty) {
       return Gaps.empty;
     }
-    String claT = StringUtil.isEmpty(cla) ? '' : ' , $cla';
+
+    String t = insEmpty ? cla : (claEmpty ? institute : '$institute，$cla');
+
     return Container(
       alignment: Alignment.centerLeft,
       margin: const EdgeInsets.only(bottom: 10.0),
-      child: SimpleTag(
-        "${institute.trim()}$claT",
-        round: false,
-//        style: TextStyle(fontSize: Dimens.font_sp13,letterSpacing: 1.0),
+      child: Text(
+        "$t",
+        style: TextStyle(fontSize: Dimens.font_sp13, letterSpacing: 0, color: Colors.grey),
       ),
     );
   }

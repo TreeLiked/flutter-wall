@@ -2,16 +2,17 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/main.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
 class Api {
-  static const bool devInf = false;
-  static const bool devMem = false;
+  static const bool devInf =false;
+  static const bool devMem =false;
   static const String API_BASE_AL = "https://almond-donuts.iutr.tech";
   static const String API_BASE_TR = "https://member.iutr.tech";
 
-  static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
-  static const String API_BASE_MEM_DEV = "http://127.0.0.1:9002";
+  static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
+  static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
 
   static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
   static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";
@@ -50,6 +51,7 @@ class Api {
   // tweet reply
   static const String API_TWEET_REPLY_CREATE = "/tweet/reply/add.do";
   static const String API_TWEET_REPLY_QUERY = "/tweet/reply/list.json";
+  static const String API_TWEET_REPLY_DELETE = "/tweet/reply/del.do";
 
   // sms
   static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";
@@ -84,6 +86,10 @@ class Api {
   static const String API_BLUR_QUERY_UNIVERSITY = API_BASE_MEMBER_URL + "/un/blurQuery.json";
 
   static const String API_QUERY_ORG = API_BASE_MEMBER_URL + "/org/getAccUniversity.json";
+
+  // institute
+  static const String API_QUERY_INSTITUTE = API_BASE_MEMBER_URL + "/un/getInstitutes.json";
+  static const String API_BLUR_QUERY_MAJOR = API_BASE_MEMBER_URL + "/un/getMajorName.json";
 
   // device
   static const String API_UPDATE_DEVICE_INFO = API_BASE_INF_URL + "/device/update.do";

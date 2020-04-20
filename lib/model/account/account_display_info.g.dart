@@ -29,7 +29,15 @@ AccountDisplayInfo _$AccountDisplayInfoFromJson(Map<String, dynamic> json) {
     ..displayRegion = json['displayRegion'] as bool
     ..province = json['province'] as String
     ..city = json['city'] as String
-    ..district = json['district'] as String;
+    ..district = json['district'] as String
+    ..displayInstitute = json['displayInstitute'] as bool
+    ..displayMajor = json['displayMajor'] as bool
+    ..displayCla = json['displayCla'] as bool
+    ..displayGrade = json['displayGrade'] as bool
+    ..instituteName = json['instituteName'] as String
+    ..major = json['major'] as String
+    ..grade = json['grade'] as String
+    ..cla = json['cla'] as String;
 }
 
 Map<String, dynamic> _$AccountDisplayInfoToJson(AccountDisplayInfo instance) =>
@@ -55,7 +63,15 @@ Map<String, dynamic> _$AccountDisplayInfoToJson(AccountDisplayInfo instance) =>
       'displayRegion': instance.displayRegion,
       'province': instance.province,
       'city': instance.city,
-      'district': instance.district
+      'district': instance.district,
+      'displayInstitute': instance.displayInstitute,
+      'displayMajor': instance.displayMajor,
+      'displayCla': instance.displayCla,
+      'displayGrade': instance.displayGrade,
+      'instituteName': instance.instituteName,
+      'major': instance.major,
+      'grade': instance.grade,
+      'cla': instance.cla
     };
 
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {

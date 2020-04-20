@@ -20,7 +20,6 @@ import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart' as prefix1;
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
@@ -151,7 +150,6 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
                 context: context,
                 // height: Application.screenHeight * 0.25,
               );
-              print(result);
               if (result == null) {
                 return;
               }
@@ -255,7 +253,10 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
                 locale: LocaleType.zh,
                 minTime: DateTime(1900, 1, 1),
                 maxTime: DateTime.now(), onConfirm: (date) {
-              _updateSomething(AccountEditParam(AccountEditKey.BIRTHDAY, date.toString()), (boolres) {
+              print(date);
+              String dateFormat = DateUtil.formatDate(date, format: DataFormats.full);
+              print(dateFormat);
+              _updateSomething(AccountEditParam(AccountEditKey.BIRTHDAY, dateFormat), (boolres) {
                 if (boolres) {
                   setState(() {
                     _profile.birthday = date;

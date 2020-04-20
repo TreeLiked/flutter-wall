@@ -78,14 +78,19 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                         BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
                     gradient: new LinearGradient(
                         begin: Alignment.topLeft,
-                        end: Alignment.bottomCenter,
+                        end: Alignment.bottomRight,
                         colors: ThemeUtils.isDark(context)
                             ? [
                                 Theme.of(context).backgroundColor,
                                 Color(0xff363636),
                               ]
                             : [
-                                Color(0xfffffeff),
+//                                Color(0xffffffff),
+//                                Color(0xffdfe9f3),
+                                Color(0xffFFFEFF),
+//                                Color(0xfffffeff),
+//                                Color(0xfffffeff),
+//                                Color(0xffD7FFFE),
                                 Color(0xffdfe9f3),
                               ]),
                   ),

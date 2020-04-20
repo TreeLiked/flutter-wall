@@ -198,6 +198,21 @@ class TweetApi {
     return null;
   }
 
+  static Future<Result> delTweetReply(int replyId) async {
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_DELETE + "?id=$replyId" ;
+    print(url);
+    Result r = Result(isSuccess: false);
+    try {
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      Api.formatError(e);
+      r.message = e.message;
+    }
+    return r;
+  }
+
   static Future<List<Account>> queryTweetPraise(int tweetId) async {
     var param = {
       'tweetIds': [tweetId],

@@ -76,7 +76,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
       margin: EdgeInsets.only(top: topMargin, left: 15.0),
       child: Text(
         text,
-        style: TextStyles.textGray16,
+        style: TextStyles.textGray12,
       ),
     );
   }
@@ -192,88 +192,61 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
                 });
               });
             }),
-        ClickItem(
-            title: "展示学院 [如果设置]",
-            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
-            onTap: () {
-              _showRadioDialog(
-                  '展示我的微信', settingMap[AccountSettingKeys.displayWeChat].toString().toUpperCase(), (k, v) {
-                _updateSomething(AccountSettingKeys.displayWeChat, k, (trueCallback) {
-                  setState(() {
-                    settingMap[AccountSettingKeys.displayWeChat] = (k == _TRUE) ? true : false;
-                  });
-                });
-              });
-            }),
         Gaps.vGap5,
         _simpleTitle('校园信息设定'),
         ClickItem(
             title: "展示学院 [如果设置]",
-
-            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
+            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayInstitute]),
             onTap: () {
               _showRadioDialog(
-                  '展示我的学院', settingMap[AccountSettingKeys.displayWeChat].toString().toUpperCase(), (k, v) {
-                _updateSomething(AccountSettingKeys.displayWeChat, k, (trueCallback) {
+                  '展示我的学院', settingMap[AccountSettingKeys.displayInstitute].toString().toUpperCase(), (k, v) {
+                    print(k);
+                _updateSomething(AccountSettingKeys.displayInstitute, k, (trueCallback) {
                   setState(() {
-                    settingMap[AccountSettingKeys.displayWeChat] = (k == _TRUE) ? true : false;
+                    settingMap[AccountSettingKeys.displayInstitute] = (k == _TRUE) ? true : false;
                   });
                 });
               });
             }),
         ClickItem(
             title: "展示专业 [如果设置]",
-            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
+            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayMajor]),
             onTap: () {
               _showRadioDialog(
-                  '展示我的专业', settingMap[AccountSettingKeys.displayWeChat].toString().toUpperCase(), (k, v) {
-                _updateSomething(AccountSettingKeys.displayWeChat, k, (trueCallback) {
+                  '展示我的专业', settingMap[AccountSettingKeys.displayMajor].toString().toUpperCase(), (k, v) {
+                _updateSomething(AccountSettingKeys.displayMajor, k, (trueCallback) {
                   setState(() {
-                    settingMap[AccountSettingKeys.displayWeChat] = (k == _TRUE) ? true : false;
+                    settingMap[AccountSettingKeys.displayMajor] = (k == _TRUE) ? true : false;
                   });
                 });
               });
             }),
         ClickItem(
             title: "展示年级 [如果设置]",
-            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
+            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayGrade]),
             onTap: () {
               _showRadioDialog(
-                  '展示我的年级', settingMap[AccountSettingKeys.displayWeChat].toString().toUpperCase(), (k, v) {
-                _updateSomething(AccountSettingKeys.displayWeChat, k, (trueCallback) {
+                  '展示我的年级', settingMap[AccountSettingKeys.displayGrade].toString().toUpperCase(), (k, v) {
+                _updateSomething(AccountSettingKeys.displayGrade, k, (trueCallback) {
                   setState(() {
-                    settingMap[AccountSettingKeys.displayWeChat] = (k == _TRUE) ? true : false;
+                    settingMap[AccountSettingKeys.displayGrade] = (k == _TRUE) ? true : false;
                   });
                 });
               });
             }),
         ClickItem(
             title: "展示班级 [如果设置]",
-            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
+            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayCla]),
             onTap: () {
               _showRadioDialog(
-                  '展示我的班级', settingMap[AccountSettingKeys.displayWeChat].toString().toUpperCase(), (k, v) {
-                _updateSomething(AccountSettingKeys.displayWeChat, k, (trueCallback) {
+                  '展示我的班级', settingMap[AccountSettingKeys.displayCla].toString().toUpperCase(), (k, v) {
+                _updateSomething(AccountSettingKeys.displayCla, k, (trueCallback) {
                   setState(() {
-                    settingMap[AccountSettingKeys.displayWeChat] = (k == _TRUE) ? true : false;
+                    settingMap[AccountSettingKeys.displayCla] = (k == _TRUE) ? true : false;
                   });
                 });
               });
             }),
-        ClickItem(
-            title: "展示学号 [如果设置]",
-            content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
-            onTap: () {
-              _showRadioDialog(
-                  '展示我的学号', settingMap[AccountSettingKeys.displayWeChat].toString().toUpperCase(), (k, v) {
-                _updateSomething(AccountSettingKeys.displayWeChat, k, (trueCallback) {
-                  setState(() {
-                    settingMap[AccountSettingKeys.displayWeChat] = (k == _TRUE) ? true : false;
-                  });
-                });
-              });
-            }),
-
       ],
     ));
   }

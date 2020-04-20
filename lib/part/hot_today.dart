@@ -195,14 +195,13 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
           height: ScreenUtil().setHeight(100),
         ),
         SizedBox(
-            width: ScreenUtil().setHeight(210),
+            width: ScreenUtil().setHeight(250),
             child: LoadAssetImage(
               'no_data',
               fit: BoxFit.cover,
-              width: 100,
             )),
-        Gaps.vGap10,
-        Text('快去发布内容抢占热门吧!', style: Theme.of(context).textTheme.subhead),
+        Gaps.vGap16,
+        Text('快去抢占热门吧~', style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14,letterSpacing: 1.0)),
       ],
     );
   }

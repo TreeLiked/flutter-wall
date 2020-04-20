@@ -31,10 +31,19 @@ class AccountDisplayInfo {
   String city;
   String district;
 
+  /// 学院信息
+  bool displayInstitute = false;
+  bool displayMajor = false;
+  bool displayCla = false;
+  bool displayGrade = false;
+  String instituteName;
+  String major;
+  String grade;
+  String cla;
+
   AccountDisplayInfo();
 
   Map<String, dynamic> toJson() => _$AccountDisplayInfoToJson(this);
 
-  factory AccountDisplayInfo.fromJson(Map<String, dynamic> json) =>
-      _$AccountDisplayInfoFromJson(json);
+  factory AccountDisplayInfo.fromJson(Map<String, dynamic> json) => _$AccountDisplayInfoFromJson(json);
 }

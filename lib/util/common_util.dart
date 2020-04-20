@@ -165,6 +165,7 @@ class Utils {
       fit: fit,
       width: width,
       height: height,
+      cache: false,
       loadStateChanged: (state) {
         switch (state.extendedImageLoadState) {
           case LoadState.loading:

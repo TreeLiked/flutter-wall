@@ -24,6 +24,7 @@ PopularMessage _$PopularMessageFromJson(Map<String, dynamic> json) {
     ..gmtModified = json['gmtModified'] == null
         ? null
         : DateTime.parse(json['gmtModified'] as String)
+    ..delete = json['delete'] as bool
     ..tweetBody = json['tweetBody'] as String
     ..coverUrl = json['coverUrl'] as String
     ..tweetId = json['tweetId'] as int;
@@ -38,6 +39,7 @@ Map<String, dynamic> _$PopularMessageToJson(PopularMessage instance) =>
       'id': instance.id,
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),
+      'delete': instance.delete,
       'tweetBody': instance.tweetBody,
       'coverUrl': instance.coverUrl,
       'tweetId': instance.tweetId

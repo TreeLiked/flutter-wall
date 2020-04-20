@@ -51,6 +51,8 @@ class InteractionCardItem extends StatelessWidget {
     int refId;
 
     MessageType mstT = message.messageType;
+
+    bool delete = message.delete != null && message.delete;
     if (mstT == MessageType.TWEET_PRAISE) {
       // 推文点赞
       TweetPraiseMessage temp = message as TweetPraiseMessage;
@@ -60,7 +62,6 @@ class InteractionCardItem extends StatelessWidget {
       cover = temp.coverUrl;
       refId = temp.tweetId;
       accountAnonymous = false;
-      print("------" + temp.toJson().toString());
     } else if (mstT == MessageType.TWEET_REPLY) {
       // 推文回复
       TweetReplyMessage temp = message as TweetReplyMessage;
@@ -71,7 +72,6 @@ class InteractionCardItem extends StatelessWidget {
       cover = temp.coverUrl;
       refId = temp.tweetId;
       accountAnonymous = temp.anonymous;
-      print("------" + temp.toJson().toString());
     } else if (mstT == MessageType.TOPIC_REPLY) {
       // 话题回复
       TopicReplyMessage temp = message as TopicReplyMessage;
@@ -81,7 +81,6 @@ class InteractionCardItem extends StatelessWidget {
       body = temp.topicBody;
       refId = temp.topicId;
       accountAnonymous = false;
-      print("------" + temp.toJson().toString());
     } else {
       return Gaps.empty;
     }
@@ -177,9 +176,13 @@ class InteractionCardItem extends StatelessWidget {
                                           style: const TextStyle(
                                               color: Colors.blue, fontSize: Dimens.font_sp14)),
                                       TextSpan(
-                                          text: '$replyBody',
-                                          style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
-                                              fontSize: Dimens.font_sp14)),
+                                          text: delete
+                                              ? TextConstant.TEXT_TWEET_REPLY_DELETED
+                                              : '$replyBody',
+                                          style: delete
+                                              ? const TextStyle(color: Colors.grey,fontSize: Dimens.font_sp13p5)
+                                              : MyDefaultTextStyle.getMainTextBodyStyle(isDark,
+                                                  fontSize: Dimens.font_sp14)),
                                     ]),
                                   ),
                                 ),
@@ -206,7 +209,7 @@ class InteractionCardItem extends StatelessWidget {
         anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
-        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp15,context: thisContext),
+        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp15, context: thisContext),
       ),
     );
   }

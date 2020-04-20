@@ -127,7 +127,6 @@ class _CreatePageState extends State<CreatePage> {
         try {
           String result =
               await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List(), OssUtil.DEST_TWEET);
-          print(result);
           if (result != "-1") {
             if (_baseTweet.medias == null) {
               _baseTweet.medias = List();

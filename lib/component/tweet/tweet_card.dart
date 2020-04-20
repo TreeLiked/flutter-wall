@@ -112,8 +112,7 @@ class TweetCard2 extends StatelessWidget {
               TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
               displayLink ? TweetLinkWrapper(tweet) : Gaps.empty,
               Gaps.vGap8,
-//              TweetCampusWrapper("计算机工程学院","网嵌181"),
-
+              TweetCampusWrapper(tweet.account.institute, tweet.account.cla),
               displayExtra
                   ? TweetCardExtraWrapper(
                       displayPraise: displayPraise,

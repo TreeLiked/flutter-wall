@@ -21,8 +21,9 @@ class TweetReplyWrapper extends StatelessWidget {
   final BaseTweet tweet;
   final List<TweetReply> replies;
   final Function showReplyInputCb;
+  final Function refreshReply;
 
-  TweetReplyWrapper(this.tweet, this.replies, this.showReplyInputCb);
+  TweetReplyWrapper(this.tweet, this.replies, this.showReplyInputCb, this.refreshReply);
 
   @override
   Widget build(BuildContext context) {
@@ -46,36 +47,30 @@ class TweetReplyWrapper extends StatelessWidget {
     }
 
     int len = replies.length;
-//    int replyCount = 0;
-//    int totalCount = 0;
     List<Widget> trWs = new List();
     for (int i = 0; i < len; i++) {
-//      if (replyCount == GlobalConfig.MAX_DISPLAY_REPLY || totalCount == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
-//        break;
-//      }
       TweetReply dirTr = replies[i];
       trWs.add(TweetReplyItemDetail(
           tweetAccountId: tweet.account.id,
           tweetAnonymous: tweet.anonymous,
           reply: dirTr,
           parentId: dirTr.id,
+          tweetId: tweet.id,
           tweetType: tweet.type,
-          onTapReply: (displayNick) => _sendReply(2, dirTr.id, dirTr.account.id, tarAccNick: displayNick)));
-//      replyCount++;
-//      totalCount++;
-//      if (replyCount == GlobalConfig.MAX_DISPLAY_REPLY || totalCount == GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
-//        break;
-//      }
+          onTapReply: (displayNick) => _sendReply(2, dirTr.id, dirTr.account.id, tarAccNick: displayNick),
+          refresh: this.refreshReply));
+
       if (!CollectionUtil.isListEmpty(dirTr.children)) {
         dirTr.children.forEach((tr) {
-//          totalCount++;
           trWs.add(TweetReplyItemDetail(
             tweetAccountId: tweet.account.id,
             tweetType: tweet.type,
             tweetAnonymous: tweet.anonymous,
             reply: tr,
             parentId: dirTr.id,
-            onTapReply: (displayNick) => _sendReply(2, dirTr.id, dirTr.account.id, tarAccNick: displayNick),
+            tweetId: tweet.id,
+            onTapReply: (displayNick) => _sendReply(2, dirTr.id, tr.account.id, tarAccNick: displayNick),
+            refresh: this.refreshReply,
           ));
         });
       }

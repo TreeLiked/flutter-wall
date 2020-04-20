@@ -60,12 +60,17 @@ var inputPageHandler = Handler(handlerFunc: (BuildContext context, Map<String, L
   int keyboardType =
       params['kt'] == null ? 0 : int.parse(FluroConvertUtils.fluroCnParamsDecode(params['kt'].first));
 
+  String url = params['url'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['url'].first);
+  String key = params['key'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['key'].first);
+
   return InputTextPage(
     title: title,
     hintText: hintText,
     limit: limit,
     showLimit: showLimit,
     keyboardType: keyboardType,
+    queryTaskUrl: url,
+    queryTaskKey: key,
   );
 });
 

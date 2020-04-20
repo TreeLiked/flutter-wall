@@ -18,6 +18,9 @@ class AbstractMessage {
   DateTime gmtCreated;
   DateTime gmtModified;
 
+  // 是否消息被删除了
+  bool delete;
+
 
   Map<String, dynamic> toJson() => _$AbstractMessageToJson(this);
 

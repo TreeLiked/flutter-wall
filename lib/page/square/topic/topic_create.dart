@@ -131,7 +131,6 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
         try {
           String result =
               await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List(), OssUtil.DEST_TOPIC);
-          print(result);
           if (result != "-1") {
             Media m = new Media();
             m.index = i + 1;

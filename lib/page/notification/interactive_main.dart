@@ -82,7 +82,6 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
   }
 
   void _fetchInteractiveMessages() async {
-    print("fetch---------------------");
     currentPage = 1;
     List<AbstractMessage> msgs = await getData(1, pageSize);
     if (msgs == null || msgs.length == 0) {

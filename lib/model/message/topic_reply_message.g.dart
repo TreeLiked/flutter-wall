@@ -24,6 +24,7 @@ TopicReplyMessage _$TopicReplyMessageFromJson(Map<String, dynamic> json) {
     ..gmtModified = json['gmtModified'] == null
         ? null
         : DateTime.parse(json['gmtModified'] as String)
+    ..delete = json['delete'] as bool
     ..topicId = json['topicId'] as int
     ..mainReplyId = json['mainReplyId'] as int
     ..replier = json['replier'] == null
@@ -42,6 +43,7 @@ Map<String, dynamic> _$TopicReplyMessageToJson(TopicReplyMessage instance) =>
       'id': instance.id,
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),
+      'delete': instance.delete,
       'topicId': instance.topicId,
       'mainReplyId': instance.mainReplyId,
       'replier': instance.replier,

@@ -6,6 +6,7 @@ import 'package:iap_app/page/personal_center/account_info.dart';
 import 'package:iap_app/page/personal_center/account_public_info.dart';
 import 'package:iap_app/page/personal_center/account_school_info.dart';
 import 'package:iap_app/page/personal_center/history_push.dart';
+import 'package:iap_app/page/personal_center/institute_info_set.dart';
 import 'package:iap_app/page/personal_center/invitation.dart';
 import 'package:iap_app/page/personal_center/notification_page.dart';
 import 'package:iap_app/page/personal_center/other_setting.dart';
@@ -25,6 +26,7 @@ class SettingRouter implements IRouterProvider {
 
   static String accountPrivateInfoPage = "/pc/info/private";
   static String accountSchoolInfoPage = "/pc/info/school";
+  static String accountSchoolInstitutePage = "/pc/info/school/institute";
   static String accountBindInfoPage = "/pc/info/bind";
 
   static String otherSettingPage = "/pc/other";
@@ -61,6 +63,9 @@ class SettingRouter implements IRouterProvider {
 
     router.define(accountSchoolInfoPage,
         handler: Handler(handlerFunc: (_, params) => AccountSchoolInfoPage()));
+
+    router.define(accountSchoolInstitutePage,
+        handler: Handler(handlerFunc: (_, params) => InstituteInfoSetPage()));
 
     router.define(accountBindInfoPage,
         handler: Handler(handlerFunc: (_, params) => AccountBindPage()));

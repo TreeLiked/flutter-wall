@@ -24,6 +24,7 @@ TweetPraiseMessage _$TweetPraiseMessageFromJson(Map<String, dynamic> json) {
     ..gmtModified = json['gmtModified'] == null
         ? null
         : DateTime.parse(json['gmtModified'] as String)
+    ..delete = json['delete'] as bool
     ..tweetId = json['tweetId'] as int
     ..praiser = json['praiser'] == null
         ? null
@@ -41,6 +42,7 @@ Map<String, dynamic> _$TweetPraiseMessageToJson(TweetPraiseMessage instance) =>
       'id': instance.id,
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),
+      'delete': instance.delete,
       'tweetId': instance.tweetId,
       'praiser': instance.praiser,
       'tweetBody': instance.tweetBody,

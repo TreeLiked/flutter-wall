@@ -48,6 +48,7 @@ class TweetReplyItemSimple extends StatelessWidget {
               : () {
                   ToastUtil.showToast(context, '匿名评论不可回复');
                 },
+
           child: RichText(
             maxLines: 2,
             overflow: TextOverflow.fade,

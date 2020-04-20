@@ -1,0 +1,3 @@
+flutter packages pub run build_runner build
+flutter build apk --split-per-abi
+rm -rf ios/Flutter/App.framework/

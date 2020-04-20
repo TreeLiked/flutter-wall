@@ -5,6 +5,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
 import 'package:iap_app/model/message/popular_message.dart';
@@ -66,7 +67,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 
   Future<void> _fetchLatestSystemMsg() async {
     MessageAPI.fetchLatestMessage(0).then((msg) {
-      print('--------------有新系统消息${msg == null ? 'null' : msg.toJson()}');
       setState(() {
         this._latestSystemMsg = msg;
       });
@@ -222,10 +222,13 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         return "${message.praiser.nick} 赞了你";
       } else if (_latestInteractionMsg.messageType == MessageType.TWEET_REPLY) {
         TweetReplyMessage message = _latestInteractionMsg as TweetReplyMessage;
-        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 评论了你: ${message.replyContent}";
+        String content = message.delete != null && message.delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : message.replyContent;
+        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 评论了你: $content";
       } else if (_latestInteractionMsg.messageType == MessageType.TOPIC_REPLY) {
         TopicReplyMessage message = _latestInteractionMsg as TopicReplyMessage;
-        return "${message.replier.nick} 评论了你: ${message.replyContent}";
+        String content = message.delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : message.replyContent;
+
+        return "${message.replier.nick} 评论了你: $content}";
       } else {
         return noMessage;
       }

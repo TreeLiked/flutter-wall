@@ -324,7 +324,7 @@ class BottomSheetUtil {
                                   margin: const EdgeInsets.only(top: 10),
                                   child: Text("${reply.body}",
                                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
-                                              fontSize: Dimens.font_sp18)
+                                              fontSize: Dimens.font_sp16)
                                           .copyWith(height: 2.0)),
                                 )
                               ],

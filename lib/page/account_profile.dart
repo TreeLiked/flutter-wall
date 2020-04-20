@@ -243,7 +243,7 @@ class AccountProfileInfoPageView extends StatefulWidget {
 
 class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<AccountProfileInfoPageView> {
-  String _nullText = "未知";
+  String _nullText = "用户未设置";
   double _iconSize = 25;
   Function _getProfileTask;
   bool isDark;
@@ -286,27 +286,31 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
             // _buildAvatarItem(account.avatarUrl),
             _titleItem('基础信息'),
             _buildNick(account),
-            Gaps.line,
             _buildSig(account.signature),
 
             Gaps.vGap30,
             _titleItem('个人档案'),
             _buildPersonInfo('line_in_circle', Colors.brown, account.name, account.displayName,
                 fallbackText: "姓名不可见"),
-            Gaps.line,
-            _buildPersonInfo('voice', Colors.lightBlue, account.age > 0 ? account.age.toString() : null,
-                account.displayAge,
+            _buildPersonInfo(
+                'voice', Colors.lightBlue, account.age > 0 ? "${account.age}岁" : null, account.displayAge,
                 fallbackText: "年龄不可见"),
-            Gaps.line,
             _buildPersonInfo('search', Colors.green, _getRegionText(account), account.displayRegion,
                 fallbackText: "地区不可见"),
+            _buildPersonInfo(
+                'count',
+                Colors.green,
+                _getCampusInfoText(account),
+                account.displayInstitute ||
+                    account.displayCla ||
+                    account.displayMajor ||
+                    account.displayGrade,
+                fallbackText: "学院信息未设置"),
 
             Gaps.vGap30,
             _titleItem('社交信息'),
             _buildContactItem('phone', Colors.brown, account.mobile, account.displayPhone),
-            Gaps.line,
             _buildContactItem('qq25', Colors.lightBlue, account.qq, account.displayQQ),
-            Gaps.line,
             _buildContactItem('wechat', Colors.green, account.wechat, account.displayWeChat),
 
             // _buildItem('姓名', account.profile.name),
@@ -339,8 +343,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Flexible(
             flex: 8,
             child: Text(account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
+                softWrap: true,
                 style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: context, bold: false)),
           ),
           Gaps.hGap10,
@@ -374,11 +377,11 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 1,
-            child: Text(sig ?? '未设置',
+            child: Text(sig ?? '签名未设置',
                 softWrap: true,
-                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: MyDefaultTextStyle.getSubTextBodyStyle(isDark, fontSize: Dimens.font_sp14)),
+                style:
+                    TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
           ),
         ],
       ),
@@ -390,6 +393,8 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
   }
 
   _buildPersonInfo(String svgName, Color color, String value, bool display, {String fallbackText = "不可见"}) {
+    bool hasVal = value != null && value.trim().length > 0;
+
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: Row(
@@ -399,13 +404,11 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 1,
-            child: Text(display ? (value ?? '用户未设置') : fallbackText,
+            child: Text(display ? (hasVal ? value : '用户未设置') : fallbackText,
                 softWrap: true,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    color: value == null ? Colors.grey : null,
-                    fontSize: value != null ? Dimens.font_sp15 : Dimens.font_sp14,
+                    color: !hasVal || !display ? Colors.grey : null,
+                    fontSize: hasVal && display ? Dimens.font_sp15 : Dimens.font_sp14,
                     fontWeight: FontWeight.w400)),
           ),
         ],
@@ -421,12 +424,47 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
         return profile.province;
       } else {
         if (StringUtil.isEmpty(profile.district)) {
-          return profile.province + ", " + profile.city;
+          return profile.province + "，" + profile.city;
         } else {
-          return profile.province + ", " + profile.city + ", " + profile.district;
+          return profile.province + "，" + profile.city + "，" + profile.district;
         }
       }
     }
+  }
+
+  String _getCampusInfoText(AccountDisplayInfo profile) {
+    StringBuffer sb = StringBuffer();
+    bool writeBefore = false;
+    if (profile.displayInstitute) {
+      if (!StringUtil.isEmpty(profile.instituteName)) {
+        sb.write(_writeSomething(writeBefore, profile.instituteName));
+        writeBefore = true;
+      }
+    }
+    if (profile.displayMajor) {
+      if (!StringUtil.isEmpty(profile.major)) {
+        sb.write(_writeSomething(writeBefore, profile.major));
+
+        writeBefore = true;
+      }
+    }
+    if (profile.displayCla) {
+      if (!StringUtil.isEmpty(profile.cla)) {
+        sb.write(_writeSomething(writeBefore, profile.cla));
+
+        writeBefore = true;
+      }
+    }
+    if (profile.displayGrade) {
+      if (!StringUtil.isEmpty(profile.grade)) {
+        sb.write(_writeSomething(writeBefore, profile.grade));
+      }
+    }
+    return sb.toString();
+  }
+
+  _writeSomething(bool writeBefore, String value) {
+    return writeBefore ? "，$value" : "$value";
   }
 
   _buildContactItem(String svgName, Color color, String value, bool display) {
@@ -446,7 +484,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
           Gaps.hGap10,
           Flexible(
             flex: 1,
-            child: Text(!display ? '用户未开放' : value ?? _nullText,
+            child: Text(!display ? '用户未开放' : (value ?? _nullText),
                 softWrap: true,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

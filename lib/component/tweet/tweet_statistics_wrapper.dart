@@ -13,7 +13,7 @@ class TweetStatisticsWrapper extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(right: 10),
       child: Text(
-        "$viewCnt次浏览${praiseCnt == 0 ? '' : '，$praiseCnt人觉得很赞'}",
+        "${viewCnt + 1}次浏览${praiseCnt == 0 ? '' : '，$praiseCnt人觉得很赞'}",
         softWrap: true,
         maxLines: 2,
         style: const TextStyle(

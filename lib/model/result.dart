@@ -11,4 +11,13 @@ class Result<T> {
         data = json['data'];
 
   Result({this.isSuccess});
+
+
+  Result.fromResult(Result r)
+      : isSuccess = r.isSuccess,
+        code = r.code,
+        message = r.message;
+
+
+
 }

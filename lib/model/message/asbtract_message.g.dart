@@ -7,7 +7,6 @@ part of 'asbtract_message.dart';
 // **************************************************************************
 
 AbstractMessage _$AbstractMessageFromJson(Map<String, dynamic> json) {
-
   MessageType mst = _$enumDecodeNullable(_$MessageTypeEnumMap, json['messageType']);
   switch (mst) {
     case MessageType.TOPIC_REPLY:
@@ -33,14 +32,15 @@ AbstractMessage _$AbstractMessageFromJson(Map<String, dynamic> json) {
         : Account.fromJson(json['receiver'] as Map<String, dynamic>)
     ..readStatus = _$enumDecodeNullable(_$ReadStatusEnumMap, json['readStatus'])
     ..messageType =
-    _$enumDecodeNullable(_$MessageTypeEnumMap, json['messageType'])
+        _$enumDecodeNullable(_$MessageTypeEnumMap, json['messageType'])
     ..id = json['id'] as int
     ..gmtCreated = json['gmtCreated'] == null
         ? null
         : DateTime.parse(json['gmtCreated'] as String)
     ..gmtModified = json['gmtModified'] == null
         ? null
-        : DateTime.parse(json['gmtModified'] as String);
+        : DateTime.parse(json['gmtModified'] as String)
+    ..delete = json['delete'] as bool;
 }
 
 Map<String, dynamic> _$AbstractMessageToJson(AbstractMessage instance) =>
@@ -51,7 +51,8 @@ Map<String, dynamic> _$AbstractMessageToJson(AbstractMessage instance) =>
       'messageType': _$MessageTypeEnumMap[instance.messageType],
       'id': instance.id,
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
-      'gmtModified': instance.gmtModified?.toIso8601String()
+      'gmtModified': instance.gmtModified?.toIso8601String(),
+      'delete': instance.delete
     };
 
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
@@ -61,8 +62,8 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
   }
   return enumValues.entries
       .singleWhere((e) => e.value == source,
-      orElse: () => throw ArgumentError(
-          '`$source` is not one of the supported values: '
+          orElse: () => throw ArgumentError(
+              '`$source` is not one of the supported values: '
               '${enumValues.values.join(', ')}'))
       .key;
 }

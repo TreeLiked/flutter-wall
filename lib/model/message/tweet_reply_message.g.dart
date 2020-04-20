@@ -24,6 +24,7 @@ TweetReplyMessage _$TweetReplyMessageFromJson(Map<String, dynamic> json) {
     ..gmtModified = json['gmtModified'] == null
         ? null
         : DateTime.parse(json['gmtModified'] as String)
+    ..delete = json['delete'] as bool
     ..tweetId = json['tweetId'] as int
     ..mainReplyId = json['mainReplyId'] as int
     ..tweetBody = json['tweetBody'] as String
@@ -44,6 +45,7 @@ Map<String, dynamic> _$TweetReplyMessageToJson(TweetReplyMessage instance) =>
       'id': instance.id,
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),
+      'delete': instance.delete,
       'tweetId': instance.tweetId,
       'mainReplyId': instance.mainReplyId,
       'tweetBody': instance.tweetBody,

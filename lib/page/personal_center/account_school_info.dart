@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
@@ -18,12 +19,14 @@ import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
 import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/account/school/account_campus_profile.dart';
+import 'package:iap_app/model/account/school/institute.dart';
 import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart' as prefix1;
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -114,35 +117,19 @@ class _AccountSchoolInfoPageState extends State<AccountSchoolInfoPage> {
       children: <Widget>[
         ClickItem(
             title: "学院",
-            content: _profile.institute != null
-                ? _getDisplayText(_profile.institute.name)
-                : _unSetText,
+            content: _profile.institute != null ? _getDisplayText(_profile.institute.name) : _unSetText,
             onTap: () {
-//              NavigatorUtils.pushResult(
-//                  context,
-//                  Routes.inputTextPage +
-//                      Utils.packConvertArgs({
-//                        'title': '修改',
-//                        'hintText': _profile.name ?? _unSetText,
-//                        'limit': 10,
-//                        'showLimit': false
-//                      }), (res) {
-//                if (!StringUtil.isEmpty(res.toString())) {
-//                  String content = res.toString().trim();
-//                  if (content.length <= 10) {
-//                    _updateSomething(AccountEditParam(AccountEditKey.NAME, content), (success) {
-//                      setState(() {
-//                        // provider.account.nick = content;
-//                        _profile.name = content;
-//                      });
-//                    });
-//                  } else {
-//                    ToastUtil.showToast(context, '姓名格式错误');
-//                  }
-//                } else {
-//                  ToastUtil.showToast(context, '姓名格式错误');
-//                }
-//              });
+              NavigatorUtils.pushResult(context, SettingRouter.accountSchoolInstitutePage, (res) {
+                if (res != null) {
+                  _updateSomething(
+                      AccountEditParam(AccountEditKey.INSTITUTE, (res as Institute).id.toString()),
+                      (success) {
+                    setState(() {
+                      _profile.institute = res;
+                    });
+                  });
+                }
+              });
             }),
         ClickItem(
             title: "专业",
@@ -155,7 +142,9 @@ class _AccountSchoolInfoPageState extends State<AccountSchoolInfoPage> {
                         'title': '修改专业信息',
                         'hintText': _getHintText(_profile.major, '如：网络工程'),
                         'limit': 16,
-                        'showLimit': true
+                        'showLimit': true,
+                        'url': Api.API_BLUR_QUERY_MAJOR,
+                        'key': 'majorName',
                       }), (res) {
                 if (!StringUtil.isEmpty(res.toString())) {
                   String content = res.toString().trim();
@@ -273,7 +262,7 @@ class _AccountSchoolInfoPageState extends State<AccountSchoolInfoPage> {
     return val;
   }
 
-  String _getHintText(val,hint) {
+  String _getHintText(val, hint) {
     if (StringUtil.isEmpty(val)) {
       return hint;
     }

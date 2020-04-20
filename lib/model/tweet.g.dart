@@ -13,13 +13,11 @@ BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
     ..body = json['body'] as String
     ..type = json['type'] as String
     ..anonymous = json['anonymous'] as bool
-    ..account = json['account'] == null
-        ? null
-        : TweetAccount.fromJson(json['account'] as Map<String, dynamic>)
+    ..account =
+        json['account'] == null ? null : TweetAccount.fromJson(json['account'] as Map<String, dynamic>)
     ..enableReply = json['enableReply'] as bool
     ..medias = (json['medias'] as List)
-        ?.map(
-            (e) => e == null ? null : Media.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e == null ? null : Media.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..hot = json['hot'] as int
     ..praise = json['praise'] as int
@@ -27,22 +25,14 @@ BaseTweet _$BaseTweetFromJson(Map<String, dynamic> json) {
     ..replyCount = json['replyCount'] as int
     ..upTrend = json['upTrend'] as bool
     ..dirReplies = (json['dirReplies'] as List)
-        ?.map((e) =>
-            e == null ? null : TweetReply.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e == null ? null : TweetReply.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..latestPraise = (json['latestPraise'] as List)
-        ?.map((e) =>
-            e == null ? null : Account.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => e == null ? null : Account.fromJson(e as Map<String, dynamic>))
         ?.toList()
-    ..gmtModified = json['gmtModified'] == null
-        ? null
-        : DateTime.parse(json['gmtModified'] as String)
-    ..gmtCreated = json['gmtCreated'] == null
-        ? null
-        : DateTime.parse(json['gmtCreated'] as String)
-    ..sentTime = json['sentTime'] == null
-        ? null
-        : DateTime.parse(json['sentTime'] as String)
+    ..gmtModified = json['gmtModified'] == null ? null : DateTime.parse(json['gmtModified'] as String)
+    ..gmtCreated = json['gmtCreated'] == null ? null : DateTime.parse(json['gmtCreated'] as String)
+    ..sentTime = json['sentTime'] == null ? null : DateTime.parse(json['sentTime'] as String)
     ..loved = json['loved'] as bool;
 }
 
@@ -64,6 +54,6 @@ Map<String, dynamic> _$BaseTweetToJson(BaseTweet instance) => <String, dynamic>{
       'latestPraise': instance.latestPraise,
       'gmtModified': instance.gmtModified?.toIso8601String(),
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
-      'sentTime': instance.sentTime?.toIso8601String(),
+      'sentTime': DateUtil.formatDate(instance.sentTime, format: DataFormats.full),
       'loved': instance.loved
     };

@@ -87,6 +87,8 @@ class ReportPage extends StatelessWidget {
         } else {
           if (res.isSuccess) {
             ToastUtil.showToast(context, '反馈成功，有结果我们会第一时间通知您');
+            _controller.clear();
+            NavigatorUtils.goBack(context);
           } else {
             ToastUtil.showToast(context, '反馈失败');
           }

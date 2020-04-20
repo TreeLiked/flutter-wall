@@ -366,6 +366,10 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                                 this.curReply = tr;
                               });
                               showReplyContainer(tarAccNick, tarAccId, false);
+                            }, () {
+                              setState(() {
+                                _getReplyTask = getTweetReply();
+                              });
                             }),
                           ],
                         ),

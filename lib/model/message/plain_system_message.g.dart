@@ -24,6 +24,7 @@ PlainSystemMessage _$PlainSystemMessageFromJson(Map<String, dynamic> json) {
     ..gmtModified = json['gmtModified'] == null
         ? null
         : DateTime.parse(json['gmtModified'] as String)
+    ..delete = json['delete'] as bool
     ..title = json['title'] as String
     ..content = json['content'] as String
     ..hasCover = json['hasCover'] as bool
@@ -41,6 +42,7 @@ Map<String, dynamic> _$PlainSystemMessageToJson(PlainSystemMessage instance) =>
       'id': instance.id,
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),
+      'delete': instance.delete,
       'title': instance.title,
       'content': instance.content,
       'hasCover': instance.hasCover,

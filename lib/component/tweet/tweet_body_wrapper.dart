@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/toast_util.dart';
 
 class TweetBodyWrapper extends StatelessWidget {
   final String body;
@@ -27,7 +29,15 @@ class TweetBodyWrapper extends StatelessWidget {
             maxLines: maxLine == -1 ? null : maxLine,
             softWrap: true,
             textAlign: TextAlign.left,
-            specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
+            specialTextSpanBuilder: MySpecialTextSpanBuilder(
+                showAtBackground: false,
+                onTapCb: (String text) {
+                  if (text != null && text.length > 0) {
+                    if (text.startsWith("http")) {
+                      NavigatorUtils.goWebViewPage(context, text*3, text.trim());
+                    }
+                  }
+                }),
             selectionEnabled: selectable,
             overFlowTextSpan: maxLine == -1
                 ? null

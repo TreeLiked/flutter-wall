@@ -51,7 +51,6 @@ class MessageUtil extends BaseBloc {
 
   static loopRefreshMessage() async {
     if (_loopQueryNotification) {
-      print('循环-----------------');
       Future.delayed(Duration(seconds: 60)).then((_) {
         MessageAPI.queryInteractionMessageCount().then((cnt) {
           MessageUtil.setNotificationCnt(cnt);

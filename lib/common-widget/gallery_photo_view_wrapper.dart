@@ -200,12 +200,14 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
           Utils.showDefaultLoadingWithBounds(context, text: "正在保存");
           var response = await Dio()
               .get(widget.galleryItems[currentIndex].url, options: Options(responseType: ResponseType.bytes));
-          var path = await ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
-          Navigator.pop(context);
-          Navigator.pop(context);
-//              Utils.vibrateOnceOrNotSupport();
-          if (path == null) {}
-          ToastUtil.showToast(context, '已保存到手机相册');
+          try {
+            var path = await ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
+          } catch (e, stack) {
+//            ToastUtil.showToast(context, '保存失败');
+          } finally {
+            ToastUtil.showToast(context, '已保存到手机相册');
+            Navigator.pop(context);
+          }
         }),
         BottomSheetItem(
             Icon(

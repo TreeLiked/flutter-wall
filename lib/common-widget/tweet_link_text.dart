@@ -7,9 +7,10 @@ class TweetLinkText extends SpecialText {
   static const String flag = "http";
   final int start;
   final bool showAtBackground;
+  final Function onTapText;
 
   TweetLinkText(TextStyle textStyle, SpecialTextGestureTapCallback onTap,
-      {this.showAtBackground: false, this.start})
+      {this.showAtBackground: false, this.start,this.onTapText})
       : super(
           flag,
           " ",
@@ -35,7 +36,7 @@ class TweetLinkText extends SpecialText {
             style: textStyle,
             recognizer: (TapGestureRecognizer()
               ..onTap = () {
-                if (onTap != null) onTap(atText);
+                if (onTapText != null) onTapText(atText);
               }))
         : SpecialTextSpan(
             text: atText,
@@ -44,7 +45,7 @@ class TweetLinkText extends SpecialText {
             style: textStyle,
             recognizer: (TapGestureRecognizer()
               ..onTap = () {
-                if (onTap != null) onTap(atText);
+                if (onTapText != null) onTapText(atText);
               }));
   }
 

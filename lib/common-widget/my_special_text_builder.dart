@@ -30,6 +30,7 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
               fontSize: Dimens.font_sp15,
               decoration: TextDecoration.underline),
           onTap,
+          onTapText: (text) => onTapCb(text),
           start: index - (TweetLinkText.flag.length - 1),
           showAtBackground: showAtBackground);
     } else if (isStart(flag, TweetAtText.flag)) {
@@ -41,7 +42,6 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
     }
     return null;
   }
-
 
 //  MyLinkTextSpanBuilder(
 //      {this.showAtBackground: false, this.type: BuilderType.extendedText});

@@ -185,6 +185,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           return;
         }
         if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
+          // 未注册流程
           NavigatorUtils.goBack(context);
           Result r = await InviteAPI.checkIsInInvitation();
           if (r.isSuccess && StringUtil.isEmpty(RegTemp.regTemp.invitationCode)) {
@@ -196,8 +197,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           }
           RegTemp.regTemp.phone = _phoneController.text;
           RegTemp.regTemp.invitationCode = _iCodeController.text;
-          print(RegTemp.regTemp.invitationCode);
-          print("----------============----------------------");
+          // 跳转到个人信息页面
           NavigatorUtils.push(context, LoginRouter.loginInfoPage);
         } else {
           NavigatorUtils.goBack(context);

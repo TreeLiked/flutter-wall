@@ -17,10 +17,11 @@ class MemberApi {
     print(Api.API_QUERY_ACCOUNT + '-------------------');
     Response response;
     try {
-      print(httpUtil2.headers);
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       dynamic json2 = json["data"];
+      print(json2);
+      print(response.data);
       if (json2 == null) {
         return null;
       }

@@ -40,7 +40,7 @@ class OssUtil {
     if (uploadDio == null) {
       BaseOptions options = new BaseOptions();
       options.responseType = ResponseType.plain;
-      options.contentType = ContentType.parse("multipart/form-data");
+      options.contentType = "multipart/form-data";
       uploadDio = new Dio(options);
     }
     return uploadDio;
@@ -91,14 +91,15 @@ class OssUtil {
 
     Dio dio = _getUploadDio();
 
-    FormData data = new FormData.from({
+    FormData data = new FormData.fromMap({
       'key': nameKey,
       'policy': policyBase64,
       'OSSAccessKeyId': OssConstant.ACCESS_KEY_ID,
       'success_action_status': '200',
       'signature': signature,
       'Access-Control-Allow-Origin': '*',
-      'file': new UploadFileInfo.fromBytes(fileBytes, fileName),
+      'file': MultipartFile.fromBytes(fileBytes,filename: fileName)
+//      'file': new UploadFileInfo.fromBytes(fileBytes, fileName),
     });
     try {
 //      print(object.lengthSync() / 1024 / 1024);

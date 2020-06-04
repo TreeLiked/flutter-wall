@@ -31,7 +31,7 @@ class TweetHotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context = context;
+    this.context = context;
     isDark = ThemeUtils.isDark(context);
     if (ht == null) {
       return Gaps.empty;
@@ -76,7 +76,7 @@ class TweetHotCard extends StatelessWidget {
                   fontSize: Dimens.font_sp16,
                   color: index <= 3
                       ? Colors.red
-                      : (index <= 6 ? Colors.amber : Theme.of(context).textTheme.overline.color)),
+                      : (index <= 6 ? Colors.amber : Theme.of(context).textTheme.subtitle1.color)),
             ),
           ),
           Container(

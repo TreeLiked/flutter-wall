@@ -54,5 +54,5 @@ Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
       'replyCount': instance.replyCount,
       'gmtModified': instance.gmtModified?.toIso8601String(),
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
-      'sentTime': DateUtil.formatDate(instance.sentTime, format: DataFormats.full),
+      'sentTime': DateUtil.formatDate(instance.sentTime, format: DateFormats.full),
     };

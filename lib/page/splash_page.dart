@@ -18,6 +18,7 @@ import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/log_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -66,6 +67,8 @@ class _SplashPageState extends State<SplashPage> {
       if (storageToken == '') {
         _goLogin();
       } else {
+        httpUtil.updateAuthToken(storageToken);
+        httpUtil2.updateAuthToken(storageToken);
         await MemberApi.getMyAccount(storageToken).then((acc) async {
           if (acc == null) {
             _goLogin();

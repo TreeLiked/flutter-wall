@@ -85,7 +85,7 @@ class _AccountSchoolInfoPageState extends State<AccountSchoolInfoPage> {
             if (async.connectionState == ConnectionState.active ||
                 async.connectionState == ConnectionState.waiting) {
               return new Container(
-                child: const SpinKitThreeBounce(
+                child: SpinKitThreeBounce(
                   color: Colors.lightBlue,
                   size: 18,
                 ),

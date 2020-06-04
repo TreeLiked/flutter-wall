@@ -52,7 +52,7 @@ class Log {
   static _print(String msg, {tag: 'X-LOG'}) {
     /// 单元测试不必初始化Log工具类，直接使用print输出。
     if (defaultTargetPlatform == TargetPlatform.iOS || perform == null) {
-      LogUtil.debuggable = !GlobalConfig.inProduction;
+//      LogUtil.debuggable = !GlobalConfig.inProduction;
       LogUtil.v(msg, tag: tag);
     }
   }

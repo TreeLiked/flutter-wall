@@ -1,3 +1,5 @@
+
+import 'package:common_utils/common_utils.dart';
 import 'package:flustars/flustars.dart';
 
 class TimeUtil {
@@ -27,7 +29,7 @@ class TimeUtil {
                 ? "${dt.hour}:${dt.minute}"
                 : "${dt.hour}:0${dt.minute}");
       } else {
-        if (DateUtil.isYesterdayByMillis(tarMs, nowMs)) {
+        if (DateUtil.isYesterdayByMs(tarMs, nowMs)) {
           // 如果小于24小时，显示昨天
           return "昨天 " + timeInDay(dt.hour) + dt.hour.toString() + "时";
         } else {
@@ -38,7 +40,7 @@ class TimeUtil {
             }
             return MMDD(dt) + " ${dt.hour}:${dt.minute}";
           } else {
-            return DateUtil.formatDate(dt, format: DataFormats.zh_y_mo_d_h_m);
+            return DateUtil.formatDate(dt, format: DateFormats.zh_y_mo_d_h_m);
           }
         }
       }
@@ -59,11 +61,11 @@ class TimeUtil {
 
   // MM月DD日
   static String MMDD(DateTime dt) {
-    return DateUtil.formatDate(dt, format: DataFormats.zh_mo_d);
+    return DateUtil.formatDate(dt, format: DateFormats.zh_mo_d);
   }
 
   // HH时mm分
   static String HHmm(DateTime dt) {
-    return DateUtil.formatDate(dt, format: DataFormats.zh_h_m);
+    return DateUtil.formatDate(dt, format: DateFormats.zh_h_m);
   }
 }

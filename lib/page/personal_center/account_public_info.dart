@@ -82,7 +82,7 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
             if (async.connectionState == ConnectionState.active ||
                 async.connectionState == ConnectionState.waiting) {
               return Container(
-                child: const SpinKitThreeBounce(
+                child: SpinKitThreeBounce(
                   color: Colors.lightBlue,
                   size: 18,
                 ),
@@ -239,7 +239,7 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
           maxLines: 1,
           content: _profile.birthday == null
               ? _unSetText
-              : DateUtil.formatDate(_profile.birthday, format: DataFormats.y_mo_d),
+              : DateUtil.formatDate(_profile.birthday, format: DateFormats.y_mo_d),
           onTap: () {
             DatePicker.showDatePicker(context,
                 theme: DatePickerTheme(
@@ -254,7 +254,7 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
                 minTime: DateTime(1900, 1, 1),
                 maxTime: DateTime.now(), onConfirm: (date) {
               print(date);
-              String dateFormat = DateUtil.formatDate(date, format: DataFormats.full);
+              String dateFormat = DateUtil.formatDate(date, format: DateFormats.full);
               print(dateFormat);
               _updateSomething(AccountEditParam(AccountEditKey.BIRTHDAY, dateFormat), (boolres) {
                 if (boolres) {

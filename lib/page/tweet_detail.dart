@@ -748,8 +748,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             } else {
               if (r.isSuccess) {
                 ToastUtil.showToast(context, '删除成功');
-                NavigatorUtils.goBack(context);
                 Provider.of<TweetProvider>(context).delete(widget._tweet.id);
+                NavigatorUtils.goBack(context);
               } else {
                 ToastUtil.showToast(context, '用户身份验证失败');
               }

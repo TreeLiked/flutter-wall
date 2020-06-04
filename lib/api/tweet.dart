@@ -31,17 +31,6 @@ class TweetApi {
         return new List<BaseTweet>();
       }
       List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
-//      tweetList.forEach((tw){
-//        if(tw.dirReplies != null) {
-//          tw.dirReplies.forEach((tr) {
-//            if(tr.children != null) {
-//              tr.children.forEach((subTr){
-//
-//              });
-//            }
-//          });
-//        }
-//      });
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e, pop: false);

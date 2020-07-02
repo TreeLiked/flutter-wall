@@ -87,7 +87,7 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TweetCard2(_accountTweets[index],
-                    upClickable: false, downClickable: true, displayPraise: false, displayComment: false);
+                    upClickable: false, downClickable: false, displayPraise: false, displayComment: false);
               })
           : Center(
               child: Padding(

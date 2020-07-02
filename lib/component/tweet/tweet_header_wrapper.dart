@@ -81,7 +81,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
             child: Text(
             TextConstant.TWEET_ANONYMOUS_NICK,
             style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
-                anonymous: true, bold: true),
+                anonymous: true, bold: false),
           ))
         : GestureDetector(
             onTap: () => anonymous ? null : goAccountDetail(context, account, true),
@@ -90,7 +90,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
                 account.nick  ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: true,
                 style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
-                    bold: true),
+                    bold: false),
               ),
             ));
   }
@@ -118,5 +118,113 @@ class TweetCardHeaderWrapper extends StatelessWidget {
       softWrap: true,
       maxLines: 2,
     ));
+  }
+}
+
+
+class TweetSimpleHeader extends StatelessWidget {
+  final TweetAccount account;
+  final bool anonymous;
+  final bool canClick;
+  final DateTime tweetSent;
+  final bool official;
+
+  const TweetSimpleHeader(this.account, this.anonymous, this.tweetSent,
+      {this.canClick = true, this.official = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+
+            Expanded(
+              flex: 6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _nickContainer(context),
+//                  _signatureContainer(context),
+                ],
+              ),
+            ),
+            Container(child: _timeContainer(context))
+          ],
+        ));
+  }
+
+  Widget _profileContainer(BuildContext context) {
+    return GestureDetector(
+        onTap: () => anonymous ? null : goAccountDetail(context, account, true),
+        child: Container(
+            margin: EdgeInsets.only(right: 10),
+            child: AccountAvatar(
+              cache: true,
+              avatarUrl: !anonymous
+                  ? (account.avatarUrl ?? PathConstant.AVATAR_FAILED)
+                  : PathConstant.ANONYMOUS_PROFILE,
+              size: SizeConstant.TWEET_PROFILE_SIZE,
+            )));
+  }
+
+  void goAccountDetail(BuildContext context, TweetAccount account, bool up) {
+    if (canClick) {
+      NavigatorUtils.push(
+          context,
+          Routes.accountProfile +
+              Utils.packConvertArgs(
+                  {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+    }
+  }
+
+  Widget _nickContainer(BuildContext context) {
+    if (anonymous) {
+      account.nick = TextConstant.TWEET_ANONYMOUS_NICK;
+    }
+    return anonymous
+        ? Container(
+        child: Text(
+          TextConstant.TWEET_ANONYMOUS_NICK,
+          style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
+              anonymous: true, bold: true),
+        ))
+        : GestureDetector(
+        onTap: () => anonymous ? null : goAccountDetail(context, account, true),
+        child: Container(
+          child: Text(
+            account.nick  ?? TextConstant.TEXT_UN_CATCH_ERROR,
+            softWrap: true,
+            style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
+                bold: true),
+          ),
+        ));
+  }
+
+  Widget _timeContainer(BuildContext context) {
+    if (tweetSent == null) {
+      return Container(height: 0);
+    }
+    return Text(
+      TimeUtil.getShortTime(tweetSent) ?? "未知",
+      maxLines: 2,
+      softWrap: true,
+      style: MyDefaultTextStyle.getTweetTimeStyle(context),
+    );
+  }
+
+  Widget _signatureContainer(BuildContext context) {
+    return Container(
+        child: Text(
+          !anonymous
+              ? (StringUtil.isEmpty(account.signature) ? "" : account.signature)
+              : TextConstant.TWEET_ANONYMOUS_SIG,
+          style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: SizeConstant.TWEET_TIME_SIZE),
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+          maxLines: 2,
+        ));
   }
 }

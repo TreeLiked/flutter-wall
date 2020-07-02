@@ -1,15 +1,20 @@
+import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
+import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -18,6 +23,9 @@ import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/models/tabIconData.dart';
 import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
+import 'package:iap_app/page/personal_center/personal_center.dart';
+import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
+import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/platform/platform_appbar.dart';
 import 'package:iap_app/platform/platform_scaffold.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -25,9 +33,13 @@ import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/routes/setting_router.dart';
+import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -47,7 +59,8 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin<HomePage>, TickerProviderStateMixin {
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
@@ -79,6 +92,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   int count = 1;
 
+  TabController _tabController;
+
+  int _currentTabIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -87,6 +104,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
       tab.isSelected = false;
     });
     tabIconsList[0].isSelected = true;
+
+    _tabController = TabController(vsync: this, length: 2);
 
     firstRefreshMessage();
   }
@@ -105,10 +124,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   void dispose() {
     super.dispose();
   }
-
-  Widget tabBody = Container(
-    color: Color(0xFFF2F3F8),
-  );
 
   Future<void> _onRefresh(BuildContext context) async {
     print('On refresh');
@@ -151,7 +166,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
   }
 
   /*
-   * 显示回复框 
+   * 显示回复框
    */
   void showReplyContainer(TweetReply tr, String destAccountNick, String destAccountId) {
     commentWrapperKey.currentState.showReplyContainer(tr, destAccountNick, destAccountId);
@@ -202,6 +217,11 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
 
   void updateHeader(bool next) {}
 
+  //设定Widget的偏移量
+  Offset floatingOffset = Offset(20, Application.screenHeight - 150);
+  double middle = Application.screenWidth / 2;
+  bool stickLeft = false;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -215,80 +235,160 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
     }
     firstBuild = false;
 
-    return Consumer<TweetProvider>(builder: (context, provider, _) {
-      var tweets = provider.displayTweets;
-      return Stack(
+    return Scaffold(
+      appBar: PreferredSize(
+        child: AppBar(
+          elevation: 0,
+        ),
+        preferredSize: Size.zero,
+      ),
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
           children: <Widget>[
-          NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
-            body: Listener(
-                onPointerDown: (_) {
-                  hideReplyContainer();
-                  startY = _.position.dy;
-                },
-                onPointerUp: (_) {
-                  if (widget.pullDownCallBack != null) {
-                    widget.pullDownCallBack((_.position.dy - startY) > 0);
-                  }
-                },
-                child: Scrollbar(
-                  controller: _scrollController,
-                  child: SafeArea(
-                    top: false,
-                    bottom: true,
-                    child: SmartRefresher(
-                      enablePullUp: tweets != null && tweets.length > 0,
-                      enablePullDown: true,
-                      primary: false,
-                      scrollController: _scrollController,
-                      controller: _refreshController,
-                      header: WaterDropHeader(
-                        waterDropColor: Colors.lightBlue,
-                        complete: const Text('刷新完成'),
+            Padding(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Positioned(
+                        left: prefix0.ScreenUtil().setWidth(10.0),
+                        child: Consumer<AccountLocalProvider>(
+                          builder: (_, model, __) {
+                            var acc = model.account;
+                            return IconButton(
+                                onPressed: () {
+                                  BottomSheetUtil.showBottomSheet(context, 0.75, PersonalCenter());
+                                },
+                                icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
+                          },
+                        ),
                       ),
-                      footer: ClassicFooter(
-                        loadingText: '正在加载...',
-                        canLoadingText: '释放以加载更多',
-                        noDataText: '到底了哦',
-                        idleText: '继续上滑',
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
+                        child: TabBar(
+                          labelStyle:
+                              TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.amber),
+                          unselectedLabelStyle: TextStyle(fontSize: 14, color: Colors.black),
+                          indicatorSize: TabBarIndicatorSize.label,
+                          indicator: const UnderlineTabIndicator(
+                              borderSide: const BorderSide(color: Colors.amber, width: 2.0)),
+                          controller: _tabController,
+                          labelColor: isDark ? Color(0xffbababa) : Colors.black,
+                          onTap: (index) {
+                            if (index == _currentTabIndex) {
+                              if (index == 0) {
+                                PageSharedWidget.homepageScrollController.animateTo(.0,
+                                    duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
+                                return;
+                              }
+                            }
+                            _tabController.animateTo(index);
+                            setState(() {
+                              _currentTabIndex = index;
+                            });
+                          },
+                          tabs: [
+                            Tab(
+                              text: '首页',
+                            ),
+                            Tab(
+                              text: '热门',
+                            ),
+                          ],
+                        ),
                       ),
-                      child: tweets == null
-                          ? Align(
-                        alignment: Alignment.topCenter,
-                        child: wu.WidgetUtil.getLoadingAnimation(),
-                      )
-                          : tweets.length == 0
-                          ? TweetNoDataView(onTapReload: () {
-                        if (_refreshController != null) {
-                          _refreshController.resetNoData();
-                          _refreshController.requestRefresh();
+                      Positioned(
+                          right: prefix0.ScreenUtil().setWidth(10.0),
+//                        top: prefix0.ScreenUtil().setWidth(10.0),
+                          child: IconButton(
+                            icon: StreamBuilder(
+                              initialData: 0,
+                              stream: MessageUtil.notificationStreamCntCtrl.stream,
+                              builder: (_, snapshot) => Badge(
+                                elevation: 0,
+                                padding: const EdgeInsets.all(3.0),
+                                child: LoadAssetIcon(
+                                  "notification/bell",
+                                  color: snapshot.data != -1 && snapshot.data != 0
+                                      ? Colors.amber
+                                      : Colors.black54,
+                                  width: 21.0,
+                                  height: 21.0,
+                                ),
+                                animationType: BadgeAnimationType.fade,
+                                showBadge: snapshot.data != -1 && snapshot.data != 0,
+                                badgeContent: Text(
+                                  '${snapshot.data}',
+                                  style: const TextStyle(color: Colors.white, fontSize: Dimens.font_sp12),
+                                ),
+                              ),
+                            ),
+                            onPressed: () => NavigatorUtils.push(context, Routes.notification),
+                          )),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        TweetIndexTabView(),
+                        HotToday(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.only(bottom: 0.0),
+            ),
+            _currentTabIndex == 0
+                ? Positioned(
+                    left: stickLeft ? 20.0 : null,
+                    right: stickLeft ? null : 20.0,
+                    top: floatingOffset.dy,
+                    child: Draggable(
+                      feedback: FloatingActionButton(
+                          child: Icon(
+                            Icons.add_a_photo,
+                            color: Colors.white,
+                          ),
+                          backgroundColor: Colors.amber[300],
+                          elevation: 0.0,
+                          onPressed: null),
+                      child: FloatingActionButton(
+                          child: Icon(
+                            Icons.add_a_photo,
+                            color: Colors.white,
+                          ),
+                          backgroundColor: Colors.amber[300],
+                          elevation: 10.0,
+                          splashColor: Colors.amber,
+                          onPressed: () => NavigatorUtils.push(context, Routes.create,
+                              transitionType: TransitionType.fadeIn)),
+
+                      //拖动过程中，在原来位置停留的Widget，设定这个可以保留原本位置的残影，如果不需要可以直接设置为Container()
+                      childWhenDragging: Container(),
+                      //拖动结束后的Widget
+                      onDragEnd: (details) {
+                        double targetX = details.offset.dx;
+                        double targetY = details.offset.dy;
+                        if (targetY >= Application.screenHeight - 150 || targetY <= 20) {
+                          targetY = Application.screenHeight - 150;
                         }
-                      })
-                          : ListView.builder(
-                          primary: true,
-                          itemCount: tweets.length,
-                          itemBuilder: (context, index) {
-                            return TweetCard2(
-                              tweets[index],
-                              displayExtra: true,
-                              displayPraise: true,
-                              displayComment: true,
-                              displayLink: true,
-                              displayReplyContainerCallback:
-                                  (TweetReply tr, String destAccountNick, String destAccountId) =>
-                                  showReplyContainer(tr, destAccountNick, destAccountId),
-                            );
-                          }),
-                      onRefresh: () => _onRefresh(context),
-                      onLoading: _onLoading,
+                        setState(() {
+                          stickLeft = targetX < middle;
+                          floatingOffset = new Offset(0.0, targetY);
+                        });
+                      },
                     ),
                   )
-                )),
-          ),
-            Positioned(left: 0, bottom: 0, child: HomeCommentWrapper(key: commentWrapperKey)),
+                : Gaps.empty,
           ],
-        );
-    });
+        ),
+      ),
+    );
   }
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
@@ -301,18 +401,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin<
         title: GestureDetector(
             child: Text(
               Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
-              style: TextStyle(fontSize: Dimens.font_sp15,fontWeight: FontWeight.w400),
+              style: TextStyle(fontSize: Dimens.font_sp15, fontWeight: FontWeight.w400),
             ),
             onTap: () => PageSharedWidget.homepageScrollController
                 .animateTo(.0, duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint)),
         elevation: 0.3,
         actions: <Widget>[
-//          IconButton(
-//            icon: Icon(Icons.blur_on),
-//            onPressed: () {
-//              NavigatorUtils.push(context, Routes.square, transitionType: TransitionType.fadeIn);
-//            },
-//          ),
+          IconButton(
+            icon: Icon(Icons.blur_on),
+            onPressed: () {
+              NavigatorUtils.push(context, Routes.square, transitionType: TransitionType.fadeIn);
+            },
+          ),
           IconButton(
               key: _menuKey,
               icon: Icon(Icons.add),

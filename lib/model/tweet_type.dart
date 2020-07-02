@@ -174,11 +174,11 @@ class TweetTypeEntity {
       zhTag: "交易");
 
   static const OTHER = const TweetTypeEntity(
-      iconData: Icons.all_inclusive,
-      iconColor: Color(0xffB0C4DE),
+      iconData: Icons.palette,
+      iconColor: Color(0xff87CEFA),
       intro: "没有别的就选这个吧！",
       name: "OTHER",
-      color: Color(0xffB0C4DE),
+      color: Color(0xff87CEFA),
       zhTag: "其他");
 
   static const OFFICIAL = const TweetTypeEntity(

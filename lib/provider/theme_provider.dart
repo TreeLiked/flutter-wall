@@ -4,6 +4,7 @@ import 'dart:ui' as prefix0;
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/styles.dart';
 
@@ -53,7 +54,7 @@ class ThemeProvider extends ChangeNotifier {
             isDarkMode ? Colours.dark_bg_color : Colors.white,
         // 主要用于Material背景色
         // canvasColor: Colors.transparent,
-        canvasColor: isDarkMode ? Colours.dark_material_bg : Color(0xfff7f8fa),
+        canvasColor: isDarkMode ? Colours.dark_material_bg : ThemeConstant.lightBG,
 
         // 文字选择色（输入框复制粘贴菜单）
         textSelectionColor: Colours.app_main.withAlpha(70),
@@ -72,7 +73,7 @@ class ThemeProvider extends ChangeNotifier {
         ),
         appBarTheme: AppBarTheme(
           elevation: 0.0,
-          color: isDarkMode ? Color(0xff303233) : Color(0xfffbfbfb),
+          color: isDarkMode ? ThemeConstant.darkBG : ThemeConstant.lightBG,
           brightness: isDarkMode ? Brightness.dark : Brightness.light,
         ),
         primaryTextTheme: TextTheme(

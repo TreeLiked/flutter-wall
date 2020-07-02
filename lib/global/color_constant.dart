@@ -5,7 +5,7 @@ import 'package:iap_app/util/theme_utils.dart';
 
 class ColorConstant {
   // 昵称颜色
-  static const Color TWEET_NICK_COLOR = Color(0xff708090);
+  static const Color TWEET_NICK_COLOR = Color(0xff4575AB);
   static const Color TWEET_NICK_COLOR_DARK = Color(0xff898989);
 
   /// 推文相关
@@ -16,7 +16,7 @@ class ColorConstant {
   /// 回复相关
 
   // 回复正常昵称颜色
-  static const Color TWEET_REPLY_NICK_COLOR = Color(0xff696d7d);
+  static const Color TWEET_REPLY_NICK_COLOR = Color(0xff4575AB);
   static const Color TWEET_REPLY_NICK_COLOR_DARK = Color(0xff696d7d);
 
   // 推文回复正文颜色
@@ -45,6 +45,18 @@ class ColorConstant {
   // 推文时间颜色
   static const Color TWEET_TIME_COLOR = Color(0xffADADAD);
   static const Color TWEET_TIME_COLOR_DARK = Color(0xff707070);
+
+  // 推文富链接背景颜色
+  static const Color TWEET_RICH_BG = Color(0xffF5F4F5);
+  static const Color TWEET_RICH_BG_DARK = Color(0xff3c3c3c);
+
+  // 推文富链接背景颜色稍浅
+  static const Color TWEET_RICH_BG_2 = Color(0xffF8F7F8);
+
+
+  static const Color MAIN_BG = Color(0xffFFFEFF);
+  static const Color MAIN_BG_DARK = Color(0xff272829);
+
 
   static const Color TWEET_TYPE_TEXT_DARK = Colors.white60;
 

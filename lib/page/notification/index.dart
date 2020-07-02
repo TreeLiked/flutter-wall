@@ -5,6 +5,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
@@ -146,8 +147,11 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
       backgroundColor: ThemeUtils.getBackColor(context),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('消息', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400)),
+        title: Text('消息',
+            style: TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.3)),
         centerTitle: false,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back), iconSize: 23.0, onPressed: () => NavigatorUtils.goBack(context)),
       ),
       body: SafeArea(
         top: false,
@@ -156,24 +160,26 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
             enablePullDown: true,
             enablePullUp: false,
             header: MaterialClassicHeader(
-              color: Colors.pinkAccent,
+              color: Colors.amber,
+              backgroundColor: isDark? ColorConstant.MAIN_BG_DARK:ColorConstant.MAIN_BG,
             ),
+//            header: Utils.getDefaultRefreshHeader(),
             onRefresh: _fetchLatestMessage,
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   MainMessageItem(
                     iconPath: iconSubPath,
-                    title: "订阅消息",
+                    title: "我的订阅",
                     body: "暂无订阅消息",
-                    color: Colors.lightBlue,
+                    color: Colors.pink[300],
                     onTap: () => ToastUtil.showToast(context, "当前没有订阅内容"),
                   ),
                   MainMessageItem(
                       iconPath: iconSchoolPath,
-                      title: "校园通知",
+                      title: "校园公告",
                       tagName: "官方",
-                      body: "暂无通知",
+                      body: "暂无新通知",
                       pointType: true,
                       onTap: () {
                         NavigatorUtils.push(context, NotificationRouter.campusMain);
@@ -182,7 +188,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                   MainMessageItem(
                       iconPath: iconContactPath,
                       color: Colors.lightGreen,
-                      title: "互动消息",
+                      title: "与我有关",
                       body: _latestInteractionMsg == null ? noMessage : _getInteractionBody(),
                       time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
                       controller: MessageUtil.interactionMsgControl.controller,
@@ -192,11 +198,11 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                         MessageUtil.clearNotificationCnt();
                         NavigatorUtils.push(context, NotificationRouter.interactiveMain);
                       }),
-                  Gaps.vGap5,
+                  Gaps.vGap4,
                   MainMessageItem(
                     iconPath: iconOfficialPath,
-                    color: Colors.pinkAccent,
-                    title: "墙君",
+                    color: Colors.lightBlueAccent,
+                    title: "Wall",
                     tagName: "官方",
                     controller: MessageUtil.systemStreamCntCtrl,
                     body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
@@ -222,7 +228,9 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         return "${message.praiser.nick} 赞了你";
       } else if (_latestInteractionMsg.messageType == MessageType.TWEET_REPLY) {
         TweetReplyMessage message = _latestInteractionMsg as TweetReplyMessage;
-        String content = message.delete != null && message.delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : message.replyContent;
+        String content = message.delete != null && message.delete
+            ? TextConstant.TEXT_TWEET_REPLY_DELETED
+            : message.replyContent;
         return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 评论了你: $content";
       } else if (_latestInteractionMsg.messageType == MessageType.TOPIC_REPLY) {
         TopicReplyMessage message = _latestInteractionMsg as TopicReplyMessage;

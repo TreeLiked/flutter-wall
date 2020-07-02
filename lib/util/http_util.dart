@@ -183,7 +183,7 @@ class HttpUtil {
       if (!StringUtil.isEmpty(html)) {
         Document doc = HtmlUtils.parseDocument(html);
 
-        return WebLinkModel(url, HtmlUtils.getDocTitle(doc), HtmlUtils.getDocFaviconPath(doc));
+        return WebLinkModel(url, HtmlUtils.getDocTitle(doc) ?? url, HtmlUtils.getDocFaviconPath(doc));
       }
     }
     return null;

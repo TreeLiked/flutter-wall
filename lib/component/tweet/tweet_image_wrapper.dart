@@ -23,7 +23,7 @@ class TweetMediaWrapper extends StatelessWidget {
   final BaseTweet tweet;
 
   TweetMediaWrapper(this.tweetId, {this.medias, this.tweet}) {
-    this.sw = Application.screenWidth;
+    this.sw = (Application.screenWidth - 30.0) / 6 * 5;
     this.sh = Application.screenHeight;
     if (medias != null) {
       List<Media> temp = List.from(medias)..retainWhere((media) => media.mediaType == Media.TYPE_IMAGE);
@@ -50,13 +50,12 @@ class TweetMediaWrapper extends StatelessWidget {
 //          return tweet.mediaWrapper;
 //        }
 //      } else {
-        return Container(
-            padding: const EdgeInsets.only(top: 10),
-            child: Wrap(
-                children: picUrls.length == 1
-                    ? <Widget>[_imgContainerSingle(context)]
-                    : _handleMultiPics(context)));
-      }
+      return Container(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: Wrap(
+              children:
+                  picUrls.length == 1 ? <Widget>[_imgContainerSingle(context)] : _handleMultiPics(context)));
+    }
 //    }
   }
 
@@ -69,7 +68,7 @@ class TweetMediaWrapper extends StatelessWidget {
     return GestureDetector(
         onTap: () => open(context, 0),
         child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: sw * 0.75, maxHeight: sh * 0.4),
+            constraints: BoxConstraints(maxWidth: sw * 0.6, maxHeight: sh * 0.3),
             child: ClipRRect(
                 child: CachedNetworkImage(
                     filterQuality: FilterQuality.high,
@@ -102,7 +101,7 @@ class TweetMediaWrapper extends StatelessWidget {
     // 40 最外层container左右padding,
     double left = (sw - 20);
     double perW;
-    double rp = 0.8;
+    double rp = 3;
     if (totalSize == 2 || totalSize == 4) {
       if (totalSize == 2) {
         perW = (left - _imgRightPadding - 1) / 2.2;

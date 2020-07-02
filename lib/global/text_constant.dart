@@ -5,7 +5,7 @@ class TextConstant {
   static const String TWEET_CARD_REPLY_HINT = "评论";
 
   static const String TWEET_ANONYMOUS_NICK = "匿名用户";
-  static const String TWEET_ANONYMOUS_REPLY_NICK = "匿名回复";
+  static const String TWEET_ANONYMOUS_REPLY_NICK = "匿名";
 
   static const String TWEET_ANONYMOUS_SIG = "";
 
@@ -17,4 +17,7 @@ class TextConstant {
   static const String TEXT_UN_CATCH_TWEET_TYPE = "未知类型";
 
   static const String TEXT_TWEET_REPLY_DELETED = "该评论已删除";
+
+  static const String TWEET_REPLY_FAIL = "回复失败，请稍后再试";
+
 }

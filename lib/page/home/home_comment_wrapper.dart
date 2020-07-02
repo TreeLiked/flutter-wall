@@ -49,7 +49,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                 opacity: _replyContainerWidth != 0 ? 1.0 : 0.0,
                 duration: Duration(milliseconds: 666),
                 child: Container(
-                    width: _replyContainerWidth,
+                    width: 200.0,
                     decoration: BoxDecoration(
                       color: isDark ? Color(0xff363636) : Color(0xfff2f3f4),
                       borderRadius: BorderRadius.only(

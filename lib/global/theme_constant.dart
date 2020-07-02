@@ -5,12 +5,12 @@ class ThemeConstant {
   static String appName = "Social app";
 
   //Colors for theme
-  static Color lightPrimary = Color(0xffffffff);
+  static Color lightPrimary = Color(0xfffffeff);
   static Color darkPrimary = Colors.black;
   static Color lightAccent = Colors.blue;
   static Color darkAccent = Colors.blueAccent;
-  static Color lightBG = Color(0xffffffff);
-  static Color darkBG = Colors.black;
+  static Color lightBG = Color(0xfffffeff);
+  static Color darkBG = Color(0xff272829);
   static Color badgeColor = Colors.red;
 
   static ThemeData lightTheme = ThemeData(
@@ -22,7 +22,7 @@ class ThemeConstant {
     bottomAppBarTheme: BottomAppBarTheme(color: Colors.black87),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      color: Colors.white,
+      color: lightPrimary,
       textTheme: TextTheme(
         title: TextStyle(
           color: darkBG,

@@ -9,6 +9,7 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/asset_image.dart';
 import 'package:iap_app/component/bottom_sheet_confirm.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
@@ -20,6 +21,7 @@ import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/common/image_origin.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/part/stateless.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
@@ -271,9 +273,11 @@ class _CreatePageState extends State<CreatePage> {
     print("create page build");
     sw = ScreenUtil.screenWidthDp;
     return new Scaffold(
+      backgroundColor: ColorConstant.MAIN_BG,
       resizeToAvoidBottomPadding: true,
       appBar: new AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title,
+            style: TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w500, letterSpacing: 1.2)),
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
@@ -287,6 +291,11 @@ class _CreatePageState extends State<CreatePage> {
         actions: <Widget>[
           Container(
             height: 10,
+            margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              color: _isPushBtnEnabled && !_publishing ? Colors.amber : null,
+            ),
             child: FlatButton(
               onPressed: _isPushBtnEnabled && !_publishing
                   ? () {
@@ -296,7 +305,7 @@ class _CreatePageState extends State<CreatePage> {
               child: Text(
                 '发表',
                 style: TextStyle(
-                  color: _isPushBtnEnabled ? Colors.blue : Colors.grey,
+                  color: _isPushBtnEnabled ? Colors.white : Colors.grey,
                 ),
               ),
               disabledTextColor: Colors.grey,
@@ -305,7 +314,7 @@ class _CreatePageState extends State<CreatePage> {
           )
         ],
       ),
-      backgroundColor: Color(0xfff7f8f9),
+//      backgroundColor: Color(0xfff7f8f9),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +323,7 @@ class _CreatePageState extends State<CreatePage> {
               onTap: () => _hideKeyB(),
               onPanDown: (_) => _hideKeyB(),
               child: new Container(
-                color: Colors.white,
+                color: ColorConstant.MAIN_BG,
                 padding: const EdgeInsets.only(left: 5, right: 10, bottom: 10),
                 margin: const EdgeInsets.only(bottom: 20),
                 child: new Column(
@@ -333,7 +342,10 @@ class _CreatePageState extends State<CreatePage> {
                         autocorrect: false,
                         maxLines: 8,
                         style: TextStyle(
-                            height: 1.5, fontSize: SizeConstant.TWEET_FONT_SIZE, color: Colors.black),
+                            height: 1.5,
+                            fontSize: SizeConstant.TWEET_FONT_SIZE,
+                            color: Colors.black,
+                            letterSpacing: 1.1),
                         decoration: new InputDecoration(
                             hintText: '分享校园新鲜事',
                             border: InputBorder.none,

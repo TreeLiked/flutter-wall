@@ -26,6 +26,7 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/page/common/report_page.dart';
+import 'package:iap_app/page/tweet/tweet_comment_wrapper.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/colors.dart';
@@ -42,6 +43,7 @@ import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/tweet_reply_util.dart';
 import 'package:iap_app/util/widget_util.dart' as prefix0;
 import 'package:provider/provider.dart';
 
@@ -74,6 +76,9 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
   Future _getPraiseTask;
   Future _getReplyTask;
   Future _getLinkTask;
+
+  BuildContext myContext;
+  PersistentBottomSheetController _bottomSheetController;
 
   List<Account> praiseAccounts = [];
   List<TweetReply> replies = [];
@@ -298,6 +303,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
   Widget build(BuildContext context) {
     isDark = ThemeUtils.isDark(context);
     BaseTweet tweet = widget._tweet;
+    this.myContext = context;
     if (tweet == null) {
       if (firInit) {
         return Scaffold(
@@ -323,130 +329,75 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         backgroundColor: !isDark
             ? (widget._fromHot ? Color(0xffe9e9e9) : null)
             : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
-        body: Stack(
-          children: <Widget>[
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onPanDown: (_) {
-                hideReplyContainer();
-              },
-              child: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) =>
-                    _sliverBuilder(context, innerBoxIsScrolled),
-                body: widget._tweet != null
-                    ? SingleChildScrollView(
-                        child: Container(
-                        decoration: BoxDecoration(
-                            color:
-                                isDark ? Colours.dark_bg_color : widget._fromHot ? Color(0xfff0f0f0) : null,
-                            borderRadius: const BorderRadius.all(Radius.circular(18))),
-                        padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _spaceRow(),
-                            Gaps.vGap10,
-                            TweetBodyWrapper(tweet.body, height: 2.0, selectable: true),
-                            TweetMediaWrapper(tweet.id, medias: tweet.medias),
-                            widget.newLink
-                                ? TweetLinkWrapper2(widget._tweet, _getLinkTask, fromHot: widget._fromHot)
-                                : TweetLinkWrapper(tweet),
-                            Gaps.vGap8,
-                            _viewContainer(),
-                            Gaps.vGap15,
-                            Divider(),
-                            Gaps.vGap10,
-                            _praiseWrapper(context),
-                            TweetPraiseWrapper2(praiseAccounts),
-                            _replyWrapper(context),
-                            TweetReplyWrapper(tweet, replies,
-                                (TweetReply tr, String tarAccNick, String tarAccId) {
-                              setState(() {
-                                this.curReply = tr;
-                              });
-                              showReplyContainer(tarAccNick, tarAccId, false);
-                            }, () {
-                              setState(() {
-                                _getReplyTask = getTweetReply();
-                              });
-                            }),
-                          ],
-                        ),
-                      ))
-                    : Container(
-                        alignment: Alignment.topCenter, child: prefix0.WidgetUtil.getLoadingAnimation()),
-              ),
+        body: Builder(builder: (context) {
+          this.myContext = context;
+          return Listener(
+//                behavior: HitTestBehavior.opaque,
+//                onPanDown: (_) {
+//                  hideReplyContainer();
+//                  hideBottomSheetReplyContainer();
+//                },
+            onPointerDown: (_) {
+              hideBottomSheetReplyContainer();
+            },
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) =>
+                  _sliverBuilder(context, innerBoxIsScrolled),
+              body: widget._tweet != null
+                  ? SingleChildScrollView(
+                      child: Container(
+                      decoration: BoxDecoration(
+                          color: isDark ? Colours.dark_bg_color : widget._fromHot ? Color(0xfff0f0f0) : null,
+                          borderRadius: const BorderRadius.all(Radius.circular(18))),
+                      padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          _spaceRow(),
+                          Gaps.vGap10,
+                          TweetBodyWrapper(tweet.body, height: 2.0, selectable: true),
+                          TweetMediaWrapper(tweet.id, medias: tweet.medias),
+                          widget.newLink
+                              ? TweetLinkWrapper2(widget._tweet, _getLinkTask, fromHot: widget._fromHot)
+                              : TweetLinkWrapper(tweet),
+                          Gaps.vGap8,
+                          _viewContainer(),
+                          Gaps.vGap15,
+                          Divider(),
+                          Gaps.vGap10,
+                          _praiseWrapper(context),
+                          TweetPraiseWrapper2(praiseAccounts),
+                          _replyWrapper(context),
+                          TweetReplyWrapper(tweet, replies,
+                              (TweetReply tr, String tarAccNick, String tarAccId) {
+                            String hintText = "回复：$tarAccNick";
+                            if (tweet.anonymous && tarAccId == tweet.account.id) {
+                              hintText = "回复：作者";
+                            }
+                            showBottomSheetReplyContainer(2, true, hintText, (String value, bool anonymous) {
+                              TweetReply reply = TRUtil.assembleReply(tweet, value, false, false,
+                                  parentId: tr.parentId, tarAccountId: tarAccId);
+                              reply.sentTime = DateTime.now();
+                              TRUtil.publicReply(
+                                  context,
+                                  reply,
+                                  (bool success, TweetReply newReply) =>
+                                      this.handleSendResult(success, newReply));
+                            });
+                          }, () {
+                            setState(() {
+                              _getReplyTask = getTweetReply();
+                            });
+                          }),
+                        ],
+                      ),
+                    ))
+                  : Container(
+                      alignment: Alignment.topCenter, child: prefix0.WidgetUtil.getLoadingAnimation()),
             ),
-            Positioned(
-              left: 0,
-              bottom: 0,
-              child: Container(
-                  width: _replyContainerWidth,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).appBarTheme.color,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15.0),
-                      topRight: Radius.circular(15.0),
-                    ),
-                  ),
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 15),
-                  child: Row(
-                    children: <Widget>[
-                      AccountAvatar(
-                        avatarUrl: curReply != null && curReply.anonymous
-                            ? PathConstant.ANONYMOUS_PROFILE
-                            : Application.getAccount.avatarUrl,
-                        cache: true,
-                        size: 35,
-                      ),
-                      Expanded(
-                        child: Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: TextField(
-                              keyboardAppearance: Theme.of(context).brightness,
-                              controller: _controller,
-                              focusNode: _focusNode,
-                              decoration: InputDecoration(
-                                hintText: _hintText,
-                                border: InputBorder.none,
-                                hintStyle: TextStyle(
-                                  // color: ColorConstant.TWEET_TIME_COLOR,
-                                  fontSize: Dimens.font_sp15,
-                                ),
-                                suffixIcon: curReply != null && curReply.type == 1
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            curReply.anonymous = !curReply.anonymous;
-                                            if (curReply.anonymous) {
-                                              ToastUtil.showToast(context, '此条评论将匿名回复');
-                                            }
-                                          });
-                                        },
-                                        child: Icon(
-                                          curReply.anonymous ? Icons.visibility_off : Icons.visibility,
-                                          size: SizeConstant.TWEET_PROFILE_SIZE * 0.5,
-                                          color: Colors.grey,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              textInputAction: TextInputAction.send,
-                              cursorColor: Colors.green,
-                              style: TextStyle(
-                                fontSize: SizeConstant.TWEET_FONT_SIZE - 1,
-                              ),
-                              onSubmitted: (value) {
-                                _sendReply(value);
-                              },
-                            )),
-                      ),
-                    ],
-                  )),
-            )
-          ],
-        ));
+          );
+        }));
   }
 
   Widget _praiseWrapper(BuildContext context) {
@@ -471,6 +422,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                       : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
                   width: 20,
                   height: 20,
+                  color: widget._tweet.loved ? Colors.pink[100] : Colors.grey,
                 ),
                 onTap: () => updatePraise(context, widget._tweet))));
   }
@@ -493,21 +445,69 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
           suffixWidget: tweet.enableReply
               ? GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  child: prefix0.LoadAssetIcon(PathConstant.ICON_COMMENT_ICON, width: 20, height: 20),
+                  child: prefix0.LoadAssetIcon(PathConstant.ICON_COMMENT_ICON,
+                      width: 20, height: 20, color: Colors.grey),
                   onTap: () {
-                    curReply.parentId = widget._tweet.id;
-                    curReply.type = 1;
-                    Account acc = new Account();
-                    TweetAccount ta = widget._tweet.account;
-                    acc.id = ta.id;
-                    acc.nick = ta.nick;
-                    acc.avatarUrl = ta.avatarUrl;
-                    curReply.tarAccount = acc;
-                    curReply.anonymous = false;
-                    showReplyContainer("", widget._tweet.account.id, false);
+                    showBottomSheetReplyContainer(1, true, "评论", (String value, bool anonymous) {
+                      TweetReply reply = TRUtil.assembleReply(tweet, value, anonymous, true);
+                      reply.sentTime = DateTime.now();
+                      TRUtil.publicReply(
+                          context, reply, (success, data) => this.handleSendResult(success, data));
+                    });
                   })
               : null,
         ));
+  }
+
+  void handleSendResult(bool success, TweetReply newReply) {
+    if (success) {
+      hideBottomSheetReplyContainer();
+      setState(() {
+        _getReplyTask = getTweetReply();
+      });
+      if (!widget._fromHot) {
+        if (newReply != null) {
+          if (newReply.type == 1) {
+            // 设置到直接回复
+            setState(() {
+              widget._tweet.replyCount++;
+              if (tweet.dirReplies == null) {
+                tweet.dirReplies = List();
+              }
+              tweet.dirReplies.add(newReply);
+            });
+          } else {
+            // 子回复
+            int parentId = newReply.parentId;
+            TweetReply tr2 = tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
+            setState(() {
+              widget._tweet.replyCount++;
+              if (tr2.children == null) {
+                tr2.children = List();
+              }
+              tr2.children.add(newReply);
+            });
+          }
+        } else {
+          ToastUtil.showToast(context, TextConstant.TWEET_REPLY_FAIL, gravity: ToastGravity.CENTER);
+        }
+      }
+    } else {
+      ToastUtil.showToast(context, TextConstant.TWEET_REPLY_FAIL, gravity: ToastGravity.CENTER);
+    }
+  }
+
+  void showBottomSheetReplyContainer(replyType, showAnonymous, hintText, onSend) {
+    _bottomSheetController = Scaffold.of(this.myContext).showBottomSheet((context) =>
+        TweetIndexCommentWrapper(
+            showAnonymous: showAnonymous, replyType: replyType, hintText: hintText, onSend: onSend));
+  }
+
+  void hideBottomSheetReplyContainer() {
+    if (_bottomSheetController != null) {
+      _bottomSheetController?.close();
+      _bottomSheetController = null;
+    }
   }
 
   List<BottomSheetItem> _getSheetItems() {

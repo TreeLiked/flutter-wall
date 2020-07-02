@@ -32,14 +32,16 @@ import 'package:iap_app/util/widget_util.dart';
 class TweetCardExtraWrapper extends StatefulWidget {
   final BaseTweet tweet;
   final bool displayPraise;
+  final bool canPraise;
   final bool displayCommnet;
 
   // 点击某一条评论回调 homepage textField
-  final displayReplyContainerCallback;
+  final onClickComment;
 
   const TweetCardExtraWrapper(
       {this.tweet,
-      this.displayReplyContainerCallback,
+      this.onClickComment,
+      this.canPraise = false,
       this.displayPraise = false,
       this.displayCommnet = false});
 
@@ -61,17 +63,17 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        TweetStatisticsWrapper(tweet.views, tweet.praise),
+        Gaps.vGap12,
+        TweetStatisticsWrapper(tweet,widget.canPraise,onClickComment: widget.onClickComment),
         Gaps.vGap8,
         widget.displayPraise ? TweetPraiseWrapper(tweet, prefixIcon: true) : Gaps.empty,
         widget.displayPraise ? Gaps.vGap8 : Gaps.empty,
         widget.displayCommnet
-            ? TweetReplyWrapperSimple(tweet, widget.displayReplyContainerCallback)
+            ? TweetReplyWrapperSimple(tweet, widget.onClickComment)
             : Gaps.empty,
       ],
     );
   }
-
 
   void goAccountDetail(Account account, bool up) {
     NavigatorUtils.push(
@@ -79,5 +81,29 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
         Routes.accountProfile +
             Utils.packConvertArgs(
                 {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+  }
+}
+
+class OptionItem extends StatelessWidget {
+  final String iconName;
+  final Widget text;
+
+  OptionItem(this.iconName, this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        LoadAssetIcon(
+          iconName,
+          width: 20.0,
+          height: 20.0,
+          color: Colors.grey,
+        ),
+        Gaps.hGap4,
+        text,
+      ],
+    );
   }
 }

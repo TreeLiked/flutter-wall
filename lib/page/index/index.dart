@@ -1,24 +1,11 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:iap_app/api/v_c.dart';
-import 'package:iap_app/application.dart';
-import 'package:iap_app/bloc/count_bloc.dart';
-import 'package:iap_app/bottom_bar_navigation_pattern/animated_bottom_bar.dart';
 import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/navigation_icon_view.dart';
-import 'package:iap_app/page/notification/index.dart';
-import 'package:iap_app/page/personal_center/personal_center.dart';
-import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
-import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/version_utils.dart';
 
 class Index extends StatefulWidget {
@@ -41,6 +28,8 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   final pageController = PageController(keepPage: true);
 
   bool _showBottomNavBar = true;
+
+  final double iconSize = 22.0;
 
   @override
   void initState() {
@@ -100,9 +89,9 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
 
     _pageList = <StatefulWidget>[
       HomePage(pullDownCallBack: (_) => updateBottomBar(_)),
-      HotToday(),
-      NotificationIndexPage(),
-      PersonalCenter(),
+//      HotToday(),
+//      NotificationIndexPage(),
+//      PersonalCenter(),
     ];
   }
 
@@ -152,15 +141,17 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
       initPageData();
     }
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
+
     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
         elevation: 0,
         // items: itmes,
         items: _navigationViews.map((navIconView) => navIconView.item).toList(),
         currentIndex: _currentIndex,
-        backgroundColor: Colors.transparent,
+//        backgroundColor: Colors.white,
         // selectedIconTheme: IconThemeData(opacity: 0.9),
         // unselectedIconTheme: IconThemeData(opacity: 0.5),
-//        showUnselectedLabels: false,
+        showUnselectedLabels: false,
+        showSelectedLabels: false,
         // selectedItemColor: _navigationViews[_currentIndex].selColor,
         type: BottomNavigationBarType.fixed,
         onTap: (index) => pageOnTap(index));
@@ -170,15 +161,14 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     //     bottomNavigationBar: bottomNavigationBar);
     return Scaffold(
         backgroundColor: Colors.transparent,
-        bottomNavigationBar: Offstage(
-            offstage: !_showBottomNavBar,
-            child: AnimatedOpacity(
-              opacity: _showBottomNavBar ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 700),
-              child: PreferredSize(
-                  child: bottomNavigationBar,
-                  preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.04)),
-            )),
+//        bottomNavigationBar: Offstage(
+//            offstage: !_showBottomNavBar,
+//            child: AnimatedOpacity(
+//              opacity: _showBottomNavBar ? 1.0 : 0.0,
+//              duration: Duration(milliseconds: 700),
+//              child: PreferredSize(
+//                  child: bnb, preferredSize: Size.fromHeight(300)),
+//            )),
         // child: AnimatedOpacity(
         //   opacity: _showBottomNavBar ? 1.0 : 0.0,
         //   duration: Duration(milliseconds: 600),
@@ -202,7 +192,8 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
           onPageChanged: onPageChanged,
           children: _pageList,
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
-        ));
+        )
+    );
   }
 
   @override

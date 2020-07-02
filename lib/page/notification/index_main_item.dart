@@ -42,6 +42,9 @@ class MainMessageItem extends StatefulWidget {
 }
 
 class _MainMessageItemState extends State<MainMessageItem> {
+
+  final double iconSize = 45.0;
+  double lineHeight = 47.5;
   @override
   Widget build(BuildContext context) {
     bool isDark = ThemeUtils.isDark(context);
@@ -59,19 +62,19 @@ class _MainMessageItemState extends State<MainMessageItem> {
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         Container(
-                            height: 45,
-                            width: 45,
+                            height: lineHeight,
+                            width: lineHeight,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular((50)),
                               color: widget.color,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(7.0),
                               child: LoadAssetSvg(
                                 widget.iconPath,
                                 color: Colors.white,
-                                height: 40,
-                                width: 40,
+                                height: iconSize,
+                                width: iconSize,
                               ),
                             )),
                         Gaps.hGap15,
@@ -85,7 +88,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                               children: <Widget>[
                                 Container(
                                   child: Text(widget.title,
-                                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400),
+                                      style: const TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400,letterSpacing: 1.2),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1),
                                 ),
@@ -112,6 +115,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                         style: TextStyle(
                                             fontSize: 14.0,
                                             fontWeight: FontWeight.w400,
+                                            letterSpacing: 1.1,
                                             color: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: 14)
                                                 .color),
                                         overflow: TextOverflow.ellipsis,
@@ -160,19 +164,19 @@ class _MainMessageItemState extends State<MainMessageItem> {
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Container(
-                height: 45,
-                width: 45,
+                height: lineHeight,
+                width: lineHeight,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular((50)),
+                  borderRadius: BorderRadius.circular((50.0)),
                   color: widget.color,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8.5),
                   child: LoadAssetSvg(
                     widget.iconPath,
                     color: Colors.white,
-                    height: 40,
-                    width: 40,
+                    height: iconSize,
+                    width: iconSize,
                   ),
                 )),
             Gaps.hGap15,
@@ -187,7 +191,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                   children: <Widget>[
                     Container(
                       child: Text(widget.title,
-                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400,letterSpacing: 1.1),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1),
                     ),

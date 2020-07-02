@@ -116,7 +116,7 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
     return Scaffold(
 //        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
         appBar: MyAppBar(
-          centerTitle: "系统消息",
+          centerTitle: "官方通知",
           isBack: true,
         ),
         body: SafeArea(
@@ -137,16 +137,20 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
                 ),
                 onLoading: _loadMore,
                 onRefresh: _fetchSystemMessages,
-                child: sysMsgs  == null ? Gaps.empty:sysMsgs.length == 0 ? Container(
-                  alignment: Alignment.topCenter,
-                  margin: const EdgeInsets.only(top: 50),
-                  child: Text('暂无消息'),
-                ):ListView.builder(
-                    itemCount: sysMsgs.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return SystemCardItem(sysMsgs[index]);
-                    }))));
+                child: sysMsgs == null
+                    ? Gaps.empty
+                    : sysMsgs.length == 0
+                        ? Container(
+                            alignment: Alignment.topCenter,
+                            margin: const EdgeInsets.only(top: 50),
+                            child: Text('暂无消息'),
+                          )
+                        : ListView.builder(
+                            itemCount: sysMsgs.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return SystemCardItem(sysMsgs[index]);
+                            }))));
   }
 }
 

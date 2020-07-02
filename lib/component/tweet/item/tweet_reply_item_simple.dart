@@ -16,6 +16,8 @@ class TweetReplyItemSimple extends StatelessWidget {
   final int parentId;
   final Function onTapAccount;
   final Function onTapReply;
+  final TextStyle bodyStyle;
+  final TextStyle nickStyle;
 
   TweetReplyItemSimple(
       {@required this.tweetAccountId,
@@ -23,7 +25,9 @@ class TweetReplyItemSimple extends StatelessWidget {
       @required this.reply,
       @required this.parentId,
       @required this.onTapAccount,
-      @required this.onTapReply});
+      @required this.onTapReply,
+      @required this.bodyStyle,
+      @required this.nickStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +41,7 @@ class TweetReplyItemSimple extends StatelessWidget {
         TweetReplyUtil.getTweetReplyAuthorText(reply.account, tweetAnonymous, reply.anonymous, isAuthorReply);
     return Container(
         width: double.infinity,
-        padding: EdgeInsets.only(bottom: 5.5),
+//        padding: EdgeInsets.only(bottom: 5.5),
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: !dirReplyAnonymous
@@ -86,7 +90,7 @@ class TweetReplyItemSimple extends StatelessWidget {
               TextSpan(text: '：', style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14)),
               TextSpan(
                 text: "${reply.body.trimRight()}",
-                style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp14, context: context),
+                style: bodyStyle,
               ),
             ]),
           ),

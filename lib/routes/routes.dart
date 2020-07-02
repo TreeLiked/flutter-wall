@@ -34,6 +34,7 @@ class Routes {
   // home index
   static String home = "/home";
   static String create = "/home/create";
+  static String notification = "/home/notification";
   static String filter = "/home/filter";
   static String square = "/home/square";
   static String inputTextPage = "/iptxtPage";
@@ -82,6 +83,7 @@ class Routes {
     router.define(square, handler: squareHandler, transitionType: TransitionType.fadeIn);
 
     router.define(create, handler: createHandler);
+    router.define(notification, handler: notificationHandler);
     router.define(accountProfile, handler: accountProfileHandler);
 
     router.define(inputTextPage, handler: inputPageHandler);

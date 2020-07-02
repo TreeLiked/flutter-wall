@@ -156,6 +156,48 @@ class BottomSheetUtil {
         });
   }
 
+  static void showBottomSheet(BuildContext context, double heightFactor, Widget content) {
+    bool isDark = ThemeUtils.isDark(context);
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        context: context,
+        builder: (builder) {
+          return StatefulBuilder(builder: (context1, state) {
+            return Stack(
+              children: <Widget>[
+                Container(
+                    height: Application.screenHeight * heightFactor,
+                    decoration: BoxDecoration(
+                        color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: (Application.screenWidth - 50) / 2,
+                          top: 10.0,
+                          child: Container(
+                            child: Container(
+                                height: 5.0,
+                                width: 50.0,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffaeb4bd), borderRadius: BorderRadius.circular(73.0))),
+                          ),
+                        ),
+                        SafeArea(
+                          top: false,
+                          child: SingleChildScrollView(
+                            child: content,
+                          ),
+                        )
+                      ],
+                    ))
+              ],
+            );
+          });
+        });
+  }
+
   static void showBottomSheetSingleReplyDetail(BuildContext context, BaseTopicReply reply, {Function onTap}) {
     bool isDark = ThemeUtils.isDark(context);
     showModalBottomSheet(

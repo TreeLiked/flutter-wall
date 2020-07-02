@@ -63,7 +63,7 @@ class MyDefaultTextStyle {
 
   // 推文回复：'回复' 样式
   static TextStyle getTweetReplyHuiFuTextStyle(double fontSize, {BuildContext context}) {
-    return TextStyle(color: Colors.grey, fontSize: fontSize, fontWeight: FontWeight.w400);
+    return TextStyle(color: Colors.black87, fontSize: fontSize, fontWeight: FontWeight.w400);
   }
 
   // 推文回复：回复正文样式
@@ -91,7 +91,8 @@ class MyDefaultTextStyle {
       {bool anonymous = false, bool bold = false}) {
     return TextStyle(
         fontSize: SizeConstant.TWEET_FONT_SIZE,
-        fontWeight: bold ? FontWeight.w500 : FontWeight.normal,
+        fontWeight: bold ? FontWeight.w500 : FontWeight.w400,
+        letterSpacing: 1.0,
         color: !anonymous ? ColorConstant.getTweetNickColor(context) : Color(0xff828282));
   }
 
@@ -113,5 +114,38 @@ class MyDefaultTextStyle {
 
   static Text getBottomNavTextItem(String text, Color color) {
     return Text(text, style: TextStyle(fontSize: 13));
+  }
+
+  ///
+  static TextStyle tweetReplyStyleLight() {
+    return TextStyle(
+        color: ColorConstant.TWEET_REPLY_BODY_COLOR,
+        fontSize: Dimens.font_sp14,
+        letterSpacing: 1.1,
+        fontWeight: FontWeight.w400);
+  }
+
+  static TextStyle tweetReplyStyleDark() {
+    return TextStyle(
+        color: ColorConstant.TWEET_REPLY_BODY_COLOR_DARK,
+        fontSize: Dimens.font_sp14,
+        letterSpacing: 1.1,
+        fontWeight: FontWeight.w400);
+  }
+
+  static TextStyle tweetReplyAuthorNickStyleLight() {
+    return TextStyle(
+        color: ColorConstant.TWEET_REPLY_NICK_COLOR,
+        letterSpacing: 1.1,
+        fontSize: Dimens.font_sp14,
+        fontWeight: FontWeight.w400);
+  }
+
+  static TextStyle tweetReplyAuthorNickStyleDark() {
+    return TextStyle(
+        color: ColorConstant.TWEET_REPLY_NICK_COLOR_DARK,
+        letterSpacing: 1.1,
+        fontSize: Dimens.font_sp14,
+        fontWeight: FontWeight.w400);
   }
 }

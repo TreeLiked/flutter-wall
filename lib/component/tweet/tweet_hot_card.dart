@@ -63,7 +63,8 @@ class TweetHotCard extends StatelessWidget {
     }
     return Container(
       padding: const EdgeInsets.only(top: 10.0),
-      alignment: Alignment.center,
+      margin: const EdgeInsets.only(left: 16.0),
+      alignment: Alignment.centerLeft,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -132,13 +133,23 @@ class TweetHotCard extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           text: TextSpan(children: [
+            WidgetSpan(
+                child: ClipOval(
+              child: CachedNetworkImage(
+                  imageUrl: ht.account == null
+                      ? PathConstant.ANONYMOUS_PROFILE
+                      : ht.anonymous ? PathConstant.ANONYMOUS_PROFILE : ht.account.avatarUrl,
+                  fit: BoxFit.cover,
+                  height: 16.0,
+                  width: 16.0),
+            )),
             TextSpan(
-                text: !anonymous ? ht.account.nick ?? "" : TextConstant.TWEET_ANONYMOUS_NICK,
+                text: ' ' + (!anonymous ? ht.account.nick ?? "" : TextConstant.TWEET_ANONYMOUS_NICK),
                 style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp13p5,
                     bold: false, anonymous: anonymous, context: context)),
             TextSpan(
                 text: ' 发表于${TimeUtil.getShortTime(ht.sentTime)}',
-                style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13)),
+                style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
           ]),
         ),
       ),
@@ -171,13 +182,14 @@ class TweetHotCard extends StatelessWidget {
     bool hasLink = !StringUtil.isEmpty(ht.body) && StringUtil.getFirstUrlInStr(ht.body) != null;
     return oriCoverUrl != null || hasLink
         ? Container(
+            margin: const EdgeInsets.only(right: 15.0),
             width: double.infinity,
             alignment: Alignment.topCenter,
             child: oriCoverUrl != null
                 ? Container(
                     width: double.infinity,
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.only(right: 5.0),
+//                    padding: const EdgeInsets.only(right: 5.0),
                     child: ClipRRect(
                       clipBehavior: Clip.antiAlias,
                       borderRadius: const BorderRadius.all(Radius.circular(5.0)),
@@ -195,13 +207,11 @@ class TweetHotCard extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 10.0),
                     width: 30.0,
                     height: 30.0,
-                    child: isDark
-                        ? Icon(
-                            Icons.link,
-                            size: 25,
-                            color: Colors.grey,
-                          )
-                        : const LoadAssetImage((PathConstant.IMAGE_LINK)),
+                    child: Icon(
+                      Icons.link,
+                      size: 25,
+                      color: Colors.grey,
+                    ),
                   ))
         : Gaps.empty;
   }

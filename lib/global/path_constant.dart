@@ -11,9 +11,10 @@ class PathConstant {
   static const String ICON_CHECKBOX_SEL = "cbx_ck";
   static const String ICON_CHECKBOX_UNSEL = "cbx_uck";
 
-  static const String ICON_PRAISE_ICON_UN_PRAISE = "thumb_up";
-  static const String ICON_PRAISE_ICON_PRAISE = "thumb_up_2";
-  static const String ICON_COMMENT_ICON = "comment";
+  static const String ICON_PRAISE_ICON_UN_PRAISE = "tweet/unpraise";
+  static const String ICON_PRAISE_ICON_PRAISE = "tweet/praise";
+  static const String ICON_PRAISE_ICON_LOVE = "tweet/love";
+  static const String ICON_COMMENT_ICON = "tweet/comment";
 
   static const String ICON_SEL = "assets/icons/sel.png";
 
@@ -27,6 +28,8 @@ class PathConstant {
   static const String ANONYMOUS_PROFILE =
       "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/annoymous_profile.png";
 
+//  static const String APP_LAUNCH_IMAGE =
+//      "https://tva1.sinaimg.cn/large/007S8ZIlgy1ggcuucxbvij30u01t1asi.jpg";
   static const String APP_LAUNCH_IMAGE =
       "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/app_launch_img.png";
 

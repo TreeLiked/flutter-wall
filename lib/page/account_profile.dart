@@ -647,7 +647,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
                 itemCount: _accountTweets.length,
                 itemBuilder: (context, index) {
                   return TweetCard2(_accountTweets[index],
-                      displayLink: false, upClickable: false, downClickable: true, displayPraise: true);
+                      displayLink: false, upClickable: false, downClickable: false, displayPraise: true);
                 }));
   }
 

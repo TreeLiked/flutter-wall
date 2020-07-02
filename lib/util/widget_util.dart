@@ -58,7 +58,8 @@ class WidgetUtil {
       height: size,
       width: size,
       margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(30)),
-      child: SpinKitChasingDots(color: Colors.lightBlueAccent, size: 25),
+      child: const CupertinoActivityIndicator(),
+//      child: SpinKitFadingCircle(color: Colors.amber, size: 25),
     );
   }
 
@@ -87,7 +88,7 @@ class LoadAssetImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      ImageUtils.getImgPath(image, format: format),
+      image.startsWith("assets") ? image : ImageUtils.getImgPath(image, format: format),
       height: height,
       width: width,
       fit: fit,

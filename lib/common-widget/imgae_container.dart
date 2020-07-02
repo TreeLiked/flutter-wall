@@ -15,6 +15,7 @@ class ImageContainer extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Widget errorWidget;
   final callback;
+  final bool round;
 
   const ImageContainer(
       {@required this.url,
@@ -24,6 +25,7 @@ class ImageContainer extends StatelessWidget {
       this.padding,
       this.maxWidth,
       this.errorWidget,
+      this.round = true,
       this.maxHeight});
 
   @override
@@ -38,8 +40,22 @@ class ImageContainer extends StatelessWidget {
         height: height,
         child: GestureDetector(
             onTap: callback,
-            child: ClipRRect(
-                child: CachedNetworkImage(
+            child: round
+                ? ClipRRect(
+                    child: CachedNetworkImage(
+                        filterQuality: FilterQuality.medium,
+                        imageUrl: url,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => CupertinoActivityIndicator(),
+                        errorWidget: (context, url, error) =>
+                            errorWidget ??
+                            SizedBox(
+                              width: Application.screenWidth * 0.25,
+                              height: Application.screenWidth * 0.25,
+                              child: LoadAssetImage(PathConstant.IMAGE_FAILED),
+                            )),
+                    borderRadius: const BorderRadius.all(Radius.circular(5.0)))
+                : CachedNetworkImage(
                     filterQuality: FilterQuality.medium,
                     imageUrl: url,
                     fit: BoxFit.cover,
@@ -50,7 +66,6 @@ class ImageContainer extends StatelessWidget {
                           width: Application.screenWidth * 0.25,
                           height: Application.screenWidth * 0.25,
                           child: LoadAssetImage(PathConstant.IMAGE_FAILED),
-                        )),
-                borderRadius: const BorderRadius.all(Radius.circular(5.0)))));
+                        ))));
   }
 }

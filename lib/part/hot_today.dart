@@ -1,4 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
+import 'dart:math';
+
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,24 +10,14 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/component/tweet/tweet_hot_card.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/media.dart';
-import 'package:iap_app/model/message/asbtract_message.dart';
-import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
-import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/image_utils.dart';
-import 'package:iap_app/util/string.dart';
-import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 
@@ -48,6 +40,12 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     await getData();
   }
 
+  final String defaultCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
+  String _currentCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
+  List<String> _covers;
+  int _currentCoverIndex = 0;
+  Timer _loadCoverTimer;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +56,13 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   @override
   void dispose() {
     _headerNotifier.dispose();
+    if (_loadCoverTimer != null) {
+      // 页面销毁时触发定时器销毁
+      if (_loadCoverTimer.isActive) {
+        // 判断定时器是否是激活状态
+        _loadCoverTimer.cancel();
+      }
+    }
     super.dispose();
   }
 
@@ -73,15 +78,61 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     }
     setState(() {
       this.hotTweet = ht;
-      if (ht.tweets != null) {
-        ht.tweets.forEach((f) => print(f.toJson()));
-      }
     });
+    extractCovers();
     ToastUtil.showToast(context, '更新完成');
   }
 
+  void loopLoadCover() {
+    _loadCoverTimer?.cancel();
+    if (_covers == null || _covers.length == 1) {
+      setState(() {
+        _currentCover = defaultCover;
+      });
+      return;
+    }
+    if (hotTweet == null) {
+      return;
+    }
+    _loadCoverTimer = Timer.periodic(Duration(milliseconds: 3000), (t) {
+      if (_currentCoverIndex == _covers.length - 1) {
+        _currentCoverIndex = 0;
+//        _currentCoverIndex = Random().nextInt(2) == 1 ? 0: 1;
+        setState(() {
+          _currentCover = _covers[_currentCoverIndex];
+          _loadCoverTimer.cancel();
+        });
+      }
+      setState(() {
+        _currentCover = _covers[_currentCoverIndex++];
+      });
+    });
+  }
+
+  void extractCovers() {
+    _covers?.clear();
+    _covers = new List();
+    _covers.add(defaultCover);
+    if (hotTweet == null) {
+      return;
+    }
+    List<HotTweet> bts = hotTweet.tweets;
+    if (bts != null && bts.length > 0) {
+      int len = bts.length;
+      for (int i = 0; i < len; i++) {
+        if (bts[i].cover != null && bts[i].cover.mediaType == Media.TYPE_IMAGE) {
+          _covers.add(bts[i].cover.url);
+        }
+      }
+      loopLoadCover();
+    }
+  }
+
   get getBackgroundUrl {
+//    return "https://tva1.sinaimg.cn/large/007S8ZIlgy1ggcnyaudq6j30m80zkdiv.jpg";
+
     String baseUrl = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
+    _currentCover = baseUrl;
     if (hotTweet == null) {
       return baseUrl;
     }
@@ -116,7 +167,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
           slivers: <Widget>[
             HotAppBarWidget(
               headerNotifier: _headerNotifier,
-              backgroundImg: getBackgroundUrl,
+              backgroundImg: _currentCover,
               count: 10,
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +252,8 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               fit: BoxFit.cover,
             )),
         Gaps.vGap16,
-        Text('快去抢占热门吧~', style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14,letterSpacing: 1.0)),
+        Text('快去抢占热门吧~',
+            style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14, letterSpacing: 1.0)),
       ],
     );
   }

@@ -40,7 +40,7 @@ class SettingRouter implements IRouterProvider {
   @override
   void initRouter(Router router) {
     router.define(settingPage,
-        handler: Handler(handlerFunc: (_, params) => PersonalCenter()));
+        handler: Handler(handlerFunc: (_, params) => PersonalCenter()),transitionType: TransitionType.fadeIn);
 
     router.define(privateSettingPage,
         handler: Handler(handlerFunc: (_, params) => PrivateSettingPage()));

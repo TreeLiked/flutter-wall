@@ -319,13 +319,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.1"
-  flutter_slidable:
-    dependency: "direct main"
-    description:
-      name: flutter_slidable
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.5.4"
   flutter_spinkit:
     dependency: "direct main"
     description:
@@ -901,6 +894,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.6"
+  transparent_image:
+    dependency: "direct main"
+    description:
+      name: transparent_image
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.0"
   typed_data:
     dependency: transitive
     description:

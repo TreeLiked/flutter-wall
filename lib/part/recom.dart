@@ -79,7 +79,7 @@ class RecommendationState extends State<Recommendation> with AutomaticKeepAliveC
           itemBuilder: (context, index) {
             return TweetCard2(
               tweets[index],
-              displayReplyContainerCallback:
+              onClickComment:
                   (TweetReply tr, String destAccountNick, String destAccountId, callback) =>
                       showReplyContainer(tr, destAccountNick, destAccountId, callback),
             );

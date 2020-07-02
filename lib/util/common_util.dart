@@ -13,6 +13,7 @@ import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
+import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -20,11 +21,15 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
+import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/widget_util.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class Utils {
   static String packConvertArgs(Map<String, Object> args) {
@@ -62,7 +67,10 @@ class Utils {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return SpinKitChasingDots(color: Color(0xff3489ff), size: size);
+          return SpinKitChasingDots(color: Colors.amber, size: size);
+//        const CupertinoActivityIndicator()
+//          );
+//          return SpinKitChasingDots(color: Color(0xff3489ff), size: size);
         });
     if (call != null) {
       call();
@@ -96,7 +104,7 @@ class Utils {
               child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ThemeUtils.isDark(context) ? Colors.black87 : Colors.black54,
+                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black26,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   alignment: Alignment.center,
@@ -112,8 +120,9 @@ class Utils {
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
     list.add(
-      SpinKitChasingDots(color: Colors.cyan, size: size),
-    );
+      SpinKitChasingDots(color: Colors.amber, size: size),
+//        const CupertinoActivityIndicator()
+        );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
           padding: EdgeInsets.only(top: 0),
@@ -159,6 +168,21 @@ class Utils {
         });
   }
 
+  static Widget showFadeInImage(String url) {
+    return ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: FadeInImage.memoryNetwork(
+          width: double.infinity,
+          height: double.infinity,
+          placeholder: kTransparentImage,
+          placeholderCacheHeight: 5,
+          placeholderCacheWidth: 5,
+//          placeholderScale: 20,
+          image: url,
+          fit: BoxFit.cover,
+        ));
+  }
+
   static Widget showNetImage(String url, {double width, double height, BoxFit fit}) {
     return ExtendedImage.network(
       url,
@@ -166,12 +190,17 @@ class Utils {
       width: width,
       height: height,
       cache: false,
+      clearMemoryCacheIfFailed: true,
+      enableLoadState: true,
+      shape: BoxShape.rectangle,
+      borderRadius: BorderRadius.all(Radius.circular(15.0)),
       loadStateChanged: (state) {
         switch (state.extendedImageLoadState) {
           case LoadState.loading:
             return Container(
               width: width,
               height: height,
+              child: const CupertinoActivityIndicator(),
             );
           case LoadState.completed:
             return ExtendedRawImage(
@@ -300,6 +329,23 @@ class Utils {
                   refId: refId.toString(),
                 ),
             maintainState: true));
+  }
+
+  static Widget loadingIconStatic =
+      SizedBox(width: 25.0, height: 25.0, child: const CupertinoActivityIndicator(animating: false));
+
+  static ClassicHeader getDefaultRefreshHeader() {
+    return ClassicHeader(
+      idleText: '',
+      releaseText: '',
+      refreshingText: '',
+      completeText: '',
+      refreshStyle: RefreshStyle.Follow,
+      idleIcon: loadingIconStatic,
+      releaseIcon: loadingIconStatic,
+      completeDuration: Duration(milliseconds: 0),
+      completeIcon: null,
+    );
   }
 }
 

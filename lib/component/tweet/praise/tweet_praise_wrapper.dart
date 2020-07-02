@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/account.dart';
@@ -16,6 +17,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 
@@ -30,14 +32,14 @@ class TweetPraiseWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(tweet == null) {
+    if (tweet == null) {
       return Gaps.empty;
     }
     bool hasPraise = tweet.latestPraise != null && tweet.latestPraise.length > 0;
     if (!hasPraise) {
-      if(!prefixIcon) {
-        return Gaps.empty;
-      }
+//      if (!prefixIcon) {
+      return Gaps.empty;
+//      }
     }
     // 最近点赞的人数
 
@@ -47,30 +49,20 @@ class TweetPraiseWrapper extends StatelessWidget {
     if (prefixIcon) {
       spans.add(WidgetSpan(
           alignment: PlaceholderAlignment.middle,
-          child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                updatePraise(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: LoadAssetIcon(
-                  tweet.loved
-                      ? PathConstant.ICON_PRAISE_ICON_PRAISE
-                      : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
-                  width: 17,
-                  height: 17,
-                  color: tweet.loved ? Colors.pink[100] : null,
-                ),
-              ))));
+          child: const Padding(
+            padding: const EdgeInsets.only(right: 5.0),
+            child: const LoadAssetIcon(PathConstant.ICON_PRAISE_ICON_LOVE,
+                width: 17, height: 17, color: ColorConstant.TWEET_NICK_COLOR),
+          )));
     }
 
     List<Account> praiseList = tweet.latestPraise;
+    int len = hasPraise ? praiseList.length : -1;
     if (hasPraise) {
-      for (int i = 0; i < praiseList.length && i < GlobalConfig.MAX_DISPLAY_PRAISE; i++) {
+      for (int i = 0; i < len && i < GlobalConfig.MAX_DISPLAY_PRAISE; i++) {
         Account account = praiseList[i];
         spans.add(TextSpan(
-            text: "${account.nick}" + (i != praiseList.length - 1 ? '、' : ' '),
+            text: "${account.nick}" + (i != GlobalConfig.MAX_DISPLAY_PRAISE - 1 && i != len - 1 ? '、' : ' '),
             style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
@@ -82,17 +74,23 @@ class TweetPraiseWrapper extends StatelessWidget {
       text: TextSpan(children: spans),
       softWrap: true,
     );
-    items.add(widgetT);
-    if (hasPraise && praiseList.length > GlobalConfig.MAX_DISPLAY_PRAISE) {
-      int diff = praiseList.length - GlobalConfig.MAX_DISPLAY_PRAISE;
-      items.add(Text(
-        " 等共$diff人刚刚赞过",
-        style: TextStyle(fontSize: 13),
+    if (hasPraise && len > GlobalConfig.MAX_DISPLAY_PRAISE) {
+      int diff = len - GlobalConfig.MAX_DISPLAY_PRAISE;
+      spans.add(TextSpan(
+        text: " 等共${len}人刚刚赞过",
+        style: MyDefaultTextStyle.getTweetBodyStyle(context, fontSize: 13.0),
       ));
     }
+    items.add(widgetT);
 
-    return Wrap(
-        alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items);
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+        decoration: BoxDecoration(
+          color: ThemeUtils.isDark(context) ? ColorConstant.TWEET_RICH_BG_DARK : ColorConstant.TWEET_RICH_BG,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Wrap(
+            alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items));
   }
 
   void updatePraise(BuildContext context) async {

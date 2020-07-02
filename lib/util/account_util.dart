@@ -8,7 +8,7 @@ import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetReplyUtil {
-  static const String ANONYMOUS_REPLY = "匿名回复";
+  static const String ANONYMOUS_REPLY = "匿名";
   static const String AUTHOR_TEXT = "作者";
   static const String UNKNOWN_REPLY = "未知回复";
 

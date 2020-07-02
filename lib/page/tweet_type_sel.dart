@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -54,7 +55,7 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title,style: TextStyle(fontSize: Dimens.font_sp16,letterSpacing: 1.2,fontWeight: FontWeight.w400)),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {

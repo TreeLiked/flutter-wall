@@ -12,12 +12,12 @@ class Result<T> {
 
   Result({this.isSuccess});
 
-
   Result.fromResult(Result r)
       : isSuccess = r.isSuccess,
         code = r.code,
         message = r.message;
 
-
-
+  void toText() {
+    print("$isSuccess, $message, $code, $data");
+  }
 }

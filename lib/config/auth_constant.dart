@@ -19,8 +19,9 @@ class SharedConstant {
 
   /// 每个版本都应该维护并且更新的版本号
   /// 同时更新 android/app/src/build.gradle
-  static const int VERSION_ID_ANDROID = 11;
-  static const int VERSION_ID_IOS = 11;
+  static const int VERSION_ID_ANDROID = 13;
+  static const int VERSION_ID_IOS = 13;
+
   static const String VERSION_REMARK_ANDROID = "2.0.1";
   static const String VERSION_REMARK_IOS = "2.0.1";
 

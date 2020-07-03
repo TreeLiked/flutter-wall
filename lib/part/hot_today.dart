@@ -17,6 +17,7 @@ import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 
@@ -121,7 +122,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       int len = bts.length;
       for (int i = 0; i < len; i++) {
         if (bts[i].cover != null && bts[i].cover.mediaType == Media.TYPE_IMAGE) {
-          _covers.add(bts[i].cover.url);
+          _covers.add(bts[i].cover.url + OssConstant.THUMBNAIL_SUFFIX);
         }
       }
       loopDisplayCover();

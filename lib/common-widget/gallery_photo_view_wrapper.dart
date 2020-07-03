@@ -169,7 +169,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     List<Widget> dots = List();
     for (int i = 0; i < len; i++) {
       dots.add(
-          _genDot(margin: 3.0, size: 8.0, realColor: currentIndex == i ? Colors.white : Color(0xff343434)));
+          _genDot(margin: 3.0, size: 8.0, realColor: currentIndex == i ? Colors.amber : Color(0xff343434)));
     }
     return dots;
   }

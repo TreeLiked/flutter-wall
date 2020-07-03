@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 /// 自定义AppBar
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-   const MyAppBar(
+  const MyAppBar(
       {Key key,
       this.backgroundColor,
       this.title: "",
@@ -37,8 +38,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
 
     SystemUiOverlayStyle _overlayStyle =
-        ThemeData.estimateBrightnessForColor(_backgroundColor) ==
-                Brightness.dark
+        ThemeData.estimateBrightnessForColor(_backgroundColor) == Brightness.dark
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark;
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -53,9 +53,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    alignment: centerTitle.isEmpty
-                        ? Alignment.centerLeft
-                        : Alignment.center,
+                    alignment: centerTitle.isEmpty ? Alignment.centerLeft : Alignment.center,
                     width: double.infinity,
                     child: Text(title.isEmpty ? centerTitle : title,
                         softWrap: true,
@@ -64,9 +62,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         style: TextStyle(
                           fontSize: 18,
                           letterSpacing: 1.2,
-                          color: _overlayStyle == SystemUiOverlayStyle.light
-                              ? Colours.dark_text
-                              : Colours.text,
+                          color:
+                              _overlayStyle == SystemUiOverlayStyle.light ? Colours.dark_text : Colours.text,
                         )),
                     padding: const EdgeInsets.symmetric(horizontal: 48.0),
                   )
@@ -82,9 +79,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                       padding: const EdgeInsets.all(12.0),
                       icon: Image.asset(
                         backImg,
-                        color: _overlayStyle == SystemUiOverlayStyle.light
-                            ? Colours.dark_text
-                            : Colours.text,
+                        color: _overlayStyle == SystemUiOverlayStyle.light ? Colours.dark_text : Colours.text,
                       ),
                     )
                   : Gaps.empty,
@@ -99,10 +94,16 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                   child: actionName.isEmpty
                       ? Container()
                       : FlatButton(
-                          child: Text(actionName, key: const Key('actionName')),
-                          textColor: _overlayStyle == SystemUiOverlayStyle.light
-                              ? Colours.dark_text
-                              : Colours.text,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+//                    color: Colors.amber,
+                          child: Text(
+                            actionName,
+                            key: const Key('actionName'),
+                            style: const TextStyle(fontSize: Dimens.font_sp14),
+                          ),
+                          textColor: Colors.amber,
+                          disabledColor: Colors.grey,
                           highlightColor: Colors.transparent,
                           onPressed: onPressed,
                         ),

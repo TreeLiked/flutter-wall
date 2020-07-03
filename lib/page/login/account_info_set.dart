@@ -12,6 +12,7 @@ import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/page/login/reg_temp.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -19,6 +20,7 @@ import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:image_crop/image_crop.dart';
@@ -133,6 +135,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
   }
 
   _buildBody() {
+    bool isDark = ThemeUtils.isDark(context);
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 20.0),
       child: Column(
@@ -143,24 +146,21 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Container(
             alignment: Alignment.center,
             child: _avatarFile == null
-                ?
-            GestureDetector(
-                onTap: _goChoiceAvatar,
-                child: Container(
-                    padding: const EdgeInsets.all(25.0),
-                  decoration: BoxDecoration(
-                      color: Color(0xfff1f2f3),
+                ? GestureDetector(
+                    onTap: _goChoiceAvatar,
+                    child: Container(
+                        padding: const EdgeInsets.all(25.0),
+                        decoration: BoxDecoration(
+                            color: Color(0xfff1f2f3),
 //                  borderRadius: BorderRadius.all((Radius.circular(100))),
-                      shape: BoxShape.circle),
-
-
-                    child: LoadAssetImage(
-                      "profile_sel",
-                      format: 'png',
-                      width: SizeConstant.TWEET_PROFILE_SIZE,
-                      fit: BoxFit.cover,
-                      color: Colors.grey,
-                )))
+                            shape: BoxShape.circle),
+                        child: LoadAssetImage(
+                          "profile_sel",
+                          format: 'png',
+                          width: SizeConstant.TWEET_PROFILE_SIZE,
+                          fit: BoxFit.cover,
+                          color: Colors.grey,
+                        )))
                 : GestureDetector(
                     onTap: _goChoiceAvatar,
                     child: ClipOval(
@@ -173,9 +173,10 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                     ))),
           ),
           Container(
-            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(1.0)),
+            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(15.0)),
             padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.only(top: 25),
+
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -196,10 +197,15 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Gaps.vGap12,
           Container(
             width: double.infinity,
-            color: _canGoNext ? Colors.lightBlue : Color(0xffD7D6D9),
+//            color: _canGoNext ? Colors.amber : Color(0xffD7D6D9),
             margin: const EdgeInsets.only(top: 15),
             child: FlatButton(
+                disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
+
+                color: _canGoNext ? Colors.amber : (!isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
                 child: Text('下一步', style: TextStyle(color: Colors.white)),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
                 onPressed: _canGoNext ? _chooseOrg : null),
           ),
           Gaps.vGap15,

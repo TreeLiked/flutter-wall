@@ -29,7 +29,7 @@ class TweetTypeWrapper extends StatelessWidget {
         size: 16.0,
         color: typeEntity.color,
       ),
-      backgroundColor: typeEntity.color.withAlpha(40),
+      backgroundColor: typeEntity.color.withAlpha(70),
       textStyle: TextStyle(color: typeEntity.color, fontSize: 12.0),
       horizontalPadding: 15.0,
       verticalPadding: 5.0,

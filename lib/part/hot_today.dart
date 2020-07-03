@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,7 +82,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     ToastUtil.showToast(context, '更新完成');
   }
 
-  void loopLoadCover() {
+  void loopDisplayCover() {
     _loadCoverTimer?.cancel();
     if (_covers == null || _covers.length == 1) {
       setState(() {
@@ -95,13 +94,14 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       return;
     }
     _loadCoverTimer = Timer.periodic(Duration(milliseconds: 3000), (t) {
-      if (_currentCoverIndex == _covers.length - 1) {
+      if (_currentCoverIndex == _covers.length) {
         _currentCoverIndex = 0;
 //        _currentCoverIndex = Random().nextInt(2) == 1 ? 0: 1;
         setState(() {
           _currentCover = _covers[_currentCoverIndex];
           _loadCoverTimer.cancel();
         });
+        return;
       }
       setState(() {
         _currentCover = _covers[_currentCoverIndex++];
@@ -124,13 +124,11 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
           _covers.add(bts[i].cover.url);
         }
       }
-      loopLoadCover();
+      loopDisplayCover();
     }
   }
 
   get getBackgroundUrl {
-//    return "https://tva1.sinaimg.cn/large/007S8ZIlgy1ggcnyaudq6j30m80zkdiv.jpg";
-
     String baseUrl = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
     _currentCover = baseUrl;
     if (hotTweet == null) {

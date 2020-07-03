@@ -325,10 +325,11 @@ class Utils {
                   backgroundDecoration: const BoxDecoration(
                     color: Colors.black,
                   ),
+                  loadingChild: const CupertinoActivityIndicator(),
                   initialIndex: initialIndex,
                   refId: refId.toString(),
                 ),
-            maintainState: true));
+            maintainState: false));
   }
 
   static Widget loadingIconStatic =

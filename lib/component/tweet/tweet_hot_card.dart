@@ -132,6 +132,7 @@ class TweetHotCard extends StatelessWidget {
           softWrap: true,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
           text: TextSpan(children: [
             WidgetSpan(
                 child: ClipOval(
@@ -140,8 +141,8 @@ class TweetHotCard extends StatelessWidget {
                       ? PathConstant.ANONYMOUS_PROFILE
                       : ht.anonymous ? PathConstant.ANONYMOUS_PROFILE : ht.account.avatarUrl,
                   fit: BoxFit.cover,
-                  height: 16.0,
-                  width: 16.0),
+                  height: 18.0,
+                  width: 18.0),
             )),
             TextSpan(
                 text: ' ' + (!anonymous ? ht.account.nick ?? "" : TextConstant.TWEET_ANONYMOUS_NICK),

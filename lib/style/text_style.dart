@@ -63,7 +63,7 @@ class MyDefaultTextStyle {
 
   // 推文回复：'回复' 样式
   static TextStyle getTweetReplyHuiFuTextStyle(double fontSize, {BuildContext context}) {
-    return TextStyle(color: Colors.black87, fontSize: fontSize, fontWeight: FontWeight.w400);
+    return TextStyle(color: Colors.grey, fontSize: fontSize, fontWeight: FontWeight.w400);
   }
 
   // 推文回复：回复正文样式

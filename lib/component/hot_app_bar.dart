@@ -53,8 +53,8 @@ class HotAppBarWidget extends StatelessWidget {
           style: TextStyle(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.bold),
         ),
         flexibleSpace: Container(
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 3.0),
+          color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
+          margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 3.0),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10.0),
             child: FlexibleDetailBar(

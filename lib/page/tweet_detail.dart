@@ -571,6 +571,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         //标题居中
         title: Text(
           '详情',
+          style: const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.5),
         ),
         elevation: 0.4,
         floating: true,

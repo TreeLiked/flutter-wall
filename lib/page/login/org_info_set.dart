@@ -267,26 +267,32 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                 ],
               )
             : Container(
-                margin: EdgeInsets.only(
-                    top:
-//                ScreenUtil().setHeight(200)
-                        100),
+                margin: EdgeInsets.only(top: 100),
                 width: double.infinity,
-                height: 100,
-//                height: ScreenUtil().setHeight(100),
-                alignment: Alignment.center,
+                height: 300,
+                alignment: Alignment.topCenter,
                 child: RichText(
                   softWrap: true,
                   textAlign: TextAlign.center,
                   text: TextSpan(children: [
                     TextSpan(
-                        text: '您已经选择：', style: TextStyle(color: Colors.black, fontSize: Dimens.font_sp15)),
+                        text: '当前选择：\n\n',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: Dimens.font_sp18,
+                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.w500)),
                     TextSpan(
-                        text: '$_cName\n\n',
-                        style: TextStyle(color: Colors.black, fontSize: Dimens.font_sp15)),
+                        text: '$_cName\n\n\n',
+                        style:
+                            TextStyle(color: Colors.black, fontSize: Dimens.font_sp16, letterSpacing: 1.1)),
                     TextSpan(
                       text: '重新选择',
-                      style: TextStyle(color: Theme.of(context).accentColor, fontSize: Dimens.font_sp15),
+                      style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                          fontSize: Dimens.font_sp16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           setState(() {

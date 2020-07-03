@@ -10,11 +10,7 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
-import 'package:iap_app/common-widget/v_empty_view.dart';
-import 'package:iap_app/component/tweet/tweet_card.dart';
-import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -26,8 +22,6 @@ import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
 import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/platform/platform_appbar.dart';
-import 'package:iap_app/platform/platform_scaffold.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -36,17 +30,14 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:iap_app/util/widget_util.dart' as wu;
 
 class HomePage extends StatefulWidget {
   final pullDownCallBack;
@@ -60,13 +51,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with AutomaticKeepAliveClientMixin<HomePage>, TickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin<HomePage>, SingleTickerProviderStateMixin {
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
-
-  ScrollController _scrollController = PageSharedWidget.homepageScrollController;
 
   final commentWrapperKey = GlobalKey<HomeCommentWrapperState>();
 
@@ -95,18 +84,38 @@ class _HomePageState extends State<HomePage>
   TabController _tabController;
 
   int _currentTabIndex = 0;
+  bool _displayCreate = true;
 
   @override
   void initState() {
     super.initState();
 
-    tabIconsList.forEach((tab) {
-      tab.isSelected = false;
-    });
-    tabIconsList[0].isSelected = true;
-
     _tabController = TabController(vsync: this, length: 2);
+    _tabController.addListener(() {
+      print("----------addListener----------");
+      if (_tabController.index.toDouble() == _tabController.animation.value) {
+        bool _dc = true;
+        switch (_tabController.index) {
+          case 0:
+            _dc = true;
+            print("12321321");
+            break;
+          case 1:
+            _dc = false;
+            print("--false---");
+            break;
+          case 2:
+            break;
+        }
+        if (_displayCreate != _dc) {
+          setState(() {
+            _displayCreate = _dc;
+          });
+        }
+      }
+    });
 
+    print("hellow orld");
     firstRefreshMessage();
   }
 
@@ -288,6 +297,7 @@ class _HomePageState extends State<HomePage>
                             _tabController.animateTo(index);
                             setState(() {
                               _currentTabIndex = index;
+//                              _displayCreate = _currentTabIndex == 0;
                             });
                           },
                           tabs: [
@@ -314,9 +324,9 @@ class _HomePageState extends State<HomePage>
                                   "notification/bell",
                                   color: snapshot.data != -1 && snapshot.data != 0
                                       ? Colors.amber
-                                      : Colors.black54,
-                                  width: 21.0,
-                                  height: 21.0,
+                                      : isDark ? Colors.white54 : Colors.black54,
+                                  width: 23.0,
+                                  height: 23.0,
                                 ),
                                 animationType: BadgeAnimationType.fade,
                                 showBadge: snapshot.data != -1 && snapshot.data != 0,
@@ -343,7 +353,7 @@ class _HomePageState extends State<HomePage>
               ),
               padding: EdgeInsets.only(bottom: 0.0),
             ),
-            _currentTabIndex == 0
+            _displayCreate
                 ? Positioned(
                     left: stickLeft ? 20.0 : null,
                     right: stickLeft ? null : 20.0,
@@ -352,17 +362,17 @@ class _HomePageState extends State<HomePage>
                       feedback: FloatingActionButton(
                           child: Icon(
                             Icons.add_a_photo,
-                            color: Colors.white,
+                            color: isDark ? Colors.amber : Colors.white,
                           ),
-                          backgroundColor: Colors.amber[300],
+                          backgroundColor: isDark ? Colors.black54 : Colors.amber[300],
                           elevation: 0.0,
                           onPressed: null),
                       child: FloatingActionButton(
                           child: Icon(
                             Icons.add_a_photo,
-                            color: Colors.white,
+                            color: isDark ? Colors.amber : Colors.white,
                           ),
-                          backgroundColor: Colors.amber[300],
+                          backgroundColor: isDark ? Colors.black54 : Colors.amber[300],
                           elevation: 10.0,
                           splashColor: Colors.amber,
                           onPressed: () => NavigatorUtils.push(context, Routes.create,

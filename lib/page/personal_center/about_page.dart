@@ -60,7 +60,7 @@ class _AboutPageState extends State<AboutPage> {
                     'wall_logo',
                     width: _logoWidth,
                     height: _logoWidth,
-                    color: !isDark ? Colors.lightBlueAccent : Colors.amberAccent[200],
+                    color: Colors.amber,
                   ))),
 
           Gaps.vGap10,
@@ -72,7 +72,7 @@ class _AboutPageState extends State<AboutPage> {
 //              }),
           ClickItem(
             title: "关于我们",
-            content: 'IUTR.TECH',
+            content: '满月',
           ),
           ClickItem(
               title: "使用须知",

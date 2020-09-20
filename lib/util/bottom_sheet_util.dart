@@ -127,7 +127,7 @@ class BottomSheetUtil {
                               GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(top: 15),
-                                  width: ScreenUtil.screenWidthDp * 0.95 - 30,
+                                  width: ScreenUtil.screenWidth * 0.95 - 30,
                                   child: CupertinoButton(
                                     padding: EdgeInsets.all(0),
                                     onPressed: () => NavigatorUtils.goBack(context),

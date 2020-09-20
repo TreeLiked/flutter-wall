@@ -258,7 +258,7 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
   @override
   Widget build(BuildContext context) {
     print("create page build");
-    sw = ScreenUtil.screenWidthDp;
+    sw = ScreenUtil.screenWidthPx;
     return new Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: new AppBar(

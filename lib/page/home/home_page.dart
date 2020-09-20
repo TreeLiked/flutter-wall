@@ -92,17 +92,14 @@ class _HomePageState extends State<HomePage>
 
     _tabController = TabController(vsync: this, length: 2);
     _tabController.addListener(() {
-      print("----------addListener----------");
       if (_tabController.index.toDouble() == _tabController.animation.value) {
         bool _dc = true;
         switch (_tabController.index) {
           case 0:
             _dc = true;
-            print("12321321");
             break;
           case 1:
             _dc = false;
-            print("--false---");
             break;
           case 2:
             break;
@@ -115,7 +112,6 @@ class _HomePageState extends State<HomePage>
       }
     });
 
-    print("hellow orld");
     firstRefreshMessage();
   }
 
@@ -340,6 +336,7 @@ class _HomePageState extends State<HomePage>
                           )),
                     ],
                   ),
+                  Gaps.vGap5,
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,

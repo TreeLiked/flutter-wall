@@ -81,4 +81,9 @@ class Application {
   static void setLocalAccountToken(String token) {
     _localAccountToken = token;
   }
+
+
+  static void calTweetImageWidth() {
+
+  }
 }

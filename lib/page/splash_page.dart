@@ -61,7 +61,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _initSplash() {
-    _subscription = Observable.just(1).delay(Duration(milliseconds: 1500)).listen((_) async {
+    _subscription = TimerStream("", Duration(microseconds: 1500)).listen((_) async{
       String storageToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
       print(storageToken);
       if (storageToken == '') {
@@ -113,6 +113,58 @@ class _SplashPageState extends State<SplashPage> {
         });
       }
     });
+    // _subscription = TimerStream..delay(Duration(milliseconds: 1500)).listen((_) async {
+    //   String storageToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
+    //   print(storageToken);
+    //   if (storageToken == '') {
+    //     _goLogin();
+    //   } else {
+    //     httpUtil.updateAuthToken(storageToken);
+    //     httpUtil2.updateAuthToken(storageToken);
+    //     await MemberApi.getMyAccount(storageToken).then((acc) async {
+    //       if (acc == null) {
+    //         _goLogin();
+    //       } else {
+    //         AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+    //         print("${acc.toJson()}");
+    //         accountLocalProvider.setAccount(acc);
+    //         Application.setAccount(acc);
+    //         Application.setAccountId(acc.id);
+    //         int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
+    //         String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
+    //
+    //         if (orgId == -1 || orgName == "") {
+    //           University university = await UniversityApi.queryUnis(storageToken);
+    //           if (university == null) {
+    //             // 错误，有账户无组织
+    //             print("ERROR , ------------");
+    //             ToastUtil.showToast(context, '数据错误');
+    //           } else {
+    //             if (university == null || university.id == null || university.name == null) {
+    //               ToastUtil.showToast(context, '数据错误');
+    //               return;
+    //             }
+    //             await SpUtil.putInt(SharedConstant.LOCAL_ORG_ID, university.id);
+    //             await SpUtil.putString(SharedConstant.LOCAL_ORG_NAME, university.name);
+    //             Application.setOrgName(university.name);
+    //             Application.setOrgId(university.id);
+    //           }
+    //         } else {
+    //           print('$orgId---------------------orgId');
+    //           print('$orgName---------------------orgName');
+    //           Application.setOrgId(orgId);
+    //           Application.setOrgName(orgName);
+    //         }
+    //         Application.setLocalAccountToken(storageToken);
+    //         setState(() {
+    //           _status = 1;
+    //         });
+    //
+    //         _loadStorageTweetTypes();
+    //       }
+    //     });
+    //   }
+    // });
   }
 
   Future<void> _loadStorageTweetTypes() async {
@@ -126,9 +178,12 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)..init(context);
-    Application.screenWidth = prefix0.ScreenUtil.screenWidthDp;
-    Application.screenHeight = prefix0.ScreenUtil.screenHeightDp;
+    prefix0.ScreenUtil.init(context, width: 750, height: 1334);
+    // prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)..init(context);
+    Application.screenWidth = prefix0.ScreenUtil.screenWidth;
+    Application.screenHeight = prefix0.ScreenUtil.screenHeight;
+
+
     Application.context = context;
 
     return Material(

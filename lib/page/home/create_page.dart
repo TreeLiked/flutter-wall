@@ -11,6 +11,7 @@ import 'package:iap_app/common-widget/asset_image.dart';
 import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
@@ -23,6 +24,7 @@ import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -109,6 +111,26 @@ class _CreatePageState extends State<CreatePage> {
       return;
     }
 
+    double totalSize = 0;
+    if (!CollectionUtil.isListEmpty(this.pics)) {
+      Utils.showDefaultLoadingWithBounds(context);
+      for (int i = 0; i < this.pics.length; i++) {
+        ByteData bd = await this.pics[i].getByteData();
+        if (bd != null) {
+          int byte = bd.lengthInBytes;
+          double mb = byte / 1024/1024;
+          totalSize += mb;
+        }
+      }
+      NavigatorUtils.goBack(context);
+    }
+
+    if (totalSize > OssConstant.TWEET_MAX_SIZE_ONCE) {
+      ToastUtil.showToast(context, '图片过大');
+      return;
+    }
+
+
     _focusNode?.unfocus();
     setState(() {
       this._isPushBtnEnabled = false;
@@ -117,6 +139,7 @@ class _CreatePageState extends State<CreatePage> {
     BaseTweet _baseTweet = BaseTweet();
     _baseTweet.sentTime = DateTime.now();
     bool hasError = false;
+
     if (!CollectionUtil.isListEmpty(this.pics)) {
       Utils.showDefaultLoadingWithBounds(context, text: '上传媒体');
       for (int i = 0; i < this.pics.length; i++) {
@@ -254,6 +277,11 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   void pickImage(PickType type) async {
+    bool hasP = await PermissionUtil.checkAndRequestPhotos(context, needCamera: true);
+    if (!hasP) {
+      return;
+    }
+
     await loadAssets();
     _updatePushBtnState();
   }
@@ -271,7 +299,7 @@ class _CreatePageState extends State<CreatePage> {
   @override
   Widget build(BuildContext context) {
     print("create page build");
-    sw = ScreenUtil.screenWidthDp;
+    sw = Application.screenWidth;
     return new Scaffold(
       backgroundColor: ColorConstant.MAIN_BG,
       resizeToAvoidBottomPadding: true,
@@ -290,18 +318,30 @@ class _CreatePageState extends State<CreatePage> {
         toolbarOpacity: 0.8,
         actions: <Widget>[
           Container(
-            height: 10,
-            margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            height: 5.0,
+            width: 69.0,
+            margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(14.9),
               color: _isPushBtnEnabled && !_publishing ? Colors.amber : null,
             ),
             child: FlatButton(
+              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
               onPressed: _isPushBtnEnabled && !_publishing
                   ? () {
                       this._assembleAndPushTweet();
                     }
-                  : null,
+                  : () {
+                      if (StringUtil.isEmpty(_typeName)) {
+                        ToastUtil.showToast(context, "请选择内容标签");
+                        return;
+                      }
+                      if (StringUtil.isEmpty(_controller.text) && CollectionUtil.isListEmpty(pics)) {
+                        ToastUtil.showToast(context, "请输入内容或至少选择一张图片");
+                        return;
+                      }
+                      ToastUtil.showToast(context, "正在上传内容，请稍后");
+                    },
               child: Text(
                 '发表',
                 style: TextStyle(

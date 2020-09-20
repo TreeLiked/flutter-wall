@@ -35,6 +35,7 @@ class VCAPI {
     String url = Api.API_CHECK_UPDATE +
         "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}&platform=${ios ? 'IOS' : 'ANDROID'}";
     print(url);
+    String error;
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -60,8 +61,8 @@ class VCAPI {
       }
       return r;
     } on DioError catch (e) {
-      Api.formatError(e);
+      error = Api.formatError(e);
     }
-    return null;
+    return Api.genErrorResult(error);
   }
 }

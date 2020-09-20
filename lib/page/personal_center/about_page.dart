@@ -60,7 +60,7 @@ class _AboutPageState extends State<AboutPage> {
                     'wall_logo',
                     width: _logoWidth,
                     height: _logoWidth,
-                    color: Colors.amber,
+                    color: Colors.lightGreen[200],
                   ))),
 
           Gaps.vGap10,
@@ -72,7 +72,7 @@ class _AboutPageState extends State<AboutPage> {
 //              }),
           ClickItem(
             title: "关于我们",
-            content: '满月',
+            content: 'iutr.tech'.toUpperCase(),
           ),
           ClickItem(
               title: "使用须知",

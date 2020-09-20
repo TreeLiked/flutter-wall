@@ -11,6 +11,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/gender.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/page/common/avatar_origin.dart';
 import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -19,6 +20,8 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/AccountProfileUtil.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
@@ -165,17 +168,39 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                AccountAvatar(avatarUrl: provider.account.avatarUrl, whitePadding: true, size: 70),
-                Container(
-                    margin: const EdgeInsets.only(top: 15.0),
-                    child: Text(provider.account.nick,
-                        style: const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.bold))),
-                Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.only(top: 15.0),
-                  child: Text(provider.account.signature,
-                      style: const TextStyle(fontSize: Dimens.font_sp14, color: Color(0xffaeb4bd))),
-                ),
+                AccountAvatar(
+                    avatarUrl: provider.account.avatarUrl,
+                    whitePadding: true,
+                    size: 70,
+                    onTap: () async => {
+                          if (await PermissionUtil.checkAndRequestPhotos(context))
+                            {
+                              AccountProfileUtil.cropAndUpdateProfile(provider, context, (Result r) {
+                                if (r != null && r.isSuccess) {
+                                  setState(() {
+                                    provider.account.avatarUrl = r.data;
+                                  });
+                                } else {
+                                  ToastUtil.showToast(context, '上传失败，请稍候重试');
+                                }
+                              })
+                            }
+                        }),
+                GestureDetector(
+                    onTap: () => NavigatorUtils.push(context, SettingRouter.accountInfoPage),
+                    child: Container(
+                        margin: const EdgeInsets.only(top: 15.0),
+                        child: Text(provider.account.nick,
+                            style:
+                                const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.bold)))),
+                GestureDetector(
+                    onTap: () => NavigatorUtils.push(context, SettingRouter.accountInfoPage),
+                    child: Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(top: 15.0),
+                      child: Text(provider.account.signature,
+                          style: const TextStyle(fontSize: Dimens.font_sp14, color: Color(0xffaeb4bd))),
+                    )),
               ],
             )),
             Container(

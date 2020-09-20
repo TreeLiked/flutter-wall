@@ -23,4 +23,8 @@ class OssConstant {
 
   static const String THUMBNAIL_SUFFIX = "?x-oss-process=style/image_thumbnail";
   static const String PREVIEW_SUFFIX = "?x-oss-process=style/image_preview";
+
+
+  // 推文一次能上传的最大图片的大小
+  static const double TWEET_MAX_SIZE_ONCE = 30;
 }

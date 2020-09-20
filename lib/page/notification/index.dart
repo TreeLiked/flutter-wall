@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/message.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
-import 'package:iap_app/model/message/popular_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
 import 'package:iap_app/model/message/tweet_praise_message.dart';
 import 'package:iap_app/model/message/tweet_reply_message.dart';
@@ -20,11 +17,10 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/setting_router.dart';
-import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class NotificationIndexPage extends StatefulWidget {
@@ -57,6 +53,8 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   @override
   void initState() {
     super.initState();
+    // 校验通知权限
+    PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
     _loopQueryInteraction(true);
     _loopQuerySystem(true);
   }
@@ -139,7 +137,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 //    print('notification build');
 //    print('notification' + (ModalRoute.of(context).isCurrent ? "当前页面" : "不是当前页面"));
 
-    checkAndRequestNotificationPermission();
     isDark = ThemeUtils.isDark(context);
     Color _badgeColor = isDark ? Colours.dark_app_main : Colours.app_main;
 
@@ -161,7 +158,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
             enablePullUp: false,
             header: MaterialClassicHeader(
               color: Colors.amber,
-              backgroundColor: isDark? ColorConstant.MAIN_BG_DARK:ColorConstant.MAIN_BG,
+              backgroundColor: isDark ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
             ),
 //            header: Utils.getDefaultRefreshHeader(),
             onRefresh: _fetchLatestMessage,
@@ -283,34 +280,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         },
       )
     ];
-  }
-
-  void checkAndRequestNotificationPermission() async {
-    PermissionStatus permission =
-        await PermissionHandler().checkPermissionStatus(PermissionGroup.notification);
-
-    if (permission != PermissionStatus.granted) {
-//      Map<PermissionGroup, PermissionStatus> permissions =
-      await PermissionHandler().requestPermissions([PermissionGroup.notification]);
-      permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.notification);
-      if (permission != PermissionStatus.granted) {
-        int random = Random().nextInt(100);
-        if (random == 79) {
-          print(random);
-          Utils.showSimpleConfirmDialog(
-              context,
-              '无法发送通知',
-              '你未开启"允许Wall发送通知"选项，将收不到包括用户私信，点赞评论等的通知',
-              ClickableText('知道了', () {
-                NavigatorUtils.goBack(context);
-              }),
-              ClickableText('去设置', () async {
-                await PermissionHandler().openAppSettings();
-              }),
-              barrierDismissible: false);
-        }
-      }
-    }
   }
 
   @override

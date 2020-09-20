@@ -75,15 +75,22 @@ class TopicReplyCardItem extends StatelessWidget {
                   child: ExtendedText("${reply.body}",
                       maxLines: 3,
                       selectionEnabled: true,
-                      overFlowTextSpan: OverFlowTextSpan(children: [
-                        TextSpan(text: ' \u2026 '),
-                        TextSpan(
-                            text: "查看更多",
-                            style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
-                                  onTap: () => NavigatorUtils.goBack(context)))
-                      ]),
+                      overflowWidget:TextOverflowWidget(child: Row(children: <Widget>[
+                        const Text(' \u2026 '),
+                        RaisedButton(
+                          child: const Text('查看更多'),
+                          onPressed: () {
+                            BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
+                                onTap: () => NavigatorUtils.goBack(context));
+                          },
+                        ),
+                        // TextSpan(
+                        //     text: "查看更多",
+                        //     style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
+                        //     recognizer: TapGestureRecognizer()
+                        //       ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
+                        //           onTap: () => NavigatorUtils.goBack(context)))
+                      ])),
                       softWrap: true,
                       overflow: TextOverflow.fade,
                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
@@ -219,16 +226,16 @@ class TopicReplyCardItem extends StatelessWidget {
                 ExtendedText("${subTopicReply.body}",
                     maxLines: 3,
                     selectionEnabled: true,
-                    overFlowTextSpan: OverFlowTextSpan(children: [
-                      TextSpan(text: ' \u2026 '),
-                      TextSpan(
-                          text: "查看更多",
-                          style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(
-                                context, subTopicReply,
-                                onTap: () => NavigatorUtils.goBack(context)))
-                    ]),
+                    // overFlowTextSpan: OverFlowTextSpan(children: [
+                    //   TextSpan(text: ' \u2026 '),
+                    //   TextSpan(
+                    //       text: "查看更多",
+                    //       style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
+                    //       recognizer: TapGestureRecognizer()
+                    //         ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(
+                    //             context, subTopicReply,
+                    //             onTap: () => NavigatorUtils.goBack(context)))
+                    // ]),
                     softWrap: true,
                     overflow: TextOverflow.fade,
                     style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,

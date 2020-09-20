@@ -17,6 +17,7 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
@@ -78,26 +79,8 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
   }
 
   _goChoiceAvatar() async {
-    Map<PermissionGroup, PermissionStatus> permissions =
-        await PermissionHandler().requestPermissions([PermissionGroup.camera]);
-    //校验权限
-    if (permissions[PermissionGroup.camera] != PermissionStatus.granted) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => SimpleConfirmDialog(
-                '无法访问照片',
-                '你未开启"允许Wall访问照片"选项',
-                leftItem: ClickableText('知道了', () {
-                  NavigatorUtils.goBack(context);
-                }),
-                rightItem: ClickableText('去设置', () async {
-                  await PermissionHandler().openAppSettings();
-                }),
-              ));
-
-      return;
-    } else {
+    bool has = await PermissionUtil.checkAndRequestPhotos(context);
+    if (has) {
       var image = await ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 80);
       if (image != null) {
         final cropKey = GlobalKey<CropState>();

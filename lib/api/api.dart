@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/main.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
 class Api {
@@ -152,5 +153,13 @@ class Api {
       print("未知错误$e");
       return "未知错误";
     }
+  }
+  
+  static Result genErrorResult(String errorMsg) {
+    
+    Result r = new Result();
+    r.isSuccess = false;
+    r.message = errorMsg;
+    return r ;
   }
 }

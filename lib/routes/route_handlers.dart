@@ -12,6 +12,7 @@ import 'package:flutter/painting.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/account_profile.dart';
+import 'package:iap_app/page/account_profile/account_profile.dart';
 import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/page/home/create_page.dart';
 import 'package:iap_app/page/home/home_page.dart';
@@ -95,7 +96,7 @@ var accountProfileHandler = Handler(handlerFunc: (BuildContext context, Map<Stri
   String avatarUrl =
       params['avatarUrl'] == null ? "" : FluroConvertUtils.fluroCnParamsDecode(params['avatarUrl'].first);
 
-  return AccountProfilePage(accountId, nick, avatarUrl);
+  return AccountProfile(accountId, nick, avatarUrl);
 });
 
 //var galleryViewHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

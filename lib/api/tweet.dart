@@ -133,9 +133,18 @@ class TweetApi {
   static Future<Map<String, dynamic>> pushTweet(BaseTweet tweet) async {
     print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERY);
 
-    Response response =
-        await httpUtil.dio.post(Api.API_BASE_INF_URL + Api.API_TWEET_CREATE, data: tweet.toJson());
-    return Api.convertResponse(response.data);
+    Result r;
+    try {
+      Response response =
+      await httpUtil.dio.post(Api.API_BASE_INF_URL + Api.API_TWEET_CREATE, data: tweet.toJson());
+      return Api.convertResponse(response.data);
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+
+      r = Api.genErrorResult(error);
+    }
+    return r.toJson();
+
   }
 
   static Future<Map<String, dynamic>> requestUploadMediaLink(List<String> fileSuffixes, String type) async {

@@ -55,37 +55,37 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   }
 
   void initPageData() {
-    _navigationViews = <NavigationIconView>[
-      NavigationIconView(null,
-          icon: Icon(Icons.home, size: 20, color: Colors.grey),
-          title: Container(
-            child: MyDefaultTextStyle.getBottomNavTextItem('首页', Colors.indigo),
-          ),
-          selColor: Colors.indigo,
-          vsync: this),
-      NavigationIconView(null,
-          icon: Icon(Icons.room, size: 20, color: Colors.grey),
-          selColor: Colors.pinkAccent,
-          title: Container(
-            child: MyDefaultTextStyle.getBottomNavTextItem('热门', Colors.pinkAccent),
-          ),
-          vsync: this),
-      NavigationIconView(MessageUtil.notificationStreamCntCtrl,
-          badgeAble: true,
-          icon: Icon(Icons.notifications, size: 20, color: Colors.grey),
-          title: Container(
-            child: MyDefaultTextStyle.getBottomNavTextItem('消息', Colors.yellow.shade900),
-          ),
-          selColor: Colors.yellow.shade900,
-          vsync: this),
-      NavigationIconView(null,
-          icon: Icon(Icons.person, size: 20, color: Colors.grey),
-          title: Container(
-            child: MyDefaultTextStyle.getBottomNavTextItem('我的', Colors.teal),
-          ),
-          selColor: Colors.teal,
-          vsync: this),
-    ];
+    // _navigationViews = <NavigationIconView>[
+    //   NavigationIconView(null,
+    //       icon: Icon(Icons.home, size: 20, color: Colors.grey),
+    //       title: Container(
+    //         child: MyDefaultTextStyle.getBottomNavTextItem('首页', Colors.indigo),
+    //       ),
+    //       selColor: Colors.indigo,
+    //       vsync: this),
+    //   NavigationIconView(null,
+    //       icon: Icon(Icons.room, size: 20, color: Colors.grey),
+    //       selColor: Colors.pinkAccent,
+    //       title: Container(
+    //         child: MyDefaultTextStyle.getBottomNavTextItem('热门', Colors.pinkAccent),
+    //       ),
+    //       vsync: this),
+    //   NavigationIconView(MessageUtil.notificationStreamCntCtrl,
+    //       badgeAble: true,
+    //       icon: Icon(Icons.notifications, size: 20, color: Colors.grey),
+    //       title: Container(
+    //         child: MyDefaultTextStyle.getBottomNavTextItem('消息', Colors.yellow.shade900),
+    //       ),
+    //       selColor: Colors.yellow.shade900,
+    //       vsync: this),
+    //   NavigationIconView(null,
+    //       icon: Icon(Icons.person, size: 20, color: Colors.grey),
+    //       title: Container(
+    //         child: MyDefaultTextStyle.getBottomNavTextItem('我的', Colors.teal),
+    //       ),
+    //       selColor: Colors.teal,
+    //       vsync: this),
+    // ];
 
     _pageList = <StatefulWidget>[
       HomePage(pullDownCallBack: (_) => updateBottomBar(_)),
@@ -140,21 +140,21 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     if (_navigationViews == null) {
       initPageData();
     }
-    ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
+    ScreenUtil.init(context, width: 750, height: 1334);
 
-    final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
-        elevation: 0,
-        // items: itmes,
-        items: _navigationViews.map((navIconView) => navIconView.item).toList(),
-        currentIndex: _currentIndex,
-//        backgroundColor: Colors.white,
-        // selectedIconTheme: IconThemeData(opacity: 0.9),
-        // unselectedIconTheme: IconThemeData(opacity: 0.5),
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-        // selectedItemColor: _navigationViews[_currentIndex].selColor,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) => pageOnTap(index));
+//     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
+//         elevation: 0,
+//         // items: itmes,
+//         items: _navigationViews.map((navIconView) => navIconView.item).toList(),
+//         currentIndex: _currentIndex,
+// //        backgroundColor: Colors.white,
+//         // selectedIconTheme: IconThemeData(opacity: 0.9),
+//         // unselectedIconTheme: IconThemeData(opacity: 0.5),
+//         showUnselectedLabels: false,
+//         showSelectedLabels: false,
+//         // selectedItemColor: _navigationViews[_currentIndex].selColor,
+//         type: BottomNavigationBarType.fixed,
+//         onTap: (index) => pageOnTap(index));
 
     // return new Scaffold(
     //     body: IndexedStack(index: _currentIndex, children: _pageList),

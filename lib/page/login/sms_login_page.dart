@@ -368,7 +368,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         child: FlatButton(
           child: Text(!_codeWaiting ? '获取短信验证码' : '重新获取 $s(s)', style: TextStyle(color: Colors.white)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-          color: _canGetCode ? Colors.amber: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
+          color: _canGetCode ? Colors.amber : !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
           onPressed: _codeWaiting
@@ -395,8 +395,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                         this._canGetCode = false;
                         _codeWaiting = true;
                       });
-                      _subscription =
-                          Observable.periodic(Duration(seconds: 1), (i) => i).take(second).listen((i) {
+                      _subscription = Stream.periodic(Duration(seconds: 1), (int i) {
                         setState(() {
                           s = second - i - 1;
                           if (s < 1) {
@@ -404,7 +403,17 @@ class _SMSLoginPageState extends State<LoginPage> {
                             _codeWaiting = false;
                           }
                         });
-                      });
+                      }).take(second).listen((event) {});
+                      // _subscription =
+                      //     Observable.periodic(Duration(seconds: 1), (i) => i).take(second).listen((i) {
+                      //       setState(() {
+                      //         s = second - i - 1;
+                      //         if (s < 1) {
+                      //           _canGetCode = true;
+                      //           _codeWaiting = false;
+                      //         }
+                      //       });
+                      // });
                       return Future.value(true);
                     } else {
                       ToastUtil.showToast(context, res.message);

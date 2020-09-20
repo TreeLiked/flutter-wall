@@ -117,8 +117,6 @@ class FlexShadowBackground extends StatelessWidget {
     var t = FlexibleDetailBar.percentage(context);
     t = Curves.ease.transform(t) / 2 + 0.2;
     return Container(
-      decoration:
-          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(25))),
       foregroundDecoration: BoxDecoration(color: Colors.black.withOpacity(t)),
       child: child,
     );

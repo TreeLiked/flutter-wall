@@ -87,6 +87,10 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) => _sliverBuilder(context, innerBoxIsScrolled),
+      body: AccountProfileTweetPageView(),
+    );
     return Stack(
       children: <Widget>[
         DefaultTabController(
@@ -95,10 +99,11 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
                 body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) =>
                   _sliverBuilder(context, innerBoxIsScrolled),
-              body: TabBarView(
+              body: TabBar(
+
                   // onPageChanged: _onPageChanged,
                   controller: _tabController,
-                  children: _pageList),
+                  tabs: _pageList),
             ))),
       ],
     );
@@ -148,58 +153,65 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
           floating: false,
           pinned: true,
           snap: false,
-          bottom: new TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white70,
-              isScrollable: false,
+          // bottom: new TabBar(
+          //     labelColor: Colors.white,
+          //     unselectedLabelColor: Colors.white70,
+          //     isScrollable: false,
+          //     indicatorSize: TabBarIndicatorSize.label,
+          //
+          //     // indicatorColor: Colors.black87,
+          //     controller: _tabController,
+          //     labelPadding: const EdgeInsets.all(0.0),
+          //     tabs: [
+          //       const Tab(child: Text('个人资料', style: TextStyle(color: null))),
+          //       const Tab(child: Text('历史发布', style: TextStyle(color: null)))
+          //     ]),
 
-              // indicatorColor: Colors.black87,
-              controller: _tabController,
-              labelPadding: const EdgeInsets.all(0.0),
-              tabs: [
-                const Tab(child: Text('个人资料', style: TextStyle(color: null))),
-                const Tab(child: Text('历史发布', style: TextStyle(color: null)))
-              ]),
-          flexibleSpace: FlexibleDetailBar(
-              content: Padding(
-                padding: EdgeInsets.only(top: ScreenUtil().setHeight(100)),
-                child: Center(
-                    child: Hero(
-                        tag: 'avatar',
-                        child: AccountAvatar(
-                            avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
-                            whitePadding: true,
-                            size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
-                            cache: true,
-                            onTap: () {
-                              Navigator.push(context, PageRouteBuilder(pageBuilder:
-                                  (BuildContext context, Animation animation, Animation secondaryAnimation) {
-                                return new FadeTransition(
-                                    opacity: animation, child: AvatarOriginPage(widget.avatarUrl));
-                              }));
-                            }))),
-              ),
-              background: Container(
-                  decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(25))),
-                  child: Stack(children: <Widget>[
-                    Utils.showNetImage(
-                      widget.avatarUrl,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                    BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaY: 5,
-                        sigmaX: 5,
-                      ),
-                      child: Container(
-                        color: Colors.black38,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                  ]))))
+        flexibleSpace: Container(
+          child: Text("123"),
+        ),
+          // flexibleSpace: FlexibleDetailBar(
+          //     content: Padding(
+          //       padding: EdgeInsets.only(top: ScreenUtil().setHeight(100)),
+          //       child: Center(
+          //           child: Hero(
+          //               tag: 'avatar',
+          //               child: AccountAvatar(
+          //                   avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
+          //                   whitePadding: true,
+          //                   size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
+          //                   cache: true,
+          //                   onTap: () {
+          //                     Navigator.push(context, PageRouteBuilder(pageBuilder:
+          //                         (BuildContext context, Animation animation, Animation secondaryAnimation) {
+          //                       return new FadeTransition(
+          //                           opacity: animation, child: AvatarOriginPage(widget.avatarUrl));
+          //                     }));
+          //                   }))),
+          //     ),
+          //     background: Container(
+          //         decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(25))),
+          //         child: Stack(children: <Widget>[
+          //           Utils.showNetImage(
+          //             widget.avatarUrl,
+          //             width: double.infinity,
+          //             height: double.infinity,
+          //             fit: BoxFit.cover,
+          //           ),
+          //           BackdropFilter(
+          //             filter: ImageFilter.blur(
+          //               sigmaY: 5,
+          //               sigmaX: 5,
+          //             ),
+          //             child: Container(
+          //               color: Colors.black38,
+          //               width: double.infinity,
+          //               height: double.infinity,
+          //             ),
+          //           ),
+          //         ])))
+
+      )
     ];
   }
 
@@ -396,7 +408,7 @@ class _AccountProfileInfoPageView extends State<AccountProfileInfoPageView>
     bool hasVal = value != null && value.trim().length > 0;
 
     return Container(
-      margin: EdgeInsets.only(top: 15),
+      // margin: EdgeInsets.only(top: 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -613,6 +625,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
           margin: EdgeInsets.only(top: 50),
           alignment: Alignment.topCenter,
           constraints: BoxConstraints(maxHeight: 100),
+          color: Colors.white,
           child: Text(
             '用户关闭历史或未发布过内容',
             style: const TextStyle(fontSize: Dimens.font_sp14),

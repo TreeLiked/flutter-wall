@@ -122,7 +122,7 @@ class Utils {
     list.add(
       SpinKitChasingDots(color: Colors.amber, size: size),
 //        const CupertinoActivityIndicator()
-        );
+    );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
           padding: EdgeInsets.only(top: 0),
@@ -270,32 +270,6 @@ class Utils {
     );
   }
 
-  static Future<void> checkPhotoPermission(BuildContext context) async {
-    Map<PermissionGroup, PermissionStatus> permissions;
-    if (Platform.isAndroid) {
-      permissions = await PermissionHandler().requestPermissions([PermissionGroup.camera]);
-    } else {
-      permissions = await PermissionHandler().requestPermissions([PermissionGroup.photos]);
-    }
-    //校验权限
-    if ((Platform.isAndroid && permissions[PermissionGroup.camera] != PermissionStatus.granted) ||
-        (Platform.isIOS && permissions[PermissionGroup.photos] != PermissionStatus.granted)) {
-      await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => SimpleConfirmDialog(
-                '无法访问照片',
-                '你未开启"允许Wall访问照片"选项',
-                leftItem: ClickableText('知道了', () {
-                  NavigatorUtils.goBack(context);
-                }),
-                rightItem: ClickableText('去设置', () async {
-                  await PermissionHandler().openAppSettings();
-                }),
-              ));
-    }
-  }
-
   static void copyTextToClipBoard(String text) {
     Clipboard.setData(ClipboardData(text: text));
   }
@@ -325,7 +299,11 @@ class Utils {
                   backgroundDecoration: const BoxDecoration(
                     color: Colors.black,
                   ),
-                  loadingChild: const CupertinoActivityIndicator(),
+                  loadingChild: new SpinKitRing(
+                    color: Colors.grey,
+                    size: 18.0,
+                    lineWidth: 3.0,
+                  ),
                   initialIndex: initialIndex,
                   refId: refId.toString(),
                 ),

@@ -43,16 +43,15 @@ class TweetReplyItemDetail extends StatelessWidget {
 
   BuildContext context;
 
-  TweetReplyItemDetail(
-      {@required this.tweetAccountId,
-      @required this.tweetAnonymous,
-      @required this.reply,
-      @required this.parentId,
-      @required this.tweetId,
-      this.onTapAccount,
-      @required this.onTapReply,
-      @required this.tweetType,
-      @required this.refresh});
+  TweetReplyItemDetail({@required this.tweetAccountId,
+    @required this.tweetAnonymous,
+    @required this.reply,
+    @required this.parentId,
+    @required this.tweetId,
+    this.onTapAccount,
+    @required this.onTapReply,
+    @required this.tweetType,
+    @required this.refresh});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +64,7 @@ class TweetReplyItemDetail extends StatelessWidget {
 
     bool boo1 = dirReplyAnonymous || (tweetAnonymous && isAuthorReply);
     String authorNick =
-        TweetReplyUtil.getTweetReplyAuthorText(reply.account, tweetAnonymous, reply.anonymous, isAuthorReply);
+    TweetReplyUtil.getTweetReplyAuthorText(reply.account, tweetAnonymous, reply.anonymous, isAuthorReply);
     return Container(
         margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: GestureDetector(
@@ -81,23 +80,25 @@ class TweetReplyItemDetail extends StatelessWidget {
                   title: '评论操作',
                   choices: tweetAccountId == Application.getAccountId
                       ? [
-                          MultiBottomSheetItem(
-                              text: '举报',
-                              style: TextStyle(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
-                              onTap: () => NavigatorUtils.goReportPage(
-                                  context, ReportPage.REPORT_TWEET_REPLY, reply.id.toString(), "评论举报")),
-                          MultiBottomSheetItem(
-                              text: '删除',
-                              style: TextStyle(color: Color(0xff4682B4), fontSize: Dimens.font_sp13p5),
-                              onTap: () => delReply(reply.id))
-                        ]
+                    MultiBottomSheetItem(
+                        text: '举报',
+                        style: TextStyle(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
+                        onTap: () =>
+                            NavigatorUtils.goReportPage(
+                                context, ReportPage.REPORT_TWEET_REPLY, reply.id.toString(), "评论举报")),
+                    MultiBottomSheetItem(
+                        text: '删除',
+                        style: TextStyle(color: Color(0xff4682B4), fontSize: Dimens.font_sp13p5),
+                        onTap: () => delReply(reply.id))
+                  ]
                       : [
-                          MultiBottomSheetItem(
-                              text: '举报',
-                              style: TextStyle(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
-                              onTap: () => NavigatorUtils.goReportPage(
-                                  context, ReportPage.REPORT_TWEET_REPLY, reply.id.toString(), "评论举报"))
-                        ],
+                    MultiBottomSheetItem(
+                        text: '举报',
+                        style: TextStyle(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
+                        onTap: () =>
+                            NavigatorUtils.goReportPage(
+                                context, ReportPage.REPORT_TWEET_REPLY, reply.id.toString(), "评论举报"))
+                  ],
                 );
               },
             );
@@ -149,7 +150,7 @@ class TweetReplyItemDetail extends StatelessWidget {
       tweetType = fallbackTweetType;
     }
     String authorNick =
-        TweetReplyUtil.getTweetReplyAuthorText(reply.account, tweetAnonymous, reply.anonymous, isAuthorReply);
+    TweetReplyUtil.getTweetReplyAuthorText(reply.account, tweetAnonymous, reply.anonymous, isAuthorReply);
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -160,52 +161,52 @@ class TweetReplyItemDetail extends StatelessWidget {
           text: TextSpan(children: [
             replyAnonymous || !isAuthorReply || directReply
                 ? TextSpan(
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        // 如果 回复匿名 || （推文匿名 && 作者的回复）
-                        if (replyAnonymous || authorReplyWithTweetAnon) {
-                          return;
-                        }
-                        forwardAccountProfile(reply.account);
-                      },
-                    text: authorNick ?? "",
-                    style: TweetReplyUtil.getTweetReplyStyle(
-                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    // 如果 回复匿名 || （推文匿名 && 作者的回复）
+                    if (replyAnonymous || authorReplyWithTweetAnon) {
+                      return;
+                    }
+                    forwardAccountProfile(reply.account);
+                  },
+                text: authorNick ?? "",
+                style: TweetReplyUtil.getTweetReplyStyle(
+                    tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
                 : WidgetSpan(
-                    child: SimpleTag(
-                    '作者',
-                    round: false,
-                    bgColor: tweetTypeMap[tweetType].color.withAlpha(200),
-                    textColor: Colors.white,
-                    verticalPadding: 0,
-                  )),
+                child: SimpleTag(
+                  '作者',
+                  round: false,
+                  bgColor: tweetTypeMap[tweetType].color.withAlpha(200),
+                  textColor: Colors.white,
+                  verticalPadding: 0,
+                )),
             !replyAnonymous && directReply && isAuthorReply
                 ? WidgetSpan(
-                    child: SimpleTag(
-                    '作者',
-                    round: false,
-                    bgColor: tweetTypeMap[tweetType].color.withAlpha(200),
-                    textColor: Colors.white,
-                    verticalPadding: 0,
-                    leftMargin: 5,
-                  ))
+                child: SimpleTag(
+                  '作者',
+                  round: false,
+                  bgColor: tweetTypeMap[tweetType].color.withAlpha(200),
+                  textColor: Colors.white,
+                  verticalPadding: 0,
+                  leftMargin: 5,
+                ))
                 : emptyTs,
             !directReply
                 ? TextSpan(
-                    text: ' 回复 ',
-                    style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14, context: context))
+                text: ' 回复 ',
+                style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14, context: context))
                 : emptyTs,
             !directReply
                 ? TextSpan(
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        if (!targetAuthorAndTweetAnon) {
-                          forwardAccountProfile(reply.tarAccount);
-                        }
-                      },
-                    text: (targetAuthorAndTweetAnon ? TextConstant.TWEET_AUTHOR_TEXT : reply.tarAccount.nick),
-                    style: TweetReplyUtil.getTweetReplyStyle(
-                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    if (!targetAuthorAndTweetAnon) {
+                      forwardAccountProfile(reply.tarAccount);
+                    }
+                  },
+                text: (targetAuthorAndTweetAnon ? TextConstant.TWEET_AUTHOR_TEXT : reply.tarAccount.nick),
+                style: TweetReplyUtil.getTweetReplyStyle(
+                    tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
                 : emptyTs
           ]),
         ),
@@ -233,29 +234,30 @@ class TweetReplyItemDetail extends StatelessWidget {
 //          );
 //        },
         child: Container(
-      margin: const EdgeInsets.only(top: 1.5),
-      child: ExtendedText("${body.trimRight()}",
-          maxLines: 3,
-          softWrap: true,
-          textAlign: TextAlign.left,
-          specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
-          onSpecialTextTap: (dynamic parameter) {},
-          selectionEnabled: false,
-          overFlowTextSpan: OverFlowTextSpan(children: [
-            TextSpan(text: ' \u2026 '),
-            TextSpan(
-                text: "查看全部",
-                style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: Dimens.font_sp15,
-                ),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => BottomSheetUtil.showBottomSheetSingleTweetReplyDetail(
-                      context, reply, reply.anonymous, tweetAnonymous && reply.account.id == tweetAccountId,
-                      onTap: () => NavigatorUtils.goBack(context))),
-          ]),
-          style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp15, context: context)),
-    ));
+          margin: const EdgeInsets.only(top: 1.5),
+          child: ExtendedText("${body.trimRight()}",
+              maxLines: 3,
+              softWrap: true,
+              textAlign: TextAlign.left,
+              specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
+              onSpecialTextTap: (dynamic parameter) {},
+              selectionEnabled: false,
+
+              overflowWidget: TextOverflowWidget(child: Row(children: <Widget>[
+                const Text(' \u2026 '),
+                RaisedButton(
+                  child: const Text('查看全部', style: const TextStyle(
+                    color: Colors.blue,
+                    fontSize: Dimens.font_sp15,
+                  ),),
+                  onPressed: () {
+                    BottomSheetUtil.showBottomSheetSingleTweetReplyDetail(
+                        context, reply, reply.anonymous, tweetAnonymous && reply.account.id == tweetAccountId,
+                        onTap: () => NavigatorUtils.goBack(context));
+                  })
+              ])),
+              style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp15, context: context)),
+        ));
   }
 
   Widget _timeContainer() {

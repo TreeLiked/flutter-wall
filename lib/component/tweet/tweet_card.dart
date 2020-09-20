@@ -47,6 +47,8 @@ class TweetCard2 extends StatelessWidget {
   final bool displayExtra;
   final bool displayInstitute;
   final Widget moreWidget;
+  final bool myNickClickable;
+  final bool needLeftProfile;
 
   BuildContext context;
   bool isDark;
@@ -62,6 +64,8 @@ class TweetCard2 extends StatelessWidget {
       this.displayInstitute = false,
       this.displayExtra = true,
       this.canPraise = false,
+      this.myNickClickable = true,
+      this.needLeftProfile = true,
       this.moreWidget}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
@@ -85,10 +89,13 @@ class TweetCard2 extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: Container(padding: const EdgeInsets.only(right: 15.0), child: _profileContainer()),
-              ),
+              this.needLeftProfile
+                  ? Flexible(
+                      flex: 1,
+                      child:
+                          Container(padding: const EdgeInsets.only(right: 15.0), child: _profileContainer()),
+                    )
+                  : Gaps.empty,
               Flexible(
                 flex: 5,
                 fit: FlexFit.loose,
@@ -101,9 +108,12 @@ class TweetCard2 extends StatelessWidget {
                       tweet.account,
                       tweet.anonymous,
                       tweet.sentTime,
+                      myNickClickable: this.myNickClickable,
+
+                      // official: tweet.account.off,
                     ),
                     Gaps.vGap5,
-                    TweetBodyWrapper(tweet.body, maxLine: 5, fontSize: Dimens.font_sp15, height: 1.6),
+                    TweetBodyWrapper(tweet.body, maxLine: 3, fontSize: Dimens.font_sp15, height: 1.6),
                     TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
                     displayLink ? TweetLinkWrapper(tweet) : Gaps.empty,
                     Gaps.vGap8,
@@ -193,7 +203,7 @@ class TweetCard2 extends StatelessWidget {
   Widget _profileContainer() {
     bool anonymous = tweet.anonymous;
     return GestureDetector(
-        onTap: () => anonymous ? null : goAccountDetail2(context, tweet.account, true),
+        onTap: () => anonymous || !myNickClickable ? null : goAccountDetail2(context, tweet.account, true),
         child: Container(
             child: AccountAvatar(
           cache: true,

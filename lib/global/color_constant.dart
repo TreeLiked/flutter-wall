@@ -21,7 +21,7 @@ class ColorConstant {
 
   // 推文回复正文颜色
   static const Color TWEET_REPLY_BODY_COLOR = Color(0xff000000);
-  static const Color TWEET_REPLY_BODY_COLOR_DARK = Color(0xff888888);
+  static const Color TWEET_REPLY_BODY_COLOR_DARK = Color(0xff999999);
 
   // 推文匿名回复的昵称颜色
   static const Color TWEET_REPLY_ANONYMOUS_NICK_COLOR = Color(0xff444444);

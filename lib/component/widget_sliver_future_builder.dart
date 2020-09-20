@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/theme_utils.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(
   BuildContext context,
@@ -65,10 +68,14 @@ class _CustomFutureBuilderState<T> extends State<CustomSliverFutureBuilder<T>> {
                   return Center(
                     child: Container(
                         alignment: Alignment.center,
-                        height: ScreenUtil().setWidth(300),
+                        height: ScreenUtil().setHeight(400),
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[CupertinoActivityIndicator(), Gaps.vGap16, Text('正在加载')],
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            CupertinoActivityIndicator(),
+                            Gaps.vGap20,
+                            Text('正在加载', style: MyDefaultTextStyle.getTweetBodyStyle(context))
+                          ],
                         )),
                   );
                 case ConnectionState.done:

@@ -121,7 +121,7 @@ class TweetMediaWrapper extends StatelessWidget {
       url: url,
       width: perW,
       height: perW,
-      padding: EdgeInsets.only(right: rp, bottom: 0.8),
+      padding: EdgeInsets.only(right: rp, bottom: 3.0),
       callback: () => open(context, index),
     );
   }

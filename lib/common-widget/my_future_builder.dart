@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/part/notification/my_sn_card.dart';
 import 'package:iap_app/res/gaps.dart';
 
@@ -27,7 +28,7 @@ class _FutureBuilderWidgetState<T> extends State<FutureBuilderWidget<T>> {
 
   ///默认加载界面
   final defaultLoading = Center(
-      child: new SpinKitThreeBounce(
+      child: SpinKitThreeBounce(
         color: Colors.lightBlue,
         size: 18,
       ));

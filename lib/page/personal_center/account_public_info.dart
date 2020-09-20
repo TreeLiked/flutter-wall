@@ -309,7 +309,7 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
                   context,
                   Routes.inputTextPage +
                       Utils.packConvertArgs({
-                        'title': '修改修改个人资料[微信]',
+                        'title': '修改个人资料[微信]',
                         'hintText': _profile.wechat ?? _unSetText,
                         'limit': 64,
                         'showLimit': false

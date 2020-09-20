@@ -17,6 +17,9 @@ class Result<T> {
         code = r.code,
         message = r.message;
 
+  Map<String, dynamic> toJson() =>
+      <String, dynamic>{'isSuccess': isSuccess, 'code': code, 'message': message, 'data': data};
+
   void toText() {
     print("$isSuccess, $message, $code, $data");
   }

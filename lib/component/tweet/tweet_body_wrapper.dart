@@ -1,5 +1,6 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -34,18 +35,18 @@ class TweetBodyWrapper extends StatelessWidget {
                 onTapCb: (String text) {
                   if (text != null && text.length > 0) {
                     if (text.startsWith("http")) {
-                      NavigatorUtils.goWebViewPage(context, text*3, text.trim());
+                      NavigatorUtils.goWebViewPage(context, text * 3, text.trim());
                     }
                   }
                 }),
             selectionEnabled: selectable,
-            overFlowTextSpan: maxLine == -1
+            overflowWidget: maxLine == -1
                 ? null
-                : OverFlowTextSpan(children: [
-                    TextSpan(text: ' \u2026 '),
-                    TextSpan(
-                        text: "查看全部", style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp15)),
-                  ]),
+                : TextOverflowWidget(
+                    child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                    const Text('\u2026'),
+                    const Text("查看全部", style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp14))
+                  ])),
             style: height == -1
                 ? MyDefaultTextStyle.getTweetBodyStyle(context)
                 : MyDefaultTextStyle.getTweetBodyStyle(context).copyWith(height: height)));

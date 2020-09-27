@@ -13,8 +13,9 @@ class TweetCampusWrapper extends StatelessWidget {
   final String institute;
   final String cla;
   final String tweetType;
+  final bool anonymous;
 
-  TweetCampusWrapper(this.institute, this.cla, this.tweetType);
+  TweetCampusWrapper(this.institute, this.cla, this.tweetType, this.anonymous);
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +30,18 @@ class TweetCampusWrapper extends StatelessWidget {
       children: <Widget>[
         TweetTypeWrapper(tweetType),
         Gaps.hGap4,
-        insEmpty && claEmpty
+        (insEmpty && claEmpty) || anonymous
             ? Gaps.empty
             : SquareTag(
                 "$t",
                 backgroundColor: Color(0xffEDF1F7),
-                textStyle: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR, fontSize: 12.0),
+                backgroundDarkColor: Colors.black12,
+                textStyle: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
                 horizontalPadding: 15.0,
                 verticalPadding: 5.0,
-                roundRadius: 8.0,
+                roundRadius: 10.0,
                 prefixIcon: Icon(
-                  Icons.audiotrack,
+                  Icons.school,
                   color: ColorConstant.TWEET_NICK_COLOR,
                   size: 16.0,
                 ),

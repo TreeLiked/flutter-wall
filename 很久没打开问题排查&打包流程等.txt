@@ -1,0 +1,18 @@
+1、看不懂问题先flutter clean 走一波
+
+
+
+
+### 打包流程
+0 SharedConstant # VERSION_ID_ANDROID
+  SharedConstant # VERSION_ID_IOS
+  SharedConstant # VERSION_REMARK_ANDROID
+  SharedConstant # VERSION_REMARK_IOS
+  还有Xcode修改程序的版本号
+
+
+
+1、Android
+  flutter build apk --split-per-abi
+2、IOS
+  flutter build ios --release -> Product -Archive

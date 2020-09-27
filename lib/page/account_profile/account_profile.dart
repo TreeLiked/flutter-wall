@@ -12,7 +12,6 @@ import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/component/flexible_detail_bar.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/tweet_delete_bottom_sheet.dart';
-import 'package:iap_app/component/widget_sliver_future_builder.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
@@ -34,7 +33,9 @@ import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 
@@ -72,6 +73,8 @@ class _AccountProfileState extends State<AccountProfile> {
     _initRefresh();
     _hisTweetController = EasyRefreshController();
     _onLoadHisTweet = _loadMoreData;
+    UMengUtil.userGoPage(UMengUtil.PAGE_ACCOUNT_PROFILE);
+
   }
 
   void _loadProfileInfo() async {
@@ -108,7 +111,6 @@ class _AccountProfileState extends State<AccountProfile> {
   }
 
   void _loadMoreData() async {
-    print("loadmore---------$_currentPage");
     List<BaseTweet> tweets = await _getTweets();
     print("${tweets.length}");
     if (!CollectionUtil.isListEmpty(tweets)) {
@@ -190,7 +192,10 @@ class _AccountProfileState extends State<AccountProfile> {
                   ],
                   flexibleSpace: ClipRRect(
                     borderRadius: BorderRadius.only(
-                        bottomLeft: const Radius.circular(5.0), bottomRight: const Radius.circular(5.0)),
+                        topLeft: Radius.zero,
+                        topRight: Radius.zero,
+                        bottomLeft: const Radius.circular(10.0),
+                        bottomRight: const Radius.circular(10.0)),
                     child: FlexibleDetailBar(
                         content: Container(
                           padding: EdgeInsets.only(top: ScreenUtil().setHeight(50)),
@@ -218,12 +223,12 @@ class _AccountProfileState extends State<AccountProfile> {
                               Gaps.vGap8,
                               Text(
                                 widget.nick,
-                                style: const TextStyle(fontSize: Dimens.font_sp16),
+                                style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
                               ),
                               Gaps.vGap10,
                               Text(
                                 account == null ? "" : account.signature ?? "",
-                                style: const TextStyle(fontSize: Dimens.font_sp13p5, color: Colors.white70),
+                                style: pfStyle.copyWith(fontSize: Dimens.font_sp13p5, color: Colors.white70),
                               ),
                             ],
                           )),
@@ -241,7 +246,8 @@ class _AccountProfileState extends State<AccountProfile> {
                               sigmaX: 4,
                             ),
                             child: Container(
-                              decoration: BoxDecoration(color: Colors.black12),
+                              decoration: BoxDecoration(
+                                  color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black12),
                               width: double.infinity,
                               height: double.infinity,
                             ),
@@ -253,7 +259,7 @@ class _AccountProfileState extends State<AccountProfile> {
                     margin: EdgeInsets.only(top: 20, left: 15.0, right: 20.0, bottom: 10),
                     child: account == null
                         ? SpinKitThreeBounce(
-                            color: Colors.amber,
+                            color: Colors.amber[600],
                             size: 20,
                           )
                         : Row(
@@ -273,6 +279,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                           text: _getCampusInfoText(),
                                           style: TextStyle(
                                               fontSize: Dimens.font_sp15,
+                                              fontFamily: TextConstant.PING_FANG_FONT,
                                               color: MyColorStyle.getTweetReplyBodyColor(context: context)))
                                     ]),
                                   )),
@@ -290,7 +297,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                         Text(
                                           "查看更多",
                                           style:
-                                              const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14),
+                                          pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14),
                                         ),
                                         Icon(Icons.arrow_right, color: Colors.grey)
                                       ],
@@ -308,7 +315,7 @@ class _AccountProfileState extends State<AccountProfile> {
                           constraints: BoxConstraints(maxHeight: 100),
                           child: Text(
                             '该用户暂未发布过内容',
-                            style: TextStyle(fontSize: Dimens.font_sp15, letterSpacing: 1.3),
+                            style: pfStyle.copyWith(fontSize: Dimens.font_sp15, letterSpacing: 1.3),
                           )),
                     )
                   : SliverList(
@@ -329,21 +336,12 @@ class _AccountProfileState extends State<AccountProfile> {
   }
 
   calGender(AccountDisplayInfo acc) {
-    int gender = -1;
-    if (acc == null) {
-      return gender;
-    }
-    if (acc.displaySex) {
-      if (!StringUtil.isEmpty(acc.gender)) {
-        String s = acc.gender.toUpperCase();
-        if (s == "MALE") {
-          gender = 0;
-        } else if (s == "FEMALE") {
-          gender = 1;
-        }
+    if (acc != null) {
+      if (acc.displaySex) {
+        return Gender.parseGender(acc.gender);
       }
     }
-    return gender;
+    return Gender.UNKNOWN;
   }
 
   String _getCampusInfoText() {
@@ -437,7 +435,7 @@ class _AccountProfileState extends State<AccountProfile> {
   _buildDetailProfileInfo() {
     if (account == null) {
       return Center(
-        child: Text("暂无可用信息"),
+        child: Text("暂无可用信息", style: pfStyle),
       );
     }
     return Container(
@@ -493,7 +491,7 @@ class _AccountProfileState extends State<AccountProfile> {
                 margin: const EdgeInsets.only(right: 10.0),
                 child: Text(
                   key,
-                  style: TextStyle(fontSize: Dimens.font_sp15, color: Colors.grey),
+                  style: pfStyle.copyWith(fontSize: Dimens.font_sp15, color: Colors.grey),
                 ),
               ),
               value,
@@ -519,7 +517,7 @@ class _AccountProfileState extends State<AccountProfile> {
                 Icon(icon.icon, size: 20, color: icon.color),
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
-                  child: Text(title, style: TextStyle(fontSize: Dimens.font_sp16)),
+                  child: Text(title, style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
                 )
               ],
             ),
@@ -534,7 +532,7 @@ class _AccountProfileState extends State<AccountProfile> {
     if (text == null || text.trim().length == 0) {
       text = "不可见";
     }
-    return Text(text);
+    return Text(text, style: pfStyle);
   }
 
   Widget _buildGenderWidget() {
@@ -547,7 +545,7 @@ class _AccountProfileState extends State<AccountProfile> {
             width: 20,
             height: 20,
             child: CircleAvatar(
-              backgroundColor: Colors.pinkAccent,
+              backgroundColor: Colors.pink[200],
               child: LoadAssetSvg(
                 'female',
                 width: 20,

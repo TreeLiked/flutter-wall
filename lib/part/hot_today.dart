@@ -16,9 +16,11 @@ import 'package:iap_app/model/media.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 
 class HotToday extends StatefulWidget {
@@ -50,6 +52,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   void initState() {
     super.initState();
     // _futureTask = getData();
+    UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX_HOT);
     _headerNotifier = LinkHeaderNotifier();
   }
 
@@ -180,10 +183,10 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                         children: [
                           TextSpan(
                               text: '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
-                              style: TextStyle(fontSize: 30)),
+                              style: pfStyle.copyWith(fontSize: Dimens.font_sp15 * 2)),
                           TextSpan(
                               text: '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
-                              style: TextStyle(fontSize: 16)),
+                              style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
                         ],
                       ),
                     ),
@@ -198,14 +201,14 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                           '精选20条校园最热门的内容，每半小时更新一次',
                           softWrap: true,
                           maxLines: 2,
-                          style: TextStyle(fontSize: Dimens.font_sp14, color: Colors.white70),
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70),
                         ),
                         Text(
                           '上次更新时间：' +
                               (hotTweet != null
                                   ? DateUtil.formatDate(hotTweet.lastFetched, format: "HH:mm").toString()
                                   : '暂未更新'),
-                          style: TextStyle(fontSize: 13, color: Colors.white60),
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Colors.white60),
                         )
                       ],
                     ),
@@ -252,7 +255,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
             )),
         Gaps.vGap16,
         Text('快去抢占热门吧~',
-            style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14, letterSpacing: 1.0)),
+            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
       ],
     );
   }

@@ -169,9 +169,12 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 AccountAvatar(
-                    avatarUrl: provider.account.avatarUrl,
+                    avatarUrl: provider.account.avatarUrl ?? PathConstant.DEFAULT_PROFILE,
                     whitePadding: true,
                     size: 70,
+                    gender: provider.account.profile == null
+                        ? Gender.UNKNOWN
+                        : Gender.parseGender(provider.account.profile.gender),
                     onTap: () async => {
                           if (await PermissionUtil.checkAndRequestPhotos(context))
                             {
@@ -190,7 +193,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                     onTap: () => NavigatorUtils.push(context, SettingRouter.accountInfoPage),
                     child: Container(
                         margin: const EdgeInsets.only(top: 15.0),
-                        child: Text(provider.account.nick,
+                        child: Text(provider.account.nick ?? "",
                             style:
                                 const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.bold)))),
                 GestureDetector(
@@ -198,7 +201,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                     child: Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.only(top: 15.0),
-                      child: Text(provider.account.signature,
+                      child: Text(provider.account.signature ?? "",
                           style: const TextStyle(fontSize: Dimens.font_sp14, color: Color(0xffaeb4bd))),
                     )),
               ],

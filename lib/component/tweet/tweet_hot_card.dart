@@ -72,7 +72,7 @@ class TweetHotCard extends StatelessWidget {
           Container(
             child: Text(
               idxStr,
-              style: TextStyle(
+              style: pfStyle.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: Dimens.font_sp16,
                   color: index <= 3
@@ -119,7 +119,7 @@ class TweetHotCard extends StatelessWidget {
                     selectionEnabled: false,
                     overflow: TextOverflow.ellipsis,
                     softWrap: true,
-                    style: TextStyle(fontSize: Dimens.font_sp15),
+                    style: pfStyle.copyWith(fontSize: Dimens.font_sp15),
                   ),
                 ],
               ))
@@ -150,7 +150,7 @@ class TweetHotCard extends StatelessWidget {
                     bold: false, anonymous: anonymous, context: context)),
             TextSpan(
                 text: ' 发表于${TimeUtil.getShortTime(ht.sentTime)}',
-                style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
+                style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
           ]),
         ),
       ),
@@ -166,10 +166,10 @@ class TweetHotCard extends StatelessWidget {
                   color: tweetTypeMap[type].color, fontSize: Dimens.font_sp12, fontWeight: FontWeight.w500),
             ),
             Padding(
-                padding: const EdgeInsets.only(right: 20),
+                padding: const EdgeInsets.only(right: 10),
                 child: Text(
                   '热度 ${ht.hot}',
-                  style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp12),
+                  style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp12),
                 ))
           ],
         ),

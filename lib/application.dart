@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model/account.dart';
@@ -86,4 +87,5 @@ class Application {
   static void calTweetImageWidth() {
 
   }
+
 }

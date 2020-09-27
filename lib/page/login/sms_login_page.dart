@@ -237,7 +237,9 @@ class _SMSLoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("登录后即可展示自己", style: TextStyles.textBold24),
+          Text("登录后即可加入Wall", style: TextStyles.textBold24),
+          // Gaps.vGap5,
+          // Text("与上千万大学生发掘精彩", style: TextStyles.textBold14),
           _renderSubBody(),
           Gaps.vGap30,
           Container(

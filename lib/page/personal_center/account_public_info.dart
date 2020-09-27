@@ -69,7 +69,7 @@ class _AccountPrivateInfoPageState extends State<AccountPrivateInfoPage> {
               Utils.displayDialog(
                   context,
                   SimpleConfirmDialog(
-                      '公开信息说明', '您可以对所有的信息进行编辑\n\n我们会确保这些信息不被泄漏\n\n或者您可以在隐私设置中选择哪些信息公开在个人资料页面'));
+                      '公开信息说明', '您可以对所有的信息进行编辑，我们会确保这些信息不被泄漏。\n或者您可以在隐私设置中选择哪些信息公开在个人资料页面。'));
             }),
         body: _profileFutureContainer());
   }

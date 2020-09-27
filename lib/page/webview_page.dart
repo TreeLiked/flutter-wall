@@ -6,6 +6,7 @@ import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -73,7 +74,7 @@ class _WebViewPageState extends State<WebViewPage> {
             child: Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
-                  title: Text("${widget.title}"),
+                  title: Text("${widget.title}", style: pfStyle),
                   leading: IconButton(
                     onPressed: () {
                       NavigatorUtils.goBack(context);

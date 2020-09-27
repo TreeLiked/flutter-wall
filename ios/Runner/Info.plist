@@ -42,7 +42,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSCameraUsageDescription</key>
-	<string>“Wall”请求在您使用期间获取您的相机权限，以上传头像或发送图片</string>
+	<string>“Wall”请求在您使用期间获取您的相机权限，以上传头像或发表图片内容</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -52,7 +52,7 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像或发送图片</string>
+	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像或发表图片内容</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Not Used</string>
 	<key>UILaunchStoryboardName</key>

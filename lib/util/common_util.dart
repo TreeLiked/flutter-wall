@@ -193,7 +193,7 @@ class Utils {
       clearMemoryCacheIfFailed: true,
       enableLoadState: true,
       shape: BoxShape.rectangle,
-      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+      // borderRadius: BorderRadius.all(Radius.circular(15.0)),
       loadStateChanged: (state) {
         switch (state.extendedImageLoadState) {
           case LoadState.loading:

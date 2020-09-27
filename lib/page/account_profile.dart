@@ -585,7 +585,6 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   }
 
   void _loadMoreData() async {
-    print("loadmore---------$_currentPage");
     List<BaseTweet> tweets = await _getTweets();
     print("${tweets.length}");
     if (!CollectionUtil.isListEmpty(tweets)) {

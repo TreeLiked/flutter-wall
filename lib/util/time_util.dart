@@ -1,4 +1,3 @@
-
 import 'package:common_utils/common_utils.dart';
 import 'package:flustars/flustars.dart';
 
@@ -25,13 +24,11 @@ class TimeUtil {
         }
         // 同一天显示上午下午
         return timeInDay(dt.hour) +
-            (dt.minute >= 10
-                ? "${dt.hour}:${dt.minute}"
-                : "${dt.hour}:0${dt.minute}");
+            (dt.minute >= 10 ? "${dt.hour}:${dt.minute}" : "${dt.hour}:0${dt.minute}");
       } else {
         if (DateUtil.isYesterdayByMs(tarMs, nowMs)) {
           // 如果小于24小时，显示昨天
-          return "昨天 " + timeInDay(dt.hour) + dt.hour.toString() + "时";
+          return "昨天" + timeInDay(dt.hour) + dt.hour.toString() + "时";
         } else {
           if (dt.year == DateTime.now().year) {
             // 同一年
@@ -45,6 +42,10 @@ class TimeUtil {
         }
       }
     }
+  }
+
+  static String getMonth(DateTime dt, {bool zeroFill = true}) {
+    dt.month;
   }
 
   static String timeInDay(int hour) {
@@ -67,5 +68,17 @@ class TimeUtil {
   // HH时mm分
   static String HHmm(DateTime dt) {
     return DateUtil.formatDate(dt, format: DateFormats.zh_h_m);
+  }
+
+  static bool sameYear(DateTime dt) {
+    return dt.year == DateTime.now().year;
+  }
+
+  static bool sameMonthAndYear(DateTime dt) {
+    return sameYear(dt) && dt.month == DateTime.now().month;
+  }
+
+  static bool sameDayAndYearMonth(DateTime dt) {
+    return sameMonthAndYear(dt) && dt.day == DateTime.now().day;
   }
 }

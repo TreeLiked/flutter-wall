@@ -13,6 +13,7 @@ TweetAccount _$TweetAccountFromJson(Map<String, dynamic> json) {
     ..signature = json['signature'] as String
     ..avatarUrl = json['avatarUrl'] as String
     ..institute = json['institute'] as String
+    ..gender = json['gender'] as String
     ..cla = json['cla'] as String;
 }
 
@@ -23,5 +24,6 @@ Map<String, dynamic> _$TweetAccountToJson(TweetAccount instance) =>
       'signature': instance.signature,
       'avatarUrl': instance.avatarUrl,
       'institute': instance.institute,
+      'gender': instance.gender,
       'cla': instance.cla
     };

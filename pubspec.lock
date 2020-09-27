@@ -203,7 +203,14 @@ packages:
       name: device_info
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.2+4"
+    version: "0.4.2+8"
+  device_info_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   dio:
     dependency: "direct main"
     description:
@@ -384,7 +391,7 @@ packages:
       name: fluttertoast
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.0.1"
+    version: "7.1.1"
   front_end:
     dependency: transitive
     description:
@@ -936,6 +943,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
+  umeng_analytics_plugin:
+    dependency: "direct main"
+    description:
+      name: umeng_analytics_plugin
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.3"
   unicorndial:
     dependency: "direct main"
     description:
@@ -977,7 +991,7 @@ packages:
       name: webview_flutter
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.22+1"
+    version: "0.3.24"
   xml:
     dependency: transitive
     description:

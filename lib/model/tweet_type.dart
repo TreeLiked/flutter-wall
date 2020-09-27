@@ -143,10 +143,10 @@ class TweetTypeEntity {
 
   static const SHARE = const TweetTypeEntity(
       iconData: Icons.star_half,
-      iconColor: Color(0xff0acffe),
+      iconColor: Color(0xff63B8FF),
       intro: "快乐就要分享，分享了就更快乐",
       name: "SHARE",
-      color: Color(0xff0acffe),
+      color: Color(0xff63B8FF),
       zhTag: "分享");
 
   static const LOST_AND_FOUND = const TweetTypeEntity(

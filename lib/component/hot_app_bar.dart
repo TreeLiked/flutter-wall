@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/part/hot_today.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
@@ -50,7 +51,7 @@ class HotAppBarWidget extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
           title,
-          style: TextStyle(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.bold),
+          style: pfStyle.copyWith(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.w500),
         ),
         flexibleSpace: Container(
           color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,

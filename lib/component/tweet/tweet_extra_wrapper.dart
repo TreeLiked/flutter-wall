@@ -33,7 +33,7 @@ class TweetCardExtraWrapper extends StatefulWidget {
   final BaseTweet tweet;
   final bool displayPraise;
   final bool canPraise;
-  final bool displayCommnet;
+  final bool displayComment;
 
   // 点击某一条评论回调 homepage textField
   final onClickComment;
@@ -43,7 +43,7 @@ class TweetCardExtraWrapper extends StatefulWidget {
       this.onClickComment,
       this.canPraise = false,
       this.displayPraise = false,
-      this.displayCommnet = false});
+      this.displayComment = false});
 
   @override
   State<StatefulWidget> createState() {
@@ -68,7 +68,7 @@ class _TweetCardExtraWrapper extends State<TweetCardExtraWrapper> {
         Gaps.vGap8,
         widget.displayPraise ? TweetPraiseWrapper(tweet, prefixIcon: true) : Gaps.empty,
         widget.displayPraise ? Gaps.vGap8 : Gaps.empty,
-        widget.displayCommnet
+        widget.displayComment
             ? TweetReplyWrapperSimple(tweet, widget.onClickComment)
             : Gaps.empty,
       ],

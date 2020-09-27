@@ -11,6 +11,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
+import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/colors.dart';
@@ -109,20 +110,20 @@ class TweetCard2 extends StatelessWidget {
                       tweet.anonymous,
                       tweet.sentTime,
                       myNickClickable: this.myNickClickable,
-
+                      timeRight: this.needLeftProfile,
                       // official: tweet.account.off,
                     ),
-                    Gaps.vGap5,
                     TweetBodyWrapper(tweet.body, maxLine: 3, fontSize: Dimens.font_sp15, height: 1.6),
                     TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
                     displayLink ? TweetLinkWrapper(tweet) : Gaps.empty,
                     Gaps.vGap8,
 
-                    TweetCampusWrapper(tweet.account.institute, tweet.account.cla, tweet.type),
+                    TweetCampusWrapper(
+                        tweet.account.institute, tweet.account.cla, tweet.type, tweet.anonymous),
                     displayExtra
                         ? TweetCardExtraWrapper(
                             displayPraise: displayPraise,
-                            displayCommnet: displayComment,
+                            displayComment: displayComment,
                             tweet: tweet,
                             canPraise: canPraise,
                             onClickComment: onClickComment)
@@ -202,6 +203,7 @@ class TweetCard2 extends StatelessWidget {
 
   Widget _profileContainer() {
     bool anonymous = tweet.anonymous;
+    Gender gender = anonymous ? Gender.UNKNOWN : Gender.parseGender(tweet.account.gender);
     return GestureDetector(
         onTap: () => anonymous || !myNickClickable ? null : goAccountDetail2(context, tweet.account, true),
         child: Container(
@@ -211,6 +213,7 @@ class TweetCard2 extends StatelessWidget {
               ? (tweet.account.avatarUrl ?? PathConstant.AVATAR_FAILED)
               : PathConstant.ANONYMOUS_PROFILE,
           size: SizeConstant.TWEET_PROFILE_SIZE,
+          gender: gender,
         )));
   }
 

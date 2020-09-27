@@ -21,6 +21,7 @@ import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class NotificationIndexPage extends StatefulWidget {
@@ -54,6 +55,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   void initState() {
     super.initState();
     // 校验通知权限
+    UMengUtil.userGoPage(UMengUtil.PAGE_NOTI_INDEX);
     PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
     _loopQueryInteraction(true);
     _loopQuerySystem(true);

@@ -72,7 +72,7 @@ class _AccountSchoolInfoPageState extends State<AccountSchoolInfoPage> {
               Utils.displayDialog(
                   context,
                   SimpleConfirmDialog(
-                      '学校信息说明', '您可以对所在学校信息进行编辑\n\n我们会确保这些信息不被泄漏\n\n或者您可以在隐私设置中选择哪些信息公开在个人资料页面'));
+                      '学校信息说明', '您可以对所在学校信息进行编辑，我们会确保这些信息不被泄。\n或者您可以在隐私设置中选择哪些信息公开在个人资料页面。'));
             }),
         body: _profileFutureContainer());
   }

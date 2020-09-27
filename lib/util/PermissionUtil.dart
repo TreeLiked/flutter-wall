@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,7 @@ class PermissionUtil {
       }
       return false;
     }
-    if (needCamera) {
+    if (needCamera && Platform.isAndroid) {
       if (!await Permission.camera.isGranted) {
         if (await Permission.camera.isUndetermined) {
           return Permission.camera.request().isGranted;

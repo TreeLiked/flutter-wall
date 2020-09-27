@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/component/square_tag.dart';
 import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
@@ -22,19 +24,45 @@ class TweetTypeWrapper extends StatelessWidget {
       t = fallbackTweetType;
     }
     TweetTypeEntity typeEntity = tweetTypeMap[t];
-    return SquareTag(
-      '${typeEntity.zhTag}',
-      prefixIcon: Icon(
-        typeEntity.iconData,
-        size: 16.0,
-        color: typeEntity.color,
-      ),
-      backgroundColor: typeEntity.color.withAlpha(70),
-      textStyle: TextStyle(color: typeEntity.color, fontSize: 12.0),
-      horizontalPadding: 15.0,
-      verticalPadding: 5.0,
-      roundRadius: 8.0,
-    );
+
+    bool isDark = ThemeUtils.isDark(context);
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.3),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.black12 : Color(0xffF3F6F8),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+                decoration: BoxDecoration(
+                    color: isDark ? typeEntity.color.withAlpha(139) : typeEntity.color,
+                    shape: BoxShape.circle),
+                padding: const EdgeInsets.all(5.0),
+                child: Text("#",
+                    style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.white, fontSize: Dimens.font_sp12))),
+            Gaps.hGap4,
+            Text('${typeEntity.zhTag}..',
+                style: TextStyle(color: typeEntity.color, fontSize: Dimens.font_sp12))
+          ],
+        ));
+    // return SquareTag(
+    //   '${typeEntity.zhTag}',
+    //   prefixIcon: Container(
+    //     decoration: BoxDecoration(
+    //       shape: BoxShape.circle,
+    //       color: Colors.lightBlueAccent
+    //     ),
+    //     child: Text("#", style: TextStyle(color: Colors.white),),
+    //   ),
+    //   backgroundColor: Colors.grey.withAlpha(100),
+    //   textStyle: TextStyle(color: typeEntity.color, fontSize: 12.0),
+    //   horizontalPadding: 15.0,
+    //   verticalPadding: 5.0,
+    //   roundRadius: 4.0,
+    // );
     return Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         margin: EdgeInsets.only(left: leftMargin, right: rightMargin),

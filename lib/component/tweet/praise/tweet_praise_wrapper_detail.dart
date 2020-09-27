@@ -7,6 +7,7 @@ import 'package:iap_app/common-widget/my_future_builder.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -44,7 +45,7 @@ class TweetPraiseWrapper2 extends StatelessWidget {
       Account account = t[i];
       spans.add(TextSpan(
           text: "${account.nick}" + (i != len - 1 ? '、' : ' '),
-          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context),
+          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context).copyWith(fontFamily: TextConstant.PING_FANG_FONT),
           recognizer: TapGestureRecognizer()
             ..onTap = () => NavigatorUtils.goAccountProfile2(context, account)));
     }
@@ -58,7 +59,7 @@ class TweetPraiseWrapper2 extends StatelessWidget {
       int diff = t.length - limit;
       items.add(Text(
         " 等共$diff人觉得很赞",
-        style: TextStyle(fontSize: 13),
+        style: pfStyle.copyWith(fontSize: Dimens.font_sp13),
       ));
     }
 
@@ -131,7 +132,7 @@ class TweetReplyWrapperView extends NetNormalWidget<List<Account>> {
           margin: const EdgeInsets.only(top: 10.0),
           alignment: Alignment.center,
           child: Text('快来第一个点赞吧',
-              style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13p5)));
+              style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13p5).copyWith(fontFamily: TextConstant.PING_FANG_FONT)));
     }
 //    return Text('评论${t.length}',style: TextStyle(color: Colors.black),);
     int limit = GlobalConfig.MAX_DISPLAY_PRAISE_DETAIL;
@@ -145,7 +146,7 @@ class TweetReplyWrapperView extends NetNormalWidget<List<Account>> {
       Account account = t[i];
       spans.add(TextSpan(
           text: "${account.nick}" + (i != len - 1 ? '、' : ' '),
-          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context),
+          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context).copyWith(fontFamily: TextConstant.PING_FANG_FONT),
           recognizer: TapGestureRecognizer()
             ..onTap = () => NavigatorUtils.goAccountProfile2(context, account)));
     }
@@ -159,7 +160,7 @@ class TweetReplyWrapperView extends NetNormalWidget<List<Account>> {
       int diff = t.length - limit;
       items.add(Text(
         " 等共$diff人觉得很赞",
-        style: TextStyle(fontSize: 13),
+        style: pfStyle.copyWith(fontSize: Dimens.font_sp13),
       ));
     }
 

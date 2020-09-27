@@ -42,9 +42,9 @@ class MainMessageItem extends StatefulWidget {
 }
 
 class _MainMessageItemState extends State<MainMessageItem> {
-
   final double iconSize = 45.0;
   double lineHeight = 47.5;
+
   @override
   Widget build(BuildContext context) {
     bool isDark = ThemeUtils.isDark(context);
@@ -88,7 +88,10 @@ class _MainMessageItemState extends State<MainMessageItem> {
                               children: <Widget>[
                                 Container(
                                   child: Text(widget.title,
-                                      style: const TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400,letterSpacing: 1.2),
+                                      style: pfStyle.copyWith(
+                                          fontSize: Dimens.font_sp16,
+                                          fontWeight: FontWeight.w400,
+                                          letterSpacing: 1.2),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1),
                                 ),
@@ -96,6 +99,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                     ? SimpleTag(
                                         widget.tagName,
                                         leftMargin: 5.0,
+                                        radius: 20.0,
                                       )
                                     : Container(width: 0),
                                 Expanded(
@@ -112,7 +116,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                               children: <Widget>[
                                 Expanded(
                                     child: Text(widget.body ?? "暂无消息",
-                                        style: TextStyle(
+                                        style: pfStyle.copyWith(
                                             fontSize: 14.0,
                                             fontWeight: FontWeight.w400,
                                             letterSpacing: 1.1,
@@ -136,9 +140,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                             )
                                           : Text(
                                               '${snapshot.data}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
+                                              style: pfStyle.copyWith(color: Colors.white),
                                             ),
                                     ),
                                   ],
@@ -191,7 +193,8 @@ class _MainMessageItemState extends State<MainMessageItem> {
                   children: <Widget>[
                     Container(
                       child: Text(widget.title,
-                          style: const TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400,letterSpacing: 1.1),
+                          style: const TextStyle(
+                              fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400, letterSpacing: 1.1),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1),
                     ),
@@ -199,6 +202,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                         ? SimpleTag(
                             widget.tagName,
                             leftMargin: 5.0,
+                            radius: 20.0,
                           )
                         : Gaps.empty,
                     Expanded(

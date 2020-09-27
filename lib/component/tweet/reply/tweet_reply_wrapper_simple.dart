@@ -33,8 +33,9 @@ class TweetReplyWrapperSimple extends StatelessWidget {
     int totalCount = 0;
     List<Widget> trWs = new List();
     bool isDark = ThemeUtils.isDark(context);
-    TextStyle style = isDark ? MyDefaultTextStyle.tweetReplyStyleDark() : MyDefaultTextStyle.tweetReplyStyleLight();
-    
+    TextStyle style =
+        isDark ? MyDefaultTextStyle.tweetReplyStyleDark() : MyDefaultTextStyle.tweetReplyStyleLight();
+
     for (int i = 0; i < len; i++) {
       if (totalCount == GlobalConfig.MAX_DISPLAY_REPLY) {
         break;
@@ -45,7 +46,8 @@ class TweetReplyWrapperSimple extends StatelessWidget {
           tweetAnonymous: tweet.anonymous,
           reply: dirTr,
           parentId: dirTr.id,
-          onTapReply: (displayNick) => _sendReply(2, dirTr.id, dirTr.account.id, tarAccNick: displayNick),
+          onTapReply: (displayNick) =>
+              _sendReply(2, dirTr.id, dirTr.account.id, tweet.account.id, tarAccNick: displayNick),
           bodyStyle: style));
       totalCount++;
       if (!CollectionUtil.isListEmpty(dirTr.children)) {
@@ -57,7 +59,8 @@ class TweetReplyWrapperSimple extends StatelessWidget {
               tweetAnonymous: tweet.anonymous,
               reply: tr,
               parentId: dirTr.id,
-              onTapReply: (displayNick) => _sendReply(2, dirTr.id, tr.account.id, tarAccNick: displayNick),
+              onTapReply: (displayNick) =>
+                  _sendReply(2, dirTr.id, tweet.account.id, tr.account.id, tarAccNick: displayNick),
               bodyStyle: style,
             ));
           }
@@ -109,7 +112,7 @@ class TweetReplyWrapperSimple extends StatelessWidget {
     );
   }
 
-  _sendReply(int type, int parentId, String tarAccId, {String tarAccNick}) {
+  _sendReply(int type, int parentId, String tarAccId, String replierId, {String tarAccNick}) {
     if (showReplyInputCb != null) {
       TweetReply tr = new TweetReply();
       tr.tweetId = tweet.id;
@@ -117,6 +120,7 @@ class TweetReplyWrapperSimple extends StatelessWidget {
       tr.parentId = parentId;
       tr.anonymous = false;
       tr.tarAccount = Account.fromId(tarAccId);
+      tr.account = Account.fromId(replierId);
       showReplyInputCb(tr, tarAccNick, tarAccId);
     }
   }

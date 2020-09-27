@@ -4,11 +4,13 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 
 class TweetCardHeaderWrapper extends StatelessWidget {
@@ -18,7 +20,6 @@ class TweetCardHeaderWrapper extends StatelessWidget {
   final DateTime tweetSent;
   final bool official;
   final bool myNickClickable;
-
 
   const TweetCardHeaderWrapper(this.account, this.anonymous, this.tweetSent,
       {this.canClick = true, this.official = false, this.myNickClickable = true});
@@ -131,29 +132,43 @@ class TweetSimpleHeader extends StatelessWidget {
   final bool official;
   final bool myNickClickable;
 
+  // 是否在右侧展示时间，否则在左侧(用户个人资料页面进来)
+  final bool timeRight;
 
   const TweetSimpleHeader(this.account, this.anonymous, this.tweetSent,
-      {this.canClick = true, this.official = false, this.myNickClickable = true});
+      {this.canClick = true, this.official = false, this.myNickClickable = true, this.timeRight = true});
 
   @override
   Widget build(BuildContext context) {
+    if (this.timeRight) {
+      return Container(
+          child: Row(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _nickContainer(context),
+//                  _signatureContainer(context),
+              ],
+            ),
+          ),
+          Container(child: _timeContainer(context))
+        ],
+      ));
+    }
+    // 否则从个人资料页面进来，更换header样式
     return Container(
         child: Row(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Expanded(
-          flex: 6,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _nickContainer(context),
-//                  _signatureContainer(context),
-            ],
-          ),
-        ),
-        Container(child: _timeContainer(context))
+        Container(margin: const EdgeInsets.only(bottom: 5.0), child: _timeLeftContainer(context))
       ],
     ));
   }
@@ -200,7 +215,7 @@ class TweetSimpleHeader extends StatelessWidget {
                 account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: true,
                 style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
-                    bold: true),
+                    bold: false),
               ),
             ));
   }
@@ -215,6 +230,60 @@ class TweetSimpleHeader extends StatelessWidget {
       softWrap: true,
       style: MyDefaultTextStyle.getTweetTimeStyle(context),
     );
+  }
+
+  Widget _timeLeftContainer(BuildContext context) {
+
+    if (tweetSent == null) {
+      return Container(height: 0);
+    }
+    bool dark = ThemeUtils.isDark(context);
+    List<TextSpan> spans = new List();
+
+    if (TimeUtil.sameDayAndYearMonth(tweetSent)) {
+      // 当天的内容
+      spans.add(
+        TextSpan(
+            text: '~ ' + TimeUtil.getShortTime(tweetSent) + ' ~',
+            style: pfStyle.copyWith(color: Colors.amber[600], fontSize: Dimens.font_sp14)),
+      );
+    } else {
+      if (TimeUtil.sameYear(tweetSent)) {
+        // 当年的内容
+        spans.add(
+          TextSpan(
+              text: '${tweetSent.day}',
+              style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
+        );
+        spans.add(
+          TextSpan(text: ' /', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
+        );
+        spans.add(
+          TextSpan(
+              text: '${tweetSent.month}月',
+              style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
+        );
+      } else {
+        // 今年之前的内容
+        spans.add(
+          TextSpan(
+              text: '${tweetSent.month}月${tweetSent.day}日',
+              style: pfStyle.copyWith(fontSize: Dimens.font_sp18, letterSpacing: 1.2)),
+        );
+        spans.add(
+          TextSpan(text: ' / ', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
+        );
+        spans.add(
+          TextSpan(
+              text: '${tweetSent.year}年', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
+        );
+      }
+    }
+    return RichText(
+        text: TextSpan(
+      style: pfStyle.copyWith(color: dark ? Colors.white54 : Colors.black87),
+      children: spans,
+    ));
   }
 
   Widget _signatureContainer(BuildContext context) {

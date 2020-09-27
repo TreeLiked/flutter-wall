@@ -13,20 +13,28 @@ import 'package:iap_app/util/toast_util.dart';
 class TRUtil {
   static void sendReplyCallback(State widget, BaseTweet tweet, TweetReply callbackReply) {}
 
-  static TweetReply assembleReply(BaseTweet tweet, String body, bool anonymous, bool direct, {int parentId,String tarAccountId}) {
+  static TweetReply assembleReply(BaseTweet tweet, String body, bool anonymous, bool direct,
+      {int parentId, String tarAccountId, TweetReply subReply}) {
+    if (subReply != null) {
+      subReply.body = body;
+      subReply.sentTime = DateTime.now();
+      return subReply;
+    }
+
     TweetReply reply = new TweetReply();
     reply.type = direct ? 1 : 2;
     reply.tweetId = tweet.id;
     reply.anonymous = anonymous;
     reply.account = Account.fromId(Application.getAccountId);
     reply.body = body;
+    reply.sentTime = DateTime.now();
+
     if (direct) {
       reply.parentId = tweet.id;
       reply.tarAccount = Account.fromId(tweet.account.id);
     } else {
       reply.parentId = parentId;
       reply.tarAccount = Account.fromId(tarAccountId);
-
     }
     return reply;
   }

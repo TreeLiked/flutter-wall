@@ -51,9 +51,9 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   Widget build(BuildContext context) {
     tweetProvider = Provider.of<TweetProvider>(context);
     return Scaffold(
-//      bottomSheet: Container(
-//        child: Text("12333213"),
-//      ),
+      // bottomSheet: Container(
+      //   child: Text("12333213"),
+      // ),
       body: Consumer<TweetProvider>(builder: (context, provider, _) {
         var tweets = provider.displayTweets;
         return Listener(
@@ -109,17 +109,18 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
                               displayComment: true,
                               displayLink: true,
                               canPraise: true,
-                              onClickComment: () {
+                              onClickComment: (TweetReply subReply, String targetNick, String targetAccountId) {
                                 _bottomSheetController =
                                     Scaffold.of(context).showBottomSheet((context) => Container(
                                             child: TweetIndexCommentWrapper(
-                                          replyType: 1,
-                                          showAnonymous: true,
-                                          hintText: '评论',
+                                          // 如果是子回复 ，reply不为空
+                                          replyType: subReply == null ? 1 : 2,
+                                          showAnonymous: subReply == null,
+                                          hintText: targetNick != null ? '回复: $targetNick' : '评论',
                                           onSend: (String value, bool anonymous) async {
                                             TweetReply reply = TRUtil.assembleReply(
-                                                tweets[index], value, anonymous, true);
-                                            reply.sentTime = DateTime.now();
+                                                tweets[index], value, anonymous, true, subReply: subReply);
+
                                             await TRUtil.publicReply(context, reply,
                                                 (bool success, TweetReply newReply) {
                                               if (success) {
@@ -143,7 +144,9 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   void closeReplyInput() {
-    _bottomSheetController?.close();
+    if (_bottomSheetController != null) {
+      _bottomSheetController?.close();
+    }
   }
 
   Future<void> _onRefresh(BuildContext context) async {

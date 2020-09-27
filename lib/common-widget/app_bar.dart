@@ -4,6 +4,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 /// 自定义AppBar
@@ -59,8 +60,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: pfStyle.copyWith(
+                          fontSize: Dimens.font_sp16,
                           letterSpacing: 1.2,
                           color:
                               _overlayStyle == SystemUiOverlayStyle.light ? Colours.dark_text : Colours.text,

@@ -30,11 +30,13 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -113,6 +115,7 @@ class _HomePageState extends State<HomePage>
     });
 
     firstRefreshMessage();
+    UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
   }
 
   void firstRefreshMessage() async {
@@ -266,6 +269,7 @@ class _HomePageState extends State<HomePage>
                             return IconButton(
                                 onPressed: () {
                                   BottomSheetUtil.showBottomSheet(context, 0.75, PersonalCenter());
+                                  UMengUtil.userGoPage(UMengUtil.PAGE_PC);
                                 },
                                 icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
                           },
@@ -274,14 +278,15 @@ class _HomePageState extends State<HomePage>
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
                         child: TabBar(
-                          labelStyle:
-                              TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.amber),
-                          unselectedLabelStyle: TextStyle(fontSize: 14, color: Colors.black),
+                          labelStyle: pfStyle.copyWith(
+                              fontSize: 20, fontWeight: FontWeight.w500, color: Colors.amber[600]),
+                          unselectedLabelStyle:
+                              pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
                           indicatorSize: TabBarIndicatorSize.label,
                           indicator: const UnderlineTabIndicator(
                               borderSide: const BorderSide(color: Colors.amber, width: 2.0)),
                           controller: _tabController,
-                          labelColor: isDark ? Color(0xffbababa) : Colors.black,
+                          labelColor: isDark ? Colors.white30 : Colors.black,
                           onTap: (index) {
                             if (index == _currentTabIndex) {
                               if (index == 0) {
@@ -352,45 +357,49 @@ class _HomePageState extends State<HomePage>
             ),
             _displayCreate
                 ? Positioned(
-                    left: stickLeft ? 20.0 : null,
-                    right: stickLeft ? null : 20.0,
+                    left: stickLeft ? 3.9 : null,
+                    right: stickLeft ? null : 20,
                     top: floatingOffset.dy,
-                    child: Draggable(
-                      feedback: FloatingActionButton(
-                          child: Icon(
-                            Icons.add_a_photo,
-                            color: isDark ? Colors.amber : Colors.white,
-                          ),
-                          backgroundColor: isDark ? Colors.black54 : Colors.amber[300],
-                          elevation: 0.0,
-                          onPressed: null),
-                      child: FloatingActionButton(
-                          child: Icon(
-                            Icons.add_a_photo,
-                            color: isDark ? Colors.amber : Colors.white,
-                          ),
-                          backgroundColor: isDark ? Colors.black54 : Colors.amber[300],
-                          elevation: 10.0,
-                          splashColor: Colors.amber,
-                          onPressed: () => NavigatorUtils.push(context, Routes.create,
-                              transitionType: TransitionType.fadeIn)),
+                    child: Container(
+                      width: 55,
+                      height: 55,
+                      child: Draggable(
+                        feedback: FloatingActionButton(
+                            child: Icon(
+                              Icons.add_a_photo,
+                              color: isDark ? Colors.amber[300] : Colors.amberAccent,
+                            ),
+                            backgroundColor: isDark ? Colors.black38 : Colors.white70,
+                            splashColor: Colors.white12,
+                            elevation: 10.0,
+                            onPressed: null),
+                        child: FloatingActionButton(
+                            child: Icon(
+                              Icons.add_a_photo,
+                              color: isDark ? Colors.amber[300] : Colors.amberAccent,
+                            ),
+                            backgroundColor: isDark ? Colors.black38 : Colors.white70,
+                            elevation: 10.0,
+                            splashColor: Colors.white12,
+                            onPressed: () => NavigatorUtils.push(context, Routes.create,
+                                transitionType: TransitionType.fadeIn)),
 
-                      //拖动过程中，在原来位置停留的Widget，设定这个可以保留原本位置的残影，如果不需要可以直接设置为Container()
-                      childWhenDragging: Container(),
-                      //拖动结束后的Widget
-                      onDragEnd: (details) {
-                        double targetX = details.offset.dx;
-                        double targetY = details.offset.dy;
-                        if (targetY >= Application.screenHeight - 150 || targetY <= 20) {
-                          targetY = Application.screenHeight - 150;
-                        }
-                        setState(() {
-                          stickLeft = targetX < middle;
-                          floatingOffset = new Offset(0.0, targetY);
-                        });
-                      },
-                    ),
-                  )
+                        //拖动过程中，在原来位置停留的Widget，设定这个可以保留原本位置的残影，如果不需要可以直接设置为Container()
+                        childWhenDragging: Container(),
+                        //拖动结束后的Widget
+                        onDragEnd: (details) {
+                          double targetX = details.offset.dx;
+                          double targetY = details.offset.dy - 50;
+                          if (targetY >= Application.screenHeight - 180 || targetY <= 20) {
+                            targetY = Application.screenHeight - 180;
+                          }
+                          setState(() {
+                            stickLeft = targetX < middle;
+                            floatingOffset = new Offset(0.0, targetY);
+                          });
+                        },
+                      ),
+                    ))
                 : Gaps.empty,
           ],
         ),

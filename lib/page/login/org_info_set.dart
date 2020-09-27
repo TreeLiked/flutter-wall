@@ -257,7 +257,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                                 _cId = list[index].id;
                                               });
                                             },
-                                            title: new Text(list[index].name),
+                                            title: new Text(list[index].name,style: pfStyle),
                                           );
                                         });
                                   }
@@ -278,7 +278,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                   text: TextSpan(children: [
                     TextSpan(
                         text: '当前选择：\n\n',
-                        style: TextStyle(
+                        style: pfStyle.copyWith(
                             color: Colors.black,
                             fontSize: Dimens.font_sp18,
                             letterSpacing: 1.2,
@@ -286,10 +286,10 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                     TextSpan(
                         text: '$_cName\n\n\n',
                         style:
-                            TextStyle(color: Colors.black, fontSize: Dimens.font_sp16, letterSpacing: 1.1)),
+                        pfStyle.copyWith(color: Colors.black, fontSize: Dimens.font_sp16, letterSpacing: 1.1)),
                     TextSpan(
                       text: '重新选择',
-                      style: TextStyle(
+                      style: pfStyle.copyWith(
                           color: Theme.of(context).accentColor,
                           fontSize: Dimens.font_sp16,
                           fontWeight: FontWeight.bold,

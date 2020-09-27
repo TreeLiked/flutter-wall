@@ -5,6 +5,7 @@ import 'package:iap_app/component/square_tag.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
+import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
@@ -23,12 +24,14 @@ class TweetStatisticsWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const style  = TextStyle(fontFamily: TextConstant.PING_FANG_FONT,color: Colors.grey,fontSize: Dimens.font_sp13);
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          OptionItem("tweet/view", Text("${tweet.views + 1}")),
-          OptionItem(null, Text("${tweet.praise == 0 ? '' : tweet.praise}"),
+          OptionItem("tweet/view", Text("${tweet.views + 1}", style:  style)),
+          // Text("浏览${tweet.views + 1}", style:  style.copyWith(fontSize: Dimens.font_sp12)),
+          OptionItem(null, Text("${tweet.praise == 0 ? '' : tweet.praise}",style:  style),
               prefix: LoadAssetIcon(
                 tweet.loved ? PathConstant.ICON_PRAISE_ICON_PRAISE : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
                 width: 17,
@@ -39,11 +42,11 @@ class TweetStatisticsWrapper extends StatelessWidget {
 
           tweet.enableReply
               ? OptionItem(
-                  null, Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭"),
+                  null, Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭", style:  style),
                   prefix: LoadAssetIcon(PathConstant.ICON_COMMENT_ICON,
                       width: 17, height: 17, color: Colors.grey),
-                  onTap: () => onClickComment == null ? null : onClickComment())
-              : Text("评论关闭", style: TextStyle(color: Color(0xffCDAD00), fontSize: Dimens.font_sp13p5))
+                  onTap: () => onClickComment == null ? null : onClickComment(null, null, null))
+              : Text("评论关闭", style: style.copyWith(color: Color(0xffCDAD00), fontSize: Dimens.font_sp13p5))
 //          OptionItem("tweet/comment",
 //              Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭")),
         ],

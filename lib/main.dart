@@ -8,21 +8,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/page/common/org_sel_page.dart';
-import 'package:iap_app/page/login/account_info_set.dart';
-import 'package:iap_app/page/login/org_info_set.dart';
 import 'package:iap_app/page/splash_page.dart';
-import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/JPushUtil.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -57,14 +53,16 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     final Router router = Router();
     Routes.configureRoutes(router);
     Application.router = router;
-
   }
 
   @override
   void initState() {
     super.initState();
 
+    JPushUtil.jPush = _jPush;
     initPlatformState();
+    initUMengAnalytics();
+
     print('------------------main 生产环境=${AlmondDonuts.inProduction}--------------------------');
     _jPush.getRegistrationID().then((rid) {
       if (rid != null && rid.length != 0) {
@@ -73,19 +71,19 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       }
     });
 
-//    var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
-//    var localNotification = LocalNotification(
-//        id: 234,
-//        title: 'fadsfa',
-//        buildId: 1,
-//        content: 'fdas',
-//        fireTime: fireDate,
-//        subtitle: 'fasf',
-//        badge: 5,
-//        extra: {"fa": "0"});
-//    _jPush.sendLocalNotification(localNotification).then((res) {
-//      print(res);
-//    });
+   // var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
+   // var localNotification = LocalNotification(
+   //     id: 234,
+   //     title: 'fadsfa',
+   //     buildId: 1,
+   //     content: 'fdas',
+   //     fireTime: fireDate,
+   //     subtitle: 'fasf',
+   //     badge: 5,
+   //     extra: {"fa": "0"});
+   // _jPush.sendLocalNotification(localNotification).then((res) {
+   //   print(res);
+   // });
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Color(0xff000000), statusBarIconBrightness: Brightness.dark));
@@ -124,6 +122,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
         print("flutter onReceiveMessage: $message");
       },
     );
+
   }
 
   _handleJump(Map<String, dynamic> extraMap) {
@@ -161,6 +160,10 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     }
 //    _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
     if (!mounted) return;
+  }
+
+  Future<void> initUMengAnalytics() async{
+    await UMengUtil.initUMengAnalytics();
   }
 
   @override

@@ -12,7 +12,7 @@ class AccountAvatar extends StatelessWidget {
   final String avatarUrl;
   final GestureTapCallback onTap;
   final bool cache;
-  final int gender;
+  final Gender gender;
 
   const AccountAvatar(
       {Key key,
@@ -20,12 +20,13 @@ class AccountAvatar extends StatelessWidget {
       this.size = SizeConstant.TWEET_PROFILE_SIZE,
       this.onTap,
       this.cache = false,
-      this.gender = -1,
+      this.gender = Gender.UNKNOWN,
       this.whitePadding = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double genderFloatSize = (size / 3.5);
     return Stack(children: [
       Container(
           decoration: BoxDecoration(
@@ -57,34 +58,34 @@ class AccountAvatar extends StatelessWidget {
                               fit: BoxFit.fitHeight,
                             ))),
           )),
-      (gender == 0 || gender == 1)
+      (Gender.MALE == gender || Gender.FEMALE == gender)
           ? Positioned(
               bottom: 0,
-              right: 10,
-              child: gender == 0
+              right: 0,
+              child: gender == Gender.MALE
                   ? Container(
-                      width: 15,
-                      height: 15,
+                      width: genderFloatSize,
+                      height: genderFloatSize,
                       child: CircleAvatar(
                         backgroundColor: Colors.blueAccent,
                         child: LoadAssetSvg(
                           'male',
-                          width: 15,
-                          height: 15,
+                          width: genderFloatSize,
+                          height: genderFloatSize,
                           color: Colors.white,
                           fit: BoxFit.cover,
                         ),
                       ),
                     )
                   : Container(
-                      width: 15,
-                      height: 15,
+                      width: genderFloatSize,
+                      height: genderFloatSize,
                       child: CircleAvatar(
-                        backgroundColor: Colors.pinkAccent,
+                        backgroundColor: Colors.pink[200],
                         child: LoadAssetSvg(
                           'female',
-                          width: 15,
-                          height: 15,
+                          width: genderFloatSize,
+                          height: genderFloatSize,
                           color: Colors.white,
                           fit: BoxFit.cover,
                         ),

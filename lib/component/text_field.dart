@@ -118,7 +118,7 @@ class _MyTextFieldState extends State<MyTextField> {
 //          style:
 //              TextStyle(color: widget.keyboardType == TextInputType.text ? Colors.black87 : Colors.white70),
 
-            style: TextStyle(fontSize: Dimens.font_sp16),
+            style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
             textInputAction: TextInputAction.done,
             keyboardType: widget.keyboardType,
             // 数字、手机号限制格式为0到9(白名单)， 密码限制不包含汉字（黑名单）

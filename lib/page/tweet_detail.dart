@@ -22,6 +22,7 @@ import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
+import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -44,6 +45,7 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/tweet_reply_util.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart' as prefix0;
 import 'package:provider/provider.dart';
 
@@ -107,6 +109,9 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
 
 //    _getPraiseTask = _loadData();
     _fetchTweetIfNullAndFetchExtra();
+
+    UMengUtil.userGoPage(
+        widget._fromHot ? UMengUtil.PAGE_TWEET_INDEX_DETAIL_HOT : UMengUtil.PAGE_TWEET_INDEX_DETAIL);
   }
 
   _fetchTweetIfNullAndFetchExtra() async {
@@ -191,6 +196,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                     avatarUrl: !t.anonymous ? t.account.avatarUrl : PathConstant.ANONYMOUS_PROFILE,
                     size: SizeConstant.TWEET_PROFILE_SIZE,
                     cache: true,
+                    gender: t.anonymous ? Gender.UNKNOWN : Gender.parseGenderByTweetAccount(t.account),
                     whitePadding: false))
           ],
         ),
@@ -207,11 +213,12 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                           ..onTap = t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
                         text: t.anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : (t.account.nick ?? ""),
                         style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                            context, SizeConstant.TWEET_NICK_SIZE + 3,
-                            anonymous: t.anonymous)),
+                                context, SizeConstant.TWEET_NICK_SIZE + 3,
+                                anonymous: t.anonymous)
+                            .copyWith(fontFamily: TextConstant.PING_FANG_FONT)),
                   ])),
               Text(TimeUtil.getShortTime(widget._tweet.sentTime),
-                  style: TextStyle(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
+                  style: pfStyle.copyWith(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
             ],
           ),
         )
@@ -406,12 +413,12 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         child: TitleItemWrapper(
             Text(
               "点赞",
-              style:
-                  TextStyle(color: ColorConstant.TWEET_DETAIL_PRAISE_ROW_COLOR, fontSize: Dimens.font_sp14),
+              style: pfStyle.copyWith(
+                  color: ColorConstant.TWEET_DETAIL_PRAISE_ROW_COLOR, fontSize: Dimens.font_sp14),
             ),
             subTitleText: tweet.praise > 0
                 ? Text("${tweet.praise}",
-                    style: TextStyle(
+                    style: pfStyle.copyWith(
                         color: ColorConstant.getTweetTimeColor(context), fontSize: Dimens.font_sp13p5))
                 : null,
             suffixWidget: GestureDetector(
@@ -433,12 +440,13 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         child: TitleItemWrapper(
           Text(
             "评论",
-            style: TextStyle(color: ColorConstant.TWEET_DETAIL_REPLY_ROW_COLOR, fontSize: Dimens.font_sp14),
+            style: pfStyle.copyWith(
+                color: ColorConstant.TWEET_DETAIL_REPLY_ROW_COLOR, fontSize: Dimens.font_sp14),
           ),
           subTitleText: tweet.replyCount > 0
               ? Text(
                   "${tweet.replyCount}",
-                  style: TextStyle(
+                  style: pfStyle.copyWith(
                       color: ColorConstant.getTweetTimeColor(context), fontSize: Dimens.font_sp13p5),
                 )
               : null,
@@ -571,7 +579,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         //标题居中
         title: Text(
           '详情',
-          style: const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.5),
+          style:
+              pfStyle.copyWith(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w500, letterSpacing: 1.2),
         ),
         elevation: 0.4,
         floating: true,

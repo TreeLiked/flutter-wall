@@ -6,7 +6,7 @@ import 'package:iap_app/util/theme_utils.dart';
 class ColorConstant {
   // 昵称颜色
   static const Color TWEET_NICK_COLOR = Color(0xff4575AB);
-  static const Color TWEET_NICK_COLOR_DARK = Color(0xff898989);
+  static const Color TWEET_NICK_COLOR_DARK = Color(0xff708090);
 
   /// 推文相关
   // 推文body颜色
@@ -17,7 +17,7 @@ class ColorConstant {
 
   // 回复正常昵称颜色
   static const Color TWEET_REPLY_NICK_COLOR = Color(0xff4575AB);
-  static const Color TWEET_REPLY_NICK_COLOR_DARK = Color(0xff696d7d);
+  static const Color TWEET_REPLY_NICK_COLOR_DARK = Color(0xff708090);
 
   // 推文回复正文颜色
   static const Color TWEET_REPLY_BODY_COLOR = Color(0xff000000);

@@ -10,12 +10,14 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetCampusWrapper extends StatelessWidget {
+  final int tweetId;
   final String institute;
   final String cla;
   final String tweetType;
   final bool anonymous;
+  final bool displayType;
 
-  TweetCampusWrapper(this.institute, this.cla, this.tweetType, this.anonymous);
+  TweetCampusWrapper(this.tweetId, this.institute, this.cla, this.tweetType, this.anonymous, {this.displayType = true});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +30,8 @@ class TweetCampusWrapper extends StatelessWidget {
     String t = insEmpty ? cla : (claEmpty ? institute : '$institute，$cla');
     return Wrap(
       children: <Widget>[
-        TweetTypeWrapper(tweetType),
-        Gaps.hGap4,
+        displayType ? TweetTypeWrapper(tweetId, tweetType): Gaps.empty,
+        displayType ? Gaps.hGap4: Gaps.empty,
         (insEmpty && claEmpty) || anonymous
             ? Gaps.empty
             : SquareTag(

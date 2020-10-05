@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/image_utils.dart';
 
 class TweetNoDataView extends StatelessWidget {
@@ -21,16 +22,16 @@ class TweetNoDataView extends StatelessWidget {
           child: Image.asset(
             ImageUtils.getImgPath("no_data", format: "png"),
             fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width * 0.25,
+            width: MediaQuery.of(context).size.width * 0.3,
           ),
         ),
-        Text('暂无数据', style: TextStyle(letterSpacing: 2)),
+        Text('暂无数据', style: pfStyle.copyWith(letterSpacing: 1.1)),
         Gaps.vGap10,
         GestureDetector(
           onTap: () => onTapReload == null ? null : onTapReload(),
           child: Text(
             '点击重新加载',
-            style: TextStyle(color: Colors.blueAccent),
+            style: pfStyle.copyWith(color: Colors.blueAccent, letterSpacing: 1.1),
           ),
         )
       ],

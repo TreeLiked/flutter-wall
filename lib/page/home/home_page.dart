@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
@@ -22,6 +24,7 @@ import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
 import 'package:iap_app/part/hot_today.dart';
+import 'package:iap_app/part/notification/red_point.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -31,6 +34,7 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/JPushUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/message_util.dart';
@@ -115,6 +119,7 @@ class _HomePageState extends State<HomePage>
     });
 
     firstRefreshMessage();
+    loopQueryNewTweet();
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
   }
 
@@ -126,6 +131,10 @@ class _HomePageState extends State<HomePage>
       MessageUtil.startLoopQueryNotification();
     });
 //    });
+  }
+
+  void loopQueryNewTweet() async {
+    MessageUtil.loopRefreshNewTweet(Application.context);
   }
 
   @override
@@ -150,17 +159,7 @@ class _HomePageState extends State<HomePage>
     List<BaseTweet> temp = await getData(1);
     tweetProvider.update(temp, clear: true, append: false);
     _refreshController.refreshCompleted();
-  }
-
-  Future<void> _onLoading() async {
-    List<BaseTweet> temp = await getData(++_currentPage);
-    tweetProvider.update(temp, append: true, clear: false);
-    if (CollectionUtil.isListEmpty(temp)) {
-      _currentPage--;
-      _refreshController.loadNoData();
-    } else {
-      _refreshController.loadComplete();
-    }
+    JPushUtil.requestOnlyOnce();
   }
 
   Future getData(int page) async {
@@ -290,6 +289,10 @@ class _HomePageState extends State<HomePage>
                           onTap: (index) {
                             if (index == _currentTabIndex) {
                               if (index == 0) {
+                                if (MessageUtil.taIndexTweetCnt > 0) {
+                                  PageSharedWidget.tabIndexRefreshController.requestRefresh();
+                                  MessageUtil.clearTabIndexTweetCnt();
+                                }
                                 PageSharedWidget.homepageScrollController.animateTo(.0,
                                     duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
                                 return;
@@ -302,8 +305,22 @@ class _HomePageState extends State<HomePage>
                             });
                           },
                           tabs: [
-                            Tab(
-                              text: '首页',
+                            StreamBuilder(
+                              initialData: 0,
+                              stream: MessageUtil.tabIndexStreamCntCtrl.stream,
+                              builder: (_, snapshot) => Badge(
+                                elevation: 0,
+                                padding: const EdgeInsets.all(4.0),
+                                child: Text('最新'),
+                                animationType: BadgeAnimationType.fade,
+                                badgeColor: TweetTypeUtil.getRandomTweetType().color ??
+                                    Colors.lightBlueAccent,
+                                showBadge: snapshot.data > 0,
+                                shape: BadgeShape.circle,
+                                // borderRadius: 10.0,
+                                badgeContent: Text('${snapshot.data > 99 ? '99+' : snapshot.data}',
+                                    style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
+                              ),
                             ),
                             Tab(
                               text: '热门',

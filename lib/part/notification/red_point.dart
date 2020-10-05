@@ -6,6 +6,7 @@ class RedPoint extends StatefulWidget {
   final AbstractMessage message;
 
   final Color color;
+
   RedPoint(this.message, {this.color = Colors.red});
 
 //  final RedPoint
@@ -22,7 +23,9 @@ class _RedPoint extends State<RedPoint> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          widget.message.readStatus = ReadStatus.READ;
+          if (widget.message != null) {
+            widget.message.readStatus = ReadStatus.READ;
+          }
         });
       },
       child: widget.message.readStatus == ReadStatus.UNREAD

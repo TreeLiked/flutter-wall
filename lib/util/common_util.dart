@@ -168,9 +168,9 @@ class Utils {
         });
   }
 
-  static Widget showFadeInImage(String url) {
+  static Widget showFadeInImage(String url, BorderRadius radius) {
     return ClipRRect(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: radius,
         child: FadeInImage.memoryNetwork(
           width: double.infinity,
           height: double.infinity,

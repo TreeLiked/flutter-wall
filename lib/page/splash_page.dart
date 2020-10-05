@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
 import 'package:iap_app/api/invite.dart';
 import 'package:iap_app/api/member.dart';
@@ -21,6 +22,7 @@ import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/log_utils.dart';
+import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -61,7 +63,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _initSplash() {
-    _subscription = TimerStream("", Duration(microseconds: 1500)).listen((_) async{
+    _subscription = TimerStream("", Duration(milliseconds: 2000)).listen((_) async {
+      print("-------------------------");
       String storageToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
       print(storageToken);
       if (storageToken == '') {
@@ -107,8 +110,8 @@ class _SplashPageState extends State<SplashPage> {
             setState(() {
               _status = 1;
             });
-
-            _loadStorageTweetTypes();
+            // _loadStorageTweetTypes();
+            _clearCacheIfNecessary();
           }
         });
       }
@@ -167,6 +170,25 @@ class _SplashPageState extends State<SplashPage> {
     // });
   }
 
+  Future<void> _clearCacheIfNecessary() async {
+    String date = await SharedPreferenceUtil.readStringValue(SharedConstant.LAST_CLEAR_CACHE);
+    if (date == null) {
+      await SharedPreferenceUtil.setStringValue(
+          SharedConstant.LAST_CLEAR_CACHE, DateTime.now().millisecondsSinceEpoch.toString());
+      return;
+    }
+
+    int nowMs = DateUtil.getNowDateMs();
+    int lastClearDateMs = int.parse(date);
+    if (nowMs - lastClearDateMs > 3 * 24 * 3600 * 1000) {
+      // 超过三天没有清理缓存了
+      PaintingBinding.instance.imageCache.clear();
+      var defaultCacheManager = DefaultCacheManager();
+      defaultCacheManager.emptyCache();
+      await SharedPreferenceUtil.setStringValue(SharedConstant.LAST_CLEAR_CACHE, nowMs.toString());
+    }
+  }
+
   Future<void> _loadStorageTweetTypes() async {
     TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
     tweetTypesFilterProvider.updateTypeNames();
@@ -183,14 +205,12 @@ class _SplashPageState extends State<SplashPage> {
     Application.screenWidth = prefix0.ScreenUtil.screenWidth;
     Application.screenHeight = prefix0.ScreenUtil.screenHeight;
 
-
     Application.context = context;
 
     return Material(
         child: _status == 0
             ? CachedNetworkImage(
-                imageUrl:
-                    PathConstant.APP_LAUNCH_IMAGE,
+                imageUrl: PathConstant.APP_LAUNCH_IMAGE,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 height: double.infinity,

@@ -55,7 +55,7 @@ class AccountAvatar extends StatelessWidget {
                               PathConstant.IMAGE_FAILED,
                               width: SizeConstant.TWEET_PROFILE_SIZE,
                               height: SizeConstant.TWEET_PROFILE_SIZE,
-                              fit: BoxFit.fitHeight,
+                              fit: BoxFit.cover,
                             ))),
           )),
       (Gender.MALE == gender || Gender.FEMALE == gender)

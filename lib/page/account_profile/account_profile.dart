@@ -181,7 +181,7 @@ class _AccountProfileState extends State<AccountProfile> {
                         if (Application.getAccountId != null &&
                             Application.getAccountId != widget.accountId) {
                           items.add(
-                              BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.red), '屏蔽此人', () {
+                              BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
                             Navigator.pop(context);
                             _showShieldedAccountBottomSheet();
                           }));
@@ -441,10 +441,12 @@ class _AccountProfileState extends State<AccountProfile> {
     return Container(
       margin: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0, bottom: 20.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSingleContainer(
               Icon(
-                Icons.ac_unit,
+                Icons.perm_contact_calendar,
                 color: Colors.green,
               ),
               "基础资料",
@@ -452,7 +454,7 @@ class _AccountProfileState extends State<AccountProfile> {
                 "昵称": _buildSingleTextValue(account.nick),
                 "签名": _buildSingleTextValue(account.signature ?? "未设置"),
               }),
-          _buildSingleContainer(Icon(Icons.dashboard, color: Colors.blueAccent), "个人档案", {
+          _buildSingleContainer(Icon(Icons.add_a_photo, color: Colors.blueAccent), "个人档案", {
             "姓名": _buildSingleTextValue(account.displayName ? account.name : "姓名不可见"),
             "性别": _buildGenderWidget(),
             "年龄": _buildSingleTextValue(
@@ -462,13 +464,13 @@ class _AccountProfileState extends State<AccountProfile> {
           }),
           _buildSingleContainer(
               Icon(
-                Icons.contacts,
+                Icons.contact_phone,
                 color: Colors.amber,
               ),
               "联系资料",
               {
                 "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : "未知"),
-                "Q  Q": _buildSingleTextValue(account.displayQQ ? account.qq : "未知"),
+                "QQ": _buildSingleTextValue(account.displayQQ ? account.qq : "未知"),
                 "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : "未知"),
               }),
         ],
@@ -517,7 +519,7 @@ class _AccountProfileState extends State<AccountProfile> {
                 Icon(icon.icon, size: 20, color: icon.color),
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0),
-                  child: Text(title, style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
+                  child: Text(title, style: pfStyle.copyWith(fontSize: Dimens.font_sp16,fontWeight: FontWeight.w500, letterSpacing: 1.2)),
                 )
               ],
             ),

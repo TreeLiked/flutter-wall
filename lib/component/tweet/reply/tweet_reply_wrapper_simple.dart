@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -46,21 +48,23 @@ class TweetReplyWrapperSimple extends StatelessWidget {
           tweetAnonymous: tweet.anonymous,
           reply: dirTr,
           parentId: dirTr.id,
+          onTapAccount: (Account acc, bool _) => NavigatorUtils.goAccountProfile2(context, acc),
           onTapReply: (displayNick) =>
-              _sendReply(2, dirTr.id, dirTr.account.id, tweet.account.id, tarAccNick: displayNick),
+              _sendReply(2, dirTr.id, dirTr.account.id, Application.getAccountId, tarAccNick: displayNick),
           bodyStyle: style));
       totalCount++;
       if (!CollectionUtil.isListEmpty(dirTr.children)) {
         dirTr.children.forEach((tr) {
-          if (totalCount != GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
+          if (totalCount <= GlobalConfig.MAX_DISPLAY_REPLY_ALL) {
             totalCount++;
             trWs.add(TweetReplyItemSimple(
               tweetAccountId: tweet.account.id,
               tweetAnonymous: tweet.anonymous,
               reply: tr,
               parentId: dirTr.id,
+              onTapAccount: (Account acc, bool _) => NavigatorUtils.goAccountProfile2(context, acc),
               onTapReply: (displayNick) =>
-                  _sendReply(2, dirTr.id, tweet.account.id, tr.account.id, tarAccNick: displayNick),
+                  _sendReply(2, dirTr.id, tr.account.id, Application.getAccountId, tarAccNick: displayNick),
               bodyStyle: style,
             ));
           }

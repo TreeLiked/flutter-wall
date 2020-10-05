@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
+import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/update_dialog.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/version/pub_v.dart';
@@ -60,7 +61,7 @@ class _AboutPageState extends State<AboutPage> {
                     'wall_logo',
                     width: _logoWidth,
                     height: _logoWidth,
-                    color: Colors.lightGreen[200],
+                    color: Colors.lightBlueAccent,
                   ))),
 
           Gaps.vGap10,
@@ -96,6 +97,15 @@ class _AboutPageState extends State<AboutPage> {
           ClickItem(
             title: "问题反馈",
             onTap: () => NavigatorUtils.goReportPage(context, ReportPage.REPORT_SYSTEM, "-1", "系统反馈"),
+          ),
+          ClickItem(
+            title: '联系我们',
+            onTap: () async {
+              Utils.displayDialog(
+                  context,
+                  SimpleConfirmDialog(
+                      '联系我们', '你可以添加微信号：dlwlrma73或发送邮件到 im.lqs2@icloud.com和我们联系'));
+            },
           ),
 
           ClickItem(

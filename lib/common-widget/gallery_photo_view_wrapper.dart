@@ -87,7 +87,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                 builder: _buildItem,
                 itemCount: widget.galleryItems.length,
                 // loadingBuilder: LoadB,
-                loadingBuilder: (context, _)=>widget.loadingChild,
+                loadingBuilder: (context, _) => widget.loadingChild,
                 // loadingChild: widget.loadingChild,
                 backgroundDecoration: widget.backgroundDecoration,
                 pageController: widget.pageController,
@@ -96,7 +96,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               ),
               Positioned(
                   // left: sw / 2,
-                  top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(10),
+                  top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(20),
                   left: 10,
                   child: Container(
                     width: Application.screenWidth - 20,
@@ -147,17 +147,33 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                       Flexible(
                         flex: 1,
                         child: Container(
-                            margin: EdgeInsets.only(top: 0, right: 20.0),
+                            margin: EdgeInsets.only(top: 0, right: 0.0),
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                                 child: Icon(
                                   Icons.more_horiz,
-                                  color: Colors.grey,
+                                  color: Colors.white70,
                                 ),
                                 onTap: () => displayOptions())),
                       ),
                     ]),
                   )),
+              Positioned(
+                  bottom: Application.screenHeight * 0.1,
+                  left: Application.screenWidth * 0.05,
+                  child: GestureDetector(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        color: Colors.white12,
+                        width: 35,
+                        height: 35,
+                        alignment: Alignment.center,
+                        child: Icon(Icons.arrow_back, color: Colors.amber, size: 20),
+                      ),
+                    ),
+                    onTap: () => NavigatorUtils.goBack(context),
+                  ))
             ],
           )),
     ));

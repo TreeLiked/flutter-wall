@@ -26,11 +26,7 @@ class TweetIndexCommentWrapper extends StatefulWidget {
   final Function onSend;
 
   TweetIndexCommentWrapper(
-      {Key key,
-      this.replyType,
-      this.showAnonymous = false,
-      this.hintText = "发表我的看法",
-      @required this.onSend})
+      {Key key, this.replyType, this.showAnonymous = false, this.hintText = "发表我的看法", @required this.onSend})
       : super(key: key);
 
   @override
@@ -99,26 +95,28 @@ class _TweetIndexCommentWrapperState extends State<TweetIndexCommentWrapper> {
                 },
               )),
               Gaps.vGap8,
-              OptionItem(
-                  "匿名回复",
-                  _anonymous
-                      ? Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
-                          size: 15.0,
-                        )
-                      : Icon(
-                          Icons.check_circle_outline,
-                          color: Colors.grey,
-                          size: 15.0,
-                        ), () {
-                setState(() {
-                  _anonymous = !_anonymous;
-                  if (_anonymous) {
-                    ToastUtil.showToast(context, '此条评论将匿名回复');
-                  }
-                });
-              })
+              widget.showAnonymous
+                  ? OptionItem(
+                      "匿名回复",
+                      _anonymous
+                          ? Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 15.0,
+                            )
+                          : Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.grey,
+                              size: 15.0,
+                            ), () {
+                      setState(() {
+                        _anonymous = !_anonymous;
+                        if (_anonymous) {
+                          ToastUtil.showToast(context, '此条评论将匿名回复');
+                        }
+                      });
+                    })
+                  : Gaps.empty
             ],
           )),
         ]));
@@ -192,7 +190,7 @@ class OptionItem extends StatelessWidget {
           radius: 12.0,
           margin: EdgeInsets.only(left: leftMargin, right: rightMargin),
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
-          backgroundColor: ThemeUtils.isDark(context)?ColorConstant.TWEET_RICH_BG_DARK: Color(0xffeae9ea),
+          backgroundColor: ThemeUtils.isDark(context) ? ColorConstant.TWEET_RICH_BG_DARK : Color(0xffeae9ea),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

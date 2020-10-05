@@ -59,7 +59,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   void initState() {
     super.initState();
 
-    JPushUtil.jPush = _jPush;
     initPlatformState();
     initUMengAnalytics();
 
@@ -148,6 +147,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
 
   Future<void> initPlatformState() async {
     addEventListeners();
+    JPushUtil.jPush = _jPush;
     _jPush.setup(
       appKey: "2541d486ffc85cf504572f6e",
       channel: "developer-default",
@@ -155,9 +155,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       production: AlmondDonuts.inProduction,
       debug: !AlmondDonuts.inProduction,
     );
-    if (Platform.isIOS) {
-      _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
-    }
 //    _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
     if (!mounted) return;
   }

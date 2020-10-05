@@ -15,7 +15,7 @@ import '../../application.dart';
 class TweetMediaWrapper extends StatelessWidget {
   double sw;
   double sh;
-  final double _imgRightPadding = 1.5;
+  final double _imgRightPadding = 2.0;
 
   final List<Media> medias;
   List<String> picUrls;
@@ -99,29 +99,22 @@ class TweetMediaWrapper extends StatelessWidget {
 
   Widget _imgContainer(String url, int index, int totalSize, BuildContext context) {
     // 40 最外层container左右padding,
-    double left = (sw - 20);
+    double left = (sw);
     double perW;
-    double rp = 3;
     if (totalSize == 2 || totalSize == 4) {
       if (totalSize == 2) {
-        perW = (left - _imgRightPadding - 1) / 2.2;
+        perW = (left - _imgRightPadding * totalSize) / 2.2;
       } else {
-        perW = (left - _imgRightPadding - 1) / 2.3;
-      }
-      if (index % 2 != 0) {
-        rp = 0;
+        perW = (left - _imgRightPadding * totalSize) / 2.2;
       }
     } else {
       perW = (left - _imgRightPadding * 2 - 1) / 3;
-      if (index % 3 == 2) {
-        rp = 0;
-      }
     }
     return ImageContainer(
       url: url,
       width: perW,
       height: perW,
-      padding: EdgeInsets.only(right: rp, bottom: 3.0),
+      padding: EdgeInsets.only(right: _imgRightPadding, bottom: 2.0),
       callback: () => open(context, index),
     );
   }

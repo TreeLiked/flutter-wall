@@ -16,7 +16,7 @@ class ToastUtil {
       fontSize: Dimens.font_sp14,
       gravity: gravity,
       toastLength: length,
-      backgroundColor: dark ? Colors.black87 : Colors.black54,
+      backgroundColor: dark ? Colors.black87 : Colors.black38,
       textColor: dark ? Colors.white : Colors.white,
     );
   }

@@ -20,7 +20,15 @@ class HotAppBarWidget extends StatelessWidget {
   final double sigma;
   final VoidCallback playOnTap;
   final int count;
+  final bool pinned;
+  final bool floating;
+  final bool snap;
   final LinkHeaderNotifier headerNotifier;
+
+  final BorderRadius outerRadius;
+  final EdgeInsetsGeometry outerMargin;
+  final BorderRadius imageRadius;
+  final Color lightShadow;
 
   HotAppBarWidget({
     @required this.expandedHeight,
@@ -31,6 +39,13 @@ class HotAppBarWidget extends StatelessWidget {
     this.sigma = 2.8,
     this.playOnTap,
     this.count,
+    this.outerRadius,
+    this.outerMargin,
+    this.imageRadius,
+    this.lightShadow = Colors.black12,
+    this.pinned = false,
+    this.floating = false,
+    this.snap = false,
   });
 
   @override
@@ -45,25 +60,27 @@ class HotAppBarWidget extends StatelessWidget {
             : [],
         centerTitle: true,
         expandedHeight: expandedHeight,
-        pinned: false,
+        pinned: pinned,
+        snap: snap,
+        floating: floating,
         elevation: 0,
         brightness: Brightness.dark,
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          title,
+          title ?? "",
           style: pfStyle.copyWith(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.w500),
         ),
         flexibleSpace: Container(
           color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
-          margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 3.0),
+          margin: outerMargin,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: outerRadius,
             child: FlexibleDetailBar(
               content: content,
               background: Stack(
                 children: <Widget>[
                   backgroundImg.startsWith('http')
-                      ? Utils.showFadeInImage(backgroundImg)
+                      ? Utils.showFadeInImage(backgroundImg, imageRadius)
                       : Image.asset(
                           backgroundImg,
                           width: double.infinity,
@@ -79,7 +96,7 @@ class HotAppBarWidget extends StatelessWidget {
                       width: double.infinity,
                       height: double.infinity,
                       decoration: BoxDecoration(
-                        color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black12,
+                        color: ThemeUtils.isDark(context) ? Colors.black54 : lightShadow,
 //                  borderRadius: BorderRadius.all(Radius.circular(85.0)),
                       ),
                     ),

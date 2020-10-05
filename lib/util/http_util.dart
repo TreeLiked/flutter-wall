@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:html/dom.dart';
 
 import 'package:dio/dio.dart';
@@ -26,9 +27,12 @@ Map<String, dynamic> headers = {
 Map<String, dynamic> headersJson = {
   "Accept": "application/json",
   "Content-Type": "application/json; charset=UTF-8",
-  "INDENTIFY-ID": "",
+  "identify-id": Application.getAccountId ?? "",
   "user-agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36",
+  "version": Platform.isAndroid
+      ? "${SharedConstant.VERSION_ID_ANDROID}_${SharedConstant.VERSION_REMARK_ANDROID}"
+      : "${SharedConstant.VERSION_ID_IOS}_${SharedConstant.VERSION_REMARK_IOS}",
 };
 
 class HttpUtil {
@@ -132,7 +136,6 @@ class HttpUtil {
     print('get请求启动! url：$url ,body: $data');
     Response response;
     Result result = Result(isSuccess: false);
-
     try {
       response = await dio.get(
         url,

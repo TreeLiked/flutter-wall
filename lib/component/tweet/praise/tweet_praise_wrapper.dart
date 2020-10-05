@@ -77,7 +77,7 @@ class TweetPraiseWrapper extends StatelessWidget {
     if (hasPraise && len > GlobalConfig.MAX_DISPLAY_PRAISE) {
       int diff = len - GlobalConfig.MAX_DISPLAY_PRAISE;
       spans.add(TextSpan(
-        text: " 等共${len}人刚刚赞过",
+        text: " 等共$len人刚刚赞过",
         style: MyDefaultTextStyle.getTweetBodyStyle(context, fontSize: 13.0),
       ));
     }

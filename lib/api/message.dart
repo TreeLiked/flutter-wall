@@ -185,7 +185,31 @@ class MessageAPI {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       Result r = Result.fromJson(json);
-      if (r.isSuccess) {
+      if (r != null && r.isSuccess) {
+        return json['data'];
+      }
+      return -1;
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      print(error);
+    }
+    return -1;
+  }
+
+  static Future<int> queryNewTweetCount(int orgId, int tweetId, String type) async {
+    String url;
+    if (StringUtil.isEmpty(type)) {
+      url = "${Api.API_NEW_TWEET_CNT}?oId=$orgId&tId=$tweetId";
+    } else {
+      url = "${Api.API_NEW_TWEET_CNT}?oId=$orgId&tId=$tweetId&tType=$type";
+    }
+    try {
+      print(url);
+      Response response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      Result r = Result.fromJson(json);
+      print(r.toJson());
+      if (r != null && r.isSuccess) {
         return json['data'];
       }
       return -1;

@@ -131,15 +131,15 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                     Badge(
                                       elevation: 0,
                                       shape: BadgeShape.circle,
-                                      showBadge: snapshot.data != -1 && snapshot.data != 0,
-                                      padding: const EdgeInsets.all(5),
+                                      showBadge: snapshot.data > 0,
+                                      padding: const EdgeInsets.all(3.5),
                                       badgeContent: widget.pointType
                                           ? const SizedBox(
                                               height: 0.1,
                                               width: 0.1,
                                             )
                                           : Text(
-                                              '${snapshot.data}',
+                                              '${snapshot.data > 99 ? '99+' : snapshot.data}',
                                               style: pfStyle.copyWith(color: Colors.white),
                                             ),
                                     ),

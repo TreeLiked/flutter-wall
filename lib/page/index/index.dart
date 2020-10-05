@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/page/home/home_page.dart';
 import 'package:iap_app/page/index/navigation_icon_view.dart';
+import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
@@ -89,7 +90,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
 
     _pageList = <StatefulWidget>[
       HomePage(pullDownCallBack: (_) => updateBottomBar(_)),
-//      HotToday(),
+      // HotToday(),
 //      NotificationIndexPage(),
 //      PersonalCenter(),
     ];
@@ -192,8 +193,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
           onPageChanged: onPageChanged,
           children: _pageList,
           physics: NeverScrollableScrollPhysics(), // 禁止滑动
-        )
-    );
+        ));
   }
 
   @override

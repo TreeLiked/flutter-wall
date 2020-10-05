@@ -133,7 +133,7 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
                   NavigatorUtils.goReportPage(context, ReportPage.REPORT_ACCOUNT, widget.accountId, "账户举报");
                 }));
                 if (Application.getAccountId != null && Application.getAccountId != widget.accountId) {
-                  items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.red), '屏蔽此人', () {
+                  items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
                     Navigator.pop(context);
                     _showShieldedAccountBottomSheet();
                   }));

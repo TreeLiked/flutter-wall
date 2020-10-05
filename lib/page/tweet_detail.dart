@@ -240,6 +240,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             child: Container(
           alignment: Alignment.centerRight,
           child: TweetTypeWrapper(
+            tweet.id,
             tweet.type,
             reverseDir: true,
           ),
@@ -382,7 +383,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                             if (tweet.anonymous && tarAccId == tweet.account.id) {
                               hintText = "回复：作者";
                             }
-                            showBottomSheetReplyContainer(2, true, hintText, (String value, bool anonymous) {
+                            showBottomSheetReplyContainer(2, false, hintText, (String value, bool anonymous) {
                               TweetReply reply = TRUtil.assembleReply(tweet, value, false, false,
                                   parentId: tr.parentId, tarAccountId: tarAccId);
                               reply.sentTime = DateTime.now();
@@ -539,12 +540,12 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       }));
     } else {
       // 非自己
-      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_alt, color: Colors.deepOrange), '屏蔽此内容', () {
+      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_alt, color: Colors.grey), '屏蔽此内容', () {
         Navigator.pop(context);
         _showShieldedBottomSheet();
       }));
 
-      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.red), '屏蔽此人', () {
+      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
         Navigator.pop(context);
         _showShieldedAccountBottomSheet();
       }));
@@ -756,10 +757,10 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             if (r == null) {
               ToastUtil.showToast(context, '服务错误');
             } else {
+              NavigatorUtils.goBack(context);
               if (r.isSuccess) {
                 ToastUtil.showToast(context, '删除成功');
                 Provider.of<TweetProvider>(context).delete(widget._tweet.id);
-                NavigatorUtils.goBack(context);
               } else {
                 ToastUtil.showToast(context, '用户身份验证失败');
               }

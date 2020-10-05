@@ -9,6 +9,7 @@
   SharedConstant # VERSION_REMARK_ANDROID
   SharedConstant # VERSION_REMARK_IOS
   还有Xcode修改程序的版本号
+  android app bundle版本号
 
 
 

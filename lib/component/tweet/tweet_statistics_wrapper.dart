@@ -38,14 +38,14 @@ class TweetStatisticsWrapper extends StatelessWidget {
                 height: 17,
                 color: tweet.loved ? Colors.pink[100] : Colors.grey,
               ),
-              onTap: () => canPraise ? updatePraise(context) : null),
+              onTap: () => canPraise ? updatePraise(context) : HitTestBehavior.opaque),
 
           tweet.enableReply
               ? OptionItem(
                   null, Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭", style:  style),
                   prefix: LoadAssetIcon(PathConstant.ICON_COMMENT_ICON,
                       width: 17, height: 17, color: Colors.grey),
-                  onTap: () => onClickComment == null ? null : onClickComment(null, null, null))
+                  onTap: () => onClickComment == null ? HitTestBehavior.opaque : onClickComment(null, null, null))
               : Text("评论关闭", style: style.copyWith(color: Color(0xffCDAD00), fontSize: Dimens.font_sp13p5))
 //          OptionItem("tweet/comment",
 //              Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭")),

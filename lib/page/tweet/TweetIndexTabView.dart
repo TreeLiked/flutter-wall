@@ -13,8 +13,10 @@ import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/tweet_comment_wrapper.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
+import 'package:iap_app/util/JPushUtil.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/tweet_reply_util.dart';
@@ -31,7 +33,7 @@ class TweetIndexTabView extends StatefulWidget {
 }
 
 class _TweetIndexTabViewState extends State<TweetIndexTabView> {
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  RefreshController _refreshController = PageSharedWidget.tabIndexRefreshController;
 
 //  List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
@@ -150,11 +152,13 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   Future<void> _onRefresh(BuildContext context) async {
-    print('On refresh');
+    print(''
+        'On refresh');
     _refreshController.resetNoData();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
     tweetProvider.update(temp, clear: true, append: false);
+    MessageUtil.clearTabIndexTweetCnt();
     if (temp == null) {
       _refreshController.refreshFailed();
     } else {
@@ -166,6 +170,7 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
     List<BaseTweet> temp = await getData(1);
     tweetProvider.update(temp, clear: true, append: false);
     _refreshController.refreshCompleted();
+
   }
 
   Future<void> _onLoading() async {
@@ -188,7 +193,6 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
 //        types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames)))
       types: null,
     )));
-
     return pbt;
   }
 }

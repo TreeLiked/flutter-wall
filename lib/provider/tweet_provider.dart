@@ -113,7 +113,7 @@ class TweetProvider extends ChangeNotifier {
       throw 'append and clear must have different value';
     }
     if (tweets == null) {
-      _displayTweets = null;
+      // _displayTweets = null;
     } else {
       List<String> unlikes = SpUtil.getStringList(SharedConstant.MY_UN_LIKED);
       if (unlikes != null && unlikes.length > 0) {

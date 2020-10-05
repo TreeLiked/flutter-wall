@@ -171,6 +171,9 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               headerNotifier: _headerNotifier,
               backgroundImg: _currentCover,
               count: 10,
+              outerMargin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 3.0),
+              outerRadius: BorderRadius.circular(10.0),
+              imageRadius: BorderRadius.circular(10.0),
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -254,8 +257,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               fit: BoxFit.cover,
             )),
         Gaps.vGap16,
-        Text('快去抢占热门吧~',
-            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
+        Text('快去抢占热门吧~', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
       ],
     );
   }

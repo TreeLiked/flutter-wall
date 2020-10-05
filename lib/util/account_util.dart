@@ -30,6 +30,9 @@ class TweetReplyUtil {
     if (tweetAnonymous && replyAuthor) {
       return AUTHOR_TEXT;
     }
+    if (targetAcc == null) {
+      return UNKNOWN_REPLY;
+    }
     return targetAcc.nick ?? UNKNOWN_REPLY;
   }
 

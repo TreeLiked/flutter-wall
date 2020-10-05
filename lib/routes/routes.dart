@@ -12,6 +12,7 @@ import 'package:iap_app/common-widget/widget_not_found.dart';
 import 'package:iap_app/page/login/sms_login_page.dart';
 import 'package:iap_app/page/login_page.dart';
 import 'package:iap_app/page/splash_page.dart';
+import 'package:iap_app/page/tweet/tweet_type_infgroplf_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/page/webview_page.dart';
 import 'package:iap_app/routes/login_router.dart';
@@ -42,6 +43,7 @@ class Routes {
 
   // various detail
   static String tweetDetail = "/home/tweetDetail";
+  static String tweetTypeInfProPlf = "/home/tweetTypeInfProPlf";
 
 //  static String cardToGallery = "/home/cardTogallery";
 //  static String detailToGallery = "/home/card/detailTogallery";
@@ -72,6 +74,12 @@ class Routes {
     router.define(tweetDetail, handler: Handler(handlerFunc: (_, params) {
       int tweetId = int.parse(params['tweetId'].first);
       return TweetDetail(null, tweetId: tweetId, hotRank: -1, newLink: true);
+    }));
+
+    router.define(tweetTypeInfProPlf, handler: Handler(handlerFunc: (_, params) {
+      int tweetId = int.parse(params['tweetId'].first);
+      String type = params['tweetType'].first;
+      return TweetTypeInfGroPlfPage(tweetId, type);
     }));
 
     router.define(loginPage, handler: Handler(handlerFunc: (_, params) {

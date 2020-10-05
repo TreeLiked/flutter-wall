@@ -50,6 +50,7 @@ class TweetCard2 extends StatelessWidget {
   final Widget moreWidget;
   final bool myNickClickable;
   final bool needLeftProfile;
+  final bool displayType;
 
   BuildContext context;
   bool isDark;
@@ -67,6 +68,7 @@ class TweetCard2 extends StatelessWidget {
       this.canPraise = false,
       this.myNickClickable = true,
       this.needLeftProfile = true,
+        this.displayType = true,
       this.moreWidget}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
@@ -119,7 +121,7 @@ class TweetCard2 extends StatelessWidget {
                     Gaps.vGap8,
 
                     TweetCampusWrapper(
-                        tweet.account.institute, tweet.account.cla, tweet.type, tweet.anonymous),
+                        tweet.id, tweet.account.institute, tweet.account.cla, tweet.type, tweet.anonymous, displayType: displayType,),
                     displayExtra
                         ? TweetCardExtraWrapper(
                             displayPraise: displayPraise,

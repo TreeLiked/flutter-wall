@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
@@ -24,7 +25,9 @@ import 'package:iap_app/util/fluro_convert_utils.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -246,11 +249,18 @@ class Utils {
       return false;
     }
     try {
-      ImagePickerSaver.saveFile(fileData: Uint8List.fromList(bytes));
+      var result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 100);
+      print("save result --> "+ result.toString());
+      if (Platform.isAndroid) {
+        return !StringUtil.isEmpty(result) && result.toString().startsWith("file");
+      } else if (Platform.isIOS) {
+        return true == result;
+      }
     } on Exception catch (e) {
       debugPrint(e.toString());
+      ToastUtil.showToast(Application.context, e.toString());
     }
-    return true;
+    return false;
   }
 
   static KeyboardActionsConfig getKeyboardActionsConfig(BuildContext context, List<FocusNode> list) {

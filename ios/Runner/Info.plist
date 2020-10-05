@@ -51,6 +51,8 @@
 	<string>Not Used</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Not Used</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像、发表图片或保存内容等</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像或发表图片内容</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

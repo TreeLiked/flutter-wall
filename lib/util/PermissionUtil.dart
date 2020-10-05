@@ -85,4 +85,29 @@ class PermissionUtil {
     }
     return true;
   }
+
+
+  static Future<bool> checkAndRequestStorage(BuildContext context,
+      {bool showTipIfDetermined = false, int probability = 10}) async {
+    bool hasPermission = await Permission.storage.isGranted;
+    if (!hasPermission) {
+      if (await Permission.storage.isUndetermined) {
+        return Permission.storage.request().isGranted;
+      } else {
+        Utils.showSimpleConfirmDialog(
+            context,
+            '无法访问',
+            '你未开启"允许Wall访问或保存照片"选项，将无法发表内容，更换头像或保存内容等',
+            ClickableText('知道了', () {
+              NavigatorUtils.goBack(context);
+            }),
+            ClickableText('去设置', () async {
+              await openAppSettings();
+            }),
+            barrierDismissible: false);
+        return false;
+      }
+    }
+    return true;
+  }
 }

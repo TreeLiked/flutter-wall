@@ -13,10 +13,13 @@ import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker_saver/image_picker_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -216,15 +219,21 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
             ),
             '保存到本地', () async {
           Utils.showDefaultLoadingWithBounds(context, text: "正在保存");
-          var response = await Dio()
-              .get(widget.galleryItems[currentIndex].url, options: Options(responseType: ResponseType.bytes));
+          bool saveResult = false;
           try {
-            var path = await ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
+            bool hasPermission = await PermissionUtil.checkAndRequestStorage(context);
+            if (hasPermission) {
+              saveResult = await Utils.downloadAndSaveImageFromUrl(widget.galleryItems[currentIndex].url);
+            }
           } catch (e, stack) {
-//            ToastUtil.showToast(context, '保存失败');
+            saveResult = false;
           } finally {
-            ToastUtil.showToast(context, '已保存到手机相册');
             Navigator.pop(context);
+            if (saveResult) {
+              ToastUtil.showToast(context, '已保存到手机相册');
+            } else {
+              ToastUtil.showToast(context, '保存失败');
+            }
           }
         }),
         BottomSheetItem(

@@ -66,6 +66,8 @@ dependencies:
   # 图片选择与下载
   image_picker_saver: ^0.3.0
 
+  image_gallery_saver: ^1.5.0
+
   # 单图选择
   image_picker: ^0.6.7+8
 

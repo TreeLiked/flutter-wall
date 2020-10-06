@@ -1,6 +1,6 @@
 # iap_app
 
-Application for information aggregation platform.
+A campus social application based on flutter
 
 ## Getting Started
 

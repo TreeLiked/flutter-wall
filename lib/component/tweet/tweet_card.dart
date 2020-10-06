@@ -51,9 +51,9 @@ class TweetCard2 extends StatelessWidget {
   final bool myNickClickable;
   final bool needLeftProfile;
   final bool displayType;
-
   BuildContext context;
   bool isDark;
+  final Function onDetailDelete;
 
   TweetCard2(this.tweet,
       {this.upClickable = true,
@@ -68,8 +68,9 @@ class TweetCard2 extends StatelessWidget {
       this.canPraise = false,
       this.myNickClickable = true,
       this.needLeftProfile = true,
-        this.displayType = true,
-      this.moreWidget}) {
+      this.displayType = true,
+      this.moreWidget,
+      this.onDetailDelete}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
     this.maxWidthSinglePic = sw * 0.75;
@@ -121,7 +122,13 @@ class TweetCard2 extends StatelessWidget {
                     Gaps.vGap8,
 
                     TweetCampusWrapper(
-                        tweet.id, tweet.account.institute, tweet.account.cla, tweet.type, tweet.anonymous, displayType: displayType,),
+                      tweet.id,
+                      tweet.account.institute,
+                      tweet.account.cla,
+                      tweet.type,
+                      tweet.anonymous,
+                      displayType: displayType,
+                    ),
                     displayExtra
                         ? TweetCardExtraWrapper(
                             displayPraise: displayPraise,
@@ -189,6 +196,7 @@ class TweetCard2 extends StatelessWidget {
           builder: (context) => TweetDetail(
                 this.tweet,
                 newLink: !displayLink,
+                onDelete: onDetailDelete,
               )),
     );
   }

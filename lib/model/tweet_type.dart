@@ -190,11 +190,11 @@ class TweetTypeEntity {
 
   static const HELP_AND_REWARD = const TweetTypeEntity(
       iconData: Icons.transfer_within_a_station,
-      iconColor: Color(0xff87CEFF),
+      iconColor: Color(0xFFCD96CD),
       name: "HELP_AND_REWARD",
       intro: "送人玫瑰，手有余香",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
-      color: Color(0xff87CEFF),
+      color: Color(0xFFCD96CD),
       zhTag: "帮助");
 
   static const SECOND_HAND_TRANSACTION = const TweetTypeEntity(
@@ -240,9 +240,9 @@ class TweetTypeEntity {
 
   static const AD = const TweetTypeEntity(
       iconData: Icons.school,
-      iconColor: Color(0xff68e0cf),
+      iconColor: Color(0xffA2B5CD),
       name: "AD",
-      color: Color(0xff68e0cf),
+      color: Color(0xffA2B5CD),
       zhTag: "广告",
       canUnSubscribe: false,
       pushable: false,

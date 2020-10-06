@@ -193,7 +193,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   ],
                 ),
               ),
-              expandedHeight: ScreenUtil().setHeight(280),
+              expandedHeight: ScreenUtil().setHeight(300),
             ),
             // SliverPersistentHeader(
             //   pinned: true,
@@ -221,6 +221,11 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   displayLink: true,
                   canPraise: true,
                   displayType: false,
+                  onDetailDelete: (int tweetId){
+                    setState(() {
+                      _allTweets.removeWhere((element) => element.id == tweetId);
+                    });
+                  },
                 );
               }, childCount: CollectionUtil.isListEmpty(_allTweets) ? 0 : _allTweets.length),
             ),

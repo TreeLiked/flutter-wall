@@ -56,12 +56,13 @@ class TweetDetail extends StatefulWidget {
   final int hotRank;
   final bool newLink;
   final bool accountMore;
+  final Function onDelete;
 
   int tweetId;
   bool _fromHot = false;
 
   TweetDetail(this._tweet,
-      {this.tweetId, this.hotRank = -1, this.accountMore = false, this.newLink = false}) {
+      {this.tweetId, this.hotRank = -1, this.accountMore = false, this.newLink = false, this.onDelete}) {
     if (this.hotRank >= 0) {
       _fromHot = true;
     }
@@ -751,18 +752,21 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       builder: (BuildContext context) {
         return SimpleConfirmBottomSheet(
           onTapDelete: () async {
-            Utils.showDefaultLoading(context);
+            Utils.showDefaultLoading(this.myContext);
             Result r = await TweetApi.deleteAccountTweets(Application.getAccountId, widget._tweet.id);
-            NavigatorUtils.goBack(context);
+            NavigatorUtils.goBack(this.myContext);
             if (r == null) {
-              ToastUtil.showToast(context, '服务错误');
+              ToastUtil.showToast(this.myContext, '服务错误');
             } else {
-              NavigatorUtils.goBack(context);
               if (r.isSuccess) {
-                ToastUtil.showToast(context, '删除成功');
-                Provider.of<TweetProvider>(context).delete(widget._tweet.id);
+                Provider.of<TweetProvider>(this.myContext).delete(widget._tweet.id);
+                ToastUtil.showToast(this.myContext, '删除成功');
+                NavigatorUtils.goBack(this.myContext);
+                if (widget.onDelete != null) {
+                  widget.onDelete(widget._tweet.id);
+                }
               } else {
-                ToastUtil.showToast(context, '用户身份验证失败');
+                ToastUtil.showToast(this.myContext, '用户身份验证失败');
               }
             }
           },

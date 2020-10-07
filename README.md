@@ -8,6 +8,8 @@
 ### 下载地址丨Download
 - [点我下载](https://almond-donuts.iutr.tech/download.html)
 
+### 支持丨Support
+IDE Support by [Jetbrains](https://www.jetbrains.com/?from=flutter-wall)
 
 ### 应用截图丨Screenshots
 
@@ -32,3 +34,5 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+Thanks <span><img width="40" height="40" src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjh5se52jnj30u00wjtcz.jpg"/></span>.

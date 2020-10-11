@@ -70,7 +70,8 @@ class Utils {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return SpinKitChasingDots(color: Colors.amber, size: size);
+          return SpinKitThreeBounce(color: Colors.amber, size: size);
+          // return CupertinoActivityIndicator();
 //        const CupertinoActivityIndicator()
 //          );
 //          return SpinKitChasingDots(color: Color(0xff3489ff), size: size);
@@ -123,8 +124,9 @@ class Utils {
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
     list.add(
-      SpinKitChasingDots(color: Colors.amber, size: size),
-//        const CupertinoActivityIndicator()
+      SpinKitThreeBounce(color: Colors.lightBlueAccent,size: size)
+      // SpinKitChasingDots(color: Colors.amber, size: size),
+      //  const CupertinoActivityIndicator()
     );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
@@ -258,7 +260,7 @@ class Utils {
       }
     } on Exception catch (e) {
       debugPrint(e.toString());
-      ToastUtil.showToast(Application.context, e.toString());
+      // ToastUtil.showToast(Application.context, e.toString());
     }
     return false;
   }

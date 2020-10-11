@@ -13,6 +13,7 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -313,8 +314,8 @@ class _HomePageState extends State<HomePage>
                                 padding: const EdgeInsets.all(4.0),
                                 child: Text('最新'),
                                 animationType: BadgeAnimationType.fade,
-                                badgeColor: TweetTypeUtil.getRandomTweetType().color ??
-                                    Colors.lightBlueAccent,
+                                badgeColor:
+                                    TweetTypeUtil.getRandomTweetType().color ?? Colors.lightBlueAccent,
                                 showBadge: snapshot.data > 0,
                                 shape: BadgeShape.circle,
                                 // borderRadius: 10.0,
@@ -342,7 +343,9 @@ class _HomePageState extends State<HomePage>
                                   "notification/bell",
                                   color: snapshot.data != -1 && snapshot.data != 0
                                       ? Colors.amber
-                                      : isDark ? Colors.white54 : Colors.black54,
+                                      : isDark
+                                          ? Colors.white54
+                                          : Colors.black54,
                                   width: 23.0,
                                   height: 23.0,
                                 ),
@@ -384,19 +387,19 @@ class _HomePageState extends State<HomePage>
                         feedback: FloatingActionButton(
                             child: Icon(
                               Icons.add_a_photo,
-                              color: isDark ? Colors.amber[300] : Colors.amberAccent,
+                              color: isDark ? Colors.amber[300] : Colors.white,
                             ),
-                            backgroundColor: isDark ? Colors.black38 : Colors.white70,
+                            backgroundColor: isDark ? Colors.black38 : Color(0xEEE6E6FA),
                             splashColor: Colors.white12,
                             elevation: 10.0,
                             onPressed: null),
                         child: FloatingActionButton(
                             child: Icon(
                               Icons.add_a_photo,
-                              color: isDark ? Colors.amber[300] : Colors.amberAccent,
+                              color: isDark ? Colors.amber[300] : Colors.white,
                             ),
-                            backgroundColor: isDark ? Colors.black38 : Colors.white70,
-                            elevation: 10.0,
+                            backgroundColor: isDark ? Colors.black38 : Color(0xEEE6E6FA),
+                            elevation: 8.0,
                             splashColor: Colors.white12,
                             onPressed: () => NavigatorUtils.push(context, Routes.create,
                                 transitionType: TransitionType.fadeIn)),

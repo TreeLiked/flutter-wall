@@ -13,6 +13,7 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/page/index/index.dart';
+import 'package:iap_app/page/login/org_info_set.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -217,5 +218,6 @@ class _SplashPageState extends State<SplashPage> {
                 fadeInCurve: Curves.linear,
               )
             : Index());
+        // child: OrgInfoCPage());
   }
 }

@@ -1,4 +1,4 @@
-import 'package:fluro/fluro.dart';
+import 'package:fluro/fluro.dart' as fff;
 import 'package:flutter/material.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model/account.dart';
 
 class Application {
-  static Router router;
+  static fff.Router router;
   static GlobalKey<NavigatorState> key = GlobalKey();
   static SharedPreferences sp;
   static double screenWidth;

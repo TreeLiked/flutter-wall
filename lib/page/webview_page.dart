@@ -25,15 +25,13 @@ class WebViewPage extends StatefulWidget {
 
   @override
   _WebViewPageState createState() => _WebViewPageState();
-
-
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   final Completer<WebViewController> _controller = Completer<WebViewController>();
 
-
   WebView wv;
+
   @override
   void dispose() {
     super.dispose();
@@ -41,7 +39,6 @@ class _WebViewPageState extends State<WebViewPage> {
 
   @override
   Widget build(BuildContext context) {
-
     wv = WebView(
       initialUrl: widget.url,
       javascriptMode: JavascriptMode.unrestricted,
@@ -92,14 +89,28 @@ class _WebViewPageState extends State<WebViewPage> {
                       icon: Icon(Icons.more_vert),
                       onPressed: () => {
                         BottomSheetUtil.showBottomSheetView(context, [
-                          BottomSheetItem(Icon(Icons.content_copy), "复制链接", () {
+                          BottomSheetItem(
+                              Icon(
+                                Icons.content_copy,
+                                color: Colors.lightBlue,
+                              ),
+                              "复制链接", () {
                             ToastUtil.showToast(context, '已复制');
                             NavigatorUtils.goBack(context);
                             Utils.copyTextToClipBoard(widget.url);
                           }),
+                          BottomSheetItem(
+                              Icon(
+                                Icons.refresh,
+                                color: Colors.green,
+                              ),
+                              "刷新", () async {
+                            NavigatorUtils.goBack(context);
+                            await (await (_controller?.future)).clearCache();
+                          }),
                         ])
                       },
-                    )
+                    ),
                   ],
                 ),
                 body: wv),

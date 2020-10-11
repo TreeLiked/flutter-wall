@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:device_info/device_info.dart';
-import 'package:fluro/fluro.dart';
+import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,7 +50,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   final JPush _jPush = JPush();
 
   AlmondDonutsState() {
-    final Router router = Router();
+    final fluro.Router router = fluro.Router();
     Routes.configureRoutes(router);
     Application.router = router;
   }

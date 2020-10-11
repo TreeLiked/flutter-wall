@@ -1,37 +1,17 @@
 import 'dart:async';
 
-import 'package:flustars/flustars.dart' as prefix0;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/school/institute.dart';
 import 'package:iap_app/model/result.dart';
-import 'package:iap_app/model/result_code.dart';
-import 'package:iap_app/model/university.dart';
-import 'package:iap_app/page/login/reg_temp.dart';
-import 'package:iap_app/provider/account_local.dart';
-import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
-import 'package:iap_app/routes/login_router.dart';
-import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
-import 'package:provider/provider.dart';
 
 class InstituteInfoSetPage extends StatefulWidget {
   @override

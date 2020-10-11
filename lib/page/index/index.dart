@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/page/home/home_page.dart';
-import 'package:iap_app/page/index/navigation_icon_view.dart';
 import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/message_util.dart';
@@ -20,8 +19,6 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
   // 当前选中的索引
   int _currentIndex = 0;
 
-  // 底部导航视图
-  List<NavigationIconView> _navigationViews;
 
   // 所有页面
   // 当前页面
@@ -138,9 +135,6 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     super.build(context);
     print('index_build');
 //    Application.context = context;
-    if (_navigationViews == null) {
-      initPageData();
-    }
     ScreenUtil.init(context, width: 750, height: 1334);
 
 //     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(

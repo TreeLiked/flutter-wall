@@ -103,7 +103,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                             key: const Key('actionName'),
                             style: const TextStyle(fontSize: Dimens.font_sp14),
                           ),
-                          textColor: Colors.amber,
+                          textColor: Colors.amber[700],
                           highlightColor: Colors.transparent,
                           onPressed: onPressed,
                         ),

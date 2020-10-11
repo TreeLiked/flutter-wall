@@ -22,7 +22,7 @@ class MyButton extends StatelessWidget {
       color: Colors.amber,
       disabledTextColor: isDark ? Colours.dark_text_disabled : Colours.text_disabled,
       disabledColor: isDark ? Colours.dark_button_disabled : Colours.button_disabled,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(
         children: <Widget>[
           Container(

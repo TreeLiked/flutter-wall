@@ -7,7 +7,7 @@
  * See LICENSE for distribution and usage details.
  */
 import 'package:fluro/fluro.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Router;
 import 'package:iap_app/common-widget/widget_not_found.dart';
 import 'package:iap_app/page/login/sms_login_page.dart';
 import 'package:iap_app/page/login_page.dart';

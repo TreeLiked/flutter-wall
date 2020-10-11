@@ -28,6 +28,7 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
@@ -252,7 +253,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   margin: const EdgeInsets.only(right: 10),
-                  child: Text('+86', style: TextStyles.textSize16),
+                  child: Text('+ 86', style: TextStyles.textSize16),
                 ),
                 Gaps.vLine,
                 Expanded(
@@ -328,8 +329,8 @@ class _SMSLoginPageState extends State<LoginPage> {
           _renderHit('未注册的手机号通过验证后将自动注册'),
           Gaps.vGap8,
           _renderGetCodeLine(),
-          Gaps.vGap16,
-//          _renderOtherLine(),
+          Gaps.vGap30,
+          // _renderOtherLine(),
         ],
       ),
     );
@@ -340,7 +341,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         margin: const EdgeInsets.only(top: 15),
         child: RichText(
           softWrap: true,
-          maxLines: 3,
+          maxLines: 8,
           text: TextSpan(children: [
             TextSpan(text: "登录即表示同意 ", style: TextStyles.textGray14),
             TextSpan(
@@ -369,8 +370,12 @@ class _SMSLoginPageState extends State<LoginPage> {
         margin: const EdgeInsets.only(top: 15),
         child: FlatButton(
           child: Text(!_codeWaiting ? '获取短信验证码' : '重新获取 $s(s)', style: TextStyle(color: Colors.white)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-          color: _canGetCode ? Colors.amber : !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          color: _canGetCode
+              ? Colors.amber
+              : !isDark
+                  ? Color(0xffD7D6D9)
+                  : Colours.dark_bg_color_darker,
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
           onPressed: _codeWaiting

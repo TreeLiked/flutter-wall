@@ -6,12 +6,13 @@ import 'colors.dart';
 import 'dimens.dart';
 
 class TextStyles {
-  static const TextStyle textSize12 = const TextStyle(
+  static const TextStyle textSize12 = const  TextStyle(
     fontSize: Dimens.font_sp12,
   );
   static const TextStyle textSize14 = const TextStyle(
     fontSize: Dimens.font_sp14,
   );
+
   static const TextStyle textSize10 = const TextStyle(
       fontSize: Dimens.font_sp10, color: Colors.white, fontFamily: TextConstant.PING_FANG_FONT);
   static const TextStyle textSize16 =
@@ -31,26 +32,30 @@ class TextStyles {
     fontSize: Dimens.font_sp14,
     color: Colours.text_gray,
     fontFamily: TextConstant.PING_FANG_FONT,
+    fontWeight: FontWeight.w400,
   );
   static const TextStyle textGray16 = const TextStyle(
     fontSize: Dimens.font_sp16,
     fontFamily: TextConstant.PING_FANG_FONT,
     color: Colours.text_gray,
+    fontWeight: FontWeight.w400,
   );
   static const TextStyle textDarkGray14 = const TextStyle(
     fontSize: Dimens.font_sp14,
     fontFamily: TextConstant.PING_FANG_FONT,
     color: Colours.dark_text_gray,
+    fontWeight: FontWeight.w400,
   );
 
   static const TextStyle textWhite14 = const TextStyle(
     fontSize: Dimens.font_sp14,
     color: Colors.white,
     fontFamily: TextConstant.PING_FANG_FONT,
+    fontWeight: FontWeight.w400,
   );
 
   static const TextStyle textClickable = const TextStyle(
-      fontSize: Dimens.font_sp14, color: Color(0xff03489d), fontFamily: TextConstant.PING_FANG_FONT);
+      fontSize: Dimens.font_sp14, color: Color(0xff02376a), fontFamily: TextConstant.PING_FANG_FONT);
 
   static const commonTextStyle =
       const TextStyle(fontSize: 16, color: Colors.black87, fontFamily: TextConstant.PING_FANG_FONT);

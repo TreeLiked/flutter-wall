@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/common-widget/my_button.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
@@ -28,6 +29,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
@@ -133,7 +135,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
           NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
           return;
         }
-        ToastUtil.showServiceExpToast(context);
+        ToastUtil.showToast(context, res.message);
         NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
       }
     }
@@ -151,6 +153,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
           centerTitle: '选择大学',
           actionName: '完成',
           onPressed: _haveChoice ? _finishAll : null,
+          isBack: !_haveChoice,
         ),
         body: !_haveChoice
             ? Column(
@@ -158,11 +161,11 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                   Gaps.vGap16,
                   Container(
 //                    height: ScreenUtil().setHeight(80),
-                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 3.0),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: ThemeUtils.isDark(context) ? Color(0xff363636) : Color(0xfff2f2f2),
+                      borderRadius: BorderRadius.circular(13.0),
+                      color: ThemeUtils.isDark(context) ? Color(0xff363636) : ColorConstant.TWEET_RICH_BG,
                     ),
                     margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
                     child: TextField(
@@ -183,7 +186,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                           });
                         });
                       },
-                      style: TextStyles.textBold14,
+                      style: TextStyles.textSize14.copyWith(letterSpacing: 1.1, color: Colors.amber[800]),
                       decoration: InputDecoration(
                           hintText: '输入大学以搜索，英文缩写也可以哦',
                           hintStyle: TextStyles.textGray14,
@@ -203,8 +206,6 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                               });
                             },
                           ),
-//                          filled: true,
-//                          fillColor: Color(0xfff5f6f7),
                           border: InputBorder.none),
                       maxLines: 1,
                     ),
@@ -245,19 +246,38 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                           child: Text('没有满足条件的数据', style: TextStyles.textGray14));
                                     }
 
+                                    list.forEach((element) {
+                                      print(element.toJson());
+                                    });
                                     return ListView.builder(
                                         itemCount: list.length,
                                         itemBuilder: (context, index) {
                                           return new ListTile(
                                             onTap: () {
-                                              // list[index].
+                                              University un = list[index];
+                                              if (un == null) {
+                                                return;
+                                              }
+                                              if (un.status != 1) {
+                                                if (un.status == 0) {
+                                                  ToastUtil.showToast(context, "抱歉，您的学校暂时未开放");
+                                                }
+                                                if (un.status == 2) {
+                                                  ToastUtil.showToast(context, "抱歉，您的学校正在灰度测试中，感谢您的支持");
+                                                }
+                                                return;
+                                              }
                                               setState(() {
                                                 _haveChoice = true;
-                                                _cName = list[index].name;
-                                                _cId = list[index].id;
+                                                _cName = un.name;
+                                                _cId = un.id;
                                               });
                                             },
-                                            title: new Text(list[index].name,style: pfStyle),
+                                            title: new Text(list[index].name, style: TextStyles.textSize14),
+                                            subtitle: StringUtil.isEmpty(list[index].enAbbr)
+                                                ? null
+                                                : new Text(list[index].enAbbr.toUpperCase() ?? "",
+                                                    style: TextStyles.textSize12),
                                           );
                                         });
                                   }
@@ -268,39 +288,52 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                 ],
               )
             : Container(
-                margin: EdgeInsets.only(top: 100),
+                margin: EdgeInsets.only(top: ScreenUtil().setHeight(150)),
                 width: double.infinity,
-                height: 300,
+                height: Application.screenHeight,
                 alignment: Alignment.topCenter,
                 child: RichText(
                   softWrap: true,
                   textAlign: TextAlign.center,
                   text: TextSpan(children: [
                     TextSpan(
-                        text: '当前选择：\n\n',
+                        text: '当前选择：',
                         style: pfStyle.copyWith(
-                            color: Colors.black,
-                            fontSize: Dimens.font_sp18,
-                            letterSpacing: 1.2,
-                            fontWeight: FontWeight.w500)),
+                            color: Colors.black, fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
                     TextSpan(
                         text: '$_cName\n\n\n',
-                        style:
-                        pfStyle.copyWith(color: Colors.black, fontSize: Dimens.font_sp16, letterSpacing: 1.1)),
-                    TextSpan(
-                      text: '重新选择',
-                      style: pfStyle.copyWith(
-                          color: Theme.of(context).accentColor,
-                          fontSize: Dimens.font_sp16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
+                        style: pfStyle.copyWith(
+                            color: Colors.black, fontSize: Dimens.font_sp16, letterSpacing: 1.1)),
+                    WidgetSpan(
+                        child: Container(
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+                        color: ColorConstant.TWEET_RICH_BG,
+                        child: Text(
+                          "重新选择",
+                          style: pfStyle.copyWith(color: Colors.green, letterSpacing: 1.1),
+                        ),
+                        onPressed: () => {
                           setState(() {
+                            _controller.text = "";
+                            _queryUnTask = queryUnis("");
                             _haveChoice = false;
-                          });
+                          })
                         },
-                    )
+                      ),
+                    )),
+                    TextSpan(
+                        text: '\n\n',
+                        style: pfStyle.copyWith(
+                          color: Colors.grey,
+                          fontSize: Dimens.font_sp13,
+                        )),
+                    TextSpan(
+                        text: '\n\n提示：一旦大学选择后，将不支持更改',
+                        style: pfStyle.copyWith(
+                          color: Colors.grey,
+                          fontSize: Dimens.font_sp13,
+                        ))
                   ]),
                 )));
   }

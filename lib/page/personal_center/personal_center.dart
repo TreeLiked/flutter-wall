@@ -1,22 +1,14 @@
-import 'dart:async';
-import 'dart:math';
 
-import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/invite.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
-import 'package:iap_app/component/up_down_item.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart';
-import 'package:iap_app/page/common/avatar_origin.dart';
-import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -25,9 +17,7 @@ import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/AccountProfileUtil.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
-import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 
 class PersonalCenter extends StatefulWidget {

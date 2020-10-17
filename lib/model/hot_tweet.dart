@@ -1,7 +1,5 @@
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/media.dart';
-import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/model/tweet_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'hot_tweet.g.dart';

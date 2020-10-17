@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/theme_utils.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(
   BuildContext context,

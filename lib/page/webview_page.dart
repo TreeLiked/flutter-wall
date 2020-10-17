@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';

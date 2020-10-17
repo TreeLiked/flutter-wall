@@ -2,18 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/exit_dialog.dart';
-import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
-import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -21,14 +16,12 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
-import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class AccountInfoPage extends StatefulWidget {

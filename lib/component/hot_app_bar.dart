@@ -1,10 +1,8 @@
 import 'dart:ui';
 
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';

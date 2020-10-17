@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/common.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -12,7 +11,6 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 

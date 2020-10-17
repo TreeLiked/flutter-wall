@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/model/result.dart';
-import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class ReportAPI {

@@ -6,7 +6,6 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 

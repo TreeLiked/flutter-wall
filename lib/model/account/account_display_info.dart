@@ -1,5 +1,4 @@
 import 'package:iap_app/model/account/account_role.dart';
-import 'package:iap_app/model/gender.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'account_display_info.g.dart';

@@ -3,14 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/widget_util.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// 登录模块的输入框封装
 class MyTextField extends StatefulWidget {

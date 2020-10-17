@@ -1,11 +1,8 @@
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/util/image_utils.dart';
 
 class WidgetUtil {

@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
@@ -13,7 +12,6 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -25,7 +23,6 @@ import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
 import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/part/notification/red_point.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -37,7 +34,6 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/JPushUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';

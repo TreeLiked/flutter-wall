@@ -5,7 +5,6 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
-import 'package:iap_app/api/invite.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
@@ -13,15 +12,12 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/university.dart';
 import 'package:iap_app/page/index/index.dart';
-import 'package:iap_app/page/login/org_info_set.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
-import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/log_utils.dart';
 import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -201,7 +197,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    prefix0.ScreenUtil.init(context, width: 750, height: 1334);
+    prefix0.ScreenUtil.init(context, width: 1242, height: 2688);
     // prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)..init(context);
     Application.screenWidth = prefix0.ScreenUtil.screenWidth;
     Application.screenHeight = prefix0.ScreenUtil.screenHeight;
@@ -218,6 +214,6 @@ class _SplashPageState extends State<SplashPage> {
                 fadeInCurve: Curves.linear,
               )
             : Index());
-        // child: OrgInfoCPage());
+    // child: OrgInfoCPage());
   }
 }

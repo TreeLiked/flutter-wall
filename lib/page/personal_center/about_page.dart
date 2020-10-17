@@ -1,20 +1,13 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/common-widget/update_dialog.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/model/version/pub_v.dart';
 import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';

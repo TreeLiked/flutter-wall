@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/component/simgple_tag.dart';
-import 'package:iap_app/component/square_tag.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/provider/account_local.dart';

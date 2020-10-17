@@ -1,32 +1,13 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/application.dart';
-import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
 import 'package:iap_app/component/tweet/praise/tweet_praise_wrapper.dart';
 import 'package:iap_app/component/tweet/reply/tweet_reply_wrapper_simple.dart';
-import 'package:iap_app/component/tweet/tweet_campus_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_statistics_wrapper.dart';
-import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/global_config.dart';
-import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/size_constant.dart';
-import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/res/colors.dart';
-import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/account_util.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 
 class TweetCardExtraWrapper extends StatefulWidget {

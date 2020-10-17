@@ -1,5 +1,4 @@
-import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
+
 
 class SharedConstant {
   static const String LOCAL_ACCOUNT_ID = "ACCOUNT_ID";

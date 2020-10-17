@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/part/notification/my_sn_card.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/res/styles.dart';
 
 // 系统通知tabView

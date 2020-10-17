@@ -10,7 +10,6 @@ import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';

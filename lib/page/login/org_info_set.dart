@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flustars/flustars.dart' as prefix0;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -9,7 +8,6 @@ import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/common-widget/my_button.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';

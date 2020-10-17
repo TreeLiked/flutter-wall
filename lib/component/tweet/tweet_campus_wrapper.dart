@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/component/square_tag.dart';
 import 'package:iap_app/component/tweet/tweet_type_wrapper.dart';
 import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetCampusWrapper extends StatelessWidget {

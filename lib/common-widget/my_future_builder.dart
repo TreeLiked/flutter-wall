@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/part/notification/my_sn_card.dart';
 import 'package:iap_app/res/gaps.dart';

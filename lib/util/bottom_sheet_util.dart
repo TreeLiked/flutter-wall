@@ -8,7 +8,6 @@ import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/topic/add_topic_reply.dart';

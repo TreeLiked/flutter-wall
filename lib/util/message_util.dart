@@ -5,7 +5,6 @@ import 'package:iap_app/api/message.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/bloc/count_bloc.dart';
 import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/page/notification/index.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:provider/provider.dart';

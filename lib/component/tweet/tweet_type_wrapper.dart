@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iap_app/component/square_tag.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';

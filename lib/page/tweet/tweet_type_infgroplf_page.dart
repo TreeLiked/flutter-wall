@@ -1,24 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/api/tweet_type_subscribe.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/my_button.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
-import 'package:iap_app/component/tweet/tweet_hot_card.dart';
-import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/page_param.dart';
+import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -45,6 +47,10 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
   int _currentPage = 1;
   List<BaseTweet> _allTweets;
 
+  bool _subThis = false;
+
+  bool _initSub = true;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +61,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
       t = fallbackTweetType;
     }
     typeEntity = tweetTypeMap[t];
+    checkSubscribeStatus();
   }
 
   Future<void> _onRefresh() async {
@@ -109,7 +116,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
               title: '',
               headerNotifier: _headerNotifier,
               // backgroundImg: TweetTypeUtil.getTweetTypeCover(context),
-              backgroundImg:TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
+              backgroundImg: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
               count: 10,
               sigma: 5.5,
               pinned: true,
@@ -139,9 +146,11 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                                 color: Colors.white,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child:
-                                      CachedNetworkImage(imageUrl: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity), fit: BoxFit.cover,
-                                      placeholder: (_, __)=> const CupertinoActivityIndicator(),),
+                                  child: CachedNetworkImage(
+                                    imageUrl: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => const CupertinoActivityIndicator(),
+                                  ),
                                 ),
                               ))),
                     ),
@@ -154,7 +163,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('# ${typeEntity.zhTag}',
+                            Text('#${typeEntity.zhTag}',
                                 style: pfStyle.copyWith(
                                     fontSize: Dimens.font_sp16,
                                     letterSpacing: 1.2,
@@ -178,13 +187,35 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                           Container(
                             height: 30,
                             child: FlatButton(
-                              onPressed: () => {ToastUtil.showToast(context, '功能即将开放，敬请期待')},
+                              onPressed: () async {
+                                if (_initSub) {
+                                  return;
+                                }
+                                bool a = await PermissionUtil.checkAndRequestNotification(context);
+                                if (!a) {
+                                  ToastUtil.showToast(context, "通知权限未开启");
+                                  return;
+                                }
+                                await modSubscribe();
+                              },
                               textColor: Colors.white,
-                              color: typeEntity.color,
+                              color: _subThis ? typeEntity.color : null,
                               disabledTextColor: isDark ? Colours.dark_text_disabled : Colours.text_disabled,
                               disabledColor: isDark ? Colours.dark_button_disabled : Colours.button_disabled,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                              child: Text("+ 关注", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide(color: Colors.black26, width: _subThis ? 0 : 1.0),
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              child: !_initSub
+                                  ? (_subThis
+                                      ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.check, size: 15),
+                                            Text(" 已关注", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
+                                          ],
+                                        )
+                                      : Text("+ 关注", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)))
+                                  : SpinKitDoubleBounce(size: 5, color: Colors.white),
                             ),
                           )
                         ],
@@ -193,7 +224,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   ],
                 ),
               ),
-              expandedHeight: ScreenUtil().setHeight(300),
+              expandedHeight: ScreenUtil().setHeight(500),
             ),
             // SliverPersistentHeader(
             //   pinned: true,
@@ -221,7 +252,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   displayLink: true,
                   canPraise: true,
                   displayType: false,
-                  onDetailDelete: (int tweetId){
+                  onDetailDelete: (int tweetId) {
                     setState(() {
                       _allTweets.removeWhere((element) => element.id == tweetId);
                     });
@@ -245,6 +276,52 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
           ),
           onLoad: _onLoading),
     );
+  }
+
+  void modSubscribe() async {
+    Utils.showDefaultLoadingWithBounds(context);
+
+    Result r;
+    if (_subThis) {
+      // 已经订阅要取消
+      r = await TtSubscribe.unSubscribeType(widget.tweetType);
+    } else {
+      // 想订阅
+      r = await TtSubscribe.subscribeType(widget.tweetType);
+    }
+    NavigatorUtils.goBack(context);
+    if (r != null && r.isSuccess) {
+      ToastUtil.showToast(context, _subThis ? "已取消关注" : "关注成功～");
+      setState(() {
+        _subThis = !_subThis;
+      });
+    } else {
+      if (r == null) {
+        ToastUtil.showServiceExpToast(context);
+      } else {
+        ToastUtil.showToast(context, r.message);
+      }
+    }
+  }
+
+  void checkSubscribeStatus() async {
+    Result r = await TtSubscribe.checkSubscribeStatus(widget.tweetType);
+    if (r != null && r.isSuccess) {
+      bool sub = r.data as bool;
+      setState(() {
+        _subThis = sub;
+        _initSub = false;
+      });
+    } else {
+      setState(() {
+        _initSub = false;
+      });
+      if (r == null) {
+        ToastUtil.showServiceExpToast(Application.context);
+      } else {
+        ToastUtil.showToast(Application.context, r.message);
+      }
+    }
   }
 }
 

@@ -1,9 +1,7 @@
 import 'dart:core';
-import 'dart:ffi';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
-import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class DeviceApi {

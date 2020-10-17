@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'dart:ui' as prefix0;
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';

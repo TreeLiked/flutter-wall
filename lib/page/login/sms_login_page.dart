@@ -28,7 +28,6 @@ import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
@@ -37,7 +36,6 @@ import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/version_utils.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:provider/provider.dart';
-import 'package:rxdart/rxdart.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -220,7 +218,7 @@ class _SMSLoginPageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(
-          padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(110)),
+          padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(200)),
           child: defaultTargetPlatform == TargetPlatform.iOS
               ? FormKeyboardActions(
                   child: _buildBody(),

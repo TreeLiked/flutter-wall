@@ -3,7 +3,6 @@ import 'package:iap_app/common-widget/base_dialog.dart';
 import 'package:iap_app/common-widget/radio_item.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/widget_util.dart';
 

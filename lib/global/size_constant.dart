@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:iap_app/res/dimens.dart';
 
 class SizeConstant {

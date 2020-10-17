@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/asset_image.dart';
 import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
@@ -19,15 +17,11 @@ import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
-import 'package:iap_app/page/common/image_origin.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
-import 'package:iap_app/part/stateless.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
-import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
@@ -36,7 +30,6 @@ import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:photo/photo.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 class CreatePage extends StatefulWidget {
   final String title = "发布内容";

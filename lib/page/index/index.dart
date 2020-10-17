@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/page/home/home_page.dart';
-import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/version_utils.dart';
@@ -135,7 +133,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
     super.build(context);
     print('index_build');
 //    Application.context = context;
-    ScreenUtil.init(context, width: 750, height: 1334);
+    ScreenUtil.init(context, width: 1242, height: 2688);
 
 //     final BottomNavigationBar bottomNavigationBar = new BottomNavigationBar(
 //         elevation: 0,

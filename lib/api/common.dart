@@ -2,11 +2,7 @@ import 'dart:core';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
-import 'package:iap_app/api/member.dart';
-import 'package:iap_app/model/account/school/institute.dart';
 import 'package:iap_app/model/result.dart';
-import 'package:iap_app/model/university.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class CommonApi {

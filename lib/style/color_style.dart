@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/global/global_config.dart';
-import 'package:iap_app/global/size_constant.dart';
-import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class MyColorStyle {

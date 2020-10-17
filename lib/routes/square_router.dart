@@ -1,7 +1,4 @@
 import 'package:fluro/fluro.dart';
-import 'package:iap_app/page/login/account_info_set.dart';
-import 'package:iap_app/page/login/org_info_set.dart';
-import 'package:iap_app/page/login/sms_login_page.dart';
 import 'package:iap_app/page/square/topic/topic_create.dart';
 import 'package:iap_app/page/square/topic/topic_detail_page.dart';
 import 'package:iap_app/routes/router_init.dart';

@@ -1,4 +1,3 @@
-import 'package:iap_app/model/account/account_profile.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'simple_account.g.dart';

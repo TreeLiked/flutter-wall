@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:flustars/flustars.dart' as prefix0;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/base_dialog.dart';

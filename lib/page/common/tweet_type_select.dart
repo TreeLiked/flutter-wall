@@ -6,7 +6,6 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/widget_util.dart';
-import 'package:provider/provider.dart';
 
 class TweetTypeSelectPage extends StatefulWidget {
   final String title;

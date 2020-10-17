@@ -1,6 +1,5 @@
 import 'package:iap_app/model/page_tweet.dart';
 import 'package:iap_app/model/tweet.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 class Page<T> {
   int currentPage;

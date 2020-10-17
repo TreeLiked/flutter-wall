@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
-import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';

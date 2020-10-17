@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/v_empty_view.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
-import 'package:iap_app/util/widget_util.dart';
 
 class ClickItem extends StatelessWidget {
   const ClickItem(

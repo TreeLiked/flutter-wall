@@ -2,18 +2,18 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/main.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 
 class Api {
-  static const bool devInf =false;
-  static const bool devMem =true;
+  static const bool devInf = false;
+  static const bool devMem = false;
   static const String API_BASE_AL = "https://almond-donuts.iutr.tech";
   static const String API_BASE_TR = "https://member.iutr.tech";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
   static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
+
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
   static const String API_BASE_MEM_DEV = "http://192.168.31.235:9002";
 
@@ -64,7 +64,8 @@ class Api {
   static const String API_QUERY_ACCOUNT = API_BASE_MEMBER_URL + "/account/getAccInfo.json";
 
   static const String API_QUERY_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getProfileInfo.json";
-  static const String API_QUERY_ACCOUNT_CAMPUS_PROFILE = API_BASE_MEMBER_URL + "/account/getCampusProfile.json";
+  static const String API_QUERY_ACCOUNT_CAMPUS_PROFILE =
+      API_BASE_MEMBER_URL + "/account/getCampusProfile.json";
 
   static const String API_QUERY_FILTERED_ACCOUNT_PROFILE = API_BASE_MEMBER_URL + "/account/getShowInfo.json";
 
@@ -111,8 +112,12 @@ class Api {
 
   static const String API_MSG_LATEST = API_BASE_INF_URL + "/message/latest.json";
 
-  // version update
+  // subscribe
+  static const String API_TWEET_TYPE_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/s.action";
+  static const String API_TWEET_TYPE_UN_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/us.action";
+  static const String API_TWEET_TYPE_CHECK_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/c.action";
 
+  // version update
   static const String API_CHECK_UPDATE = API_BASE_INF_URL + "/version/checkUpdate";
   static const String API_CHECK_AVAILABLE = API_BASE_INF_URL + "/version/available";
   static const String API_AGREEMENT = "https://almond-donuts.iutr.tech/terms.html";
@@ -145,8 +150,8 @@ class Api {
       return "响应超时";
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
-      print("出现异常$e");
-      return "出现异常";
+      print("服务出现异常$e");
+      return "服务出现异常";
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.
       print("请求取消");
@@ -157,12 +162,12 @@ class Api {
       return "未知错误";
     }
   }
-  
-  static Result genErrorResult(String errorMsg) {
-    
+
+  static Result<dynamic>  genErrorResult(String errorMsg, {dynamic data}) {
     Result r = new Result();
     r.isSuccess = false;
     r.message = errorMsg;
-    return r ;
+    r.data = data;
+    return r;
   }
 }

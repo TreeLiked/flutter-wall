@@ -7,7 +7,6 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
-import 'package:iap_app/style/text_style.dart';
 
 class ActivityPageView extends StatefulWidget {
   @override

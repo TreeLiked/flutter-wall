@@ -7,7 +7,6 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/string.dart';
-import 'package:iap_app/util/toast_util.dart';
 
 class TweetBodyWrapper extends StatelessWidget {
   final String body;

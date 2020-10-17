@@ -1,11 +1,8 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/page/square/activity_page_view.dart';
 import 'package:iap_app/page/square/topic/topic_page_view.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/square_router.dart';
 import 'package:iap_app/style/text_style.dart';

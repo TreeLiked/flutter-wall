@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,16 +8,11 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/common/report_page.dart';
-import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:image_picker_saver/image_picker_saver.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 

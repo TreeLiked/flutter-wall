@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -9,7 +8,6 @@ import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
 
 class TweetCommentWrapper extends StatefulWidget {
   final BaseTweet tweet;

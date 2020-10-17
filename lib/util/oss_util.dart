@@ -3,7 +3,6 @@
 * PostObject方式上传图片官方文档：https://help.aliyun.com/document_detail/31988.html
 */
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:crypto/crypto.dart';

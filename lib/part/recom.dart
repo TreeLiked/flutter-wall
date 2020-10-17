@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/api/message.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
-import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

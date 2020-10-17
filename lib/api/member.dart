@@ -1,13 +1,11 @@
 import 'dart:core';
 
 import 'package:dio/dio.dart';
-import 'package:flustars/flustars.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_display_info.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
-import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/account/school/account_campus_profile.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';

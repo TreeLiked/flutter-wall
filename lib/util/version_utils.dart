@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/v_c.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/update_dialog.dart';

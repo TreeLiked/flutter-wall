@@ -10,7 +10,6 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'package:iap_app/common-widget/widget_not_found.dart';
 import 'package:iap_app/page/login/sms_login_page.dart';
-import 'package:iap_app/page/login_page.dart';
 import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/page/tweet/tweet_type_infgroplf_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
@@ -20,7 +19,7 @@ import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/routes/square_router.dart';
-import 'package:iap_app/util/fluro_convert_utils.dart';
+
 import './route_handlers.dart';
 
 class Routes {

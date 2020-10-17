@@ -5,7 +5,6 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 
 class TweetProvider extends ChangeNotifier {

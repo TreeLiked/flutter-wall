@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/message.dart';
-import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';

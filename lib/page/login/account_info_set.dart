@@ -3,11 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/member.dart';
-import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/common-widget/my_button.dart';
-import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/page/common/image_crop.dart';
@@ -27,7 +23,6 @@ import 'package:iap_app/util/widget_util.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class AccountInfoCPage extends StatefulWidget {
   @override

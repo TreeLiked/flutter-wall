@@ -9,28 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/common-widget/v_empty_view.dart';
-import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
-import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
-import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
-import 'package:iap_app/util/widget_util.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -124,7 +113,7 @@ class Utils {
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
     list.add(
-      SpinKitThreeBounce(color: Colors.lightBlueAccent,size: size)
+      SpinKitChasingDots(color: Colors.lightBlueAccent,size: size)
       // SpinKitChasingDots(color: Colors.amber, size: size),
       //  const CupertinoActivityIndicator()
     );

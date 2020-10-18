@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
@@ -78,16 +79,19 @@ class _AboutPageState extends State<AboutPage> {
                 NavigatorUtils.goWebViewPage(
                     context, "Wall服务协议", "http://almond-donuts.iutr.tech:8088/terms.html");
               }),
-          ClickItem(
-            title: '检查更新',
-            content: 'v${ios ? SharedConstant.VERSION_REMARK_IOS : SharedConstant.VERSION_REMARK_ANDROID}',
-            onTap: () async {
-              Utils.showDefaultLoadingWithBounds(context);
-              VersionUtils.checkUpdate(context: context).then((result) {
-                NavigatorUtils.goBack(context);
-                VersionUtils.displayUpdateDialog(result, context: context);
-              });
-            },
+          GestureDetector(
+            child: ClickItem(
+              title: '检查更新',
+              content: 'v${ios ? SharedConstant.VERSION_REMARK_IOS : SharedConstant.VERSION_REMARK_ANDROID}',
+              onTap: () async {
+                Utils.showDefaultLoadingWithBounds(context);
+                VersionUtils.checkUpdate(context: context).then((result) {
+                  NavigatorUtils.goBack(context);
+                  VersionUtils.displayUpdateDialog(result, context: context);
+                });
+              },
+            ),
+            onLongPress: () => ToastUtil.showToast(context, Application.getDeviceId ?? "NULL"),
           ),
           ClickItem(
             title: "问题反馈",
@@ -98,7 +102,11 @@ class _AboutPageState extends State<AboutPage> {
             onTap: () async {
               Utils.displayDialog(
                   context,
-                  SimpleConfirmDialog('联系我们', '你可以添加微信号：dlwlrma73或发送邮件到 im.lqs2@icloud.com和我联系',),barrierDismissible: true);
+                  SimpleConfirmDialog(
+                    '联系我们',
+                    '你可以添加微信号：dlwlrma73或发送邮件到 im.lqs2@icloud.com和我联系',
+                  ),
+                  barrierDismissible: true);
             },
           ),
 

@@ -165,7 +165,6 @@ class _HomePageState extends State<HomePage>
         pageSize: 10,
         orgId: Application.getOrgId,
         types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames))));
-
     return pbt;
   }
 

@@ -58,12 +58,13 @@ class _AccountProfileState extends State<AccountProfile> {
   Function _getProfileTask;
 
   AccountDisplayInfo account;
+  bool _initAccount = true;
+  bool _initTweet = true;
 
   EasyRefreshController _hisTweetController;
   Function _onLoadHisTweet;
   bool display = false;
-  bool initialing = true;
-  List<BaseTweet> _accountTweets = List();
+  List<BaseTweet> _accountTweets;
   int _currentPage = 1;
 
   @override
@@ -74,12 +75,12 @@ class _AccountProfileState extends State<AccountProfile> {
     _hisTweetController = EasyRefreshController();
     _onLoadHisTweet = _loadMoreData;
     UMengUtil.userGoPage(UMengUtil.PAGE_ACCOUNT_PROFILE);
-
   }
 
   void _loadProfileInfo() async {
     AccountDisplayInfo account = await MemberApi.getAccountDisplayProfile(widget.accountId);
     setState(() {
+      _initAccount = false;
       this.account = account;
     });
   }
@@ -98,13 +99,19 @@ class _AccountProfileState extends State<AccountProfile> {
     if (!CollectionUtil.isListEmpty(tweets)) {
       _currentPage++;
       setState(() {
-        this.initialing = false;
+        if (_accountTweets == null) {
+          _accountTweets = List();
+        }
+        this._initTweet = false;
         this._accountTweets.addAll(tweets);
       });
       _hisTweetController.finishRefresh(success: true, noMore: false);
     } else {
       setState(() {
-        this.initialing = false;
+        // if (_accountTweets == null) {
+        //   _accountTweets = List();
+        // }
+        this._initTweet = false;
       });
       _hisTweetController.finishRefresh(success: true, noMore: true);
     }
@@ -148,7 +155,7 @@ class _AccountProfileState extends State<AccountProfile> {
                   pinned: true,
                   snap: false,
                   floating: false,
-                  expandedHeight: ScreenUtil().setHeight(350),
+                  expandedHeight: ScreenUtil().setHeight(550),
                   elevation: 0.5,
                   titleSpacing: 1.2,
                   // title: Text(widget.nick, style: const TextStyle(fontSize: Dimens.font_sp16,color: Colors.white)),
@@ -180,8 +187,8 @@ class _AccountProfileState extends State<AccountProfile> {
                         }));
                         if (Application.getAccountId != null &&
                             Application.getAccountId != widget.accountId) {
-                          items.add(
-                              BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
+                          items.add(BottomSheetItem(
+                              Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
                             Navigator.pop(context);
                             _showShieldedAccountBottomSheet();
                           }));
@@ -194,11 +201,11 @@ class _AccountProfileState extends State<AccountProfile> {
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.zero,
                         topRight: Radius.zero,
-                        bottomLeft: const Radius.circular(10.0),
-                        bottomRight: const Radius.circular(10.0)),
+                        bottomLeft: const Radius.circular(5.0),
+                        bottomRight: const Radius.circular(5.0)),
                     child: FlexibleDetailBar(
                         content: Container(
-                          padding: EdgeInsets.only(top: ScreenUtil().setHeight(50)),
+                          padding: EdgeInsets.only(top: ScreenUtil().setHeight(150)),
                           child: Center(
                               child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -242,12 +249,12 @@ class _AccountProfileState extends State<AccountProfile> {
                           ),
                           BackdropFilter(
                             filter: ImageFilter.blur(
-                              sigmaY: 4,
-                              sigmaX: 4,
+                              sigmaY: 5,
+                              sigmaX: 5,
                             ),
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black12),
+                                  color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.white10),
                               width: double.infinity,
                               height: double.infinity,
                             ),
@@ -257,67 +264,73 @@ class _AccountProfileState extends State<AccountProfile> {
               SliverToBoxAdapter(
                 child: Container(
                     margin: EdgeInsets.only(top: 20, left: 15.0, right: 20.0, bottom: 10),
-                    child: account == null
+                    child: account == null && _initAccount
                         ? SpinKitThreeBounce(
-                            color: Colors.amber[600],
+                            color: Colors.lightGreen,
                             size: 20,
                           )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                  flex: 3,
-                                  fit: FlexFit.loose,
-                                  child: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(children: [
-                                      WidgetSpan(
-                                          child: _wrapIcon(LoadAssetSvg("count",
-                                              width: 19, height: 19, color: Colors.green))),
-                                      TextSpan(
-                                          text: _getCampusInfoText(),
-                                          style: TextStyle(
-                                              fontSize: Dimens.font_sp15,
-                                              fontFamily: TextConstant.PING_FANG_FONT,
-                                              color: MyColorStyle.getTweetReplyBodyColor(context: context)))
-                                    ]),
-                                  )),
-                              Flexible(
-                                  flex: 1,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      BottomSheetUtil.showBottomSheet(
-                                          context, 0.5, _buildDetailProfileInfo());
-                                    },
-                                    child: Wrap(
-                                      crossAxisAlignment: WrapCrossAlignment.center,
-                                      alignment: WrapAlignment.center,
-                                      children: [
-                                        Text(
-                                          "查看更多",
-                                          style:
-                                          pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14),
+                        : account == null
+                            ? Gaps.empty
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                      flex: 3,
+                                      fit: FlexFit.loose,
+                                      child: RichText(
+                                        textAlign: TextAlign.center,
+                                        text: TextSpan(children: [
+                                          WidgetSpan(
+                                              child: _wrapIcon(LoadAssetSvg("count",
+                                                  width: 19, height: 19, color: Colors.green))),
+                                          TextSpan(
+                                              text: _getCampusInfoText(),
+                                              style: TextStyle(
+                                                  fontSize: Dimens.font_sp15,
+                                                  fontFamily: TextConstant.PING_FANG_FONT,
+                                                  color:
+                                                      MyColorStyle.getTweetReplyBodyColor(context: context)))
+                                        ]),
+                                      )),
+                                  Flexible(
+                                      flex: 1,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          BottomSheetUtil.showBottomSheet(
+                                              context, 0.6, _buildDetailProfileInfo());
+                                        },
+                                        child: Wrap(
+                                          crossAxisAlignment: WrapCrossAlignment.center,
+                                          alignment: WrapAlignment.center,
+                                          children: [
+                                            Text(
+                                              "查看更多",
+                                              style: pfStyle.copyWith(
+                                                  color: Colors.grey, fontSize: Dimens.font_sp14),
+                                            ),
+                                            Icon(Icons.arrow_right, color: Colors.grey)
+                                          ],
                                         ),
-                                        Icon(Icons.arrow_right, color: Colors.grey)
-                                      ],
-                                    ),
-                                  )),
-                            ],
-                          )),
+                                      )),
+                                ],
+                              )),
               ),
-              CollectionUtil.isListEmpty(_accountTweets)
-                  ? SliverToBoxAdapter(
-                      child: Container(
-                          margin: EdgeInsets.only(top: 50),
-                          height: 800,
-                          alignment: Alignment.topCenter,
-                          constraints: BoxConstraints(maxHeight: 100),
-                          child: Text(
-                            '该用户暂未发布过内容',
-                            style: pfStyle.copyWith(fontSize: Dimens.font_sp15, letterSpacing: 1.3),
-                          )),
-                    )
+              CollectionUtil.isListEmpty(_accountTweets) || _initTweet
+                  ? (!_initTweet
+                      ? SliverToBoxAdapter(
+                          child: Container(
+                              margin: EdgeInsets.only(top: 50),
+                              height: 800,
+                              alignment: Alignment.topCenter,
+                              constraints: BoxConstraints(maxHeight: 100),
+                              child: Text(
+                                '该用户暂未发布过内容',
+                                style: pfStyle.copyWith(fontSize: Dimens.font_sp15, letterSpacing: 1.3),
+                              )),
+                        )
+                      : SliverToBoxAdapter(
+                          child: SpinKitChasingDots(color: Colors.lightBlueAccent, size: 20)))
                   : SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
@@ -433,7 +446,7 @@ class _AccountProfileState extends State<AccountProfile> {
   }
 
   _buildDetailProfileInfo() {
-    if (account == null) {
+    if (account == null || _initAccount) {
       return Center(
         child: Text("暂无可用信息", style: pfStyle),
       );
@@ -516,10 +529,12 @@ class _AccountProfileState extends State<AccountProfile> {
           children: [
             Row(
               children: [
-                Icon(icon.icon, size: 20, color: icon.color),
+                // Icon(icon.icon, size: 20, color: icon.color),
                 Padding(
-                  padding: const EdgeInsets.only(left: 10.0),
-                  child: Text(title, style: pfStyle.copyWith(fontSize: Dimens.font_sp16,fontWeight: FontWeight.w500, letterSpacing: 1.2)),
+                  padding: const EdgeInsets.only(left: 0.0),
+                  child: Text(title,
+                      style: pfStyle.copyWith(
+                          fontSize: Dimens.font_sp16, fontWeight: FontWeight.w500, letterSpacing: 1.2)),
                 )
               ],
             ),

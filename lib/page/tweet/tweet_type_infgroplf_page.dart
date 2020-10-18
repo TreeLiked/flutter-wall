@@ -113,10 +113,11 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
           firstRefresh: true,
           slivers: <Widget>[
             HotAppBarWidget(
-              title: '',
+              title: typeEntity.zhTag,
               headerNotifier: _headerNotifier,
               // backgroundImg: TweetTypeUtil.getTweetTypeCover(context),
               backgroundImg: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
+              cache: true,
               count: 10,
               sigma: 5.5,
               pinned: true,
@@ -211,10 +212,10 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Icon(Icons.check, size: 15),
-                                            Text(" 已关注", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
+                                            Text(" 已订阅", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
                                           ],
                                         )
-                                      : Text("+ 关注", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)))
+                                      : Text("+ 订阅", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)))
                                   : SpinKitDoubleBounce(size: 5, color: Colors.white),
                             ),
                           )
@@ -224,7 +225,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   ],
                 ),
               ),
-              expandedHeight: ScreenUtil().setHeight(500),
+              expandedHeight: ScreenUtil().setHeight(550),
             ),
             // SliverPersistentHeader(
             //   pinned: true,
@@ -291,7 +292,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
     }
     NavigatorUtils.goBack(context);
     if (r != null && r.isSuccess) {
-      ToastUtil.showToast(context, _subThis ? "已取消关注" : "关注成功～");
+      ToastUtil.showToast(context, _subThis ? "已取消订阅" : "订阅成功～");
       setState(() {
         _subThis = !_subThis;
       });

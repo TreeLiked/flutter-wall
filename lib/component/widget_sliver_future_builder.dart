@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 
@@ -63,24 +64,29 @@ class _CustomFutureBuilderState<T> extends State<CustomSliverFutureBuilder<T>> {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                 case ConnectionState.active:
-                  return Center(
-                    child: Container(
-                        alignment: Alignment.center,
-                        height: ScreenUtil().setHeight(400),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            CupertinoActivityIndicator(),
-                            Gaps.vGap20,
-                            Text('正在加载', style: MyDefaultTextStyle.getTweetBodyStyle(context))
-                          ],
-                        )),
-                  );
+                  return Container(
+                      alignment: Alignment.topCenter,
+                      height: ScreenUtil().setHeight(300),
+                      margin: EdgeInsets.only(top: ScreenUtil().setHeight(300)),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          CupertinoActivityIndicator(),
+                          Gaps.vGap20,
+                          Text('正在加载', style: MyDefaultTextStyle.getTweetTimeStyle(context))
+                        ],
+                      ));
                 case ConnectionState.done:
                   if (snapshot.hasData) {
                     return widget.builder(context, snapshot.data);
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('服务错误'));
+                    print(snapshot.error);
+                    return Container(
+                        alignment: Alignment.topCenter,
+                        height: ScreenUtil().setHeight(300),
+                        margin: EdgeInsets.only(top: ScreenUtil().setHeight(300)),
+                        child: Text("服务错误",
+                            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)));
                   }
               }
               return Container();

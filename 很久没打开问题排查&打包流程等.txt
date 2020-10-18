@@ -17,3 +17,8 @@
   flutter build apk --split-per-abi
 2、IOS
   flutter build ios --release -> Product -Archive
+
+
+
+### 如果需要调试本地
+地址换掉，member注册的provider的name值改掉

@@ -28,6 +28,8 @@ class HotAppBarWidget extends StatelessWidget {
   final BorderRadius imageRadius;
   final Color lightShadow;
 
+  final bool cache;
+
   HotAppBarWidget({
     @required this.expandedHeight,
     @required this.content,
@@ -44,6 +46,7 @@ class HotAppBarWidget extends StatelessWidget {
     this.pinned = false,
     this.floating = false,
     this.snap = false,
+    this.cache = false,
   });
 
   @override
@@ -66,7 +69,8 @@ class HotAppBarWidget extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
           title ?? "",
-          style: pfStyle.copyWith(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.w500),
+          style:
+              pfStyle.copyWith(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.w500, letterSpacing: 1.1),
         ),
         flexibleSpace: Container(
           color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
@@ -78,7 +82,7 @@ class HotAppBarWidget extends StatelessWidget {
               background: Stack(
                 children: <Widget>[
                   backgroundImg.startsWith('http')
-                      ? Utils.showFadeInImage(backgroundImg, imageRadius)
+                      ? Utils.showFadeInImage(backgroundImg, imageRadius, cache: cache)
                       : Image.asset(
                           backgroundImg,
                           width: double.infinity,

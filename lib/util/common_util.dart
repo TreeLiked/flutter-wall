@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -14,6 +15,7 @@ import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
 import 'package:iap_app/util/string.dart';
@@ -76,11 +78,11 @@ class Utils {
     Function call, {
     double size = 30,
   }) async {
-    showDefaultLoading(context, size: size);
+    showDefaultLoadingWithBounds(context, size: size);
     if (call != null) {
       await call();
-      NavigatorUtils.goBack(context);
     }
+    NavigatorUtils.goBack(context);
   }
 
   static void showDefaultLoadingWithBounds(BuildContext context, {double size = 25, String text = ""}) {
@@ -92,8 +94,8 @@ class Utils {
             type: MaterialType.transparency,
             child: Center(
                 child: SizedBox(
-              width: ScreenUtil().setWidth(200),
-              height: ScreenUtil().setWidth(200),
+              width: ScreenUtil().setWidth(300),
+              height: ScreenUtil().setWidth(300),
               child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -112,21 +114,18 @@ class Utils {
 
   static List<Widget> _renderLoadingList(BuildContext context, double size, String text) {
     List<Widget> list = new List();
-    list.add(
-      SpinKitChasingDots(color: Colors.lightBlueAccent,size: size)
-      // SpinKitChasingDots(color: Colors.amber, size: size),
-      //  const CupertinoActivityIndicator()
-    );
+    list.add(SpinKitChasingDots(color: Colors.lightBlueAccent, size: size)
+        // SpinKitChasingDots(color: Colors.amber, size: size),
+        //  const CupertinoActivityIndicator()
+        );
     if (!StringUtil.isEmpty(text)) {
       list.add(Padding(
-          padding: EdgeInsets.only(top: 0),
+          padding: EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
           child: Text(text,
               softWrap: true,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: ThemeUtils.isDark(context) ? Colors.white : Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold))));
+              style: pfStyle.copyWith(
+                  color: ThemeUtils.isDark(context) ? Colors.white : Colors.white, fontSize: 14))));
     }
     return list;
   }
@@ -162,19 +161,27 @@ class Utils {
         });
   }
 
-  static Widget showFadeInImage(String url, BorderRadius radius) {
+  static Widget showFadeInImage(String url, BorderRadius radius, {bool cache = false}) {
     return ClipRRect(
         borderRadius: radius,
-        child: FadeInImage.memoryNetwork(
+        child: cache
+            ? CachedNetworkImage(
           width: double.infinity,
-          height: double.infinity,
-          placeholder: kTransparentImage,
-          placeholderCacheHeight: 5,
-          placeholderCacheWidth: 5,
+                height: double.infinity,
+                imageUrl: url,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => const CupertinoActivityIndicator(),
+              )
+            : FadeInImage.memoryNetwork(
+                width: double.infinity,
+                height: double.infinity,
+                placeholder: kTransparentImage,
+                placeholderCacheHeight: 5,
+                placeholderCacheWidth: 5,
 //          placeholderScale: 20,
-          image: url,
-          fit: BoxFit.cover,
-        ));
+                image: url,
+                fit: BoxFit.cover,
+              ));
   }
 
   static Widget showNetImage(String url, {double width, double height, BoxFit fit}) {
@@ -241,7 +248,7 @@ class Utils {
     }
     try {
       var result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 100);
-      print("save result --> "+ result.toString());
+      print("save result --> " + result.toString());
       if (Platform.isAndroid) {
         return !StringUtil.isEmpty(result) && result.toString().startsWith("file");
       } else if (Platform.isIOS) {

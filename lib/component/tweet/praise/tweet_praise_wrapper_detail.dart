@@ -20,7 +20,10 @@ class TweetPraiseWrapper2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    if (t == null || t.length == 0) {
+    if (t == null) {
+      return SpinKitThreeBounce(color: ColorConstant.TWEET_DETAIL_PRAISE_ROW_COLOR, size: 18.0);
+    }
+    if (t.length == 0) {
       return Container(
           margin: const EdgeInsets.only(top: 10.0),
           alignment: Alignment.center,
@@ -39,7 +42,8 @@ class TweetPraiseWrapper2 extends StatelessWidget {
       Account account = t[i];
       spans.add(TextSpan(
           text: "${account.nick}" + (i != len - 1 ? '、' : ' '),
-          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context).copyWith(fontFamily: TextConstant.PING_FANG_FONT),
+          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context)
+              .copyWith(fontFamily: TextConstant.PING_FANG_FONT),
           recognizer: TapGestureRecognizer()
             ..onTap = () => NavigatorUtils.goAccountProfile2(context, account)));
     }
@@ -121,12 +125,16 @@ class _TweetPraiseWrapper extends State<TweetPraiseWrapper> {
 class TweetReplyWrapperView extends NetNormalWidget<List<Account>> {
   @override
   Widget buildContainer(BuildContext context, List<Account> t) {
-    if (t == null || t.length == 0) {
+    if (t == null) {
+      return SpinKitThreeBounce(color: ColorConstant.TWEET_DETAIL_REPLY_ROW_COLOR, size: 18.0);
+    }
+    if (t.length == 0) {
       return Container(
           margin: const EdgeInsets.only(top: 10.0),
           alignment: Alignment.center,
           child: Text('快来第一个点赞吧',
-              style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13p5).copyWith(fontFamily: TextConstant.PING_FANG_FONT)));
+              style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13p5)
+                  .copyWith(fontFamily: TextConstant.PING_FANG_FONT)));
     }
 //    return Text('评论${t.length}',style: TextStyle(color: Colors.black),);
     int limit = GlobalConfig.MAX_DISPLAY_PRAISE_DETAIL;
@@ -140,7 +148,8 @@ class TweetReplyWrapperView extends NetNormalWidget<List<Account>> {
       Account account = t[i];
       spans.add(TextSpan(
           text: "${account.nick}" + (i != len - 1 ? '、' : ' '),
-          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context).copyWith(fontFamily: TextConstant.PING_FANG_FONT),
+          style: MyDefaultTextStyle.getTweetNickStyle(13, bold: false, context: context)
+              .copyWith(fontFamily: TextConstant.PING_FANG_FONT),
           recognizer: TapGestureRecognizer()
             ..onTap = () => NavigatorUtils.goAccountProfile2(context, account)));
     }

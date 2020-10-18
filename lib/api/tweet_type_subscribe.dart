@@ -54,4 +54,21 @@ class TtSubscribe {
     }
     return Api.genErrorResult(em, data: false);
   }
+
+  static Future<Result<dynamic>> getMySubscribeTypes() async {
+    String url = Api.API_TWEET_TYPE_GET_SUBSCRIBE;
+    print(url);
+    Response response;
+    String em;
+    try {
+      response = await httpUtil.dio.get(url);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      if (json != null) {
+        return Result.fromJson(json);
+      }
+    } on DioError catch (e) {
+      em = Api.formatError(e, pop: false);
+    }
+    return Api.genErrorResult(em, data: false);
+  }
 }

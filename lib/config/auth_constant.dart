@@ -21,11 +21,11 @@ class SharedConstant {
 
   /// 每个版本都应该维护并且更新的版本号
   /// 同时更新 android/app/src/build.gradle
-  static const int VERSION_ID_ANDROID = 16;
-  static const int VERSION_ID_IOS = 16;
+  static const int VERSION_ID_ANDROID = 17;
+  static const int VERSION_ID_IOS = 17;
 
-  static const String VERSION_REMARK_ANDROID = "2.3.0";
-  static const String VERSION_REMARK_IOS = "2.3.0";
+  static const String VERSION_REMARK_ANDROID = "2.4.0";
+  static const String VERSION_REMARK_IOS = "2.4.0";
 
   /// 维护本地屏蔽列表
   static const String MY_UN_LIKED = "MY_UNLIKED";

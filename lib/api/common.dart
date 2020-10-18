@@ -26,4 +26,14 @@ class CommonApi {
     return res;
   }
 
+  static Future<Map<String, dynamic>> getSplashAd() async {
+    Response response;
+    try {
+      response = await httpUtil2.dio.get(Api.API_AD_SPLASH);
+      return response.data;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return null;
+  }
 }

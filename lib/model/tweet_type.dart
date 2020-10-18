@@ -114,17 +114,17 @@ class TweetTypeEntity {
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
   static const ASK_FOR_MARRIAGE = const TweetTypeEntity(
-      iconData: Icons.people,
-      iconColor: Color(0xffee9ca7),
+      iconData: Icons.people_alt_sharp,
+      iconColor: Color(0xffCD5C5C),
       name: "ASK_FOR_MARRIAGE",
       zhTag: "征婚",
       intro: "我想早恋，但已经晚了",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
-      color: Color(0xffee9ca7),
+      color: Color(0xffCD5C5C),
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_marriage.png");
   static const SOMEONE_FIND = const TweetTypeEntity(
-      iconData: Icons.portrait,
+      iconData: Icons.person_search,
       iconColor: Colors.lightBlue,
       name: "SOMEONE_FIND",
       intro: "世界上所有的相遇都是久别重逢",
@@ -171,12 +171,12 @@ class TweetTypeEntity {
       zhTag: "娱乐");
 
   static const SHARE = const TweetTypeEntity(
-      iconData: Icons.star_half,
-      iconColor: Color(0xff63B8FF),
+      iconData: Icons.star,
+      iconColor: Color(0xffCCBB60),
       intro: "快乐就要分享，分享了就更快乐",
       name: "SHARE",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
-      color: Color(0xff63B8FF),
+      color: Color(0xffCCBB60),
       zhTag: "分享");
 
   static const LOST_AND_FOUND = const TweetTypeEntity(
@@ -198,7 +198,7 @@ class TweetTypeEntity {
       zhTag: "帮助");
 
   static const SECOND_HAND_TRANSACTION = const TweetTypeEntity(
-      iconData: Icons.compare_arrows,
+      iconData: Icons.add_shopping_cart,
       iconColor: Colors.blue,
       name: "SECOND_HAND_TRANSACTION",
       intro: "让价值再飞一会",
@@ -208,10 +208,10 @@ class TweetTypeEntity {
 
   static const OTHER = const TweetTypeEntity(
       iconData: Icons.palette,
-      iconColor: Color(0xff87CEFA),
+      iconColor: Color(0xff66CDAA),
       intro: "没有别的就选这个吧！",
       name: "OTHER",
-      color: Color(0xff87CEFA),
+      color: Color(0xff66CDAA),
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
       zhTag: "其他");
 

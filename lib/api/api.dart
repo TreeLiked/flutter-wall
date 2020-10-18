@@ -12,10 +12,10 @@ class Api {
   static const String API_BASE_TR = "https://member.iutr.tech";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
-  static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
+  static const String API_BASE_INF_DEV = "http://192.168.18.180:8088";
 
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
-  static const String API_BASE_MEM_DEV = "http://192.168.31.235:9002";
+  static const String API_BASE_MEM_DEV = "http://192.168.18.180:9002";
 
   static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
   static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";
@@ -116,12 +116,17 @@ class Api {
   static const String API_TWEET_TYPE_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/s.action";
   static const String API_TWEET_TYPE_UN_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/us.action";
   static const String API_TWEET_TYPE_CHECK_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/c.action";
+  static const String API_TWEET_TYPE_GET_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/g.action";
 
   // version update
   static const String API_CHECK_UPDATE = API_BASE_INF_URL + "/version/checkUpdate";
   static const String API_CHECK_AVAILABLE = API_BASE_INF_URL + "/version/available";
   static const String API_AGREEMENT = "https://almond-donuts.iutr.tech/terms.html";
   static const String API_SHARE = "https://almond-donuts.iutr.tech/download.html";
+
+  // advertisement
+  static const String API_AD_SPLASH = API_BASE_INF_URL + "/adv/splash/g";
+
 
   static Map<String, dynamic> convertResponse(Object responseData) {
     try {

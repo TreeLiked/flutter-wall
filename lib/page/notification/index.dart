@@ -56,9 +56,13 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     super.initState();
     // 校验通知权限
     UMengUtil.userGoPage(UMengUtil.PAGE_NOTI_INDEX);
-    PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
     _loopQueryInteraction(true);
     _loopQuerySystem(true);
+    checkNotification();
+  }
+
+  void checkNotification() async {
+    PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
   }
 
   _fetchLatestMessage() async {

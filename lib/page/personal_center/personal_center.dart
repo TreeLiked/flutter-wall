@@ -125,6 +125,12 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                         NavigatorUtils.push(context, SettingRouter.historyPushPage);
                       },
                     ),
+                    ClickItem(
+                      title: '我的订阅',
+                      onTap: () {
+                        NavigatorUtils.push(context, SettingRouter.mySubscribePage);
+                      },
+                    ),
                   ]),
 //                          _getGroupSetting("账户", [
 ////                            ClickItem(

@@ -103,7 +103,6 @@ class TweetApi {
       if (tweetData == null || tweetData.length == 0) {
         return new List<BaseTweet>();
       }
-      prefix1.print(tweetData.length.toString() + "=================================");
       List<BaseTweet> tweetList = tweetData.map((m) => BaseTweet.fromJson(m)).toList();
       return tweetList;
     } on DioError catch (e) {
@@ -268,4 +267,5 @@ class TweetApi {
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return UniHotTweet.fromJson(json);
   }
+
 }

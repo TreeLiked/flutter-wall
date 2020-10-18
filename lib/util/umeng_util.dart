@@ -9,6 +9,8 @@ class UMengUtil {
 
   static const String PAGE_NOTI_INDEX = "通知首页";
 
+  static const String  PAGE_AD = "广告页面";
+
   static const String PAGE_ACCOUNT_PROFILE = "用户资料页面";
 
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/api/unlike.dart';
@@ -98,105 +99,105 @@ class _AccountProfilePageState extends State<AccountProfilePage> with SingleTick
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[
       SliverAppBar(
-          centerTitle: false,
-          // 标题居中
-          elevation: 0.3,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                List<BottomSheetItem> items = List();
-                items.add(BottomSheetItem(
-                    Icon(
-                      Icons.warning,
-                      color: Colors.grey,
-                    ),
-                    '举报', () {
-                  Navigator.pop(context);
-                  NavigatorUtils.goReportPage(context, ReportPage.REPORT_ACCOUNT, widget.accountId, "账户举报");
-                }));
-                if (Application.getAccountId != null && Application.getAccountId != widget.accountId) {
-                  items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
-                    Navigator.pop(context);
-                    _showShieldedAccountBottomSheet();
-                  }));
-                }
-                BottomSheetUtil.showBottomSheetView(context, items);
-              },
+        centerTitle: false,
+        // 标题居中
+        elevation: 0.3,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.more_horiz,
+              color: Colors.white,
             ),
-          ],
-          leading: IconButton(
             onPressed: () {
-              FocusScope.of(context).unfocus();
-              Navigator.maybePop(context);
+              List<BottomSheetItem> items = List();
+              items.add(BottomSheetItem(
+                  Icon(
+                    Icons.warning,
+                    color: Colors.grey,
+                  ),
+                  '举报', () {
+                Navigator.pop(context);
+                NavigatorUtils.goReportPage(context, ReportPage.REPORT_ACCOUNT, widget.accountId, "账户举报");
+              }));
+              if (Application.getAccountId != null && Application.getAccountId != widget.accountId) {
+                items.add(
+                    BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
+                  Navigator.pop(context);
+                  _showShieldedAccountBottomSheet();
+                }));
+              }
+              BottomSheetUtil.showBottomSheetView(context, items);
             },
-            icon: Image.asset(PathConstant.ICON_GO_BACK_ARROW, color: Colors.white, width: 20),
           ),
-          expandedHeight: 200,
-          floating: false,
-          pinned: true,
-          snap: false,
-          // bottom: new TabBar(
-          //     labelColor: Colors.white,
-          //     unselectedLabelColor: Colors.white70,
-          //     isScrollable: false,
-          //     indicatorSize: TabBarIndicatorSize.label,
-          //
-          //     // indicatorColor: Colors.black87,
-          //     controller: _tabController,
-          //     labelPadding: const EdgeInsets.all(0.0),
-          //     tabs: [
-          //       const Tab(child: Text('个人资料', style: TextStyle(color: null))),
-          //       const Tab(child: Text('历史发布', style: TextStyle(color: null)))
-          //     ]),
+        ],
+        leading: IconButton(
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            Navigator.maybePop(context);
+          },
+          icon: Image.asset(PathConstant.ICON_GO_BACK_ARROW, color: Colors.white, width: 20),
+        ),
+        expandedHeight: 200,
+        floating: false,
+        pinned: true,
+        snap: false,
+        // bottom: new TabBar(
+        //     labelColor: Colors.white,
+        //     unselectedLabelColor: Colors.white70,
+        //     isScrollable: false,
+        //     indicatorSize: TabBarIndicatorSize.label,
+        //
+        //     // indicatorColor: Colors.black87,
+        //     controller: _tabController,
+        //     labelPadding: const EdgeInsets.all(0.0),
+        //     tabs: [
+        //       const Tab(child: Text('个人资料', style: TextStyle(color: null))),
+        //       const Tab(child: Text('历史发布', style: TextStyle(color: null)))
+        //     ]),
 
         flexibleSpace: Container(
           child: Text("123"),
         ),
-          // flexibleSpace: FlexibleDetailBar(
-          //     content: Padding(
-          //       padding: EdgeInsets.only(top: ScreenUtil().setHeight(100)),
-          //       child: Center(
-          //           child: Hero(
-          //               tag: 'avatar',
-          //               child: AccountAvatar(
-          //                   avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
-          //                   whitePadding: true,
-          //                   size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
-          //                   cache: true,
-          //                   onTap: () {
-          //                     Navigator.push(context, PageRouteBuilder(pageBuilder:
-          //                         (BuildContext context, Animation animation, Animation secondaryAnimation) {
-          //                       return new FadeTransition(
-          //                           opacity: animation, child: AvatarOriginPage(widget.avatarUrl));
-          //                     }));
-          //                   }))),
-          //     ),
-          //     background: Container(
-          //         decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(25))),
-          //         child: Stack(children: <Widget>[
-          //           Utils.showNetImage(
-          //             widget.avatarUrl,
-          //             width: double.infinity,
-          //             height: double.infinity,
-          //             fit: BoxFit.cover,
-          //           ),
-          //           BackdropFilter(
-          //             filter: ImageFilter.blur(
-          //               sigmaY: 5,
-          //               sigmaX: 5,
-          //             ),
-          //             child: Container(
-          //               color: Colors.black38,
-          //               width: double.infinity,
-          //               height: double.infinity,
-          //             ),
-          //           ),
-          //         ])))
-
+        // flexibleSpace: FlexibleDetailBar(
+        //     content: Padding(
+        //       padding: EdgeInsets.only(top: ScreenUtil().setHeight(100)),
+        //       child: Center(
+        //           child: Hero(
+        //               tag: 'avatar',
+        //               child: AccountAvatar(
+        //                   avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
+        //                   whitePadding: true,
+        //                   size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
+        //                   cache: true,
+        //                   onTap: () {
+        //                     Navigator.push(context, PageRouteBuilder(pageBuilder:
+        //                         (BuildContext context, Animation animation, Animation secondaryAnimation) {
+        //                       return new FadeTransition(
+        //                           opacity: animation, child: AvatarOriginPage(widget.avatarUrl));
+        //                     }));
+        //                   }))),
+        //     ),
+        //     background: Container(
+        //         decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(25))),
+        //         child: Stack(children: <Widget>[
+        //           Utils.showNetImage(
+        //             widget.avatarUrl,
+        //             width: double.infinity,
+        //             height: double.infinity,
+        //             fit: BoxFit.cover,
+        //           ),
+        //           BackdropFilter(
+        //             filter: ImageFilter.blur(
+        //               sigmaY: 5,
+        //               sigmaX: 5,
+        //             ),
+        //             child: Container(
+        //               color: Colors.black38,
+        //               width: double.infinity,
+        //               height: double.infinity,
+        //             ),
+        //           ),
+        //         ])))
       )
     ];
   }
@@ -539,7 +540,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
 
   bool display = false;
   bool initialing = true;
-  List<BaseTweet> _accountTweets = List();
+  List<BaseTweet> _accountTweets;
 
   EasyRefreshController _easyRefreshController;
 
@@ -558,12 +559,16 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
     if (!CollectionUtil.isListEmpty(tweets)) {
       _currentPage++;
       setState(() {
-        this.initialing = false;
+        if (_accountTweets == null) {
+          _accountTweets = List();
+        }
         this._accountTweets.addAll(tweets);
+        this.initialing = false;
       });
       _easyRefreshController.finishRefresh(success: true, noMore: false);
     } else {
       setState(() {
+        this._accountTweets = List();
         this.initialing = false;
       });
       _easyRefreshController.finishRefresh(success: true, noMore: true);
@@ -602,10 +607,11 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (initialing) {
+    if (initialing || _accountTweets == null) {
       return WidgetUtil.getLoadingAnimation();
     }
-    if (_accountTweets == null || _accountTweets.length == 0) {
+
+    if (_accountTweets.length == 0) {
       return Container(
           margin: EdgeInsets.only(top: 50),
           alignment: Alignment.topCenter,
@@ -633,20 +639,22 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
             enableHapticFeedback: true,
             enableInfiniteLoad: true),
         onLoad: () => _onLoad(),
-        child: _accountTweets == null || _accountTweets.length == 0
-            ? Container(
-                margin: EdgeInsets.only(top: 50),
-                alignment: Alignment.topCenter,
-                constraints: BoxConstraints(maxHeight: 100),
-                child: Text('该用户暂未发布过内容'))
-            : ListView.builder(
-                primary: false,
-                shrinkWrap: true,
-                itemCount: _accountTweets.length,
-                itemBuilder: (context, index) {
-                  return TweetCard2(_accountTweets[index],
-                      displayLink: false, upClickable: false, downClickable: false, displayPraise: true);
-                }));
+        child: _accountTweets == null
+            ? SpinKitThreeBounce(color: Colors.lightBlueAccent)
+            : _accountTweets.length == 0
+                ? Container(
+                    margin: EdgeInsets.only(top: 50),
+                    alignment: Alignment.topCenter,
+                    constraints: BoxConstraints(maxHeight: 100),
+                    child: Text('该用户暂未发布过内容'))
+                : ListView.builder(
+                    primary: false,
+                    shrinkWrap: true,
+                    itemCount: _accountTweets.length,
+                    itemBuilder: (context, index) {
+                      return TweetCard2(_accountTweets[index],
+                          displayLink: false, upClickable: false, downClickable: false, displayPraise: true);
+                    }));
   }
 
   @override

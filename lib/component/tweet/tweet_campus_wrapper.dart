@@ -39,11 +39,11 @@ class TweetCampusWrapper extends StatelessWidget {
                 horizontalPadding: 15.0,
                 verticalPadding: 5.0,
                 roundRadius: 10.0,
-                prefixIcon: Icon(
-                  Icons.school,
-                  color: ColorConstant.TWEET_NICK_COLOR,
-                  size: 16.0,
-                ),
+                // prefixIcon: Icon(
+                //   Icons.school,
+                //   color: ColorConstant.TWEET_NICK_COLOR,
+                //   size: 16.0,
+                // ),
               )
       ],
     );

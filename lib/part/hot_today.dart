@@ -30,7 +30,7 @@ class HotToday extends StatefulWidget {
 }
 
 class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin {
-  double _expandedHeight = ScreenUtil().setWidth(380);
+  double _expandedHeight = ScreenUtil().setWidth(600);
 
   UniHotTweet hotTweet;
 
@@ -195,7 +195,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                   ),
                   Container(
                     padding: EdgeInsets.only(left: ScreenUtil().setWidth(40)),
-                    margin: EdgeInsets.only(bottom: ScreenUtil().setWidth(20)),
+                    margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(40)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -221,7 +221,11 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               title: '校园热门',
             ),
             new SliverFixedExtentList(
-              itemExtent: loadingOrRedisInit ? 0 : !noData ? 100 : Application.screenHeight,
+              itemExtent: loadingOrRedisInit
+                  ? 0
+                  : !noData
+                      ? 100
+                      : Application.screenHeight,
               delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
                 //创建列表项
                 if (hotTweet == null) {
@@ -232,7 +236,12 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                   return _noDataView();
                 }
                 return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1));
-              }, childCount: loadingOrRedisInit ? 0 : !noData ? hotTweet.tweets.length : 1),
+              },
+                  childCount: loadingOrRedisInit
+                      ? 0
+                      : !noData
+                          ? hotTweet.tweets.length
+                          : 1),
             ),
           ],
           onRefresh: _onRefresh,
@@ -247,16 +256,17 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Container(
-          height: ScreenUtil().setHeight(100),
+          height: ScreenUtil().setHeight(160),
         ),
         SizedBox(
-            width: ScreenUtil().setHeight(250),
+            width: ScreenUtil().setHeight(350),
             child: LoadAssetImage(
               'no_data',
               fit: BoxFit.cover,
             )),
         Gaps.vGap16,
-        Text('快去抢占热门吧~', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
+        Text('快去抢占热门吧~',
+            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14, letterSpacing: 1.1)),
       ],
     );
   }

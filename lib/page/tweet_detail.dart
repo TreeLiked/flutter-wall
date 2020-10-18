@@ -83,8 +83,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
   BuildContext myContext;
   PersistentBottomSheetController _bottomSheetController;
 
-  List<Account> praiseAccounts = [];
-  List<TweetReply> replies = [];
+  List<Account> praiseAccounts;
+  List<TweetReply> replies;
 
   // 回复相关
   TextEditingController _controller = TextEditingController();
@@ -335,9 +335,10 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
     }
 
     return Scaffold(
-        backgroundColor: !isDark
-            ? (widget._fromHot ? Color(0xffe9e9e9) : null)
-            : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
+        // backgroundColor: !isDark
+        //     ? (widget._fromHot ? Color(0xffe9e9e9) : null)
+        //     : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
+        backgroundColor: !isDark ? null : Colours.dark_bg_color,
         body: Builder(builder: (context) {
           this.myContext = context;
           return Listener(
@@ -356,7 +357,9 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   ? SingleChildScrollView(
                       child: Container(
                       decoration: BoxDecoration(
-                          color: isDark ? Colours.dark_bg_color : widget._fromHot ? Color(0xfff0f0f0) : null,
+                          color: isDark
+                              ? Colours.dark_bg_color
+                              :  null,
                           borderRadius: const BorderRadius.all(Radius.circular(18))),
                       padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
                       child: Column(
@@ -575,7 +578,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
           )
         ],
         backgroundColor: widget._fromHot
-            ? (isDark ? Colours.dark_bg_color : Color(0xfff0f0f0))
+            ? (isDark ? Colours.dark_bg_color : Color(0xfffDfDfD))
             : (isDark ? Colours.dark_bg_color : null),
         centerTitle: true,
         //标题居中
@@ -586,7 +589,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         ),
         elevation: 0.4,
         floating: true,
-        pinned: !widget._fromHot,
+        pinned: true,
         snap: false,
         leading: GestureDetector(
             onTap: () => Navigator.pop(context),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/common-widget/my_future_builder.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_detail.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -29,9 +30,11 @@ class TweetReplyWrapper extends StatelessWidget {
                   fontSize: SizeConstant.TWEET_DISABLE_REPLY_SIZE,
                   color: ColorConstant.TWEET_DISABLE_COLOR_TEXT_COLOR)));
     }
-    ;
 
-    if (replies == null || replies.length == 0) {
+    if (replies == null) {
+      return SpinKitThreeBounce(color: ColorConstant.TWEET_DETAIL_REPLY_ROW_COLOR, size: 18.0);
+    }
+    if (replies.length == 0) {
       return Container(
           margin: const EdgeInsets.only(top: 10.0),
           alignment: Alignment.center,

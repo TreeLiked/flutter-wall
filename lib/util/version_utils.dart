@@ -43,7 +43,7 @@ class VersionUtils {
           VersionUtils.showUpdateDialog(context ?? Application.context, result.data, true);
         } else {
           if (!slient) {
-            ToastUtil.showToast(context, "测试版本");
+            ToastUtil.showToast(context, "新版本");
           }
         }
       } else {

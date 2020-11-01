@@ -14,7 +14,7 @@
 
 
 1、Android
-  flutter build apk --split-per-abi
+  flutter build apk --split-per-abi --debug/--profile/--release
 2、IOS
   flutter build ios --release -> Product -Archive
 

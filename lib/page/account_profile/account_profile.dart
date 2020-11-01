@@ -155,10 +155,10 @@ class _AccountProfileState extends State<AccountProfile> {
                   pinned: true,
                   snap: false,
                   floating: false,
-                  expandedHeight: ScreenUtil().setHeight(550),
+                  expandedHeight: ScreenUtil().setHeight(700),
                   elevation: 0.5,
                   titleSpacing: 1.2,
-                  // title: Text(widget.nick, style: const TextStyle(fontSize: Dimens.font_sp16,color: Colors.white)),
+                  // title: Text("资料", style: const TextStyle(fontSize: Dimens.font_sp16,color: Colors.white)),
                   centerTitle: true,
                   leading: IconButton(
                     onPressed: () {
@@ -198,17 +198,13 @@ class _AccountProfileState extends State<AccountProfile> {
                     ),
                   ],
                   flexibleSpace: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.zero,
-                        topRight: Radius.zero,
-                        bottomLeft: const Radius.circular(5.0),
-                        bottomRight: const Radius.circular(5.0)),
                     child: FlexibleDetailBar(
                         content: Container(
-                          padding: EdgeInsets.only(top: ScreenUtil().setHeight(150)),
-                          child: Center(
-                              child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight, left: 30.0, right: 30.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Hero(
@@ -229,7 +225,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                       })),
                               Gaps.vGap8,
                               Text(
-                                widget.nick,
+                                widget.nick ?? "",
                                 style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
                               ),
                               Gaps.vGap10,
@@ -238,7 +234,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                 style: pfStyle.copyWith(fontSize: Dimens.font_sp13p5, color: Colors.white70),
                               ),
                             ],
-                          )),
+                          ),
                         ),
                         background: Stack(children: <Widget>[
                           Utils.showNetImage(
@@ -249,12 +245,12 @@ class _AccountProfileState extends State<AccountProfile> {
                           ),
                           BackdropFilter(
                             filter: ImageFilter.blur(
-                              sigmaY: 5,
-                              sigmaX: 5,
+                              sigmaY: 7,
+                              sigmaX: 7,
                             ),
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.white10),
+                                  color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black26),
                               width: double.infinity,
                               height: double.infinity,
                             ),
@@ -281,9 +277,9 @@ class _AccountProfileState extends State<AccountProfile> {
                                       child: RichText(
                                         textAlign: TextAlign.center,
                                         text: TextSpan(children: [
-                                          WidgetSpan(
-                                              child: _wrapIcon(LoadAssetSvg("count",
-                                                  width: 19, height: 19, color: Colors.green))),
+                                          // WidgetSpan(
+                                          //     child: _wrapIcon(LoadAssetSvg("count",
+                                          //         width: 19, height: 19, color: Colors.green))),
                                           TextSpan(
                                               text: _getCampusInfoText(),
                                               style: TextStyle(
@@ -330,7 +326,10 @@ class _AccountProfileState extends State<AccountProfile> {
                               )),
                         )
                       : SliverToBoxAdapter(
-                          child: SpinKitChasingDots(color: Colors.lightBlueAccent, size: 20)))
+                          child: Container(
+                          margin: const EdgeInsets.only(top: 30),
+                          child: SpinKitThreeBounce(color: Colors.lightGreen, size: 20),
+                        )))
                   : SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
@@ -423,7 +422,7 @@ class _AccountProfileState extends State<AccountProfile> {
       context: context,
       builder: (BuildContext dialogContext) {
         return SimpleConfirmBottomSheet(
-            tip: "您确认屏蔽此用户，屏蔽后此用户的内容将对您不可见",
+            tip: "您确认屏蔽此用户，屏蔽后此用户的内容将对您不可见，此操作不可恢复",
             onTapDelete: () async {
               Utils.showDefaultLoading(Application.context);
               Result r = await UnlikeAPI.unlikeAccount(widget.accountId.toString());

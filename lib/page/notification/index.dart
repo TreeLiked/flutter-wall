@@ -58,11 +58,15 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     UMengUtil.userGoPage(UMengUtil.PAGE_NOTI_INDEX);
     _loopQueryInteraction(true);
     _loopQuerySystem(true);
-    checkNotification();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      checkNotification();
+    });
   }
 
   void checkNotification() async {
-    PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
+    Future.delayed(Duration(seconds: 3)).then((value) =>
+        PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39));
   }
 
   _fetchLatestMessage() async {

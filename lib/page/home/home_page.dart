@@ -1,4 +1,3 @@
-
 import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
@@ -34,6 +33,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/JPushUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -94,30 +94,34 @@ class _HomePageState extends State<HomePage>
     super.initState();
 
     _tabController = TabController(vsync: this, length: 2);
-    _tabController.addListener(() {
-      if (_tabController.index.toDouble() == _tabController.animation.value) {
-        bool _dc = true;
-        switch (_tabController.index) {
-          case 0:
-            _dc = true;
-            break;
-          case 1:
-            _dc = false;
-            break;
-          case 2:
-            break;
-        }
-        if (_displayCreate != _dc) {
-          setState(() {
-            _displayCreate = _dc;
-          });
-        }
-      }
-    });
+    // _tabController.addListener(() {
+    //   if (_tabController.index.toDouble() == _tabController.animation.value) {
+    //     bool _dc = true;
+    //     switch (_tabController.index) {
+    //       case 0:
+    //         _dc = true;
+    //         break;
+    //       case 1:
+    //         _dc = false;
+    //         break;
+    //       case 2:
+    //         break;
+    //     }
+    //     if (_displayCreate != _dc) {
+    //       setState(() {
+    //         _displayCreate = _dc;
+    //       });
+    //     }
+    //   }
+    // });
 
     firstRefreshMessage();
     loopQueryNewTweet();
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Future.delayed(Duration(seconds: 5)).then((value) => JPushUtil.requestOnlyOnce());
+    });
   }
 
   void firstRefreshMessage() async {
@@ -156,7 +160,6 @@ class _HomePageState extends State<HomePage>
     List<BaseTweet> temp = await getData(1);
     tweetProvider.update(temp, clear: true, append: false);
     _refreshController.refreshCompleted();
-    JPushUtil.requestOnlyOnce();
   }
 
   Future getData(int page) async {
@@ -309,12 +312,11 @@ class _HomePageState extends State<HomePage>
                                 padding: const EdgeInsets.all(4.0),
                                 child: Text('最新'),
                                 animationType: BadgeAnimationType.fade,
-                                badgeColor:
-                                    TweetTypeUtil.getRandomTweetType().color ?? Colors.lightBlueAccent,
+                                badgeColor: Colors.amber,
                                 showBadge: snapshot.data > 0,
                                 shape: BadgeShape.circle,
                                 // borderRadius: 10.0,
-                                badgeContent: Text('${snapshot.data > 99 ? '99+' : snapshot.data}',
+                                badgeContent: Text(Utils.getBadgeText(snapshot.data),
                                     style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
                               ),
                             ),
@@ -334,21 +336,32 @@ class _HomePageState extends State<HomePage>
                               builder: (_, snapshot) => Badge(
                                 elevation: 0,
                                 padding: const EdgeInsets.all(3.0),
-                                child: LoadAssetIcon(
+                                child:
+                                // Icon(
+                                //     Utils.badgeHasData(snapshot.data)
+                                //         ? Icons.notifications_active_outlined
+                                //         : Icons.notifications_none_rounded,
+                                //     color: Utils.badgeHasData(snapshot.data)
+                                //         ? Colors.amber
+                                //         : isDark
+                                //             ? Colors.white54
+                                //             : Colors.black54),
+                                LoadAssetIcon(
                                   "notification/bell",
-                                  color: snapshot.data != -1 && snapshot.data != 0
+                                  color: Utils.badgeHasData(snapshot.data)
                                       ? Colors.amber
                                       : isDark
-                                          ? Colors.white54
-                                          : Colors.black54,
+                                      ? Colors.white54
+                                      : Colors.black54,
                                   width: 23.0,
                                   height: 23.0,
                                 ),
+                                badgeColor: Colors.red[400],
                                 animationType: BadgeAnimationType.fade,
-                                showBadge: snapshot.data != -1 && snapshot.data != 0,
+                                showBadge: Utils.badgeHasData(snapshot.data),
                                 badgeContent: Text(
-                                  '${snapshot.data}',
-                                  style: const TextStyle(color: Colors.white, fontSize: Dimens.font_sp12),
+                                  Utils.getBadgeText(snapshot.data),
+                                  style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp12),
                                 ),
                               ),
                             ),
@@ -380,21 +393,33 @@ class _HomePageState extends State<HomePage>
                       height: 55,
                       child: Draggable(
                         feedback: FloatingActionButton(
-                            child: Icon(
-                              Icons.add_a_photo,
-                              color: isDark ? Colors.amber[300] : Colors.white,
+                            child: LoadAssetIcon(
+                              "create",
+                              color: isDark
+                                  ? Colors.yellow
+                                  : Colors.black38,
+                              width: 23.0,
+                              height: 23.0,
                             ),
-                            backgroundColor: isDark ? Colors.black38 : Color(0xEEE6E6FA),
+                            backgroundColor: isDark ? Color(0xff1C1C1C): Color(0xFFFFF8DC),
                             splashColor: Colors.white12,
                             elevation: 10.0,
                             onPressed: null),
                         child: FloatingActionButton(
-                            child: Icon(
-                              Icons.add_a_photo,
-                              color: isDark ? Colors.amber[300] : Colors.white,
+                            // child: Icon(
+                            //   Icons.add_photo_alternate,
+                            //   color: isDark ? Colors.amber[300] : Colors.white,
+                            // ),
+                            child: LoadAssetIcon(
+                              "create",
+                              color: isDark
+                                  ? Colors.yellow
+                                  : Colors.black38,
+                              width: 23.0,
+                              height: 23.0,
                             ),
-                            backgroundColor: isDark ? Colors.black38 : Color(0xEEE6E6FA),
-                            elevation: 8.0,
+                            backgroundColor: isDark ? Color(0xff1C1C1C): Color(0xFFFFF8DC),
+                            elevation: 10.0,
                             splashColor: Colors.white12,
                             onPressed: () => NavigatorUtils.push(context, Routes.create,
                                 transitionType: TransitionType.fadeIn)),

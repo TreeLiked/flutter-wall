@@ -8,6 +8,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -17,10 +18,12 @@ class WebViewPage extends StatefulWidget {
     Key key,
     @required this.title,
     @required this.url,
+    this.source,
   }) : super(key: key);
 
   final String title;
   final String url;
+  final String source;
 
   @override
   _WebViewPageState createState() => _WebViewPageState();
@@ -73,6 +76,11 @@ class _WebViewPageState extends State<WebViewPage> {
                   title: Text("${widget.title}", style: pfStyle),
                   leading: IconButton(
                     onPressed: () {
+                      if(!StringUtil.isEmpty(widget.source) && widget.source == "1") {
+                        // 从splash页面进来的广告页面
+                        NavigatorUtils.goIndex(context);
+                        return;
+                      }
                       NavigatorUtils.goBack(context);
                     },
                     tooltip: 'Back',

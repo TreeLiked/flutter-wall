@@ -128,7 +128,7 @@ class TweetTypeEntity {
       iconColor: Colors.lightBlue,
       name: "SOMEONE_FIND",
       intro: "世界上所有的相遇都是久别重逢",
-      zhTag: "寻人",
+      zhTag: "找人",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
       color: Colors.lightBlue);
 
@@ -186,7 +186,7 @@ class TweetTypeEntity {
       name: "LOST_AND_FOUND",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
       color: Color(0xffCDB5CD),
-      zhTag: "寻物");
+      zhTag: "失物招领");
 
   static const HELP_AND_REWARD = const TweetTypeEntity(
       iconData: Icons.transfer_within_a_station,
@@ -204,7 +204,7 @@ class TweetTypeEntity {
       intro: "让价值再飞一会",
       color: Colors.blue,
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
-      zhTag: "交易");
+      zhTag: "二手交易");
 
   static const OTHER = const TweetTypeEntity(
       iconData: Icons.palette,

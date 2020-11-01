@@ -209,10 +209,12 @@ class _CreatePageState extends State<CreatePage> {
 
   void _selectTypeCallback(List<String> typeNames) {
     if (!CollectionUtil.isListEmpty(typeNames)) {
-      this._typeName = typeNames[0];
-      this._typeText = tweetTypeMap[typeNames[0]].zhTag;
+      setState(() {
+        this._typeName = typeNames[0];
+        this._typeText = tweetTypeMap[typeNames[0]].zhTag;
+        _updatePushBtnState();
+      });
     }
-    _updatePushBtnState();
   }
 
   void _reverseAnonymous() {

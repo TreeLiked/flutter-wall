@@ -9,6 +9,7 @@ import 'package:iap_app/component/widget_sliver_future_builder.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 
 class HistoryPushedPage extends StatefulWidget {
@@ -92,7 +93,8 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
           : Center(
               child: Padding(
                   padding: const EdgeInsets.only(top: 40),
-                  child: LoadAssetImage('no_data', width: ScreenUtil().setWidth(250)))),
+                  child: LoadAssetImage(ThemeUtils.isDark(context) ? "no_data_dark" : 'no_data',
+                      width: ScreenUtil().setWidth(250)))),
     );
   }
 

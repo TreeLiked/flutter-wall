@@ -19,18 +19,19 @@ class SimpleConfirmBottomSheet extends StatelessWidget {
     return Material(
       child: SafeArea(
         child: SizedBox(
-            height: 161.2,
+            height: 191.2,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  height: 52.0,
-                  child: Center(
-                    child: Text(
-                      "$tip",
-                      softWrap: true,
-                      maxLines: 5,
-                      style: TextStyles.textSize14,
-                    ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15.0),
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "$tip",
+                    softWrap: true,
+                    maxLines: 5,
+                    style: TextStyles.textSize16,
                   ),
                 ),
                 Gaps.line,

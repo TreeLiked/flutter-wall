@@ -8,9 +8,12 @@ import 'dimens.dart';
 class TextStyles {
   static const TextStyle textSize12 = const  TextStyle(
     fontSize: Dimens.font_sp12,
+      fontFamily: TextConstant.PING_FANG_FONT
+
   );
   static const TextStyle textSize14 = const TextStyle(
     fontSize: Dimens.font_sp14,
+    fontFamily: TextConstant.PING_FANG_FONT
   );
 
   static const TextStyle textSize10 = const TextStyle(

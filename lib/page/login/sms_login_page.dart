@@ -389,6 +389,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                     NavigatorUtils.goBack(context);
                     if (res == null) {
                       ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+                      return;
                     }
                     if (res.isSuccess) {
                       ToastUtil.showToast(context, '发送成功');

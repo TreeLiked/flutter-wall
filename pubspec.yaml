@@ -31,7 +31,7 @@ dependencies:
   json_annotation: ^2.0.0
   # 动画
   flare_flutter: ^2.0.3
-  flustars: ^0.2.6+1
+  flustars: ^0.3.3
   # 下拉刷新
   pull_to_refresh: ^1.6.2
 
@@ -45,7 +45,7 @@ dependencies:
   provider: ^3.1.0
 
   # 本地存储
-  shared_preferences: ^0.5.7+3
+  shared_preferences: ^0.5.12+2
 
   # 微信登录
   # fluwx: ^1.1.1
@@ -189,6 +189,7 @@ flutter:
     - assets/images/
     - assets/fonts/
     - assets/images/tab/
+    - assets/images/guide/
     - assets/flrs/
     - assets/svgs/
     - assets/icons/
@@ -196,7 +197,6 @@ flutter:
     - assets/icons/notification/
     - assets/icons/profile/
     - assets/icons/tweet/
-    - assets/gifs/loading.gif
 
 
   # The following line ensures that the Material Icons font is

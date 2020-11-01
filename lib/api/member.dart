@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/config/auth_constant.dart';
@@ -11,9 +12,11 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class MemberApi {
+  static const String _TAG = "MemberApi";
+
   static Future<Account> getMyAccount(String token) async {
-    print(Api.API_QUERY_ACCOUNT + '-------------------');
     Response response;
+    LogUtil.e(Api.API_QUERY_ACCOUNT, tag: _TAG);
     try {
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -33,7 +36,7 @@ class MemberApi {
   }
 
   static Future<Account> getAccountProfile(String accountId) async {
-    print(Api.API_QUERY_ACCOUNT_PROFILE + '-------------------');
+    LogUtil.e(Api.API_QUERY_ACCOUNT_PROFILE, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_PROFILE);
@@ -52,7 +55,8 @@ class MemberApi {
   }
 
   static Future<AccountCampusProfile> getAccountCampusProfile(String accountId) async {
-    print(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE + '-------------------');
+    LogUtil.e(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE, tag: _TAG);
+
     Response response;
     try {
       response = await httpUtil2.dio.get(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE);
@@ -71,7 +75,7 @@ class MemberApi {
   }
 
   static Future<AccountDisplayInfo> getAccountDisplayProfile(String accountId) async {
-    print(Api.API_QUERY_FILTERED_ACCOUNT_PROFILE + '-------------------');
+    LogUtil.e(Api.API_QUERY_FILTERED_ACCOUNT_PROFILE, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.get(
@@ -91,6 +95,7 @@ class MemberApi {
   }
 
   static Future<Result> modAccount(AccountEditParam param) async {
+    LogUtil.e(Api.API_ACCOUNT_MOD_BASIC, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.post(Api.API_ACCOUNT_MOD_BASIC, data: param);
@@ -106,7 +111,7 @@ class MemberApi {
   static Future<Result> sendPhoneVerificationCode(String phone) async {
     Response response;
     String url = Api.API_SEND_VERIFICATION_CODE + "?p=$phone";
-    print(url);
+    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -121,7 +126,7 @@ class MemberApi {
   static Future<Result> checkVerificationCode(String phone, String vCode) async {
     Response response;
     String url = Api.API_CHECK_VERIFICATION_CODE + "?p=$phone&c=$vCode";
-    print(url);
+    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -136,7 +141,7 @@ class MemberApi {
   static Future<Result> checkNickRepeat(String nick) async {
     Response response;
     String url = Api.API_CHECK_NICK_REPEAT + "?n=$nick";
-    print(url);
+    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -158,12 +163,10 @@ class MemberApi {
       'orgId': orgId,
       'iCode': iCode,
     };
-    print(data);
-    print(url);
+    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.post(url, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -174,7 +177,7 @@ class MemberApi {
   static Future<Result> login(String phone) async {
     Response response;
     String url = Api.API_LOGIN_BY_PHONE;
-    print(url);
+    LogUtil.e(url, tag: _TAG);
     var data = {
       'phone': phone,
     };
@@ -193,7 +196,7 @@ class MemberApi {
     String url = Api.API_QUERY_ACCOUNT_SETTING +
         "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
         (passiveAccountId ?? "");
-    print(url);
+    LogUtil.e(url, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.get(url);
@@ -213,7 +216,7 @@ class MemberApi {
 
   static Future<Result> updateAccountSetting(String key, String value) async {
     Response response;
-    print(Api.API_UPDATE_ACCOUNT_SETTING + "-------------------");
+    LogUtil.e(Api.API_UPDATE_ACCOUNT_SETTING, tag: _TAG);
     try {
       var data = {"key": key, "value": value};
       response = await httpUtil2.dio.post(Api.API_UPDATE_ACCOUNT_SETTING, data: data);

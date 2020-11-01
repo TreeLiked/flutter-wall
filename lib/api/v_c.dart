@@ -60,6 +60,6 @@ class VCAPI {
     } on DioError catch (e) {
       error = Api.formatError(e);
     }
-    return Api.genErrorResult(error);
+    return Api.genErrorResult(error, data: null);
   }
 }

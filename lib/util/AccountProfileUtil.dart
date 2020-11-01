@@ -15,32 +15,34 @@ import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AccountProfileUtil {
-
-
-  static void cropAndUpdateProfile(AccountLocalProvider provider, BuildContext context, Function callback)async {
-
-      bool hasP = await PermissionUtil.checkAndRequestPhotos(context);
-      if (!hasP) {
-        return;
-      }
-      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        final cropKey = GlobalKey<CropState>();
-        File file = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
-        if (file != null) {
-          Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
-          String resultUrl = await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);
-          if (resultUrl != "-1") {
-            Result r = await MemberApi.modAccount(AccountEditParam(AccountEditKey.AVATAR, resultUrl));
+  static void cropAndUpdateProfile(
+      AccountLocalProvider provider, BuildContext context, Function callback) async {
+    bool hasP = await PermissionUtil.checkAndRequestPhotos(context);
+    if (!hasP) {
+      return;
+    }
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      final cropKey = GlobalKey<CropState>();
+      File file = await Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
+      if (file != null) {
+        Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
+        String resultUrl = await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);
+        if (resultUrl != "-1") {
+          Result r = await MemberApi.modAccount(AccountEditParam(AccountEditKey.AVATAR, resultUrl));
+          if (r != null) {
             r.data = resultUrl;
             callback(r);
           } else {
             ToastUtil.showToast(context, '上传失败，请稍候重试');
           }
-          Navigator.pop(context);
+        } else {
+          ToastUtil.showToast(context, '上传失败，请稍候重试');
         }
-        file?.delete();
+        Navigator.pop(context);
+      }
+      file?.delete();
     }
   }
 }

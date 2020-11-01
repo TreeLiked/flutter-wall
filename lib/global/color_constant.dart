@@ -16,7 +16,7 @@ class ColorConstant {
   /// 回复相关
 
   // 回复正常昵称颜色
-  static const Color TWEET_REPLY_NICK_COLOR = Color(0xff4575AB);
+  static const Color TWEET_REPLY_NICK_COLOR = Color(0xff8492a6);
   static const Color TWEET_REPLY_NICK_COLOR_DARK = Color(0xff708090);
 
   // 推文回复正文颜色

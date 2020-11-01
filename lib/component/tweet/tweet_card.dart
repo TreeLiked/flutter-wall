@@ -85,7 +85,7 @@ class TweetCard2 extends StatelessWidget {
 
   Widget cardContainer2(BuildContext context) {
     Widget wd = Container(
-        padding: const EdgeInsets.only(bottom: 5.0, top: 10.0, left: 15.0, right: 20.0),
+        padding: const EdgeInsets.only(bottom: 5.0, top: .0, left: 15.0, right: 20.0),
         color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
         child: GestureDetector(
           onTap: () => _forwardDetail(context),

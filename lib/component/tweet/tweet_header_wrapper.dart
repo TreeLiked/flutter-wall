@@ -215,7 +215,7 @@ class TweetSimpleHeader extends StatelessWidget {
                 account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
                 softWrap: true,
                 style: MyDefaultTextStyle.getTweetHeadNickStyle(context, SizeConstant.TWEET_NICK_SIZE,
-                    bold: false),
+                    bold: true),
               ),
             ));
   }
@@ -253,15 +253,15 @@ class TweetSimpleHeader extends StatelessWidget {
         spans.add(
           TextSpan(
               text: '${tweetSent.day}',
-              style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
+              style: pfStyle.copyWith(fontSize: Dimens.font_sp18)),
         );
         spans.add(
-          TextSpan(text: ' /', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
+          TextSpan(text: ' /', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
         );
         spans.add(
           TextSpan(
               text: '${tweetSent.month}月',
-              style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp13p5)),
+              style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
         );
       } else {
         // 今年之前的内容

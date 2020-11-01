@@ -357,9 +357,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   ? SingleChildScrollView(
                       child: Container(
                       decoration: BoxDecoration(
-                          color: isDark
-                              ? Colours.dark_bg_color
-                              :  null,
+                          color: isDark ? Colours.dark_bg_color : null,
                           borderRadius: const BorderRadius.all(Radius.circular(18))),
                       padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
                       child: Column(
@@ -418,8 +416,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         child: TitleItemWrapper(
             Text(
               "点赞",
-              style: pfStyle.copyWith(
-                  color: ColorConstant.TWEET_DETAIL_PRAISE_ROW_COLOR, fontSize: Dimens.font_sp14),
+              style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.grey),
             ),
             subTitleText: tweet.praise > 0
                 ? Text("${tweet.praise}",
@@ -445,8 +442,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         child: TitleItemWrapper(
           Text(
             "评论",
-            style: pfStyle.copyWith(
-                color: ColorConstant.TWEET_DETAIL_REPLY_ROW_COLOR, fontSize: Dimens.font_sp14),
+            style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.grey),
           ),
           subTitleText: tweet.replyCount > 0
               ? Text(
@@ -544,7 +540,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       }));
     } else {
       // 非自己
-      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_alt, color: Colors.grey), '屏蔽此内容', () {
+      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_alt, color: Colors.yellow), '屏蔽此内容', () {
         Navigator.pop(context);
         _showShieldedBottomSheet();
       }));
@@ -571,7 +567,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       SliverAppBar(
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: Icon(Icons.more_horiz),
             onPressed: () {
               BottomSheetUtil.showBottomSheetView(context, _getSheetItems());
             },

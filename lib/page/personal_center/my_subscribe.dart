@@ -5,6 +5,7 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/api/tweet_type_subscribe.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/widget_sliver_future_builder.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -71,8 +72,12 @@ class _MySubscribePageState extends State<MySubscribePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        centerTitle: '我的订阅',
-      ),
+          centerTitle: "我的订阅",
+          actionName: "说明",
+          onPressed: () {
+            Utils.displayDialog(
+                context, SimpleConfirmDialog('订阅说明', '如果您订阅了某一个类型的标签，在该标签下有内容更新时，您将会收到通知。\n您需要赋予Wall通知权限。'));
+          }),
       body: CustomSliverFutureBuilder(
           futureFunc: _getSubscribedTask,
           builder: (context, data) => Container(
@@ -114,9 +119,6 @@ class _MySubscribePageState extends State<MySubscribePage> {
               _subOrCancel(context, tt.name, sub);
             },
             child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -124,7 +126,15 @@ class _MySubscribePageState extends State<MySubscribePage> {
                   Gaps.vGap10,
                   Text(tt.zhTag,
                       style:
-                          pfStyle.copyWith(fontSize: Dimens.font_sp14, color: sub ? tt.color : Colors.grey))
+                          pfStyle.copyWith(fontSize: Dimens.font_sp14, color: sub ? tt.color : Colors.grey)),
+                  sub
+                      ? Container(
+                          color: tt.iconColor,
+                          width: (Application.screenWidth - 30) / 7,
+                          height: 1,
+                          margin: const EdgeInsets.only(top: 10.0),
+                        )
+                      : Gaps.empty
                 ],
               ),
             ),

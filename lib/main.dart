@@ -2,13 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:device_info/device_info.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/provider/account_local.dart';
@@ -23,8 +22,6 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-
-
 //  TestWidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(AlmondDonuts());
@@ -39,7 +36,8 @@ void main() {
 }
 
 class AlmondDonuts extends StatefulWidget {
-  static const  bool inProduction = const bool.fromEnvironment("dart.vm.product");
+  static const bool inProduction = const bool.fromEnvironment("dart.vm.product");
+
   @override
   State<StatefulWidget> createState() {
     return AlmondDonutsState();
@@ -62,27 +60,30 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     initPlatformState();
     initUMengAnalytics();
 
-    print('------------------main 生产环境=${AlmondDonuts.inProduction}--------------------------');
+    LogUtil.init(tag: "Wall",maxLen: 1024);
+    LogUtil.e("Main 生产环境=${AlmondDonuts.inProduction}", tag: "AlmondDonuts");
     _jPush.getRegistrationID().then((rid) {
       if (rid != null && rid.length != 0) {
         Application.setDeviceId(rid);
-        _getAndUpdateDeviceInfo(rid);
+        // _getAndUpdateDeviceInfo(rid);
+      } else {
+        LogUtil.e("获取不到RegistrationId", tag: "AlmondDonuts");
       }
     });
 
-   // var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
-   // var localNotification = LocalNotification(
-   //     id: 234,
-   //     title: 'fadsfa',
-   //     buildId: 1,
-   //     content: 'fdas',
-   //     fireTime: fireDate,
-   //     subtitle: 'fasf',
-   //     badge: 5,
-   //     extra: {"fa": "0"});
-   // _jPush.sendLocalNotification(localNotification).then((res) {
-   //   print(res);
-   // });
+    // var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
+    // var localNotification = LocalNotification(
+    //     id: 234,
+    //     title: 'fadsfa',
+    //     buildId: 1,
+    //     content: 'fdas',
+    //     fireTime: fireDate,
+    //     subtitle: 'fasf',
+    //     badge: 5,
+    //     extra: {"fa": "0"});
+    // _jPush.sendLocalNotification(localNotification).then((res) {
+    //   print(res);
+    // });
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Color(0xff000000), statusBarIconBrightness: Brightness.dark));
@@ -121,7 +122,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
         print("flutter onReceiveMessage: $message");
       },
     );
-
   }
 
   _handleJump(Map<String, dynamic> extraMap) {
@@ -159,7 +159,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     if (!mounted) return;
   }
 
-  Future<void> initUMengAnalytics() async{
+  Future<void> initUMengAnalytics() async {
     await UMengUtil.initUMengAnalytics();
   }
 
@@ -218,74 +218,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     //     },
     //   ),
     // );
-  }
-
-  void _getAndUpdateDeviceInfo(String regId) async {
-    print("reg id 获取成功---$regId");
-    DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      print(iosInfo);
-      _updateDeviceInfo("IPHONE", "IOS", iosInfo.systemVersion, regId);
-    } else if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      print(_readAndroidBuildData(androidInfo));
-      _updateDeviceInfo(androidInfo.brand.toUpperCase(), "ANDROID", androidInfo.device, regId);
-    } else {
-      debugPrint("Unsupport Platform type");
-    }
-  }
-
-  void _updateDeviceInfo(String name, String platform, String model, String regId) async {
-    DeviceApi.updateDeviceInfo(Application.getAccountId, name, platform, model, regId);
-  }
-
-  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
-    return <String, dynamic>{
-      'name': data.name,
-      'systemName': data.systemName,
-      'systemVersion': data.systemVersion,
-      'model': data.model,
-      'localizedModel': data.localizedModel,
-      'identifierForVendor': data.identifierForVendor,
-      'isPhysicalDevice': data.isPhysicalDevice,
-      'utsname.sysname:': data.utsname.sysname,
-      'utsname.nodename:': data.utsname.nodename,
-      'utsname.release:': data.utsname.release,
-      'utsname.version:': data.utsname.version,
-      'utsname.machine:': data.utsname.machine,
-    };
-  }
-
-  Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
-    return <String, dynamic>{
-      'version.securityPatch': build.version.securityPatch,
-      'version.sdkInt': build.version.sdkInt,
-      'version.release': build.version.release,
-      'version.previewSdkInt': build.version.previewSdkInt,
-      'version.incremental': build.version.incremental,
-      'version.codename': build.version.codename,
-      'version.baseOS': build.version.baseOS,
-      'board': build.board,
-      'bootloader': build.bootloader,
-      'brand': build.brand,
-      'device': build.device,
-      'display': build.display,
-      'fingerprint': build.fingerprint,
-      'hardware': build.hardware,
-      'host': build.host,
-      'id': build.id,
-      'manufacturer': build.manufacturer,
-      'model': build.model,
-      'product': build.product,
-      'supported32BitAbis': build.supported32BitAbis,
-      'supported64BitAbis': build.supported64BitAbis,
-      'supportedAbis': build.supportedAbis,
-      'tags': build.tags,
-      'type': build.type,
-      'isPhysicalDevice': build.isPhysicalDevice,
-      'androidId': build.androidId
-    };
   }
 }
 

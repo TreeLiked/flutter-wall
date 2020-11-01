@@ -63,7 +63,8 @@ class Routes {
       // TODO 这里跳转编码问题
       String title = params['title']?.first;
       String url = params['url']?.first;
-      return WebViewPage(title: title, url: url);
+      String source = params['source']?.first;
+      return WebViewPage(title: title, url: url, source: source);
     }));
 
     router.define(splash, handler: Handler(handlerFunc: (_, params) {

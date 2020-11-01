@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
@@ -24,14 +25,17 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/account_device_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/log_utils.dart';
 import 'package:iap_app/util/shared.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
+import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -46,29 +50,32 @@ class _SplashPageState extends State<SplashPage> {
   int _addTotalTime = 0;
   StreamSubscription _adLeftTimeSub;
 
+  static const String TAG = "SplashPage";
+
+  bool _hasGuide = false;
   bool _displayGuide = false;
   Map<String, dynamic> _adValueMap;
 
   int _currentGuideIndex = 0;
-  static String version =
-      Platform.isIOS ? SharedConstant.VERSION_REMARK_IOS : SharedConstant.VERSION_REMARK_ANDROID;
+  static String version = Platform.isIOS
+      ? SharedConstant.VERSION_REMARK_IOS.substring(0, SharedConstant.VERSION_REMARK_IOS.lastIndexOf("."))
+      : SharedConstant.VERSION_REMARK_ANDROID
+          .substring(0, SharedConstant.VERSION_REMARK_IOS.lastIndexOf("."));
 
   // List<String> _guideList = ["app_start_1", "app_start_2", "app_start_3"];
   StreamSubscription _subscription;
 
-  List<String> _guideImages = [
-    // https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/guide/2.4.0_1.png
-    "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/guide/${version}_1.png",
-    "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/guide/${version}_2.png",
-    "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/guide/${version}_3.png",
-  ];
+  // 默认该版本的引导页面数目
+  int _guideLen = 3;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Log.init();
+      // ignore: invalid_use_of_visible_for_testing_member
+      // await Log.init();
       await SpUtil.getInstance();
+      // LogUtil.init();
       // 由于SpUtil未初始化，所以MaterialApp获取的为默认主题配置，这里同步一下。
       Provider.of<ThemeProvider>(context).syncTheme();
       // if (SpUtil.getBool(Constant.keyGuide, defValue: true)){
@@ -106,9 +113,8 @@ class _SplashPageState extends State<SplashPage> {
 
   void _initSplash() {
     _subscription = TimerStream("", Duration(milliseconds: 2000)).listen((_) async {
-      print("-------------------------");
       String storageToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN, defValue: '');
-      print(storageToken);
+      LogUtil.e("------执行登录------, storageToken: $storageToken", tag: TAG);
       if (storageToken == '') {
         _goLogin();
       } else {
@@ -119,18 +125,19 @@ class _SplashPageState extends State<SplashPage> {
             _goLogin();
           } else {
             AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
-            print("${acc.toJson()}");
+            LogUtil.e("调用getMyAccount结果: ${acc.toJson()}", tag: TAG);
             accountLocalProvider.setAccount(acc);
+
             Application.setAccount(acc);
             Application.setAccountId(acc.id);
-            int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
-            String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
 
+            int orgId = SpUtil.getInt(SharedConstant.LOCAL_ORG_ID, defValue: -1);
+
+            String orgName = SpUtil.getString(SharedConstant.LOCAL_ORG_NAME, defValue: "");
             if (orgId == -1 || orgName == "") {
               University university = await UniversityApi.queryUnis(storageToken);
               if (university == null) {
                 // 错误，有账户无组织
-                print("ERROR , ------------");
                 ToastUtil.showToast(context, '数据错误');
               } else {
                 if (university == null || university.id == null || university.name == null) {
@@ -143,13 +150,12 @@ class _SplashPageState extends State<SplashPage> {
                 Application.setOrgId(university.id);
               }
             } else {
-              print('$orgId---------------------orgId');
-              print('$orgName---------------------orgName');
+              LogUtil.e("登录成功，orgId: $orgId, orgName: $orgName", tag: TAG);
               Application.setOrgId(orgId);
               Application.setOrgName(orgName);
             }
             Application.setLocalAccountToken(storageToken);
-
+            AccountDeviceUtil.getAndUpdateDeviceInfo(Application.getDeviceId);
             decideWhatToDo();
             _clearCacheIfNecessary();
           }
@@ -159,7 +165,10 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void decideWhatToDo() {
-    if (_displayGuide) {
+    if (_hasGuide) {
+      setState(() {
+        _displayGuide = true;
+      });
       return;
     }
     if (_hasAd) {
@@ -167,11 +176,12 @@ class _SplashPageState extends State<SplashPage> {
         _displayAd = true;
       });
       _delayAndForwardIndex((_adValueMap["displayMs"] as int));
-    } else {
-      setState(() {
-        _status = 1;
-      });
+      return;
     }
+    // 其他情况
+    setState(() {
+      _status = 1;
+    });
   }
 
   void _delayAndForwardIndex(int ms) {
@@ -217,17 +227,21 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _checkGuideNeed() async {
-    String versionVal = SpUtil.getString(version);
-    print("versionName---------------$versionVal");
-    await SpUtil.putString(version, "true");
-    String after = SpUtil.getString(version);
-    print("versionName---------------$after");
-
-    if (StringUtil.isEmpty(versionVal)) {
+    // setState(() {
+    //   _hasGuide = true;
+    // });
+    String versionVal = SpUtil.getString(version, defValue: "0");
+    print(version);
+    print(versionVal);
+    LogUtil.e("获取引导版本字段，$versionVal");
+    if (versionVal == "0") {
+      await SpUtil.putString(version, "1");
       setState(() {
-        _displayGuide = true;
+        _hasGuide = true;
       });
+      return;
     } else {
+      // 没有引导页面去找广告啊
       _checkOrDisplayAd();
     }
   }
@@ -242,7 +256,6 @@ class _SplashPageState extends State<SplashPage> {
     // prefix0.ScreenUtil.instance = prefix0.ScreenUtil(width: 750, height: 1334)..init(context);
     Application.screenWidth = prefix0.ScreenUtil.screenWidth;
     Application.screenHeight = prefix0.ScreenUtil.screenHeight;
-
     Application.context = context;
 
     Widget w;
@@ -251,12 +264,14 @@ class _SplashPageState extends State<SplashPage> {
         children: [
           Swiper(
               itemBuilder: (BuildContext context, int index) {
-                return CachedNetworkImage(
-                    imageUrl: _guideImages[index],
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    fadeInCurve: Curves.linear);
+                return LoadAssetImage("guide/${index + 1}", width: double.infinity, height: double.infinity);
+                // return CachedNetworkImage(
+                //     imageUrl: _guideImages[index],
+                //     width: double.infinity,
+                //     fit: BoxFit.cover,
+                //     placeholder: (context, _) => const CupertinoActivityIndicator(),
+                //     height: double.infinity,
+                //     fadeInCurve: Curves.linear);
               },
               onIndexChanged: (index) {
                 setState(() {
@@ -265,7 +280,7 @@ class _SplashPageState extends State<SplashPage> {
               },
               loop: false,
               layout: SwiperLayout.DEFAULT,
-              itemCount: _guideImages.length),
+              itemCount: _guideLen),
           Positioned(
             top: prefix0.ScreenUtil().setHeight(30) + prefix0.ScreenUtil.statusBarHeight,
             right: prefix0.ScreenUtil().setWidth(60),
@@ -279,7 +294,7 @@ class _SplashPageState extends State<SplashPage> {
               child: GestureDetector(
                 // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                 child: Text(
-                  _currentGuideIndex == _guideImages.length - 1 ? "完成" : "跳过",
+                  _currentGuideIndex == _guideLen - 1 ? "完成" : "跳过",
                   style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.black54),
                 ),
                 onTap: () {
@@ -329,8 +344,9 @@ class _SplashPageState extends State<SplashPage> {
                 height: double.infinity,
                 fadeInCurve: Curves.linear,
               ),
-              onTap: () =>
-                  NavigatorUtils.goWebViewPage(context, _adValueMap["jumpTitle"], _adValueMap["jumpUrl"]),
+              onTap: () => NavigatorUtils.goWebViewPage(
+                  context, _adValueMap["jumpTitle"], _adValueMap["jumpUrl"],
+                  source: "1"),
             ),
             Positioned(
               top: prefix0.ScreenUtil().setHeight(30) + prefix0.ScreenUtil.statusBarHeight,
@@ -380,7 +396,7 @@ class _SplashPageState extends State<SplashPage> {
 
   Widget _xiaoHuaKuai(bool currentThis) {
     return Container(
-      color: currentThis ? Colors.lightGreen : Colors.white24,
+      color: currentThis ? Colors.lightBlue : Colors.white24,
       width: Application.screenWidth * 0.1,
       height: 2.0,
     );

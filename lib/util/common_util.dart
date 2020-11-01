@@ -166,7 +166,7 @@ class Utils {
         borderRadius: radius,
         child: cache
             ? CachedNetworkImage(
-          width: double.infinity,
+                width: double.infinity,
                 height: double.infinity,
                 imageUrl: url,
                 fit: BoxFit.cover,
@@ -280,6 +280,17 @@ class Utils {
 
   static void copyTextToClipBoard(String text) {
     Clipboard.setData(ClipboardData(text: text));
+  }
+
+  static String getBadgeText(int count, {int maxCount = 99}) {
+    if (count > maxCount) {
+      return '$maxCount+';
+    }
+    return '$count';
+  }
+
+  static bool badgeHasData(int data) {
+    return data > 0;
   }
 
 //  static void vibrateOnceOrNotSupport() async {

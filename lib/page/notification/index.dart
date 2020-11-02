@@ -17,6 +17,7 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/setting_router.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -153,9 +154,11 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     return Scaffold(
       backgroundColor: ThemeUtils.getBackColor(context),
       appBar: AppBar(
+        backgroundColor: isDark ? Colours.dark_bottom_sheet : ColorConstant.MAIN_BG,
         automaticallyImplyLeading: false,
         title: Text('消息',
-            style: TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.3)),
+            style: pfStyle.copyWith(
+                fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.3)),
         centerTitle: false,
         leading: IconButton(
             icon: Icon(Icons.arrow_back), iconSize: 23.0, onPressed: () => NavigatorUtils.goBack(context)),
@@ -205,7 +208,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                         MessageUtil.clearNotificationCnt();
                         NavigatorUtils.push(context, NotificationRouter.interactiveMain);
                       }),
-                  Gaps.vGap4,
+                  Gaps.vGap10,
                   MainMessageItem(
                     iconPath: iconOfficialPath,
                     color: Colors.lightBlueAccent,

@@ -204,8 +204,8 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                               disabledTextColor: isDark ? Colours.dark_text_disabled : Colours.text_disabled,
                               disabledColor: isDark ? Colours.dark_button_disabled : Colours.button_disabled,
                               shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: Colors.black26, width: _subThis ? 0 : 1.0),
-                                  borderRadius: BorderRadius.circular(20.0)),
+                                  side: BorderSide(color: Colors.black12, width: _subThis ? 0 : 1.0),
+                                  borderRadius: BorderRadius.circular(13.0)),
                               child: !_initSub
                                   ? (_subThis
                                       ? Row(

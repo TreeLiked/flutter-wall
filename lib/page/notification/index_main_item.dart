@@ -54,8 +54,8 @@ class _MainMessageItemState extends State<MainMessageItem> {
             builder: (_, snapshot) => InkWell(
                   onTap: widget.onTap,
                   child: Container(
-                    padding: const EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
-                    color: isDark ? Colours.dark_bg_color : Colors.white,
+                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+                    color: isDark ? Colours.dark_bottom_sheet : Colors.white,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
@@ -63,14 +63,14 @@ class _MainMessageItemState extends State<MainMessageItem> {
                             height: lineHeight,
                             width: lineHeight,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular((50)),
-                              color: widget.color,
-                            ),
+                                borderRadius: BorderRadius.circular((50)),
+                                color: isDark ? null : widget.color,
+                                border: Border.all(color: Colors.white12, width: isDark ? 1 : 0)),
                             child: Padding(
                               padding: const EdgeInsets.all(7.0),
                               child: LoadAssetSvg(
                                 widget.iconPath,
-                                color: Colors.white,
+                                color: isDark ? widget.color : Colors.white,
                                 height: iconSize,
                                 width: iconSize,
                               ),
@@ -158,8 +158,8 @@ class _MainMessageItemState extends State<MainMessageItem> {
       onTap: widget.onTap,
       child: Container(
 //        width: double.infinity,
-        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
-        color: isDark ? Colours.dark_bg_color : Colors.white,
+        padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+        color: isDark ? Colours.dark_bottom_sheet : Colors.white,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
@@ -168,13 +168,14 @@ class _MainMessageItemState extends State<MainMessageItem> {
                 width: lineHeight,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular((50.0)),
-                  color: widget.color,
+                  color: isDark ? null : widget.color,
+                  border: Border.all(color: Colors.white12, width: isDark ? 1 : 0),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.5),
                   child: LoadAssetSvg(
                     widget.iconPath,
-                    color: Colors.white,
+                    color: isDark ? widget.color : Colors.white,
                     height: iconSize,
                     width: iconSize,
                   ),

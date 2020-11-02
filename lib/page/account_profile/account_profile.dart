@@ -294,7 +294,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                       child: GestureDetector(
                                         onTap: () {
                                           BottomSheetUtil.showBottomSheet(
-                                              context, 0.6, _buildDetailProfileInfo());
+                                              context, 0.55, _buildDetailProfileInfo());
                                         },
                                         child: Wrap(
                                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -392,7 +392,7 @@ class _AccountProfileState extends State<AccountProfile> {
 
   String _buildRegionText() {
     if (StringUtil.isEmpty(account.province)) {
-      return "地区不可见";
+      return "";
     } else {
       if (StringUtil.isEmpty(account.city)) {
         return account.province;
@@ -451,7 +451,8 @@ class _AccountProfileState extends State<AccountProfile> {
       );
     }
     return Container(
-      margin: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0, bottom: 20.0),
+      alignment: Alignment.centerLeft,
+      margin: const EdgeInsets.only(top: 49.0, left: 20.0, right: 20.0, bottom: 10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,10 +468,10 @@ class _AccountProfileState extends State<AccountProfile> {
                 "签名": _buildSingleTextValue(account.signature ?? "未设置"),
               }),
           _buildSingleContainer(Icon(Icons.add_a_photo, color: Colors.blueAccent), "个人档案", {
-            "姓名": _buildSingleTextValue(account.displayName ? account.name : "姓名不可见"),
+            "姓名": _buildSingleTextValue(account.displayName ? account.name : ""),
             "性别": _buildGenderWidget(),
             "年龄": _buildSingleTextValue(
-                account.displayAge && account.age > 0 ? account.age.toString() : "年龄不可见"),
+                account.displayAge && account.age > 0 ? account.age.toString() : ""),
             "地区": _buildSingleTextValue(_buildRegionText()),
             "专业": _buildSingleTextValue(_getCampusInfoText()),
           }),
@@ -495,9 +496,8 @@ class _AccountProfileState extends State<AccountProfile> {
       List<Widget> ws = new List();
       items.forEach((key, value) {
         ws.add(Container(
-          margin: const EdgeInsets.only(bottom: 5.0),
           child: Wrap(
-            alignment: WrapAlignment.center,
+            alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
@@ -546,7 +546,7 @@ class _AccountProfileState extends State<AccountProfile> {
 
   Widget _buildSingleTextValue(String text) {
     if (text == null || text.trim().length == 0) {
-      text = "不可见";
+      text = "";
     }
     return Text(text, style: pfStyle);
   }

@@ -58,7 +58,7 @@ class TweetReplyItemSimple extends StatelessWidget {
               TextSpan(
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      if (!dirReplyAnonymous) {
+                      if (!dirReplyAnonymous && !(isAuthorReply && tweetAnonymous)) {
                         onTapAccount(reply.account, false);
                       }
                     },

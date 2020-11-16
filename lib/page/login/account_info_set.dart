@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/component/text_field.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/page/login/reg_temp.dart';
@@ -127,17 +128,16 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                 ? GestureDetector(
                     onTap: _goChoiceAvatar,
                     child: Container(
-                        padding: const EdgeInsets.all(25.0),
+                        padding: const EdgeInsets.all(20.0),
                         decoration: BoxDecoration(
-                            color: Color(0xfff1f2f3),
-//                  borderRadius: BorderRadius.all((Radius.circular(100))),
+                            color: Color(0xffD7D6D9),
                             shape: BoxShape.circle),
-                        child: LoadAssetImage(
+                        child: const LoadAssetImage(
                           "profile_sel",
                           format: 'png',
-                          width: SizeConstant.TWEET_PROFILE_SIZE,
+                          width: SizeConstant.TWEET_PROFILE_SIZE - 10,
                           fit: BoxFit.cover,
-                          color: Colors.grey,
+                          color: Colors.white,
                         )))
                 : GestureDetector(
                     onTap: _goChoiceAvatar,
@@ -154,7 +154,6 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
             decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(15.0)),
             padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.only(top: 25),
-
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -179,8 +178,8 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
             margin: const EdgeInsets.only(top: 15),
             child: FlatButton(
                 disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
-
-                color: _canGoNext ? Colors.amber : (!isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker),
+                color:
+                    _canGoNext ? Colors.amber : (!isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
                 child: Text('下一步', style: TextStyle(color: Colors.white)),
                 padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
@@ -189,7 +188,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Gaps.vGap15,
           Gaps.line,
           Gaps.vGap16,
-          Text('请选择一张图片作为您的头像并设计一个个性的昵称吧～', maxLines: 5, softWrap: true, style: TextStyles.textGray14)
+          Text('请选择头像并起一个独特的昵称叭～', maxLines: 5, softWrap: true, style: TextStyles.textGray14)
         ],
       ),
     );

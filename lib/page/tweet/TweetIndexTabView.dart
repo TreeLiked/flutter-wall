@@ -141,7 +141,7 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
 
   void closeReplyInput() {
     if (_bottomSheetController != null) {
-      _bottomSheetController?.close();
+      _bottomSheetController.close();
     }
   }
 

@@ -62,7 +62,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
 
     return Consumer<AccountLocalProvider>(builder: (_, provider, __) {
       return Container(
-        margin: const EdgeInsets.only(top: 25.0),
+        margin: const EdgeInsets.only(top: 10.0),
         child: Column(
           children: <Widget>[
             Container(
@@ -115,9 +115,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                     ClickItem(
                       title: '我的大学',
                       content: Application.getOrgName ?? TextConstant.TEXT_UN_CATCH_ERROR,
-                      onTap: () {
-                        ToastUtil.showToast(context, '校园切换功能暂未开放');
-                      },
                     ),
                     ClickItem(
                       title: '我的发布',

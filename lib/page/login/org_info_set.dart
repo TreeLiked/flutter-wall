@@ -69,7 +69,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   }
 
   _finishAll() async {
-    Utils.showDefaultLoadingWithBounds(context, text: '正在生成');
+    Utils.showDefaultLoadingWithBounds(context, text: '正在注册');
     RegTemp.regTemp.orgId = _cId;
     RegTemp rt = RegTemp.regTemp;
     Result res = await MemberApi.register(rt.phone, rt.nick, rt.avatarUrl, rt.orgId, rt.invitationCode);

@@ -155,7 +155,8 @@ class BottomSheetUtil {
         });
   }
 
-  static void showBottomSheet(BuildContext context, double heightFactor, Widget content) {
+  static void showBottomSheet(BuildContext context, double heightFactor, Widget content,
+      {bool topLine = true, Widget topWidget}) {
     bool isDark = ThemeUtils.isDark(context);
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
@@ -172,23 +173,29 @@ class BottomSheetUtil {
                         borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
                     child: Stack(
                       children: <Widget>[
-                        Positioned(
-                          left: (Application.screenWidth - 50) / 2,
-                          top: 10.0,
-                          child: Container(
-                            child: Container(
-                                height: 5.0,
-                                width: 50.0,
-                                decoration: BoxDecoration(
-                                    color: Color(0xffaeb4bd), borderRadius: BorderRadius.circular(73.0))),
-                          ),
-                        ),
+                        topLine
+                            ? Positioned(
+                                left: (Application.screenWidth - 50) / 2,
+                                top: 10.0,
+                                child: Container(
+                                  child: Container(
+                                      height: 5.0,
+                                      width: 50.0,
+                                      decoration: BoxDecoration(
+                                          color: Color(0xffaeb4bd),
+                                          borderRadius: BorderRadius.circular(73.0))),
+                                ),
+                              )
+                            : (topWidget ?? Gaps.empty),
                         SafeArea(
-                          top: false,
-                          child: SingleChildScrollView(
-                            child: content,
-                          ),
-                        )
+                            top: false,
+                            child: Container(
+                              margin:
+                                  EdgeInsets.only(top: topLine ? 20.0 : (topWidget == null ? 10.0 : 50.0)),
+                              child: SingleChildScrollView(
+                                child: content,
+                              ),
+                            ))
                       ],
                     ))
               ],

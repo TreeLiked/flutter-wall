@@ -266,7 +266,7 @@ class _HomePageState extends State<HomePage>
                             var acc = model.account;
                             return IconButton(
                                 onPressed: () {
-                                  BottomSheetUtil.showBottomSheet(context, 0.65, PersonalCenter());
+                                  BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
                                   UMengUtil.userGoPage(UMengUtil.PAGE_PC);
                                 },
                                 icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));

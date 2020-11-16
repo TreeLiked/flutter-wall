@@ -294,7 +294,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                       child: GestureDetector(
                                         onTap: () {
                                           BottomSheetUtil.showBottomSheet(
-                                              context, 0.55, _buildDetailProfileInfo());
+                                              context, 0.6, _buildDetailProfileInfo());
                                         },
                                         child: Wrap(
                                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -470,8 +470,7 @@ class _AccountProfileState extends State<AccountProfile> {
           _buildSingleContainer(Icon(Icons.add_a_photo, color: Colors.blueAccent), "个人档案", {
             "姓名": _buildSingleTextValue(account.displayName ? account.name : ""),
             "性别": _buildGenderWidget(),
-            "年龄": _buildSingleTextValue(
-                account.displayAge && account.age > 0 ? account.age.toString() : ""),
+            "年龄": _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : ""),
             "地区": _buildSingleTextValue(_buildRegionText()),
             "专业": _buildSingleTextValue(_getCampusInfoText()),
           }),
@@ -482,9 +481,9 @@ class _AccountProfileState extends State<AccountProfile> {
               ),
               "联系资料",
               {
-                "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : "未知"),
-                "QQ": _buildSingleTextValue(account.displayQQ ? account.qq : "未知"),
-                "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : "未知"),
+                "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : "未公开"),
+                "QQ": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : "未公开"),
+                "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : "未公开"),
               }),
         ],
       ),
@@ -538,7 +537,6 @@ class _AccountProfileState extends State<AccountProfile> {
               ],
             ),
             Gaps.vGap10,
-            Gaps.line,
             genItems(items),
           ],
         ));

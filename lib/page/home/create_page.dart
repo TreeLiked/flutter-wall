@@ -19,13 +19,17 @@ import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_type_sel.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
+import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -207,11 +211,11 @@ class _CreatePageState extends State<CreatePage> {
     _updatePushBtnState();
   }
 
-  void _selectTypeCallback(List<String> typeNames) {
-    if (!CollectionUtil.isListEmpty(typeNames)) {
+  void _selectTypeCallback(String typeName) {
+    if (!StringUtil.isEmpty(typeName)) {
       setState(() {
-        this._typeName = typeNames[0];
-        this._typeText = tweetTypeMap[typeNames[0]].zhTag;
+        this._typeName = typeName;
+        this._typeText = tweetTypeMap[typeName].zhTag;
         _updatePushBtnState();
       });
     }
@@ -230,16 +234,104 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   void _forwardSelPage() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => TweetTypeSelect(
-                  title: "选择内容类型",
-                  finishText: "完成",
-                  needVisible: false,
-                  initNames: !StringUtil.isEmpty(_typeName) ? [_typeName] : null,
-                  callback: (typeNames) => _selectTypeCallback(typeNames),
-                )));
+    BottomSheetUtil.showBottomSheet(context, 0.7, _buildTypeSelection(),
+        topLine: false, topWidget: _buildTopWidget());
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => TweetTypeSelect(
+    //               title: "选择内容类型",
+    //               finishText: "完成",
+    //               needVisible: false,
+    //               initNames: !StringUtil.isEmpty(_typeName) ? [_typeName] : null,
+    //               callback: (typeNames) => _selectTypeCallback(typeNames),
+    //             )));
+  }
+
+  _buildTopWidget() {
+    return Container(
+      height: 50.0,
+      padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+      child: Row(
+        children: [
+          Flexible(
+            child: Gaps.empty,
+            flex: 1,
+            fit: FlexFit.tight,
+          ),
+          Flexible(
+              child: Container(
+                alignment: Alignment.center,
+                child: Text("内容类型", style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
+              ),
+              flex: 1),
+          Flexible(child: Gaps.empty, flex: 1),
+        ],
+      ),
+    );
+  }
+
+  _buildTypeSelection() {
+    List<TweetTypeEntity> entities = TweetTypeUtil.getPushableTweetTypeMap().values.toList();
+    List<Widget> widgets = List();
+    entities.forEach((element) {
+      widgets.add(_buildSingleTypeItem(element, !StringUtil.isEmpty(_typeName) && _typeName == element.name));
+    });
+    return Container(
+        margin: const EdgeInsets.only(left: 5.0, right: 5.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: widgets));
+  }
+
+  _buildSingleTypeItem(TweetTypeEntity entity, bool selected) {
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          setState(() {
+            _selectTypeCallback(entity.name);
+            NavigatorUtils.goBack(context);
+          });
+        },
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 5.0),
+          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
+          alignment: Alignment.centerLeft,
+          decoration: selected
+              ? BoxDecoration(
+                  color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
+                  borderRadius: const BorderRadius.all(Radius.circular(7.9)),
+                  border: new Border.all(
+                      color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc), width: 0.5),
+                )
+              : null,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.only(right: 5.0),
+                child: Icon(
+                  entity.iconData,
+                  size: 40,
+                  color: entity.iconColor,
+                ),
+              ),
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(entity.zhTag,
+                      style: pfStyle.copyWith(
+                          fontSize: Dimens.font_sp15, color: selected ? entity.color : null)),
+                  Text(entity.intro,
+                      style: pfStyle.copyWith(
+                          fontSize: Dimens.font_sp13p5, color: selected ? entity.color : Colors.grey)),
+                  Gaps.vGap5,
+                ],
+              ))
+            ],
+          ),
+        ));
   }
 
   Future<void> loadAssets() async {

@@ -49,7 +49,7 @@ class TweetTypeWrapper extends StatelessWidget {
                         style: TextStyle(
                             color: isDark ? Colors.white70 : Colors.white, fontSize: Dimens.font_sp12))),
                 Gaps.hGap4,
-                Text('${typeEntity.zhTag}..',
+                Text('${typeEntity.zhTag}...',
                     style: TextStyle(color: typeEntity.color, fontSize: Dimens.font_sp12))
               ],
             )));

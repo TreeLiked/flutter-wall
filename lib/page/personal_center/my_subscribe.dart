@@ -20,6 +20,7 @@ import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 
@@ -35,6 +36,8 @@ class _MySubscribePageState extends State<MySubscribePage> {
   Function _getSubscribedTask;
 
   List<String> _subscribeNames = List();
+
+  bool isDark = false;
 
   Future<Result<dynamic>> _getMySubscribedTypes(BuildContext context) async {
     Result<dynamic> data = await TtSubscribe.getMySubscribeTypes();
@@ -70,6 +73,7 @@ class _MySubscribePageState extends State<MySubscribePage> {
 
   @override
   Widget build(BuildContext context) {
+    isDark = ThemeUtils.isDark(context);
     return Scaffold(
       appBar: MyAppBar(
           centerTitle: "我的订阅",
@@ -98,8 +102,8 @@ class _MySubscribePageState extends State<MySubscribePage> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3, //每行三列
           childAspectRatio: 1.0, //显示区域宽高相等
-          crossAxisSpacing: 10.0,
-          mainAxisSpacing: 10.0,
+          crossAxisSpacing: 20.0,
+          mainAxisSpacing: 20.0,
         ),
         itemCount: entities.length,
         itemBuilder: (context, index) {
@@ -110,6 +114,7 @@ class _MySubscribePageState extends State<MySubscribePage> {
           TweetTypeEntity tt = entities[index];
           bool sub = _subscribeNames.contains(tt.name);
           return GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () async {
               if (!(await PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true))) {
                 // 没有通知权限
@@ -119,6 +124,10 @@ class _MySubscribePageState extends State<MySubscribePage> {
               _subOrCancel(context, tt.name, sub);
             },
             child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: isDark ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK : ColorConstant.DEFAULT_BACK_COLOR,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -130,7 +139,7 @@ class _MySubscribePageState extends State<MySubscribePage> {
                   sub
                       ? Container(
                           color: tt.iconColor,
-                          width: (Application.screenWidth - 30) / 7,
+                          width: (Application.screenWidth - 30) / 15,
                           height: 1,
                           margin: const EdgeInsets.only(top: 10.0),
                         )

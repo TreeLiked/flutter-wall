@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/global/global_config.dart';
+import 'package:iap_app/style/text_style.dart';
 
 class ThemeConstant {
   static String appName = "Social app";
@@ -24,7 +25,8 @@ class ThemeConstant {
       elevation: 0,
       color: lightPrimary,
       textTheme: TextTheme(
-        title: TextStyle(
+        title: pfStyle.copyWith(
+
           color: darkBG,
           fontSize: GlobalConfig.TEXT_TITLE_SIZE,
           fontWeight: FontWeight.w500,
@@ -43,7 +45,7 @@ class ThemeConstant {
     appBarTheme: AppBarTheme(
       elevation: 0,
       textTheme: TextTheme(
-        title: TextStyle(
+        title: pfStyle.copyWith(
           color: lightBG,
           fontSize: GlobalConfig.TEXT_TITLE_SIZE,
           fontWeight: FontWeight.w500,

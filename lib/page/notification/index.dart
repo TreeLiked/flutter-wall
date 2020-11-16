@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
@@ -149,12 +150,11 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 //    print('notification' + (ModalRoute.of(context).isCurrent ? "当前页面" : "不是当前页面"));
 
     isDark = ThemeUtils.isDark(context);
-    Color _badgeColor = isDark ? Colours.dark_app_main : Colours.app_main;
 
     return Scaffold(
       backgroundColor: ThemeUtils.getBackColor(context),
       appBar: AppBar(
-        backgroundColor: isDark ? Colours.dark_bottom_sheet : ColorConstant.MAIN_BG,
+        backgroundColor: ThemeUtils.getBackColor(context),
         automaticallyImplyLeading: false,
         title: Text('消息',
             style: pfStyle.copyWith(
@@ -180,10 +180,10 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                 children: <Widget>[
                   MainMessageItem(
                     iconPath: iconSubPath,
-                    title: "我的订阅",
-                    body: "暂无订阅消息",
+                    title: "私信",
+                    body: "暂无私信消息",
                     color: Colors.pink[300],
-                    onTap: () => ToastUtil.showToast(context, "当前没有订阅内容"),
+                    onTap: () => ToastUtil.showToast(context, "当前没有私信消息"),
                   ),
                   MainMessageItem(
                       iconPath: iconSchoolPath,
@@ -208,7 +208,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                         MessageUtil.clearNotificationCnt();
                         NavigatorUtils.push(context, NotificationRouter.interactiveMain);
                       }),
-                  Gaps.vGap10,
+                  Gaps.vGap8,
                   MainMessageItem(
                     iconPath: iconOfficialPath,
                     color: Colors.lightBlueAccent,

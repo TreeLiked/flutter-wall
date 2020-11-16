@@ -198,7 +198,7 @@ class TweetTypeEntity {
       zhTag: "帮助");
 
   static const SECOND_HAND_TRANSACTION = const TweetTypeEntity(
-      iconData: Icons.add_shopping_cart,
+      iconData: Icons.attach_money_sharp,
       iconColor: Colors.blue,
       name: "SECOND_HAND_TRANSACTION",
       intro: "让价值再飞一会",
@@ -207,7 +207,7 @@ class TweetTypeEntity {
       zhTag: "二手交易");
 
   static const OTHER = const TweetTypeEntity(
-      iconData: Icons.palette,
+      iconData: Icons.auto_fix_high,
       iconColor: Color(0xff66CDAA),
       intro: "没有别的就选这个吧！",
       name: "OTHER",

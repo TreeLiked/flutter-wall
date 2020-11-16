@@ -14,6 +14,7 @@ class PathConstant {
   static const String ICON_PRAISE_ICON_UN_PRAISE = "tweet/unpraise";
   static const String ICON_PRAISE_ICON_PRAISE = "tweet/praise";
   static const String ICON_PRAISE_ICON_LOVE = "tweet/love";
+  static const String ICON_PRAISE_ICON_LOVE_FILL = "tweet/love_fill";
   static const String ICON_COMMENT_ICON = "tweet/comment";
 
   static const String ICON_SEL = "assets/icons/sel.png";

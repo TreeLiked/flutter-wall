@@ -26,9 +26,11 @@ class TweetCampusWrapper extends StatelessWidget {
 //    }
     String t = insEmpty ? cla : (claEmpty ? institute : '$institute，$cla');
     return Wrap(
+      runSpacing: Dimens.gap_dp4,
+        spacing: Dimens.gap_dp4,
       children: <Widget>[
         displayType ? TweetTypeWrapper(tweetId, tweetType): Gaps.empty,
-        displayType ? Gaps.hGap4: Gaps.empty,
+        // displayType ? Gaps.hGap4: Gaps.empty,
         (insEmpty && claEmpty) || anonymous
             ? Gaps.empty
             : SquareTag(

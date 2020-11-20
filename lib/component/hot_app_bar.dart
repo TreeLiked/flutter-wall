@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
@@ -14,6 +16,7 @@ class HotAppBarWidget extends StatelessWidget {
   final double expandedHeight;
   final Widget content;
   final String backgroundImg;
+  final List<String> backgroundImgs;
   final String title;
   final double sigma;
   final VoidCallback playOnTap;
@@ -28,26 +31,30 @@ class HotAppBarWidget extends StatelessWidget {
   final BorderRadius imageRadius;
   final Color lightShadow;
 
+  // 上一张图片路径用作placeholder
+  final String preBackgroundImg;
+
   final bool cache;
 
-  HotAppBarWidget({
-    @required this.expandedHeight,
-    @required this.content,
-    @required this.title,
-    @required this.backgroundImg,
-    @required this.headerNotifier,
-    this.sigma = 2.8,
-    this.playOnTap,
-    this.count,
-    this.outerRadius,
-    this.outerMargin,
-    this.imageRadius,
-    this.lightShadow = Colors.black12,
-    this.pinned = false,
-    this.floating = false,
-    this.snap = false,
-    this.cache = false,
-  });
+  HotAppBarWidget(
+      {@required this.expandedHeight,
+      @required this.content,
+      @required this.title,
+      @required this.backgroundImg,
+      @required this.headerNotifier,
+      this.backgroundImgs,
+      this.sigma = 2.8,
+      this.playOnTap,
+      this.count,
+      this.outerRadius,
+      this.outerMargin,
+      this.imageRadius,
+      this.lightShadow = Colors.black12,
+      this.pinned = false,
+      this.floating = false,
+      this.snap = false,
+      this.cache = false,
+      this.preBackgroundImg});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +89,22 @@ class HotAppBarWidget extends StatelessWidget {
               background: Stack(
                 children: <Widget>[
                   backgroundImg.startsWith('http')
-                      ? Utils.showFadeInImage(backgroundImg, imageRadius, cache: cache)
+                      ? (CollectionUtil.isListEmpty(backgroundImgs)
+                          ? Utils.showFadeInImage(backgroundImg, imageRadius,
+                              cache: cache, preImgUrl: preBackgroundImg)
+                          : Swiper(
+                              itemBuilder: (BuildContext context, int index) {
+                                return Utils.showFadeInImage(backgroundImgs[index], imageRadius,
+                                    cache: cache);
+                              },
+                              autoplay: true,
+                              loop: false,
+                              layout: SwiperLayout.DEFAULT,
+                              duration: 250,
+                              autoplayDelay: 1500,
+                              scrollDirection: Axis.vertical,
+                              // pagination: new SwiperPagination(builder: SwiperPagination.fraction),
+                              itemCount: backgroundImgs.length))
                       : Image.asset(
                           backgroundImg,
                           width: double.infinity,

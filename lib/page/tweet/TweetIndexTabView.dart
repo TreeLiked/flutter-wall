@@ -105,6 +105,7 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
                               displayComment: true,
                               displayLink: true,
                               canPraise: true,
+                              indexInList: index,
                               onClickComment: (TweetReply subReply, String targetNick, String targetAccountId) {
                                 _bottomSheetController =
                                     Scaffold.of(context).showBottomSheet((context) => Container(

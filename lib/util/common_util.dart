@@ -161,7 +161,7 @@ class Utils {
         });
   }
 
-  static Widget showFadeInImage(String url, BorderRadius radius, {bool cache = false}) {
+  static Widget showFadeInImage(String url, BorderRadius radius, {bool cache = false, String preImgUrl}) {
     return ClipRRect(
         borderRadius: radius,
         child: cache
@@ -170,8 +170,16 @@ class Utils {
                 height: double.infinity,
                 imageUrl: url,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => const CupertinoActivityIndicator(),
-              )
+                placeholder: (_, __) => StringUtil.isEmpty(preImgUrl)
+                    ? const CupertinoActivityIndicator()
+                    : ClipRRect(
+                        borderRadius: radius,
+                        child: CachedNetworkImage(
+                            width: double.infinity,
+                            height: double.infinity,
+                            imageUrl: url,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => const CupertinoActivityIndicator())))
             : FadeInImage.memoryNetwork(
                 width: double.infinity,
                 height: double.infinity,

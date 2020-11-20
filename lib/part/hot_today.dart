@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,6 +45,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
 
   final String defaultCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
   String _currentCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
+  String _preCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
   List<String> _covers;
   int _currentCoverIndex = 0;
   Timer _loadCoverTimer;
@@ -109,13 +111,18 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       }
       setState(() {
         _currentCover = _covers[_currentCoverIndex++];
+        if (_currentCoverIndex > 0) {
+          _preCover = _covers[_currentCoverIndex - 1];
+        }
       });
     });
   }
 
   void extractCovers() {
     _covers?.clear();
-    _covers = new List();
+    if (_covers == null) {
+      _covers = new List();
+    }
     _covers.add(defaultCover);
     if (hotTweet == null) {
       return;
@@ -128,7 +135,14 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
           _covers.add(bts[i].cover.url + OssConstant.THUMBNAIL_SUFFIX);
         }
       }
-      loopDisplayCover();
+      // loopDisplayCover();
+      setState(() {
+        _covers = _covers;
+        _currentCover = _covers[0];
+        // if(!CollectionUtil.isListEmpty(_covers)) {
+        //   _currentCover = _covers[Random().nextInt(_covers.length)];
+        // }
+      });
     }
   }
 
@@ -156,7 +170,14 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     super.build(context);
     bool loadingOrRedisInit = hotTweet == null;
     bool noData = !loadingOrRedisInit && CollectionUtil.isListEmpty(hotTweet.tweets);
-    return Scaffold(
+    bool showTrend = !noData;
+    if (hotTweet != null && hotTweet.lastFetched != null) {
+      if (hotTweet.lastFetched.hour == 23 && hotTweet.lastFetched.minute == 30) {
+        showTrend = false;
+      }
+    }
+    return SafeArea(
+        child: Scaffold(
       body: EasyRefresh.custom(
           header: LinkHeader(
             _headerNotifier,
@@ -170,7 +191,9 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
             HotAppBarWidget(
               headerNotifier: _headerNotifier,
               backgroundImg: _currentCover,
+              // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
               count: 10,
+              cache: true,
               outerMargin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
               outerRadius: BorderRadius.circular(8.0),
               imageRadius: BorderRadius.circular(8.0),
@@ -221,48 +244,29 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               expandedHeight: _expandedHeight,
               title: '校园热门',
             ),
-            SliverList(
-                delegate: new SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                if (hotTweet == null) {
-                  return Gaps.empty;
-                }
-                var tweets = hotTweet.tweets;
-                if (tweets == null || tweets.length == 0) {
-                  return _noDataView();
-                }
-                return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1));
-              },
-              childCount: loadingOrRedisInit ? 0 : (!noData ? hotTweet.tweets.length : 1),
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 10.0, top: 3.0),
+              sliver: SliverList(
+                  delegate: new SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  if (hotTweet == null) {
+                    return Gaps.empty;
+                  }
+                  var tweets = hotTweet.tweets;
+                  if (tweets == null || tweets.length == 0) {
+                    return _noDataView();
+                  }
+                  return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1),
+                      showTrend: showTrend);
+                },
+                childCount: loadingOrRedisInit ? 0 : (!noData ? hotTweet.tweets.length : 1),
+              )),
             )
-                // new SliverFixedExtentList(
-                //   itemExtent: loadingOrRedisInit
-                //       ? 0
-                //       : !noData
-                //           ? ScreenUtil().setHeight(400)
-                //           : Application.screenHeight,
-                //   delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
-                //     //创建列表项
-                //     if (hotTweet == null) {
-                //       return Gaps.empty;
-                //     }
-                //     var tweets = hotTweet.tweets;
-                //     if (tweets == null || tweets.length == 0) {
-                //       return _noDataView();
-                //     }
-                //     return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1));
-                //   },
-                //       childCount: loadingOrRedisInit
-                //           ? 0
-                //           : !noData
-                //               ? hotTweet.tweets.length
-                //               : 1),
-                // ),
-                )
+            // Gaps.vGap5
           ],
           onRefresh: _onRefresh,
           onLoad: null),
-    );
+    ));
   }
 
   _noDataView() {

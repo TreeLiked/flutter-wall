@@ -67,9 +67,16 @@ class _AboutPageState extends State<AboutPage> {
 //              onTap: () {
 //                NavigatorUtils.goWebViewPage(context, "Wall", "https://gitee.com/treeliked/iap-app");
 //              }),
-          ClickItem(
-            title: "关于我们",
-            content: 'iutr.tech'.toUpperCase(),
+
+          GestureDetector(
+            child: ClickItem(
+              title: "关于我们",
+              content: 'iutr.tech'.toUpperCase(),
+            ),
+            onLongPress: () => ToastUtil.showToast(
+                context,
+                '${Application.getDeviceId} - ${Platform.isIOS ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}' ??
+                    "NULL"),
           ),
           ClickItem(
               title: "使用须知",
@@ -91,7 +98,6 @@ class _AboutPageState extends State<AboutPage> {
                 });
               },
             ),
-            onLongPress: () => ToastUtil.showToast(context, Application.getDeviceId ?? "NULL"),
           ),
           ClickItem(
             title: "问题反馈",

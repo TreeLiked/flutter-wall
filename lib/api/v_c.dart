@@ -33,12 +33,12 @@ class VCAPI {
         "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}&platform=${ios ? 'IOS' : 'ANDROID'}";
     print(url);
     String error;
+    Result<PubVersion> r = new Result();
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       print(json.toString());
       bool success = json["isSuccess"];
-      Result<PubVersion> r = new Result();
       dynamic json2 = json["data"];
       if (success) {
         // 当前版本可用
@@ -59,7 +59,9 @@ class VCAPI {
       return r;
     } on DioError catch (e) {
       error = Api.formatError(e);
+      r.isSuccess = false;
+      r.message = error;
     }
-    return Api.genErrorResult(error, data: null);
+    return r;
   }
 }

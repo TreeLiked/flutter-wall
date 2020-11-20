@@ -94,7 +94,7 @@ class _HistoryPushedPage extends State<HistoryPushedPage> {
               child: Padding(
                   padding: const EdgeInsets.only(top: 40),
                   child: LoadAssetImage(ThemeUtils.isDark(context) ? "no_data_dark" : 'no_data',
-                      width: ScreenUtil().setWidth(250)))),
+                      width: ScreenUtil().setWidth(550)))),
     );
   }
 

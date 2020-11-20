@@ -47,8 +47,7 @@ class TweetBodyWrapper extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          const Text('..'),
-                          const Text("查看全部",
+                          const Text(".. 查看全部",
                               style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp13p5))
                         ])),
             style: height == -1

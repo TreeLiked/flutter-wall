@@ -22,9 +22,10 @@ class TweetHotCard extends StatelessWidget {
   final HotTweet ht;
   final int index;
   final Function onTap;
+  final bool showTrend;
   BuildContext context;
 
-  TweetHotCard(this.ht, this.index, this.onTap);
+  TweetHotCard(this.ht, this.index, this.onTap, {this.showTrend = true});
 
   bool isDark;
   String oriCoverUrl;
@@ -100,17 +101,19 @@ class TweetHotCard extends StatelessWidget {
             ),
           ),
           Container(
-              child: ht.upTrend
-                  ? Icon(
-                      Icons.arrow_upward,
-                      color: Colors.redAccent,
-                      size: 16,
-                    )
-                  : Icon(
-                      Icons.arrow_downward,
-                      color: Colors.lightGreen,
-                      size: 16,
-                    )),
+              child: showTrend
+                  ? (ht.upTrend
+                      ? Icon(
+                          Icons.arrow_upward,
+                          color: Colors.redAccent,
+                          size: 16,
+                        )
+                      : Icon(
+                          Icons.arrow_downward,
+                          color: Colors.lightGreen,
+                          size: 16,
+                        ))
+                  : Gaps.empty),
         ],
       ),
     );

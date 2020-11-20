@@ -55,6 +55,8 @@ class TweetCard2 extends StatelessWidget {
   bool isDark;
   final Function onDetailDelete;
 
+  final int indexInList;
+
   TweetCard2(this.tweet,
       {this.upClickable = true,
       this.downClickable = true,
@@ -70,6 +72,7 @@ class TweetCard2 extends StatelessWidget {
       this.needLeftProfile = true,
       this.displayType = true,
       this.moreWidget,
+      this.indexInList = -1,
       this.onDetailDelete}) {
     this.sw = Application.screenWidth;
     this.sh = Application.screenHeight;
@@ -85,7 +88,7 @@ class TweetCard2 extends StatelessWidget {
 
   Widget cardContainer2(BuildContext context) {
     Widget wd = Container(
-        padding: const EdgeInsets.only(bottom: 5.0, top: 4.0, left: 15.0, right: 20.0),
+        padding: EdgeInsets.only(bottom: 5.0, top: indexInList == 0 ? 12.0 : 4.0, left: 15.0, right: 20.0),
         color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
         child: GestureDetector(
           onTap: () => _forwardDetail(context),

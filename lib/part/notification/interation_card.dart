@@ -70,6 +70,10 @@ class InteractionCardItem extends StatelessWidget {
       cover = temp.coverUrl;
       refId = temp.tweetId;
       accountAnonymous = temp.anonymous;
+      if(!accountAnonymous) {
+        // 是否是匿名推文，作者回复别人
+
+      }
     } else if (mstT == MessageType.TOPIC_REPLY) {
       // 话题回复
       TopicReplyMessage temp = message as TopicReplyMessage;

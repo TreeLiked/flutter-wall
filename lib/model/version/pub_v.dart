@@ -12,6 +12,7 @@ class PubVersion {
   DateTime pubTime;
   String description;
   String updateDesc;
+  String cover;
 
   PubVersion();
 

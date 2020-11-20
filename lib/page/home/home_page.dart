@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage>
   void firstRefreshMessage() async {
 //    Future.delayed(Duration(seconds: 3)).then((val) {
     MessageAPI.queryInteractionMessageCount().then((cnt) {
-      MessageUtil.setNotificationCnt(cnt);
+      MessageAPI.querySystemMessageCount().then((value) => {MessageUtil.setNotificationCnt(cnt + value)});
     }).whenComplete(() {
       MessageUtil.startLoopQueryNotification();
     });
@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage>
   void updateHeader(bool next) {}
 
   //设定Widget的偏移量
-  Offset floatingOffset = Offset(20, Application.screenHeight - 150);
+  Offset floatingOffset = Offset(20, Application.screenHeight - 180);
   double middle = Application.screenWidth / 2;
   bool stickLeft = false;
 
@@ -337,22 +337,22 @@ class _HomePageState extends State<HomePage>
                                 elevation: 0,
                                 padding: const EdgeInsets.all(3.0),
                                 child:
-                                // Icon(
-                                //     Utils.badgeHasData(snapshot.data)
-                                //         ? Icons.notifications_active_outlined
-                                //         : Icons.notifications_none_rounded,
-                                //     color: Utils.badgeHasData(snapshot.data)
-                                //         ? Colors.amber
-                                //         : isDark
-                                //             ? Colors.white54
-                                //             : Colors.black54),
-                                LoadAssetIcon(
+                                    // Icon(
+                                    //     Utils.badgeHasData(snapshot.data)
+                                    //         ? Icons.notifications_active_outlined
+                                    //         : Icons.notifications_none_rounded,
+                                    //     color: Utils.badgeHasData(snapshot.data)
+                                    //         ? Colors.amber
+                                    //         : isDark
+                                    //             ? Colors.white54
+                                    //             : Colors.black54),
+                                    LoadAssetIcon(
                                   "notification/bell",
                                   color: Utils.badgeHasData(snapshot.data)
                                       ? Colors.amber
                                       : isDark
-                                      ? Colors.white54
-                                      : Colors.black54,
+                                          ? Colors.white54
+                                          : Colors.black54,
                                   width: 23.0,
                                   height: 23.0,
                                 ),
@@ -395,13 +395,11 @@ class _HomePageState extends State<HomePage>
                         feedback: FloatingActionButton(
                             child: LoadAssetIcon(
                               "create",
-                              color: isDark
-                                  ? Colors.yellow
-                                  : Colors.black38,
+                              color: isDark ? Colors.yellow : Colors.black54,
                               width: 23.0,
                               height: 23.0,
                             ),
-                            backgroundColor: isDark ? Color(0xff1C1C1C): Color(0xFFFFF8DC),
+                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFE6E6FA),
                             splashColor: Colors.white12,
                             elevation: 10.0,
                             onPressed: null),
@@ -412,14 +410,13 @@ class _HomePageState extends State<HomePage>
                             // ),
                             child: LoadAssetIcon(
                               "create",
-                              color: isDark
-                                  ? Colors.yellow
-                                  : Colors.black38,
+                              color: isDark ? Colors.yellow : Colors.black54,
                               width: 23.0,
                               height: 23.0,
                             ),
-                            backgroundColor: isDark ? Color(0xff1C1C1C): Color(0xFFFFF8DC),
+                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFE6E6FA),
                             elevation: 10.0,
+                            foregroundColor: Colors.yellow,
                             splashColor: Colors.white12,
                             onPressed: () => NavigatorUtils.push(context, Routes.create,
                                 transitionType: TransitionType.fadeIn)),
@@ -430,8 +427,8 @@ class _HomePageState extends State<HomePage>
                         onDragEnd: (details) {
                           double targetX = details.offset.dx;
                           double targetY = details.offset.dy - 50;
-                          if (targetY >= Application.screenHeight - 180 || targetY <= 20) {
-                            targetY = Application.screenHeight - 180;
+                          if (targetY >= Application.screenHeight - 190 || targetY <= 20) {
+                            targetY = Application.screenHeight - 190;
                           }
                           setState(() {
                             stickLeft = targetX < middle;

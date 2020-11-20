@@ -136,7 +136,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
       }
     }).whenComplete(() {
       if (loop) {
-        Future.delayed(Duration(minutes: 30)).then((_) {
+        Future.delayed(Duration(minutes: 5)).then((_) {
           _loopQuerySystem(true);
         });
       }
@@ -217,7 +217,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                     controller: MessageUtil.systemStreamCntCtrl,
                     body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
                     time: _latestSystemMsg == null ? null : _latestSystemMsg.sentTime,
-                    pointType: true,
+                    pointType: false,
                     onTap: () {
                       NavigatorUtils.push(context, NotificationRouter.systemMain);
                     },
@@ -241,7 +241,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         String content = message.delete != null && message.delete
             ? TextConstant.TEXT_TWEET_REPLY_DELETED
             : message.replyContent;
-        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 评论了你: $content";
+        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 回复了你: $content";
       } else if (_latestInteractionMsg.messageType == MessageType.TOPIC_REPLY) {
         TopicReplyMessage message = _latestInteractionMsg as TopicReplyMessage;
         String content = message.delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : message.replyContent;

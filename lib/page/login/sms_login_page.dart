@@ -200,7 +200,11 @@ class _SMSLoginPageState extends State<LoginPage> {
           NavigatorUtils.push(context, LoginRouter.loginInfoPage);
         } else {
           NavigatorUtils.goBack(context);
-          ToastUtil.showServiceExpToast(context);
+          if (StringUtil.isEmpty(res.message)) {
+            ToastUtil.showServiceExpToast(context);
+          } else {
+            ToastUtil.showToast(context, res.message);
+          }
         }
       }
     });

@@ -253,6 +253,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   displayLink: true,
                   canPraise: true,
                   displayType: false,
+                  indexInList: index,
                   onDetailDelete: (int tweetId) {
                     setState(() {
                       _allTweets.removeWhere((element) => element.id == tweetId);

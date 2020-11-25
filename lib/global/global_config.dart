@@ -44,7 +44,7 @@ class GlobalConfig {
 
   static const int MAX_DISPLAY_REPLY_ALL = 10;
 
-  static const int MAX_DISPLAY_PRAISE = 8;
+  static const int MAX_DISPLAY_PRAISE = 10;
 
   static const int MAX_DISPLAY_PRAISE_DETAIL = 66;
 }

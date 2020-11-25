@@ -12,7 +12,7 @@ class Api {
   static const String API_BASE_TR = "https://member.iutr.tech";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
-  static const String API_BASE_INF_DEV = "http://192.168.0.107:8088";
+  static const String API_BASE_INF_DEV = "http://192.168.0.105:8088";
 
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
   static const String API_BASE_MEM_DEV = "http://192.168.18.180:9002";

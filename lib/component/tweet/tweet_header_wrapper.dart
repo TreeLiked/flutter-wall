@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
@@ -153,6 +155,7 @@ class TweetSimpleHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 _nickContainer(context),
+                official ? SimpleTag("官方") : Gaps.empty,
 //                  _signatureContainer(context),
               ],
             ),
@@ -233,7 +236,6 @@ class TweetSimpleHeader extends StatelessWidget {
   }
 
   Widget _timeLeftContainer(BuildContext context) {
-
     if (tweetSent == null) {
       return Container(height: 0);
     }
@@ -251,9 +253,7 @@ class TweetSimpleHeader extends StatelessWidget {
       if (TimeUtil.sameYear(tweetSent)) {
         // 当年的内容
         spans.add(
-          TextSpan(
-              text: '${tweetSent.day}',
-              style: pfStyle.copyWith(fontSize: Dimens.font_sp18)),
+          TextSpan(text: '${tweetSent.day}', style: pfStyle.copyWith(fontSize: Dimens.font_sp18)),
         );
         spans.add(
           TextSpan(text: ' /', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
@@ -275,7 +275,8 @@ class TweetSimpleHeader extends StatelessWidget {
         );
         spans.add(
           TextSpan(
-              text: '${tweetSent.year}年', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
+              text: '${tweetSent.year}年',
+              style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
         );
       }
     }

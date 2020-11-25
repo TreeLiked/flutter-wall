@@ -237,7 +237,7 @@ class BottomSheetUtil {
                                         flex: 1,
                                         child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('回复详情', style: TextStyles.textBold14))),
+                                            child: Text('详情', style: TextStyles.textBold14))),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
@@ -251,7 +251,7 @@ class BottomSheetUtil {
                                 ),
                                 Gaps.vGap16,
                                 Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.end,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: <Widget>[
                                     AccountAvatar(
                                       avatarUrl: reply.author.avatarUrl,
@@ -304,7 +304,7 @@ class BottomSheetUtil {
             return Stack(
               children: <Widget>[
                 Container(
-                    height: Application.screenHeight / 1.8,
+                    height: Application.screenHeight * 0.5,
                     decoration: BoxDecoration(
                         color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color,
                         borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
@@ -317,15 +317,12 @@ class BottomSheetUtil {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Expanded(
-                                      flex: 1,
-                                      child: Gaps.empty,
-                                    ),
+                                    Expanded(flex: 1, child: Gaps.empty),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('回复详情', style: TextStyles.textBold16))),
+                                            child: Text('详情', style: TextStyles.textSize18))),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
@@ -339,9 +336,11 @@ class BottomSheetUtil {
                                 ),
                                 Gaps.vGap16,
                                 Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.end,
-                                  children: <Widget>[
+                                  alignment: WrapAlignment.start,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
                                     AccountAvatar(
+                                      whitePadding: true,
                                       avatarUrl: dirAnon || isAuthorAndTweetAnon
                                           ? PathConstant.ANONYMOUS_PROFILE
                                           : reply.account.avatarUrl,
@@ -350,19 +349,20 @@ class BottomSheetUtil {
                                           ? null
                                           : () => NavigatorUtils.goAccountProfile2(context, reply.account),
                                     ),
+                                    Gaps.hGap10,
                                     RichText(
                                       softWrap: true,
                                       text: TextSpan(children: [
                                         TextSpan(
                                             text: dirAnon
-                                                ? " " + TextConstant.TWEET_ANONYMOUS_REPLY_NICK
+                                                ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK
                                                 : isAuthorAndTweetAnon
-                                                    ? " " + TextConstant.TWEET_AUTHOR_TEXT
-                                                    : "  ${reply.account.nick}",
+                                                    ? TextConstant.TWEET_AUTHOR_TEXT
+                                                    : "${reply.account.nick}",
                                             style: TextStyle(
                                                 fontSize: Dimens.font_sp16, color: Colours.app_main)),
                                         TextSpan(
-                                            text: " 回复于 ${TimeUtil.getShortTime(reply.sentTime)}",
+                                            text: "回复于 ${TimeUtil.getShortTime(reply.sentTime)}",
                                             style: TextStyle(fontSize: Dimens.font_sp16, color: Colors.grey)),
                                       ]),
                                     ),
@@ -373,7 +373,7 @@ class BottomSheetUtil {
                                   child: Text("${reply.body}",
                                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
                                               fontSize: Dimens.font_sp16)
-                                          .copyWith(height: 2.0)),
+                                          .copyWith(height: 2.0, letterSpacing: 1.2)),
                                 )
                               ],
                             )),

@@ -13,6 +13,7 @@ import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -20,6 +21,7 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class TweetCard2 extends StatelessWidget {
@@ -117,7 +119,7 @@ class TweetCard2 extends StatelessWidget {
                       tweet.sentTime,
                       myNickClickable: this.myNickClickable,
                       timeRight: this.needLeftProfile,
-                      // official: tweet.account.off,
+                      official: false
                     ),
                     TweetBodyWrapper(tweet.body, maxLine: 3, fontSize: Dimens.font_sp15, height: 1.6),
                     TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),

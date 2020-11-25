@@ -17,6 +17,9 @@ import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetApi {
+
+  static const String TAG = "TweetApi";
+
   static String localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
 
   static Future<List<BaseTweet>> queryTweets(PageParam param) async {
@@ -31,6 +34,8 @@ class TweetApi {
         return new List<BaseTweet>();
       }
       List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
+      LogUtil.e("------queryTweets------, : ${tweetList.map((e) => e.id)}", tag: TAG);
+
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e, pop: false);

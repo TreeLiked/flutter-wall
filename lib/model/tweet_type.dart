@@ -21,6 +21,7 @@ final tweetTypeMap = {
   "SECOND_HAND_TRANSACTION": TweetTypeEntity.SECOND_HAND_TRANSACTION,
   "OTHER": TweetTypeEntity.OTHER,
   "OFFICIAL": TweetTypeEntity.OFFICIAL,
+  "CAMPUS_OFFICIAL": TweetTypeEntity.CAMPUS_OFFICIAL,
   "FALLBACK": TweetTypeEntity.FALLBACK,
   "AD": TweetTypeEntity.AD,
 };
@@ -219,6 +220,17 @@ class TweetTypeEntity {
       iconData: Icons.check_circle,
       iconColor: Color(0xff8470FF),
       name: "OFFICIAL",
+      color: Color(0xff8470FF),
+      zhTag: "官方",
+      canUnSubscribe: false,
+      pushable: false,
+      typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
+      filterable: false);
+
+  static const CAMPUS_OFFICIAL = const TweetTypeEntity(
+      iconData: Icons.check_circle,
+      iconColor: Color(0xff8470FF),
+      name: "CAMPUS_OFFICIAL",
       color: Color(0xff8470FF),
       zhTag: "官方",
       canUnSubscribe: false,

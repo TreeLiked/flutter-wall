@@ -20,6 +20,8 @@ class TextStyles {
       fontSize: Dimens.font_sp10, color: Colors.white, fontFamily: TextConstant.PING_FANG_FONT);
   static const TextStyle textSize16 =
       const TextStyle(fontSize: Dimens.font_sp16, fontFamily: TextConstant.PING_FANG_FONT);
+  static const TextStyle textSize18 =
+  const TextStyle(fontSize: Dimens.font_sp18, fontFamily: TextConstant.PING_FANG_FONT);
   static const TextStyle textBold14 = const TextStyle(
       fontSize: Dimens.font_sp14, fontWeight: FontWeight.bold, fontFamily: TextConstant.PING_FANG_FONT);
   static const TextStyle textBold16 = const TextStyle(

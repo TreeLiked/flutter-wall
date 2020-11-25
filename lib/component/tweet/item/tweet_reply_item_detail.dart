@@ -245,17 +245,17 @@ class TweetReplyItemDetail extends StatelessWidget {
           onSpecialTextTap: (dynamic parameter) {},
           selectionEnabled: false,
           overflowWidget: TextOverflowWidget(
+            fixedOffset: Offset(10.0, 0.0),
               child: Row(children: <Widget>[
-            const Text(' \u2026 '),
-            RaisedButton(
+            GestureDetector(
                 child: Text(
-                  '查看全部',
+                  '..查看全部',
                   style: pfStyle.copyWith(
                     color: Colors.blue,
                     fontSize: Dimens.font_sp15,
                   ),
                 ),
-                onPressed: () {
+                onTap: () {
                   BottomSheetUtil.showBottomSheetSingleTweetReplyDetail(
                       context, reply, reply.anonymous, tweetAnonymous && reply.account.id == tweetAccountId,
                       onTap: () => NavigatorUtils.goBack(context));

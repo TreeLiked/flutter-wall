@@ -28,6 +28,7 @@ class TweetLinkWrapper extends StatelessWidget {
     }
 
     String link = StringUtil.getFirstUrlInStr(body);
+    print("$link");
     if (link == null || link == "") {
       return Gaps.empty;
     }
@@ -36,7 +37,7 @@ class TweetLinkWrapper extends StatelessWidget {
 
     return Container(
       child: FutureBuilderWidget<WebLinkModel>(
-        loadData: (context) => HttpUtil.loadHtml(context, link),
+        loadData: (context) => HttpUtil.loadHtml(context, link.trim()),
         commonWidget: wrapper,
       ),
     );

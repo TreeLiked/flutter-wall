@@ -20,14 +20,15 @@ class TweetStatisticsWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const style  = TextStyle(fontFamily: TextConstant.PING_FANG_FONT,color: Colors.grey,fontSize: Dimens.font_sp13);
+    const style =
+        TextStyle(fontFamily: TextConstant.PING_FANG_FONT, color: Colors.grey, fontSize: Dimens.font_sp13);
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          OptionItem("tweet/view", Text("${tweet.views + 1}", style:  style)),
+          OptionItem("tweet/view", Text("${tweet.views == 0 ? 1 : tweet.views}", style: style)),
           // Text("浏览${tweet.views + 1}", style:  style.copyWith(fontSize: Dimens.font_sp12)),
-          OptionItem(null, Text("${tweet.praise == 0 ? '' : tweet.praise}",style:  style),
+          OptionItem(null, Text("${tweet.praise == 0 ? '' : tweet.praise}", style: style),
               prefix: LoadAssetIcon(
                 tweet.loved ? PathConstant.ICON_PRAISE_ICON_PRAISE : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
                 width: 17,
@@ -38,10 +39,13 @@ class TweetStatisticsWrapper extends StatelessWidget {
 
           tweet.enableReply
               ? OptionItem(
-                  null, Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭", style:  style),
+                  null,
+                  Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭",
+                      style: style),
                   prefix: LoadAssetIcon(PathConstant.ICON_COMMENT_ICON,
                       width: 17, height: 17, color: Colors.grey),
-                  onTap: () => onClickComment == null ? HitTestBehavior.opaque : onClickComment(null, null, null))
+                  onTap: () =>
+                      onClickComment == null ? HitTestBehavior.opaque : onClickComment(null, null, null))
               : Text("评论关闭", style: style.copyWith(color: Color(0xffCDAD00), fontSize: Dimens.font_sp13p5))
 //          OptionItem("tweet/comment",
 //              Text(tweet.enableReply ? "${tweet.replyCount == 0 ? '' : tweet.replyCount}" : "评论关闭")),

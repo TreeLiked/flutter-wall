@@ -52,7 +52,7 @@ class TweetReplyItemSimple extends StatelessWidget {
 
           child: RichText(
             maxLines: 2,
-            overflow: TextOverflow.fade,
+            overflow: TextOverflow.ellipsis,
             softWrap: true,
             text: TextSpan(children: [
               TextSpan(

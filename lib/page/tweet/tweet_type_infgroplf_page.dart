@@ -102,6 +102,12 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
   Widget build(BuildContext context) {
     bool isDark = ThemeUtils.isDark(context);
     double imageSize = Application.screenWidth / 6 - 10;
+
+    List<dynamic> entities = new List.from(TweetTypeUtil.getFilterableTweetTypeMap().values, growable: false)
+        .map((e) => e.name)
+        .toList();
+
+    bool canSub = entities.contains(typeEntity.name);
     return Scaffold(
       body: EasyRefresh.custom(
           header: LinkHeader(
@@ -156,7 +162,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                               ))),
                     ),
                     Flexible(
-                      flex: 3,
+                      flex: canSub ? 3 : 4,
                       fit: FlexFit.tight,
                       child: Container(
                         child: Column(
@@ -178,49 +184,55 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                       ),
                     ),
                     Flexible(
-                      flex: 2,
+                      flex: canSub ? 2 : 0,
                       fit: FlexFit.loose,
-                      child: Container(
-                          child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 30,
-                            child: FlatButton(
-                              onPressed: () async {
-                                if (_initSub) {
-                                  return;
-                                }
-                                bool a = await PermissionUtil.checkAndRequestNotification(context);
-                                if (!a) {
-                                  ToastUtil.showToast(context, "通知权限未开启");
-                                  return;
-                                }
-                                await modSubscribe();
-                              },
-                              textColor: Colors.white,
-                              color: _subThis ? typeEntity.color : null,
-                              disabledTextColor: isDark ? Colours.dark_text_disabled : Colours.text_disabled,
-                              disabledColor: isDark ? Colours.dark_button_disabled : Colours.button_disabled,
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: Colors.black12, width: _subThis ? 0 : 1.0),
-                                  borderRadius: BorderRadius.circular(13.0)),
-                              child: !_initSub
-                                  ? (_subThis
-                                      ? Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.check, size: 15),
-                                            Text(" 已订阅", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
-                                          ],
-                                        )
-                                      : Text("+ 订阅", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)))
-                                  : SpinKitDoubleBounce(size: 5, color: Colors.white),
-                            ),
-                          )
-                        ],
-                      )),
+                      child: canSub
+                          ? Container(
+                              child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 30,
+                                  child: FlatButton(
+                                    onPressed: () async {
+                                      if (_initSub) {
+                                        return;
+                                      }
+                                      bool a = await PermissionUtil.checkAndRequestNotification(context);
+                                      if (!a) {
+                                        ToastUtil.showToast(context, "通知权限未开启");
+                                        return;
+                                      }
+                                      await modSubscribe();
+                                    },
+                                    textColor: Colors.white,
+                                    color: _subThis ? typeEntity.color : null,
+                                    disabledTextColor:
+                                        isDark ? Colours.dark_text_disabled : Colours.text_disabled,
+                                    disabledColor:
+                                        isDark ? Colours.dark_button_disabled : Colours.button_disabled,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: Colors.black12, width: _subThis ? 0 : 1.0),
+                                        borderRadius: BorderRadius.circular(13.0)),
+                                    child: !_initSub
+                                        ? (_subThis
+                                            ? Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(Icons.check, size: 15),
+                                                  Text(" 已订阅",
+                                                      style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
+                                                ],
+                                              )
+                                            : Text("+ 订阅",
+                                                style: pfStyle.copyWith(fontSize: Dimens.font_sp14)))
+                                        : SpinKitDoubleBounce(size: 5, color: Colors.white),
+                                  ),
+                                )
+                              ],
+                            ))
+                          : Gaps.empty,
                     )
                   ],
                 ),

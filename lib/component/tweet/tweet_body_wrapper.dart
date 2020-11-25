@@ -25,7 +25,7 @@ class TweetBodyWrapper extends StatelessWidget {
       return Gaps.empty;
     }
     return Container(
-        child: ExtendedText("${body.trimRight()}",
+        child: ExtendedText("${body.contains("@") ? body : body.trimRight()}",
             maxLines: maxLine == -1 ? null : maxLine,
             softWrap: true,
             textAlign: TextAlign.left,

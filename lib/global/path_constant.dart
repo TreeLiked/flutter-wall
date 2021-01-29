@@ -40,6 +40,9 @@ class PathConstant {
   static const String HOT_COVER_URL =
       "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/hot_cover.jpg";
 
+  static const String DEFAULT_DISCUSS_COVER =
+      "https://iutr-media.oss-cn-hangzhou.aliyuncs.com/almond-donuts/image/default/hot_cover.png";
+
   static const String ICON_FIRE = "assets/icons/fire.png";
   static const String ICON_CHAMPIN = "assets/icons/champin.png";
 

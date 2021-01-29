@@ -89,6 +89,7 @@ class HttpUtil {
       ///  注意: 这并不是接收数据的总时限.
       receiveTimeout: 30000,
       headers: header,
+      followRedirects: true,
     );
 
     dio = new Dio(options);
@@ -185,7 +186,6 @@ class HttpUtil {
       String html = resp.data;
       if (!StringUtil.isEmpty(html)) {
         Document doc = HtmlUtils.parseDocument(html);
-
         return WebLinkModel(url, HtmlUtils.getDocTitle(doc) ?? url, HtmlUtils.getDocFaviconPath(doc));
       }
     }

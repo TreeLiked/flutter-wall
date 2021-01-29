@@ -252,7 +252,7 @@ class TweetReplyItemDetail extends StatelessWidget {
                   '..查看全部',
                   style: pfStyle.copyWith(
                     color: Colors.blue,
-                    fontSize: Dimens.font_sp15,
+                    fontSize: Dimens.font_sp14,
                   ),
                 ),
                 onTap: () {

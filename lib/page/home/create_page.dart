@@ -273,16 +273,31 @@ class _CreatePageState extends State<CreatePage> {
 
   _buildTypeSelection() {
     List<TweetTypeEntity> entities = TweetTypeUtil.getPushableTweetTypeMap().values.toList();
-    List<Widget> widgets = List();
-    entities.forEach((element) {
-      widgets.add(_buildSingleTypeItem(element, !StringUtil.isEmpty(_typeName) && _typeName == element.name));
-    });
+    // List<Widget> widgets = List();
+    // entities.forEach((element) {
+    //   widgets.add(_buildSingleTypeItem(element, !StringUtil.isEmpty(_typeName) && _typeName == element.name));
+    // });
     return Container(
-        margin: const EdgeInsets.only(left: 5.0, right: 5.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: widgets));
+      margin: const EdgeInsets.only(left: 15.0, right: 15.0, top: 5.0, bottom: 20.0),
+      child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, //每行三列
+              // childAspectRatio: 1.0, //显示区域宽高相等
+              crossAxisSpacing: 15.0,
+              mainAxisSpacing: 15.0),
+          itemCount: entities.length,
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            //如果显示到最后一个并且Icon总数小于200时继续获取数据
+            return _buildSingleTypeItem(
+                entities[index], !StringUtil.isEmpty(_typeName) && _typeName == entities[index].name);
+          }),
+    );
   }
 
   _buildSingleTypeItem(TweetTypeEntity entity, bool selected) {
+    bool isDark = ThemeUtils.isDark(context);
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
@@ -292,47 +307,116 @@ class _CreatePageState extends State<CreatePage> {
           });
         },
         child: Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 5.0),
+          // margin: const EdgeInsets.only(bottom: 5.0),
           padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
-          alignment: Alignment.centerLeft,
+          height: double.minPositive,
+          alignment: Alignment.topLeft,
           decoration: selected
               ? BoxDecoration(
-                  color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
+                  // color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
+                  color: isDark ? entity.color.withAlpha(30) : entity.color.withAlpha(79),
                   borderRadius: const BorderRadius.all(Radius.circular(7.9)),
-                  border: new Border.all(
-                      color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc), width: 0.5),
+                  border: new Border.all(color: isDark ? entity.color : Color(0xffdcdcdc), width: 0.5),
                 )
-              : null,
+              : BoxDecoration(
+                  color: isDark ? Color(0xff303030) : Color(0xffEDEDED),
+                  borderRadius: const BorderRadius.all(Radius.circular(7.9)),
+                  boxShadow: [
+                      BoxShadow(
+                        color: isDark ? Colors.transparent : Color(0xffDCDCDC),
+                        blurRadius: 3.0,
+                      ),
+                    ]
+                  // border: new Border.all(
+                  //     color: ThemeUtils.isDark(context) ? Color(0xff303030) : Color(0xffdcdcdc), width: 0.5),
+                  ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(right: 5.0),
-                child: Icon(
-                  entity.iconData,
-                  size: 40,
-                  color: entity.iconColor,
-                ),
-              ),
-              Expanded(
+            children: [
+              Flexible(
+                  flex: 2,
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(entity.zhTag,
-                      style: pfStyle.copyWith(
-                          fontSize: Dimens.font_sp15, color: selected ? entity.color : null)),
-                  Text(entity.intro,
-                      style: pfStyle.copyWith(
-                          fontSize: Dimens.font_sp13p5, color: selected ? entity.color : Colors.grey)),
-                  Gaps.vGap5,
-                ],
-              ))
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${entity.zhTag}", style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
+                      Gaps.vGap5,
+                      Text("${entity.intro}",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 3,
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp12, color: Colors.grey)),
+                    ],
+                  )),
+              Flexible(
+                  flex: 1,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Icon(
+                          entity.iconData,
+                          size: 30,
+                          color: entity.iconColor,
+                        ),
+                      )
+                    ],
+                  )),
             ],
           ),
         ));
   }
+
+  // _buildSingleTypeItem(TweetTypeEntity entity, bool selected) {
+  //   return GestureDetector(
+  //       behavior: HitTestBehavior.opaque,
+  //       onTap: () {
+  //         setState(() {
+  //           _selectTypeCallback(entity.name);
+  //           NavigatorUtils.goBack(context);
+  //         });
+  //       },
+  //       child: Container(
+  //         width: double.infinity,
+  //         margin: const EdgeInsets.only(bottom: 5.0),
+  //         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
+  //         alignment: Alignment.centerLeft,
+  //         decoration: selected
+  //             ? BoxDecoration(
+  //                 color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
+  //                 borderRadius: const BorderRadius.all(Radius.circular(7.9)),
+  //                 border: new Border.all(
+  //                     color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc), width: 0.5),
+  //               )
+  //             : null,
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.start,
+  //           children: <Widget>[
+  //             Container(
+  //               margin: const EdgeInsets.only(right: 5.0),
+  //               child: Icon(
+  //                 entity.iconData,
+  //                 size: 40,
+  //                 color: entity.iconColor,
+  //               ),
+  //             ),
+  //             Expanded(
+  //                 child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //               children: [
+  //                 Text(entity.zhTag,
+  //                     style: pfStyle.copyWith(
+  //                         fontSize: Dimens.font_sp15, color: selected ? entity.color : null)),
+  //                 Text(entity.intro,
+  //                     style: pfStyle.copyWith(
+  //                         fontSize: Dimens.font_sp13p5, color: selected ? entity.color : Colors.grey)),
+  //                 Gaps.vGap5,
+  //               ],
+  //             ))
+  //           ],
+  //         ),
+  //       ));
+  // }
 
   Future<void> loadAssets() async {
     List<Asset> resultList = List<Asset>();

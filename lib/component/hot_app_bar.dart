@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -36,6 +37,9 @@ class HotAppBarWidget extends StatelessWidget {
 
   final bool cache;
 
+  // 是否模糊图片
+  final bool blurImage;
+
   HotAppBarWidget(
       {@required this.expandedHeight,
       @required this.content,
@@ -54,6 +58,7 @@ class HotAppBarWidget extends StatelessWidget {
       this.floating = false,
       this.snap = false,
       this.cache = false,
+      this.blurImage = true,
       this.preBackgroundImg});
 
   @override
@@ -111,20 +116,22 @@ class HotAppBarWidget extends StatelessWidget {
                           height: double.infinity,
                           fit: BoxFit.cover,
                         ),
-                  BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaY: sigma,
-                      sigmaX: sigma,
-                    ),
-                    child: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      decoration: BoxDecoration(
-                        color: ThemeUtils.isDark(context) ? Colors.black54 : lightShadow,
+                  blurImage
+                      ? BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaY: sigma,
+                            sigmaX: sigma,
+                          ),
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              color: ThemeUtils.isDark(context) ? Colors.black54 : lightShadow,
 //                  borderRadius: BorderRadius.all(Radius.circular(85.0)),
-                      ),
-                    ),
-                  ),
+                            ),
+                          ),
+                        )
+                      : Gaps.empty,
                 ],
               ),
             ),

@@ -22,6 +22,7 @@ import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
 import 'package:iap_app/part/hot_today.dart';
+import 'package:iap_app/part/discuss_main.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -32,6 +33,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/JPushUtil.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
@@ -93,7 +95,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
 
-    _tabController = TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 3);
     // _tabController.addListener(() {
     //   if (_tabController.index.toDouble() == _tabController.animation.value) {
     //     bool _dc = true;
@@ -120,7 +122,10 @@ class _HomePageState extends State<HomePage>
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Future.delayed(Duration(seconds: 5)).then((value) => JPushUtil.requestOnlyOnce());
+      Future.delayed(Duration(seconds: 3)).then((value) {
+        JPushUtil.requestOnlyOnce();
+        PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
+      });
     });
   }
 
@@ -252,122 +257,133 @@ class _HomePageState extends State<HomePage>
         bottom: false,
         child: Stack(
           children: <Widget>[
-            Padding(
-              child: Column(
+             Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: prefix0.ScreenUtil().setWidth(10.0),
-                        child: Consumer<AccountLocalProvider>(
-                          builder: (_, model, __) {
-                            var acc = model.account;
-                            return IconButton(
-                                onPressed: () {
-                                  BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
-                                  UMengUtil.userGoPage(UMengUtil.PAGE_PC);
-                                },
-                                icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
-                          },
+                  Container(
+                    width: double.infinity,
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: prefix0.ScreenUtil().setWidth(10.0),
+                          child: Consumer<AccountLocalProvider>(
+                            builder: (_, model, __) {
+                              var acc = model.account;
+                              return IconButton(
+                                  onPressed: () {
+                                    BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
+                                    UMengUtil.userGoPage(UMengUtil.PAGE_PC);
+                                  },
+                                  icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
+                            },
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
-                        child: TabBar(
-                          labelStyle: pfStyle.copyWith(
-                              fontSize: 20, fontWeight: FontWeight.w500, color: Colors.amber[600]),
-                          unselectedLabelStyle:
+                        Container(
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
+                            child: TabBar(
+                              labelStyle: pfStyle.copyWith(
+                                  fontSize: 20, fontWeight: FontWeight.w500, color: Colors.amber[600]),
+                              unselectedLabelStyle:
                               pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
-                          indicatorSize: TabBarIndicatorSize.label,
-                          indicator: const UnderlineTabIndicator(
-                              borderSide: const BorderSide(color: Colors.amber, width: 2.0)),
-                          controller: _tabController,
-                          labelColor: isDark ? Colors.white30 : Colors.black,
-                          onTap: (index) {
-                            if (index == _currentTabIndex) {
-                              if (index == 0) {
-                                if (MessageUtil.taIndexTweetCnt > 0) {
-                                  PageSharedWidget.tabIndexRefreshController.requestRefresh();
-                                  MessageUtil.clearTabIndexTweetCnt();
+                              indicatorSize: TabBarIndicatorSize.label,
+                              indicator: const UnderlineTabIndicator(
+                                  borderSide: const BorderSide(color: Colors.amber, width: 2.0)),
+                              controller: _tabController,
+                              labelColor: isDark ? Colors.white30 : Colors.black,
+                              isScrollable: true,
+
+                              onTap: (index) {
+                                if (index == _currentTabIndex) {
+                                  if (index == 0) {
+                                    if (MessageUtil.taIndexTweetCnt > 0) {
+                                      PageSharedWidget.tabIndexRefreshController.requestRefresh();
+                                      MessageUtil.clearTabIndexTweetCnt();
+                                    }
+                                    PageSharedWidget.homepageScrollController.animateTo(.0,
+                                        duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
+                                    return;
+                                  }
                                 }
-                                PageSharedWidget.homepageScrollController.animateTo(.0,
-                                    duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
-                                return;
-                              }
-                            }
-                            _tabController.animateTo(index);
-                            setState(() {
-                              _currentTabIndex = index;
+                                _tabController.animateTo(index);
+                                setState(() {
+                                  _currentTabIndex = index;
 //                              _displayCreate = _currentTabIndex == 0;
-                            });
-                          },
-                          tabs: [
-                            StreamBuilder(
-                              initialData: 0,
-                              stream: MessageUtil.tabIndexStreamCntCtrl.stream,
-                              builder: (_, snapshot) => Badge(
-                                elevation: 0,
-                                padding: const EdgeInsets.all(4.0),
-                                child: Text('最新'),
-                                animationType: BadgeAnimationType.fade,
-                                badgeColor: Colors.amber,
-                                showBadge: snapshot.data > 0,
-                                shape: BadgeShape.circle,
-                                // borderRadius: 10.0,
-                                badgeContent: Text(Utils.getBadgeText(snapshot.data),
-                                    style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
-                              ),
+                                });
+                              },
+                              tabs: [
+                                StreamBuilder(
+                                  initialData: 0,
+                                  stream: MessageUtil.tabIndexStreamCntCtrl.stream,
+                                  builder: (_, snapshot) => Badge(
+                                    elevation: 0,
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text('最新'),
+                                    animationType: BadgeAnimationType.fade,
+                                    badgeColor: Colors.amber,
+                                    showBadge: snapshot.data > 0,
+                                    shape: BadgeShape.circle,
+                                    // borderRadius: 10.0,
+                                    badgeContent: Text(Utils.getBadgeText(snapshot.data),
+                                        style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
+                                  ),
+                                ),
+                                Tab(
+                                  text: '今日热门',
+                                ),
+                                Tab(
+                                  text: '话题',
+                                ),
+                              ],
                             ),
-                            Tab(
-                              text: '热门',
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      Positioned(
-                          right: prefix0.ScreenUtil().setWidth(10.0),
+                        Positioned(
+                            right: prefix0.ScreenUtil().setWidth(10.0),
 //                        top: prefix0.ScreenUtil().setWidth(10.0),
-                          child: IconButton(
-                            icon: StreamBuilder(
-                              initialData: 0,
-                              stream: MessageUtil.notificationStreamCntCtrl.stream,
-                              builder: (_, snapshot) => Badge(
-                                elevation: 0,
-                                padding: const EdgeInsets.all(3.0),
-                                child:
-                                    // Icon(
-                                    //     Utils.badgeHasData(snapshot.data)
-                                    //         ? Icons.notifications_active_outlined
-                                    //         : Icons.notifications_none_rounded,
-                                    //     color: Utils.badgeHasData(snapshot.data)
-                                    //         ? Colors.amber
-                                    //         : isDark
-                                    //             ? Colors.white54
-                                    //             : Colors.black54),
-                                    LoadAssetIcon(
-                                  "notification/bell",
-                                  color: Utils.badgeHasData(snapshot.data)
-                                      ? Colors.amber
-                                      : isDark
-                                          ? Colors.white54
-                                          : Colors.black54,
-                                  width: 23.0,
-                                  height: 23.0,
-                                ),
-                                badgeColor: Colors.red[400],
-                                animationType: BadgeAnimationType.fade,
-                                showBadge: Utils.badgeHasData(snapshot.data),
-                                badgeContent: Text(
-                                  Utils.getBadgeText(snapshot.data),
-                                  style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp12),
+                            child: IconButton(
+                              icon: StreamBuilder(
+                                initialData: 0,
+                                stream: MessageUtil.notificationStreamCntCtrl.stream,
+                                builder: (_, snapshot) => Badge(
+                                  elevation: 0,
+                                  padding: const EdgeInsets.all(3.0),
+                                  child:
+                                  // Icon(
+                                  //     Utils.badgeHasData(snapshot.data)
+                                  //         ? Icons.notifications_active_outlined
+                                  //         : Icons.notifications_none_rounded,
+                                  //     color: Utils.badgeHasData(snapshot.data)
+                                  //         ? Colors.amber
+                                  //         : isDark
+                                  //             ? Colors.white54
+                                  //             : Colors.black54),
+                                  LoadAssetIcon(
+                                    "notification/bell",
+                                    color: Utils.badgeHasData(snapshot.data)
+                                        ? Colors.amber
+                                        : isDark
+                                        ? Colors.white54
+                                        : Colors.black54,
+                                    width: 23.0,
+                                    height: 23.0,
+                                  ),
+                                  badgeColor: Colors.red[400],
+                                  animationType: BadgeAnimationType.fade,
+                                  showBadge: Utils.badgeHasData(snapshot.data),
+                                  badgeContent: Text(
+                                    Utils.getBadgeText(snapshot.data),
+                                    style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp12),
+                                  ),
                                 ),
                               ),
-                            ),
-                            onPressed: () => NavigatorUtils.push(context, Routes.notification),
-                          )),
-                    ],
+                              onPressed: () => NavigatorUtils.push(context, Routes.notification),
+                            )),
+                      ],
+                    ),
                   ),
                   Gaps.vGap5,
                   Expanded(
@@ -376,13 +392,13 @@ class _HomePageState extends State<HomePage>
                       children: [
                         TweetIndexTabView(),
                         HotToday(),
+                        DiscussMain()
                       ],
                     ),
                   ),
                 ],
               ),
-              padding: EdgeInsets.only(bottom: 0.0),
-            ),
+
             _displayCreate
                 ? Positioned(
                     left: stickLeft ? 3.9 : null,
@@ -395,11 +411,11 @@ class _HomePageState extends State<HomePage>
                         feedback: FloatingActionButton(
                             child: LoadAssetIcon(
                               "create",
-                              color: isDark ? Colors.yellow : Colors.black54,
+                              color: isDark ? Colors.yellow : Colors.amberAccent,
                               width: 23.0,
                               height: 23.0,
                             ),
-                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFE6E6FA),
+                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFFFFFFF),
                             splashColor: Colors.white12,
                             elevation: 10.0,
                             onPressed: null),
@@ -410,11 +426,11 @@ class _HomePageState extends State<HomePage>
                             // ),
                             child: LoadAssetIcon(
                               "create",
-                              color: isDark ? Colors.yellow : Colors.black54,
+                              color: isDark ? Colors.yellow : Colors.amberAccent,
                               width: 23.0,
                               height: 23.0,
                             ),
-                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFE6E6FA),
+                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFFFFFFF),
                             elevation: 10.0,
                             foregroundColor: Colors.yellow,
                             splashColor: Colors.white12,

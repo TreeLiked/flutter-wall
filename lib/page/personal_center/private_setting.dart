@@ -76,7 +76,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
       margin: EdgeInsets.only(top: topMargin, left: 15.0),
       child: Text(
         text,
-        style: TextStyles.textGray12,
+        style: TextStyles.textGray14,
       ),
     );
   }
@@ -154,7 +154,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "展示手机号 [如果绑定]",
+            title: "展示手机号",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayPhone]),
             onTap: () {
               _showRadioDialog(
@@ -167,7 +167,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "展示QQ [如果有]",
+            title: "展示QQ",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayQQ]),
             onTap: () {
               _showRadioDialog('展示我的QQ', settingMap[AccountSettingKeys.displayQQ].toString().toUpperCase(),
@@ -180,7 +180,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "展示微信 [如果有]",
+            title: "展示微信",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayWeChat]),
             onTap: () {
               _showRadioDialog(
@@ -195,7 +195,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
         Gaps.vGap5,
         _simpleTitle('校园信息设定'),
         ClickItem(
-            title: "展示学院 [如果设置]",
+            title: "展示学院",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayInstitute]),
             onTap: () {
               _showRadioDialog(
@@ -209,7 +209,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "展示专业 [如果设置]",
+            title: "展示专业",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayMajor]),
             onTap: () {
               _showRadioDialog(
@@ -222,7 +222,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "展示年级 [如果设置]",
+            title: "展示年级",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayGrade]),
             onTap: () {
               _showRadioDialog(
@@ -235,7 +235,7 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
               });
             }),
         ClickItem(
-            title: "展示班级 [如果设置]",
+            title: "展示班级",
             content: _getOpenCloseText(settingMap[AccountSettingKeys.displayCla]),
             onTap: () {
               _showRadioDialog(

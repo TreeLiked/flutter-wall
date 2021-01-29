@@ -69,8 +69,8 @@ class ColorConstant {
 
   static const Color MAIN_BAR_COLOR = Color(0xfff9f9f9);
 
-  static const Color TWEET_DETAIL_REPLY_ROW_COLOR = Color(0xff00B2EE);
-  static const Color TWEET_DETAIL_PRAISE_ROW_COLOR = Color(0xFFF48FB1);
+  static const Color TWEET_DETAIL_REPLY_ROW_COLOR = Colors.amberAccent;
+  static const Color TWEET_DETAIL_PRAISE_ROW_COLOR = Colors.amberAccent;
 //  static const Color TWEET_DETAIL_PRAISE_ROW_COLOR = Color(0xffFF1493);
 
   static Color getTweetNickColor(BuildContext context) {

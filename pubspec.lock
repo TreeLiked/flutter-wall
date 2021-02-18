@@ -602,6 +602,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.7.14"
+  nine_grid_view:
+    dependency: "direct main"
+    description:
+      name: nine_grid_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.7"
   node_interop:
     dependency: transitive
     description:

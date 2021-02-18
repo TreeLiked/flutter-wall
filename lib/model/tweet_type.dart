@@ -208,7 +208,7 @@ class TweetTypeEntity {
       zhTag: "二手交易");
 
   static const OTHER = const TweetTypeEntity(
-      iconData: Icons.auto_fix_high,
+      iconData: Icons.wb_sunny_rounded,
       iconColor: Color(0xff66CDAA),
       intro: "没有别的就选这个吧！",
       name: "OTHER",

@@ -12,6 +12,7 @@ import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/component/flexible_detail_bar.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
 import 'package:iap_app/component/tweet_delete_bottom_sheet.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
@@ -133,6 +134,7 @@ class _AccountProfileState extends State<AccountProfile> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeUtils.isDark(context);
     return Scaffold(
         body: EasyRefresh(
             controller: _hisTweetController,
@@ -155,23 +157,32 @@ class _AccountProfileState extends State<AccountProfile> {
                   pinned: true,
                   snap: false,
                   floating: false,
-                  expandedHeight: ScreenUtil().setHeight(700),
+                  expandedHeight: ScreenUtil().setHeight(600),
                   elevation: 0.5,
                   titleSpacing: 1.2,
-                  // title: Text("资料", style: const TextStyle(fontSize: Dimens.font_sp16,color: Colors.white)),
+                  title: Text(
+                    "${widget.nick ?? ''}的资料",
+                    style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                   centerTitle: true,
                   leading: IconButton(
                     onPressed: () {
                       FocusScope.of(context).unfocus();
                       Navigator.maybePop(context);
                     },
-                    icon: Image.asset(PathConstant.ICON_GO_BACK_ARROW, color: Colors.white, width: 20),
+                    icon: Image.asset(
+                      PathConstant.ICON_GO_BACK_ARROW,
+                      width: 20,
+                      color: isDark ? Colors.grey : Colors.black54,
+                    ),
                   ),
                   actions: [
                     IconButton(
                       icon: Icon(
                         Icons.more_horiz,
-                        color: Colors.white,
+                        color: isDark ? Colors.grey : Colors.black54,
                       ),
                       onPressed: () {
                         List<BottomSheetItem> items = List();
@@ -200,11 +211,12 @@ class _AccountProfileState extends State<AccountProfile> {
                   flexibleSpace: ClipRRect(
                     child: FlexibleDetailBar(
                         content: Container(
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.only(top: ScreenUtil.statusBarHeight, left: 30.0, right: 30.0),
+                          alignment: Alignment.topCenter,
+                          margin: EdgeInsets.only(
+                              top: ScreenUtil.statusBarHeight, left: 30.0, right: 30.0, bottom: 10.0),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Hero(
@@ -212,7 +224,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                   child: AccountAvatar(
                                       avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
                                       whitePadding: true,
-                                      size: SizeConstant.TWEET_PROFILE_SIZE * 1.8,
+                                      size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
                                       cache: true,
                                       gender: calGender(account),
                                       onTap: () {
@@ -226,37 +238,42 @@ class _AccountProfileState extends State<AccountProfile> {
                               Gaps.vGap8,
                               Text(
                                 widget.nick ?? "",
-                                style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
+                                style: pfStyle.copyWith(
+                                    fontSize: Dimens.font_sp16,
+                                    color: !isDark ? Colors.black : Colors.black54),
                               ),
                               Gaps.vGap10,
                               Text(
                                 account == null ? "" : account.signature ?? "",
-                                style: pfStyle.copyWith(fontSize: Dimens.font_sp13p5, color: Colors.white70),
+                                style: pfStyle.copyWith(
+                                    fontSize: Dimens.font_sp13p5,
+                                    color: isDark ? Colors.grey : Colors.black54),
                               ),
                             ],
                           ),
                         ),
                         background: Stack(children: <Widget>[
-                          Utils.showNetImage(
-                            widget.avatarUrl,
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                          !isDark
+                              ? Utils.showNetImage(
+                                  widget.avatarUrl,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                )
+                              : Gaps.empty,
                           BackdropFilter(
                             filter: ImageFilter.blur(
-                              sigmaY: 7,
-                              sigmaX: 7,
+                              sigmaY: 14,
+                              sigmaX: 14,
                             ),
                             child: Container(
-                              decoration: BoxDecoration(
-                                  color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black26),
+                              decoration:
+                                  BoxDecoration(color: isDark ? ColorConstant.MAIN_BG_DARK : Colors.white70),
                               width: double.infinity,
                               height: double.infinity,
                             ),
                           ),
-                        ])
-                    ),
+                        ])),
                   )),
               SliverToBoxAdapter(
                 child: Container(

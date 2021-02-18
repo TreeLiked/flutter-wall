@@ -3,45 +3,7 @@ import 'package:flustars/flustars.dart';
 
 class TimeUtil {
   static String getShortTime(DateTime dt) {
-    int nowMs = DateTime.now().millisecondsSinceEpoch;
-    int tarMs = dt.millisecondsSinceEpoch;
-    // 相差的分钟
-    int diffMin = (nowMs - tarMs) / 1000 ~/ 60;
-
-    if (diffMin < 5) {
-      return "刚刚";
-    } else if (diffMin < 60) {
-      return "$diffMin分钟前";
-    } else {
-      // 大于一小时
-      int diffHour = diffMin ~/ 60;
-      int leftMin = diffMin % 60;
-      diffHour = leftMin > 30 ? diffHour + 1 : diffHour;
-
-      if (DateUtil.isToday(dt.millisecondsSinceEpoch)) {
-        if (diffHour < 12) {
-          return "$diffHour小时前";
-        }
-        // 同一天显示上午下午
-        return timeInDay(dt.hour) +
-            (dt.minute >= 10 ? "${dt.hour}:${dt.minute}" : "${dt.hour}:0${dt.minute}");
-      } else {
-        if (DateUtil.isYesterdayByMs(tarMs, nowMs)) {
-          // 如果小于24小时，显示昨天
-          return "昨天" + timeInDay(dt.hour) + dt.hour.toString() + "时";
-        } else {
-          if (dt.year == DateTime.now().year) {
-            // 同一年
-            if (dt.minute < 10) {
-              return MMDD(dt) + " ${dt.hour}:0${dt.minute}";
-            }
-            return MMDD(dt) + " ${dt.hour}:${dt.minute}";
-          } else {
-            return DateUtil.formatDate(dt, format: DateFormats.zh_y_mo_d_h_m);
-          }
-        }
-      }
-    }
+    return TimelineUtil.format(dt.millisecondsSinceEpoch, locale: "zh_normal");
   }
 
   static String getMonth(DateTime dt, {bool zeroFill = true}) {

@@ -20,7 +20,7 @@ class TweetTypeWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    const Radius temp = Radius.circular(7.5);
+    const Radius temp = Radius.circular(5.0);
     String t = type;
     if (tweetTypeMap[type] == null) {
       t = fallbackTweetType;
@@ -35,7 +35,7 @@ class TweetTypeWrapper extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.3),
             decoration: BoxDecoration(
               color: isDark ? Colors.black12 : Color(0xffF3F6F8),
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.circular(7.0),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

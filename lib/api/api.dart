@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/model/result.dart';
@@ -10,6 +11,8 @@ class Api {
   static const bool devMem = false;
   static const String API_BASE_AL = "https://almond-donuts.iutr.tech";
   static const String API_BASE_TR = "https://member.iutr.tech";
+
+  static const String _TAG = "API";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
   static const String API_BASE_INF_DEV = "http://192.168.0.105:8088";
@@ -137,33 +140,33 @@ class Api {
   }
 
   static String formatError(DioError e, {pop = false}) {
-    print(e);
+    LogUtil.e(e, tag: _TAG);
     if (pop) {
       NavigatorUtils.goBack(Application.context);
     }
     if (e.type == DioErrorType.CONNECT_TIMEOUT) {
       // It occurs when url is opened timeout.
-      print("连接超时");
+      LogUtil.e("连接超时", tag: _TAG);
       return "连接超时";
     } else if (e.type == DioErrorType.SEND_TIMEOUT) {
       // It occurs when url is sent timeout.
-      print("请求超时");
+      LogUtil.e("请求超时", tag: _TAG);
       return "请求超时";
     } else if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
       //It occurs when receiving timeout
-      print("响应超时");
+      LogUtil.e("连接超时", tag: _TAG);
       return "响应超时";
     } else if (e.type == DioErrorType.RESPONSE) {
       // When the server response, but with a incorrect status, such as 404, 503...
-      print("服务出现异常$e");
+      LogUtil.e("服务出现异常$e", tag: _TAG);
       return "服务出现异常";
     } else if (e.type == DioErrorType.CANCEL) {
       // When the request is cancelled, dio will throw a error with this type.
-      print("请求取消");
+      LogUtil.e("请求取消", tag: _TAG);
       return "请求取消";
     } else {
       //DEFAULT Default error type, Some other Error. In this case, you can read the DioError.error if it is not null.
-      print("未知错误$e");
+      LogUtil.e("未知错误$e", tag: _TAG);
       return "未知错误";
     }
   }

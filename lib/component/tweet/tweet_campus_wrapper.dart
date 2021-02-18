@@ -14,23 +14,29 @@ class TweetCampusWrapper extends StatelessWidget {
   final bool anonymous;
   final bool displayType;
 
-  TweetCampusWrapper(this.tweetId, this.institute, this.cla, this.tweetType, this.anonymous, {this.displayType = true});
+  TweetCampusWrapper(this.tweetId, this.institute, this.cla, this.tweetType, this.anonymous,
+      {this.displayType = true});
 
   @override
   Widget build(BuildContext context) {
     bool insEmpty = StringUtil.isEmpty(institute);
     bool claEmpty = StringUtil.isEmpty(cla);
 
-//    if (insEmpty && claEmpty) {
-//      return Gaps.empty;
-//    }
+    if (insEmpty && claEmpty) {
+      if (!displayType) {
+        return Gaps.empty;
+      }
+    }
     String t = insEmpty ? cla : (claEmpty ? institute : '$institute，$cla');
     return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.end,
       runSpacing: Dimens.gap_dp4,
-        spacing: Dimens.gap_dp4,
+      spacing: Dimens.gap_dp4,
       children: <Widget>[
-        displayType ? TweetTypeWrapper(tweetId, tweetType): Gaps.empty,
         // displayType ? Gaps.hGap4: Gaps.empty,
+        displayType ? TweetTypeWrapper(tweetId, tweetType) : Gaps.empty,
+
         (insEmpty && claEmpty) || anonymous
             ? Gaps.empty
             : SquareTag(
@@ -40,13 +46,13 @@ class TweetCampusWrapper extends StatelessWidget {
                 textStyle: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
                 horizontalPadding: 15.0,
                 verticalPadding: 5.0,
-                roundRadius: 10.0,
+                roundRadius: 7.0,
                 // prefixIcon: Icon(
                 //   Icons.school,
                 //   color: ColorConstant.TWEET_NICK_COLOR,
                 //   size: 16.0,
                 // ),
-              )
+              ),
       ],
     );
     return Container(

@@ -81,7 +81,6 @@ class TweetApi {
         return new List<BaseTweet>();
       }
       List<BaseTweet> tweetList = tweetData.map((m) => BaseTweet.fromJson(m)).toList();
-      print(tweetList.length);
       return tweetList;
     } on DioError catch (e) {
       Api.formatError(e);

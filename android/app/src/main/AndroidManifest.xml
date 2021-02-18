@@ -10,7 +10,6 @@
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="Wall"
-    android:name="io.flutter.app.FlutterApplication"
     android:usesCleartextTraffic="true"
     android:requestLegacyExternalStorage="true">
     <!--    android:name="io.flutter.app.FlutterApplication">-->
@@ -18,7 +17,7 @@
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
-      android:name=".MainActivity"
+      android:name="io.flutter.embedding.android.FlutterActivity"
       android:theme="@style/LaunchTheme"
       android:windowSoftInputMode="adjustResize">
       <!-- This keeps the window background of the activity showing
@@ -36,9 +35,7 @@
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-      <meta-data
-        android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
-        android:value="true" />
+
     </activity>
   </application>
 

@@ -161,6 +161,9 @@ dependencies:
 
   umeng_analytics_plugin: ^1.0.3
 
+  # 九宫格图片 https://github.com/flutterchina/nine_grid_view
+  nine_grid_view: ^1.0.7
+
 
 
 

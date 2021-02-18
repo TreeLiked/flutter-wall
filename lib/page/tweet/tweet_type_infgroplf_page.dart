@@ -112,8 +112,8 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
       body: EasyRefresh.custom(
           header: LinkHeader(
             _headerNotifier,
-            extent: 70.0,
-            triggerDistance: 70.0,
+            extent: 50.0,
+            triggerDistance: 50.0,
             enableHapticFeedback: true,
           ),
           firstRefresh: true,
@@ -125,10 +125,10 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
               backgroundImg: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
               cache: true,
               count: 10,
-              sigma: 5.5,
+              sigma: 15.5,
               pinned: true,
-              floating: true,
-              snap: true,
+              floating: false,
+              snap: false,
               lightShadow: Colors.black12,
               outerRadius: BorderRadius.zero,
               imageRadius: BorderRadius.zero,
@@ -137,6 +137,8 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                 padding: const EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
                 height: double.maxFinite,
                 width: double.maxFinite,
+                decoration: BoxDecoration(
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,10 +172,10 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('#${typeEntity.zhTag}',
+                            Text('# ${typeEntity.zhTag}',
                                 style: pfStyle.copyWith(
-                                    fontSize: Dimens.font_sp16,
-                                    letterSpacing: 1.2,
+                                    fontSize: Dimens.font_sp18,
+                                    letterSpacing: 1.5,
                                     fontWeight: FontWeight.w500)),
                             Gaps.vGap5,
                             Text('${typeEntity.intro}',
@@ -214,15 +216,16 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                                         isDark ? Colours.dark_button_disabled : Colours.button_disabled,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: Colors.black12, width: _subThis ? 0 : 1.0),
-                                        borderRadius: BorderRadius.circular(13.0)),
+                                        borderRadius: BorderRadius.circular(15.0)),
                                     child: !_initSub
                                         ? (_subThis
                                             ? Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Icon(Icons.check, size: 15),
-                                                  Text(" 已订阅",
+                                                  Text("已订阅 ",
                                                       style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
+                                                  Icon(Icons.check, size: 15),
+
                                                 ],
                                               )
                                             : Text("+ 订阅",
@@ -237,7 +240,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   ],
                 ),
               ),
-              expandedHeight: ScreenUtil().setHeight(550),
+              expandedHeight: ScreenUtil().setHeight(450),
             ),
             // SliverPersistentHeader(
             //   pinned: true,

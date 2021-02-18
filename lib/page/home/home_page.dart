@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
 
-    _tabController = TabController(vsync: this, length: 3);
+    _tabController = TabController(vsync: this, length: 2);
     // _tabController.addListener(() {
     //   if (_tabController.index.toDouble() == _tabController.animation.value) {
     //     bool _dc = true;
@@ -221,7 +221,6 @@ class _HomePageState extends State<HomePage>
                     await SpUtil.putStringList(SharedConstant.LOCAL_FILTER_TYPES, resultNames);
                     typesFilterProvider.updateTypeNames();
                     _refreshController.requestRefresh();
-                    print(resultNames);
                   },
                 )));
   }
@@ -334,9 +333,9 @@ class _HomePageState extends State<HomePage>
                                 Tab(
                                   text: '今日热门',
                                 ),
-                                Tab(
-                                  text: '话题',
-                                ),
+                                // Tab(
+                                //   text: '话题',
+                                // ),
                               ],
                             ),
                           ),
@@ -392,7 +391,7 @@ class _HomePageState extends State<HomePage>
                       children: [
                         TweetIndexTabView(),
                         HotToday(),
-                        DiscussMain()
+                        // DiscussMain()
                       ],
                     ),
                   ),

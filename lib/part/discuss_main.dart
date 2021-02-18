@@ -80,7 +80,7 @@ class _DiscussMainState extends State<DiscussMain> with AutomaticKeepAliveClient
     Discuss dis = new Discuss();
     dis.title = "# 自拍美颜是欺骗吗？#";
     dis.id = "";
-    dis.cover = PathConstant.APP_LAUNCH_IMAGE;
+    dis.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1gmrst2ibm8j30u01sxk0w.jpg";
     setState(() {
       this._currentDiscuss = dis;
     });
@@ -190,100 +190,112 @@ class _DiscussMainState extends State<DiscussMain> with AutomaticKeepAliveClient
     }
     return SafeArea(
         child: Scaffold(
-      body: EasyRefresh.custom(
-          header: LinkHeader(
-            _headerNotifier,
-            extent: 70.0,
-            triggerDistance: 70.0,
-            // completeDuration: Duration(milliseconds: 5000),
-            enableHapticFeedback: true,
-          ),
-          firstRefresh: true,
-          slivers: <Widget>[
-            HotAppBarWidget(
-              headerNotifier: _headerNotifier,
-              backgroundImg:
+          body: EasyRefresh.custom(
+              header: LinkHeader(
+                _headerNotifier,
+                extent: 70.0,
+                triggerDistance: 70.0,
+                // completeDuration: Duration(milliseconds: 5000),
+                enableHapticFeedback: true,
+              ),
+              firstRefresh: true,
+              slivers: <Widget>[
+                HotAppBarWidget(
+                  headerNotifier: _headerNotifier,
+                  backgroundImg:
                   _currentDiscuss != null ? _currentDiscuss.cover : PathConstant.DEFAULT_DISCUSS_COVER,
-              // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
-              count: 10,
-              cache: true,
-              blurImage: true,
-              sigma: 0,
-              outerMargin: const EdgeInsets.all(0.0),
-              outerRadius: BorderRadius.circular(0.0),
-              imageRadius: BorderRadius.circular(0.0),
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(_currentDiscuss.title),
-                  // Spacer(),
-                  Container(
-                    padding: EdgeInsets.only(left: ScreenUtil().setWidth(40)),
-                    margin: EdgeInsets.only(bottom: ScreenUtil().setWidth(5)),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
-                              style: pfStyle.copyWith(fontSize: Dimens.font_sp15 * 2)),
-                          TextSpan(
-                              text: '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
-                              style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: ScreenUtil().setWidth(40)),
-                    margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(40)),
+                  // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
+                  count: 10,
+                  cache: true,
+                  blurImage: true,
+                  sigma: 0.0,
+                  outerMargin: const EdgeInsets.all(0.0),
+                  outerRadius: BorderRadius.circular(0.0),
+                  imageRadius: BorderRadius.circular(0.0),
+                  content: _currentDiscuss == null
+                      ? Gaps.empty
+                      : Container(
+                    // padding: EdgeInsets.only(left: ScreenUtil().setWidth(20)),
+                    margin: EdgeInsets.only(top: 10, left: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        Text("今日话题", style: pfStyle.copyWith(fontSize: Dimens.font_sp15)),
                         Text(
-                          '精选20条校园最热门的内容，每半小时更新一次',
-                          softWrap: true,
-                          maxLines: 2,
-                          style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70),
+                          _currentDiscuss.title,
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp25),
                         ),
-                        Text(
-                          '上次更新时间：' +
-                              (hotTweet != null
-                                  ? DateUtil.formatDate(hotTweet.lastFetched, format: "HH:mm").toString()
-                                  : '暂未更新'),
-                          style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Colors.white60),
-                        )
+                        Gaps.vGap5,
+                        Text("157次浏览，78条回复", style: pfStyle.copyWith(fontSize: Dimens.font_sp15)),
+                        // Spacer(),
+                        Container(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
+                                    style: pfStyle.copyWith(fontSize: Dimens.font_sp15 * 2)),
+                                TextSpan(
+                                    text: '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
+                                    style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(left: ScreenUtil().setWidth(40)),
+                          margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(40)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                '精选20条校园最热门的内容，每半小时更新一次',
+                                softWrap: true,
+                                maxLines: 2,
+                                style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70),
+                              ),
+                              Text(
+                                '上次更新时间：' +
+                                    (hotTweet != null
+                                        ? DateUtil.formatDate(hotTweet.lastFetched, format: "HH:mm")
+                                        .toString()
+                                        : '暂未更新'),
+                                style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Colors.white60),
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ],
-              ),
-              expandedHeight: _expandedHeight,
-              title: '',
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.only(bottom: 10.0, top: 3.0),
-              sliver: SliverList(
-                  delegate: new SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  if (hotTweet == null) {
-                    return Gaps.empty;
-                  }
-                  var tweets = hotTweet.tweets;
-                  if (tweets == null || tweets.length == 0) {
-                    return EmptyView(text: "快去抢占热门吧~");
-                  }
-                  return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1),
-                      showTrend: showTrend);
-                },
-                childCount: loadingOrRedisInit ? 0 : (!noData ? hotTweet.tweets.length : 1),
-              )),
-            )
-            // Gaps.vGap5
-          ],
-          onRefresh: _onRefresh,
-          onLoad: null),
-    ));
+                  expandedHeight: _expandedHeight,
+                  title: '',
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 10.0, top: 3.0),
+                  sliver: SliverList(
+                      delegate: new SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                          if (hotTweet == null) {
+                            return Gaps.empty;
+                          }
+                          var tweets = hotTweet.tweets;
+                          if (tweets == null || tweets.length == 0) {
+                            return EmptyView(text: "快去抢占热门吧~");
+                          }
+                          return TweetHotCard(
+                              tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1),
+                              showTrend: showTrend);
+                        },
+                        childCount: loadingOrRedisInit ? 0 : (!noData ? hotTweet.tweets.length : 1),
+                      )),
+                )
+                // Gaps.vGap5
+              ],
+              onRefresh: _onRefresh,
+              onLoad: null),
+        ));
   }
 
   _forwardDetail(int tweetId, int rank) {

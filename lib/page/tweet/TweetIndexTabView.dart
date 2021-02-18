@@ -147,8 +147,7 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   Future<void> _onRefresh(BuildContext context) async {
-    print(''
-        'On refresh');
+    print('On refresh');
     _refreshController.resetNoData();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);

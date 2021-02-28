@@ -202,13 +202,13 @@ class _DiscussMainState extends State<DiscussMain> with AutomaticKeepAliveClient
               slivers: <Widget>[
                 HotAppBarWidget(
                   headerNotifier: _headerNotifier,
-                  backgroundImg:
-                  _currentDiscuss != null ? _currentDiscuss.cover : PathConstant.DEFAULT_DISCUSS_COVER,
+                  backgroundImg: null,
+                  // _currentDiscuss != null ? _currentDiscuss.cover : PathConstant.DEFAULT_DISCUSS_COVER,
                   // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
                   count: 10,
                   cache: true,
                   blurImage: true,
-                  sigma: 0.0,
+                  sigma: 10.0,
                   outerMargin: const EdgeInsets.all(0.0),
                   outerRadius: BorderRadius.circular(0.0),
                   imageRadius: BorderRadius.circular(0.0),

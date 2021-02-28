@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
 
-    _tabController = TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 3);
     // _tabController.addListener(() {
     //   if (_tabController.index.toDouble() == _tabController.animation.value) {
     //     bool _dc = true;
@@ -290,7 +290,7 @@ class _HomePageState extends State<HomePage>
                               pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
                               indicatorSize: TabBarIndicatorSize.label,
                               indicator: const UnderlineTabIndicator(
-                                  borderSide: const BorderSide(color: Colors.amber, width: 2.0)),
+                                  borderSide: const BorderSide(color: Colors.amberAccent, width: 2.0)),
                               controller: _tabController,
                               labelColor: isDark ? Colors.white30 : Colors.black,
                               isScrollable: true,
@@ -320,9 +320,9 @@ class _HomePageState extends State<HomePage>
                                   builder: (_, snapshot) => Badge(
                                     elevation: 0,
                                     padding: const EdgeInsets.all(4.0),
-                                    child: Text('最新'),
+                                    child: Text('最新内容', style: pfStyle),
                                     animationType: BadgeAnimationType.fade,
-                                    badgeColor: Colors.amber,
+                                    badgeColor: Colors.deepPurple,
                                     showBadge: snapshot.data > 0,
                                     shape: BadgeShape.circle,
                                     // borderRadius: 10.0,
@@ -331,11 +331,10 @@ class _HomePageState extends State<HomePage>
                                   ),
                                 ),
                                 Tab(
-                                  text: '今日热门',
+                                  child: Text('校园热门',style: pfStyle)),
+                                Tab(
+                                  text: '今日话题',
                                 ),
-                                // Tab(
-                                //   text: '话题',
-                                // ),
                               ],
                             ),
                           ),
@@ -391,7 +390,7 @@ class _HomePageState extends State<HomePage>
                       children: [
                         TweetIndexTabView(),
                         HotToday(),
-                        // DiscussMain()
+                        DiscussMain()
                       ],
                     ),
                   ),

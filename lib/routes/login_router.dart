@@ -10,7 +10,7 @@ class LoginRouter implements IRouterProvider {
   static String loginOrgPage = "/login/org";
 
   @override
-  void initRouter(Router router) {
+  void initRouter(FluroRouter router) {
     router.define(loginIndex,
         handler: Handler(handlerFunc: (_, params) => LoginPage()));
 

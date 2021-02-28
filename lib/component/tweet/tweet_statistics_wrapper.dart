@@ -26,14 +26,15 @@ class TweetStatisticsWrapper extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          OptionItem("tweet/view", Text("${tweet.views == 0 ? 1 : tweet.views}", style: style)),
+          OptionItem(null, Text("${tweet.views == 0 ? 1 : calCount(tweet.views)}次浏览", style: style),
+              prefix: Gaps.empty),
           // Text("浏览${tweet.views + 1}", style:  style.copyWith(fontSize: Dimens.font_sp12)),
-          OptionItem(null, Text("${tweet.praise == 0 ? '' : tweet.praise}", style: style),
+          OptionItem(null, Text("${tweet.praise == 0 ? '' : calCount(tweet.praise)}", style: style),
               prefix: LoadAssetIcon(
                 tweet.loved ? PathConstant.ICON_PRAISE_ICON_PRAISE : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
                 width: 17,
                 height: 17,
-                color: tweet.loved ? Colors.pink[100] : Colors.grey,
+                color: tweet.loved ? Colors.yellow[600] : Colors.grey,
               ),
               onTap: () => canPraise ? updatePraise(context) : HitTestBehavior.opaque),
 
@@ -66,6 +67,19 @@ class TweetStatisticsWrapper extends StatelessWidget {
       Utils.showFavoriteAnimation(context, size: 20);
       Future.delayed(Duration(milliseconds: 1600)).then((_) => Navigator.pop(context));
     }
+  }
+
+  String calCount(int count) {
+    if (count < 1000) {
+      return "$count";
+    }
+    if (count < 10000) {
+      return "${count ~/ 1000}k+";
+    }
+    if (count < 100000) {
+      return "${count ~/ 10000}w+";
+    }
+    return "10w+";
   }
 }
 

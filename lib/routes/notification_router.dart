@@ -10,7 +10,7 @@ class NotificationRouter implements IRouterProvider {
   static String campusMain = "/notification/campus";
 
   @override
-  void initRouter(Router router) {
+  void initRouter(FluroRouter router) {
     router.define(systemMain, handler: Handler(handlerFunc: (_, params) {
       return SystemNotificationMainPage();
     }));

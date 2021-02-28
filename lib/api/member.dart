@@ -166,7 +166,9 @@ class MemberApi {
     LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.post(url, data: data);
+      print(response.data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
+      print(json);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);

@@ -12,7 +12,7 @@ class SquareRouter implements IRouterProvider {
   static String activityDetail = "/home/square/activity/detail";
 
   @override
-  void initRouter(Router router) {
+  void initRouter(FluroRouter router) {
     router.define(topicDetail, handler: Handler(handlerFunc: (_, params) {
       int topicId = int.parse(params['topicId']?.first);
       return TopicDetailPage(topicId);

@@ -259,7 +259,7 @@ class _CreatePageState extends State<CreatePage> {
       height: 50.0,
       padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
       alignment: Alignment.center,
-      child: Text("- 请选择内容标签 -", style: pfStyle.copyWith(fontSize: Dimens.font_sp16, letterSpacing: 2)),
+      child: Text("请选择内容标签", style: pfStyle.copyWith(fontSize: Dimens.font_sp15,color: Colors.grey)),
     );
   }
 
@@ -304,12 +304,12 @@ class _CreatePageState extends State<CreatePage> {
               ? BoxDecoration(
                   // color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
                   color: isDark ? entity.color.withAlpha(30) : entity.color.withAlpha(79),
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(14.0),
                   border: new Border.all(color: isDark ? entity.color : Color(0xffdcdcdc), width: 0.5),
                 )
               : BoxDecoration(
                   color: isDark ? Color(0xff303030) : Color(0xffEDEDED),
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(14.0),
                   boxShadow: [
                       BoxShadow(
                         color: isDark ? Colors.transparent : Color(0xffDCDCDC),
@@ -783,17 +783,17 @@ class _CreatePageState extends State<CreatePage> {
                     height: 100,
                     alignment: Alignment.center,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(color: Colors.black26),
+                        borderRadius: BorderRadius.circular(20),
+                        border: _canDelete? null: Border.all(color: Colors.black26),
                         color: _canDelete ? Colors.redAccent : Colors.transparent,
                       ),
                       child: Text("删 除",
                           style: pfStyle.copyWith(
                               color: _canDelete ? Colors.white : Colors.grey,
                               letterSpacing: 2,
-                              fontSize: Dimens.font_sp16)),
+                              fontSize: Dimens.font_sp15)),
                     ),
                   ))
         ],

@@ -408,28 +408,32 @@ class _HomePageState extends State<HomePage>
                       height: 55,
                       child: Draggable(
                         feedback: FloatingActionButton(
-                            child: LoadAssetIcon(
-                              "create",
-                              color: isDark ? Colors.yellow : Colors.amberAccent,
-                              width: 23.0,
-                              height: 23.0,
+                            // child: LoadAssetIcon(
+                            //   "create",
+                            //   color: isDark ? Colors.yellow : Colors.amberAccent,
+                            //   width: 23.0,
+                            //   height: 23.0,
+                            // ),
+                            child: Icon(
+                              Icons.add,
+                              color: isDark ? Colors.amber[300] : Colors.black,
                             ),
-                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFFFFFFF),
+                            backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
                             splashColor: Colors.white12,
                             elevation: 10.0,
                             onPressed: null),
                         child: FloatingActionButton(
-                            // child: Icon(
-                            //   Icons.add_photo_alternate,
-                            //   color: isDark ? Colors.amber[300] : Colors.white,
-                            // ),
-                            child: LoadAssetIcon(
-                              "create",
-                              color: isDark ? Colors.yellow : Colors.amberAccent,
-                              width: 23.0,
-                              height: 23.0,
+                            child: Icon(
+                              Icons.add,
+                              color: isDark ? Colors.amber[300] : Colors.black,
                             ),
-                            backgroundColor: isDark ? Color(0xff1C1C1C) : Color(0xFFFFFFFF),
+                            // child: LoadAssetIcon(
+                            //   "create",
+                            //   color: isDark ? Colors.yellow : Colors.lightBlueAccent,
+                            //   width: 23.0,
+                            //   height: 23.0,
+                            // ),
+                            backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
                             elevation: 10.0,
                             foregroundColor: Colors.yellow,
                             splashColor: Colors.white12,

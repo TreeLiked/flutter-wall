@@ -646,7 +646,7 @@ class _AccountProfileTweetPageView extends State<AccountProfileTweetPageView>
                     margin: EdgeInsets.only(top: 50),
                     alignment: Alignment.topCenter,
                     constraints: BoxConstraints(maxHeight: 100),
-                    child: Text('该用户暂未发布过内容'))
+                    child: Text('该用户暂未发布过内容', style: pfStyle.copyWith(color: Colors.grey)))
                 : ListView.builder(
                     primary: false,
                     shrinkWrap: true,

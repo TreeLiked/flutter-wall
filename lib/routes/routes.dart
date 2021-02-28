@@ -53,7 +53,7 @@ class Routes {
 
   static List<IRouterProvider> _listRouter = [];
 
-  static void configureRoutes(Router router) {
+  static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
       print("ROUTE HANDLER WAS NOT FOUND !!!");
       return WidgetNotFound();

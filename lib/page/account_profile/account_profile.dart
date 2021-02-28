@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -157,7 +158,7 @@ class _AccountProfileState extends State<AccountProfile> {
                   pinned: true,
                   snap: false,
                   floating: false,
-                  expandedHeight: ScreenUtil().setHeight(600),
+                  expandedHeight: ScreenUtil().setWidth(580),
                   elevation: 0.5,
                   titleSpacing: 1.2,
                   title: Text(
@@ -211,7 +212,7 @@ class _AccountProfileState extends State<AccountProfile> {
                   flexibleSpace: ClipRRect(
                     child: FlexibleDetailBar(
                         content: Container(
-                          alignment: Alignment.topCenter,
+                          alignment: Alignment.bottomCenter,
                           margin: EdgeInsets.only(
                               top: ScreenUtil.statusBarHeight, left: 30.0, right: 30.0, bottom: 10.0),
                           child: Column(
@@ -224,7 +225,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                   child: AccountAvatar(
                                       avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
                                       whitePadding: true,
-                                      size: SizeConstant.TWEET_PROFILE_SIZE * 1.6,
+                                      size: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
                                       cache: true,
                                       gender: calGender(account),
                                       onTap: () {
@@ -239,12 +240,14 @@ class _AccountProfileState extends State<AccountProfile> {
                               Text(
                                 widget.nick ?? "",
                                 style: pfStyle.copyWith(
-                                    fontSize: Dimens.font_sp16,
-                                    color: !isDark ? Colors.black : Colors.black54),
+                                    fontSize: Dimens.font_sp15,
+                                    color: !isDark ? Colors.black : Colors.white70),
                               ),
                               Gaps.vGap10,
                               Text(
                                 account == null ? "" : account.signature ?? "",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: pfStyle.copyWith(
                                     fontSize: Dimens.font_sp13p5,
                                     color: isDark ? Colors.grey : Colors.black54),
@@ -277,7 +280,7 @@ class _AccountProfileState extends State<AccountProfile> {
                   )),
               SliverToBoxAdapter(
                 child: Container(
-                    margin: EdgeInsets.only(top: 20, left: 15.0, right: 20.0, bottom: 10),
+                    margin: EdgeInsets.only(top: 15, left: 15.0, right: 10.0, bottom: 10),
                     child: account == null && _initAccount
                         ? SpinKitThreeBounce(
                             color: Colors.lightGreen,
@@ -293,13 +296,11 @@ class _AccountProfileState extends State<AccountProfile> {
                                       flex: 3,
                                       fit: FlexFit.loose,
                                       child: RichText(
-                                        textAlign: TextAlign.start,
+                                        textAlign: TextAlign.center,
                                         softWrap: false,
                                         overflow: TextOverflow.ellipsis,
                                         text: TextSpan(children: [
-                                          WidgetSpan(
-                                              child: Icon(Icons.alternate_email_outlined,
-                                                  size: 16, color: Colors.lightGreen)),
+                                          WidgetSpan(child: Icon(Icons.school, size: 16, color: Colors.grey)),
                                           // WidgetSpan(
                                           //     child: _wrapIcon(LoadAssetSvg("count",
                                           //         width: 19, height: 19, color: Colors.green))),
@@ -317,7 +318,7 @@ class _AccountProfileState extends State<AccountProfile> {
                                       child: GestureDetector(
                                         onTap: () {
                                           BottomSheetUtil.showBottomSheet(
-                                              context, 0.6, _buildDetailProfileInfo());
+                                              context, 0.55, _buildDetailProfileInfo());
                                         },
                                         child: Wrap(
                                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -341,10 +342,23 @@ class _AccountProfileState extends State<AccountProfile> {
                               margin: EdgeInsets.only(top: 50),
                               height: 800,
                               alignment: Alignment.topCenter,
-                              constraints: BoxConstraints(maxHeight: 100),
-                              child: Text(
-                                '该用户暂未发布过内容',
-                                style: pfStyle.copyWith(fontSize: Dimens.font_sp15, letterSpacing: 1.3),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  SizedBox(
+                                      // width: ScreenUtil().setWidth(600),
+                                      height: ScreenUtil().setHeight(400),
+                                      child: LoadAssetImage(
+                                        ThemeUtils.isDark(context) ? 'no_data_dark' : 'no_data',
+                                        fit: BoxFit.cover,
+                                      )),
+                                  Gaps.vGap16,
+                                  Text('该用户暂未发布过内容~',
+                                      style:
+                                          pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
+                                ],
                               )),
                         )
                       : SliverToBoxAdapter(
@@ -414,7 +428,7 @@ class _AccountProfileState extends State<AccountProfile> {
 
   String _buildRegionText() {
     if (StringUtil.isEmpty(account.province)) {
-      return "";
+      return "未知";
     } else {
       if (StringUtil.isEmpty(account.city)) {
         return account.province;
@@ -472,9 +486,18 @@ class _AccountProfileState extends State<AccountProfile> {
         child: Text("暂无可用信息", style: pfStyle),
       );
     }
+    String genderText = "未知";
+    if (account.displaySex && !StringUtil.isEmpty(account.gender)) {
+      String gender = account.gender.toUpperCase();
+      if (gender == Gender.FEMALE.name) {
+        genderText = "女";
+      } else if (gender == Gender.MALE.name) {
+        genderText = "男";
+      }
+    }
     return Container(
       alignment: Alignment.centerLeft,
-      margin: const EdgeInsets.only(top: 49.0, left: 20.0, right: 20.0, bottom: 10.0),
+      margin: const EdgeInsets.only(top: 29.0, left: 20.0, right: 20.0, bottom: 10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -491,8 +514,10 @@ class _AccountProfileState extends State<AccountProfile> {
               }),
           _buildSingleContainer(Icon(Icons.add_a_photo, color: Colors.blueAccent), "个人档案", {
             "姓名": _buildSingleTextValue(account.displayName ? account.name : ""),
-            "性别": _buildGenderWidget(),
-            "年龄": _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : ""),
+            "性别": _buildSingleTextValue(genderText),
+            // "性别": _buildGenderWidget(),
+            "年龄":
+                _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : "未知"),
             "地区": _buildSingleTextValue(_buildRegionText()),
             "专业": _buildSingleTextValue(_getCampusInfoText()),
           }),
@@ -504,7 +529,7 @@ class _AccountProfileState extends State<AccountProfile> {
               "联系资料",
               {
                 "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : "未公开"),
-                "QQ": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : "未公开"),
+                "Q Q": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : "未公开"),
                 "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : "未公开"),
               }),
         ],
@@ -554,7 +579,10 @@ class _AccountProfileState extends State<AccountProfile> {
                   padding: const EdgeInsets.only(left: 0.0),
                   child: Text(title,
                       style: pfStyle.copyWith(
-                          fontSize: Dimens.font_sp16, fontWeight: FontWeight.w500, letterSpacing: 1.2)),
+                          fontSize: Dimens.font_sp15,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 1.2,
+                          color: Colors.grey)),
                 )
               ],
             ),
@@ -580,16 +608,20 @@ class _AccountProfileState extends State<AccountProfile> {
             padding: const EdgeInsets.all(3.0),
             width: 20,
             height: 20,
-            child: CircleAvatar(
-              backgroundColor: Colors.pink[200],
-              child: LoadAssetSvg(
-                'female',
-                width: 20,
-                height: 20,
-                color: Colors.white,
-                fit: BoxFit.cover,
-              ),
+            child: Text(
+              "女",
+              style: pfStyle,
             ),
+            // child: CircleAvatar(
+            //   backgroundColor: Colors.pink[200],
+            //   child: LoadAssetSvg(
+            //     'female',
+            //     width: 20,
+            //     height: 20,
+            //     color: Colors.white,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
           );
         }
         if (t == Gender.MALE.name) {
@@ -597,16 +629,20 @@ class _AccountProfileState extends State<AccountProfile> {
             padding: const EdgeInsets.all(3.0),
             width: 20,
             height: 20,
-            child: CircleAvatar(
-              backgroundColor: Colors.blueAccent,
-              child: LoadAssetSvg(
-                'male',
-                width: 20,
-                height: 20,
-                color: Colors.white,
-                fit: BoxFit.cover,
-              ),
+            child: Text(
+              "女",
+              style: pfStyle,
             ),
+            // child: CircleAvatar(
+            //   backgroundColor: Colors.blueAccent,
+            //   child: LoadAssetSvg(
+            //     'male',
+            //     width: 20,
+            //     height: 20,
+            //     color: Colors.white,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
           );
         }
       }

@@ -10,14 +10,14 @@
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="Wall"
-    android:usesCleartextTraffic="true"
-    android:requestLegacyExternalStorage="true">
+    android:name="io.flutter.app.FlutterApplication"
+    android:usesCleartextTraffic="true">
     <!--    android:name="io.flutter.app.FlutterApplication">-->
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
       android:hardwareAccelerated="true"
       android:launchMode="singleTop"
-      android:name="io.flutter.embedding.android.FlutterActivity"
+      android:name=".MainActivity"
       android:theme="@style/LaunchTheme"
       android:windowSoftInputMode="adjustResize">
       <!-- This keeps the window background of the activity showing
@@ -35,7 +35,9 @@
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-
+      <meta-data
+        android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
+        android:value="true" />
     </activity>
   </application>
 
@@ -43,6 +45,7 @@
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.VIBRATE" />
 
 

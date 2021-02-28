@@ -297,11 +297,13 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                     TextSpan(
                         text: '当前选择：',
                         style: pfStyle.copyWith(
-                            color: Colors.black, fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
+                            color: Colors.grey, fontSize: Dimens.font_sp14, fontWeight: FontWeight.w400)),
                     TextSpan(
                         text: '$_cName\n\n\n',
                         style: pfStyle.copyWith(
-                            color: Colors.black, fontSize: Dimens.font_sp16, letterSpacing: 1.1)),
+                            color: ThemeUtils.isDark(context) ? Colors.white : Colors.black,
+                            fontSize: Dimens.font_sp16,
+                            letterSpacing: 1.1)),
                     WidgetSpan(
                         child: Container(
                       child: FlatButton(

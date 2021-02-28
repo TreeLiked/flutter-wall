@@ -139,9 +139,9 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       setState(() {
         _covers = _covers;
         _currentCover = _covers[0];
-        // if(!CollectionUtil.isListEmpty(_covers)) {
-        //   _currentCover = _covers[Random().nextInt(_covers.length)];
-        // }
+        if(!CollectionUtil.isListEmpty(_covers)) {
+          _currentCover = _covers[Random().nextInt(_covers.length)];
+        }
       });
     }
   }
@@ -197,6 +197,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               outerMargin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
               outerRadius: BorderRadius.circular(8.0),
               imageRadius: BorderRadius.circular(8.0),
+              sigma: 0,
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -229,6 +230,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                           maxLines: 2,
                           style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70),
                         ),
+                        Gaps.vGap2,
                         Text(
                           '上次更新时间：' +
                               (hotTweet != null

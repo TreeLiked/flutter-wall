@@ -48,7 +48,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   final JPush _jPush = JPush();
 
   AlmondDonutsState() {
-    final fluro.Router router = fluro.Router();
+    final router = fluro.FluroRouter();
     Routes.configureRoutes(router);
     Application.router = router;
   }

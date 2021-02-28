@@ -39,35 +39,37 @@ dependencies:
   rxdart: ^0.24.1
 
   # 下拉刷新2
-  flutter_easyrefresh: ^2.1.5
+  flutter_easyrefresh: ^2.1.8
 
   # 全局数据存储，类vuex
   provider: ^3.1.0
 
   # 本地存储
-  shared_preferences: ^0.5.12+2
+  shared_preferences: ^0.5.12+4
 
   # 微信登录
   # fluwx: ^1.1.1
 
   # # 网络图片缓存
   # cached_network_image: ^1.1.2+1
-  cached_network_image: ^2.3.2+1
+  cached_network_image: ^2.5.0
 
-  flutter_cache_manager: ^1.4.2
+  flutter_cache_manager: ^2.1.1
 
   # 图片预览
-  photo_view: ^0.10.2
+  photo_view: ^0.10.3
   # 
   flutter_screenutil: ^2.3.1
+#  flutter_screenutil: ^4.0.3+1
+
 
   # 权限管理
-  permission_handler: ^5.0.1+1
+  permission_handler: ^5.1.0+2
 
   # 图片选择与下载
   image_picker_saver: ^0.3.0
 
-  image_gallery_saver: ^1.5.0
+  image_gallery_saver: ^1.6.8
 
   # 单图选择
   image_picker: ^0.6.7+8
@@ -75,10 +77,10 @@ dependencies:
   # 扩展图片预览
   extended_image: ^1.1.1
   # 图片裁剪
-  image_crop: ^0.3.2
+  image_crop: ^0.3.4
 
   # toast
-  fluttertoast: ^7.1.1
+  fluttertoast: ^7.1.8
   # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
   oktoast: ^2.3.2
   # WebView插件 https://github.com/flutter/plugins/tree/master/packages/webview_flutter
@@ -87,10 +89,10 @@ dependencies:
   # 键盘增强工具
   keyboard_actions: ^2.1.2
 
-  common_utils: ^1.1.3
+  common_utils: ^1.2.4
 
   # fluro路由
-  fluro: ^1.6.3
+  fluro: ^1.7.8
 
   # 加载动画
   flutter_spinkit: ^4.1.2+1
@@ -98,7 +100,7 @@ dependencies:
   # 图片多选
   photo: ^0.4.8
 
-  multi_image_picker: ^4.7.14
+  multi_image_picker: ^4.7.15
 
   # 加密库
   crypto: ^2.1.4
@@ -129,13 +131,13 @@ dependencies:
   #  vibrate: ^0.0.4
 
   # 小红点
-  badges: ^1.1.1
+  badges: ^1.1.6
 
   # 侧滑菜单
   #  flutter_slidable: ^0.5.4
 
   # 自定义文本溢出 https://github.com/fluttercandies/extended_text/blob/master/README-ZH.md
-  extended_text: ^4.0.0
+  extended_text: ^4.1.0
 
   flutter_svg: ^0.19.0
 

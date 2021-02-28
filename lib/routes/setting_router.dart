@@ -40,7 +40,7 @@ class SettingRouter implements IRouterProvider {
   static String notificationSettingPage = "/pc/notifiSetting";
 
   @override
-  void initRouter(Router router) {
+  void initRouter(FluroRouter router) {
     router.define(settingPage,
         handler: Handler(handlerFunc: (_, params) => PersonalCenter()),transitionType: TransitionType.fadeIn);
 

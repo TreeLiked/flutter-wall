@@ -431,7 +431,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                       : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
                   width: 20,
                   height: 20,
-                  color: widget._tweet.loved ? Colors.pink[100] : Colors.grey,
+                  color: widget._tweet.loved ? Colors.yellow[600] : Colors.grey,
                 ),
                 onTap: () => updatePraise(context, widget._tweet))));
   }

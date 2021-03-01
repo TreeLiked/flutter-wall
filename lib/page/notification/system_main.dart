@@ -95,7 +95,7 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
                 enablePullDown: true,
                 enablePullUp: true,
                 header: WaterDropHeader(
-                  waterDropColor: Colors.pinkAccent,
+                  waterDropColor: Color(0xff00CED1),
                   complete: const Text('刷新完成'),
                 ),
                 footer: ClassicFooter(

@@ -291,6 +291,9 @@ class Utils {
   }
 
   static String getBadgeText(int count, {int maxCount = 99}) {
+    if (count <= 0) {
+      return "";
+    }
     if (count > maxCount) {
       return '$maxCount+';
     }

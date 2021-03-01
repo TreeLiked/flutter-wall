@@ -6,7 +6,7 @@ class Result<T> {
 
   Result.fromJson(Map<String, dynamic> json)
       : isSuccess = json['isSuccess'],
-        code = json['code'],
+        code = json['code'] is String ? json['code']: json['code'].toString(),
         message = json['message'],
         data = json['data'];
 

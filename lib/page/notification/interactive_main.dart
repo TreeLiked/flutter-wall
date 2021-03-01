@@ -100,7 +100,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
     return Scaffold(
 //        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
         appBar: MyAppBar(
-          centerTitle: "与我有关",
+          centerTitle: "个人通知",
           isBack: true,
           actionName: '全部已读',
           onPressed: CollectionUtil.isListEmpty(msgs) ? null : _readAll,
@@ -112,7 +112,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
                 enablePullDown: true,
                 enablePullUp: true,
                 header: WaterDropHeader(
-                  waterDropColor: Color(0xff80d0c7),
+                  waterDropColor: Colors.amber[700],
                   complete: const Text('刷新完成'),
                 ),
                 footer: ClassicFooter(

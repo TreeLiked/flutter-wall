@@ -36,7 +36,7 @@ Map<String, dynamic> headersJson = {
 };
 
 class HttpUtil {
-  static final String authKey = "Authorization";
+  static final String authKey = SharedConstant.AUTH_HEADER_VALUE;
 
   Dio dio;
   BaseOptions options;

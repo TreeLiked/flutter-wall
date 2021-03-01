@@ -60,7 +60,7 @@ dependencies:
   photo_view: ^0.10.3
   # 
   flutter_screenutil: ^2.3.1
-#  flutter_screenutil: ^4.0.3+1
+  #  flutter_screenutil: ^4.0.3+1
 
 
   # 权限管理
@@ -119,10 +119,10 @@ dependencies:
 
   # 极光推送
   jpush_flutter: 0.5.5
-#  jpush_flutter:
-#    git:
-#      url: git://github.com/jpush/jpush-flutter-plugin.git
-#      ref: master
+  #  jpush_flutter:
+  #    git:
+  #      url: git://github.com/jpush/jpush-flutter-plugin.git
+  #      ref: master
 
   # 设备信息
   device_info: ^0.4.2+8
@@ -166,6 +166,10 @@ dependencies:
   # 九宫格图片 https://github.com/flutterchina/nine_grid_view
   nine_grid_view: ^1.0.7
 
+  # ws连接 https://pub.dev/packages/web_socket_channel/install
+  web_socket_channel: ^1.2.0
+
+  stomp_dart_client: ^0.3.8
 
 
 

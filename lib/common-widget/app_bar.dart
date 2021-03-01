@@ -61,8 +61,9 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: pfStyle.copyWith(
-                          fontSize: Dimens.font_sp16,
-                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w500,
+                          fontSize: Dimens.font_sp16p5,
+                          letterSpacing: 1.1,
                           color:
                               _overlayStyle == SystemUiOverlayStyle.light ? Colours.dark_text : Colours.text,
                         )),
@@ -76,7 +77,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         FocusScope.of(context).unfocus();
                         Navigator.maybePop(context);
                       },
-                      tooltip: 'Back',
+                      tooltip: '返回',
                       padding: const EdgeInsets.all(12.0),
                       icon: Image.asset(
                         backImg,
@@ -85,23 +86,23 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                     )
                   : Gaps.empty,
               Positioned(
-                right: 0.0,
+                right: 8.0,
                 child: Theme(
                   data: Theme.of(context).copyWith(
                       buttonTheme: ButtonThemeData(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     minWidth: 60.0,
                   )),
                   child: actionName.isEmpty
-                      ? Container()
+                      ? Gaps.empty
                       : FlatButton(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-//                    color: Colors.amber,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                          color: Color(0xffFDF5E6),
                           child: Text(
                             actionName,
                             key: const Key('actionName'),
-                            style: const TextStyle(fontSize: Dimens.font_sp14),
+                            style: pfStyle.copyWith(fontSize: Dimens.font_sp13),
                           ),
                           textColor: Colors.amber[700],
                           highlightColor: Colors.transparent,

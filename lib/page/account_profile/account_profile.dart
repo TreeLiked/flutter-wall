@@ -300,12 +300,14 @@ class _AccountProfileState extends State<AccountProfile> {
                                         softWrap: false,
                                         overflow: TextOverflow.ellipsis,
                                         text: TextSpan(children: [
-                                          WidgetSpan(child: Icon(Icons.school, size: 16, color: Colors.grey)),
+                                          WidgetSpan(
+                                              child: Icon(Icons.school,
+                                                  size: 16, color: isDark ? Colors.white60 : Colors.black87)),
                                           // WidgetSpan(
                                           //     child: _wrapIcon(LoadAssetSvg("count",
                                           //         width: 19, height: 19, color: Colors.green))),
                                           TextSpan(
-                                              text: " " + _getCampusInfoText(),
+                                              text: "  ${_getCampusInfoText()}",
                                               style: TextStyle(
                                                   fontSize: Dimens.font_sp15,
                                                   fontFamily: TextConstant.PING_FANG_FONT,

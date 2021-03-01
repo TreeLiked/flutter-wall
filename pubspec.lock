@@ -950,6 +950,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.10.0-nullsafety.1"
+  stomp_dart_client:
+    dependency: "direct main"
+    description:
+      name: stomp_dart_client
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.8"
   stream_channel:
     dependency: transitive
     description:
@@ -1056,12 +1063,12 @@ packages:
     source: hosted
     version: "0.9.7+15"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   webview_flutter:
     dependency: "direct main"
     description:

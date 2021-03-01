@@ -36,10 +36,10 @@ class NotificationIndexPage extends StatefulWidget {
 
 class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
-  String iconSubPath = "heart";
-  String iconSchoolPath = "hat";
-  String iconContactPath = "wave";
-  String iconOfficialPath = "author";
+  String iconSubPath = "self2";
+  String iconSchoolPath = "school2";
+  String iconContactPath = "contact2";
+  String iconOfficialPath = "official2";
 
   final String noMessage = "暂无新通知";
 
@@ -154,12 +154,12 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     return Scaffold(
       backgroundColor: ThemeUtils.getBackColor(context),
       appBar: AppBar(
-        backgroundColor: ThemeUtils.getBackColor(context),
+        backgroundColor: isDark ? Colours.dark_bottom_sheet : Colors.white,
         automaticallyImplyLeading: false,
         title: Text('消息',
             style: pfStyle.copyWith(
                 fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.3)),
-        centerTitle: false,
+        centerTitle: true,
         leading: IconButton(
             icon: Icon(Icons.arrow_back), iconSize: 23.0, onPressed: () => NavigatorUtils.goBack(context)),
       ),
@@ -180,24 +180,28 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                 children: <Widget>[
                   MainMessageItem(
                     iconPath: iconSubPath,
+                    iconColor: Color(0xff87CEFF),
                     title: "私信",
                     body: "暂无私信消息",
-                    color: Colors.pink[300],
+                    color: Color(0xffEBEDFD),
                     onTap: () => ToastUtil.showToast(context, "当前没有私信消息"),
                   ),
                   MainMessageItem(
-                      iconPath: iconSchoolPath,
-                      title: "校园公告",
-                      tagName: "官方",
-                      body: "暂无新通知",
-                      pointType: true,
-                      onTap: () {
-                        NavigatorUtils.push(context, NotificationRouter.campusMain);
-                      },
-                      color: Colors.amber),
+                    iconPath: iconSchoolPath,
+                    title: "校园公告",
+                    tagName: "官方",
+                    body: "暂无新通知",
+                    pointType: true,
+                    onTap: () {
+                      NavigatorUtils.push(context, NotificationRouter.campusMain);
+                    },
+                    color: Color(0xffFCF1F4),
+                    iconColor: Color(0xffFF69B4),
+                  ),
                   MainMessageItem(
                       iconPath: iconContactPath,
-                      color: Colors.lightGreen,
+                      color: Color(0xffEBFAF4),
+                      iconColor: Color(0xff00CED1),
                       title: "与我有关",
                       body: _latestInteractionMsg == null ? noMessage : _getInteractionBody(),
                       time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
@@ -211,7 +215,8 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                   Gaps.vGap8,
                   MainMessageItem(
                     iconPath: iconOfficialPath,
-                    color: Colors.lightBlueAccent,
+                    color: Color(0xffFEF7E7),
+                    iconColor: Color(0xffDAA520),
                     title: "Wall",
                     tagName: "官方",
                     controller: MessageUtil.systemStreamCntCtrl,

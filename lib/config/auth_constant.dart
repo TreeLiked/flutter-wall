@@ -1,4 +1,8 @@
 class SharedConstant {
+  static const String AUTH_HEADER_VALUE = "Authorization";
+  static const String ORG_ID_HEADER_VALUE = "OrgId";
+
+
   static const String LOCAL_ACCOUNT_ID = "ACCOUNT_ID";
 
   static const String LOCAL_ACCOUNT_TOKEN = "ACCOUNT_TOKEN";

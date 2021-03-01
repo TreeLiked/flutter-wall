@@ -194,6 +194,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
               count: 10,
               cache: true,
+              lightShadow: Colors.black38,
               outerMargin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
               outerRadius: BorderRadius.circular(8.0),
               imageRadius: BorderRadius.circular(8.0),

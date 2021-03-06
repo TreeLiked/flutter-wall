@@ -127,7 +127,6 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
     curReply.account = acc;
 
     await TweetApi.pushReply(curReply, curReply.tweetId).then((result) {
-      print(result.data);
       if (result.isSuccess) {
         TweetReply newReply = TweetReply.fromJson(result.data);
         _controller.clear();

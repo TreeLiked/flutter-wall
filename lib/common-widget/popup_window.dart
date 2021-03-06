@@ -31,8 +31,7 @@ Future<T> showPopupWindow<T>({
       break;
     case TargetPlatform.android:
     case TargetPlatform.fuchsia:
-      label =
-          semanticLabel ?? MaterialLocalizations.of(context)?.popupMenuLabel;
+      label = semanticLabel ?? MaterialLocalizations.of(context)?.popupMenuLabel;
   }
 
   return Navigator.push(
@@ -43,9 +42,8 @@ Future<T> showPopupWindow<T>({
           child: child,
           elevation: elevation,
           semanticLabel: label,
-          theme: Theme.of(context, shadowThemeOnly: true),
-          barrierLabel:
-              MaterialLocalizations.of(context).modalBarrierDismissLabel,
+          theme: Theme.of(context),
+          barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
           fullWidth: fullWidth,
           isShowBg: isShowBg));
 }
@@ -96,8 +94,7 @@ class _PopupWindowRoute<T> extends PopupRoute<T> {
   }
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     Widget win = new _PopupWindow<T>(
       route: this,
       semanticLabel: semanticLabel,
@@ -126,8 +123,7 @@ class _PopupWindowRoute<T> extends PopupRoute<T> {
                 height: double.infinity,
                 color: isShowBg ? const Color(0x99000000) : null,
                 child: new CustomSingleChildLayout(
-                  delegate: new _PopupWindowLayoutDelegate(
-                      position, null, Directionality.of(context)),
+                  delegate: new _PopupWindowLayoutDelegate(position, null, Directionality.of(context)),
                   child: win,
                 ),
               ),
@@ -155,14 +151,11 @@ class _PopupWindow<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double length = 10.0;
-    final double unit = 1.0 /
-        (length + 1.5); // 1.0 for the width and 0.5 for the last item's fade.
+    final double unit = 1.0 / (length + 1.5); // 1.0 for the width and 0.5 for the last item's fade.
 
-    final CurveTween opacity =
-        new CurveTween(curve: const Interval(0.0, 1.0 / 3.0));
+    final CurveTween opacity = new CurveTween(curve: const Interval(0.0, 1.0 / 3.0));
     final CurveTween width = new CurveTween(curve: new Interval(0.0, unit));
-    final CurveTween height =
-        new CurveTween(curve: new Interval(0.0, unit * length));
+    final CurveTween height = new CurveTween(curve: new Interval(0.0, unit * length));
 
     final Widget child = new ConstrainedBox(
         constraints: new BoxConstraints(
@@ -170,8 +163,7 @@ class _PopupWindow<T> extends StatelessWidget {
           maxWidth: fullWidth ? double.infinity : _kWindowMaxWidth,
         ),
         child: new SingleChildScrollView(
-          padding:
-              const EdgeInsets.symmetric(vertical: _kWindowVerticalPadding),
+          padding: const EdgeInsets.symmetric(vertical: _kWindowVerticalPadding),
           child: route.child,
         ));
 
@@ -181,9 +173,7 @@ class _PopupWindow<T> extends StatelessWidget {
         return new Opacity(
           opacity: opacity.evaluate(route.animation),
           child: new Material(
-            type: route.elevation == 0
-                ? MaterialType.transparency
-                : MaterialType.card,
+            type: route.elevation == 0 ? MaterialType.transparency : MaterialType.card,
             elevation: route.elevation,
             child: new Align(
               alignment: AlignmentDirectional.topEnd,
@@ -207,8 +197,7 @@ class _PopupWindow<T> extends StatelessWidget {
 
 ///自定义委托内容：子控件大小及其位置计算
 class _PopupWindowLayoutDelegate extends SingleChildLayoutDelegate {
-  _PopupWindowLayoutDelegate(
-      this.position, this.selectedItemOffset, this.textDirection);
+  _PopupWindowLayoutDelegate(this.position, this.selectedItemOffset, this.textDirection);
 
   final RelativeRect position;
   final double selectedItemOffset;
@@ -218,8 +207,8 @@ class _PopupWindowLayoutDelegate extends SingleChildLayoutDelegate {
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
     // The menu can be at most the size of the overlay minus 8.0 pixels in each
     // direction.
-    return new BoxConstraints.loose(constraints.biggest -
-        const Offset(_kWindowScreenPadding * 2.0, _kWindowScreenPadding * 2.0));
+    return new BoxConstraints.loose(
+        constraints.biggest - const Offset(_kWindowScreenPadding * 2.0, _kWindowScreenPadding * 2.0));
   }
 
   @override
@@ -233,9 +222,7 @@ class _PopupWindowLayoutDelegate extends SingleChildLayoutDelegate {
     if (selectedItemOffset == null) {
       y = position.top;
     } else {
-      y = position.top +
-          (size.height - position.top - position.bottom) / 2.0 -
-          selectedItemOffset;
+      y = position.top + (size.height - position.top - position.bottom) / 2.0 - selectedItemOffset;
     }
 
     // Find the ideal horizontal position.

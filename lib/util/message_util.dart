@@ -4,13 +4,11 @@ import 'dart:convert';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/bloc/count_bloc.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/im_dto.dart';
-import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
@@ -18,6 +16,7 @@ import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
+import 'package:stomp_dart_client/stomp.dart';
 
 class SingleMessageControl extends BaseBloc {
   static final String _TAG = "SingleMessageControl";
@@ -55,48 +54,29 @@ class SingleMessageControl extends BaseBloc {
 }
 
 class MessageUtil extends BaseBloc {
-  static bool _loopQueryNotification = true;
+  // ws 长连接客户端
+  static StompClient _stompClient;
 
-  static void startLoopQueryNotification() {
-    _loopQueryNotification = true;
-    loopRefreshMessage();
+  static StompClient get stompClient => _stompClient;
+
+  static set setStompClient(StompClient value) {
+    _stompClient = value;
   }
 
-  static void stopLoopQueryNotification() {
-    _loopQueryNotification = false;
+  static queryAndSetInteractionAndSystemMessageCnt() async {
+    MessageAPI.queryInteractionMessageCount().then((cnt) {
+      MessageAPI.querySystemMessageCount().then((value) => {MessageUtil.setNotificationCnt(cnt + value)});
+    });
   }
 
-  static loopRefreshMessage() async {
-    if (_loopQueryNotification) {
-      Future.delayed(Duration(seconds: 60)).then((_) {
-        MessageAPI.queryInteractionMessageCount().then((cnt) {
-          MessageUtil.setNotificationCnt(cnt);
-        }).whenComplete(() {
-          if (_loopQueryNotification) {
-            loopRefreshMessage();
-          }
-        });
-      });
-    }
-  }
-
-  static loopRefreshNewTweet(BuildContext context) async {
+  static queryAndSetNewTweetCnt(BuildContext context) async {
     final _tweetProvider = Provider.of<TweetProvider>(context);
     List<BaseTweet> tweets = _tweetProvider.displayTweets;
-
     if (CollectionUtil.isListEmpty(tweets)) {
-      await Future.delayed(Duration(seconds: 60)).then((value) => loopRefreshNewTweet(context));
       return;
     }
-
-    Future.delayed(Duration(seconds: 60)).then((_) {
-      final _tweetProvider = Provider.of<TweetProvider>(context);
-      List<BaseTweet> tweets = _tweetProvider.displayTweets;
-      MessageAPI.queryNewTweetCount(Application.getOrgId, tweets[0].id, null).then((cnt) {
-        MessageUtil.setTabIndexTweetCnt(cnt);
-      }).whenComplete(() {
-        loopRefreshNewTweet(context);
-      });
+    MessageAPI.queryNewTweetCount(Application.getOrgId, tweets[0].id, null).then((cnt) {
+      MessageUtil.setTabIndexTweetCnt(cnt);
     });
   }
 
@@ -104,6 +84,7 @@ class MessageUtil extends BaseBloc {
   static int notificationCnt = 0;
   static int tabIndexTweetCnt = 0;
 
+  // 这个是通知页面用的
   static final SingleMessageControl interactionMsgControl = new SingleMessageControl();
   static final SingleMessageControl systemMsgControl = new SingleMessageControl();
 
@@ -113,14 +94,7 @@ class MessageUtil extends BaseBloc {
   // 首页 tab红点
   static final StreamController<int> _tabIndexTweetStreamCntCtrl = new StreamController<int>.broadcast();
 
-  static final StreamController<int> _interactionStreamCntCtrl = new StreamController<int>.broadcast();
-  static final StreamController<int> _systemStreamCntCtrl = new StreamController<int>.broadcast();
-
   static StreamController<int> get notificationStreamCntCtrl => _notificationStreamCntCtrl;
-
-  static StreamController<int> get interactionStreamCntCtrl => _interactionStreamCntCtrl;
-
-  static StreamController<int> get systemStreamCntCtrl => _systemStreamCntCtrl;
 
   static StreamController<int> get tabIndexStreamCntCtrl => _tabIndexTweetStreamCntCtrl;
 
@@ -133,7 +107,9 @@ class MessageUtil extends BaseBloc {
 
   static void clearNotificationCnt() {
     notificationCnt = 0;
-    _notificationStreamCntCtrl.sink.add(0);
+    if (_notificationStreamCntCtrl != null && !_notificationStreamCntCtrl.isClosed) {
+      _notificationStreamCntCtrl.sink.add(0);
+    }
   }
 
   static void setTabIndexTweetCnt(int count) {
@@ -144,17 +120,10 @@ class MessageUtil extends BaseBloc {
   }
 
   static void clearTabIndexTweetCnt() {
-    tabIndexTweetCnt =0;
-    _tabIndexTweetStreamCntCtrl.sink.add(0);
-  }
-
-  static void clearInteractionCnt() {
-    notificationCnt = 0;
-    _interactionStreamCntCtrl.sink.add(0);
-  }
-
-  static void setInteractionCnt(int count) {
-    _interactionStreamCntCtrl.sink.add(count);
+    tabIndexTweetCnt = 0;
+    if (_tabIndexTweetStreamCntCtrl != null && !_tabIndexTweetStreamCntCtrl.isClosed) {
+      _tabIndexTweetStreamCntCtrl.sink.add(0);
+    }
   }
 
   static void showSystemRedPoint() {
@@ -167,9 +136,8 @@ class MessageUtil extends BaseBloc {
 
   static void close() {
     _notificationStreamCntCtrl?.close();
-    _interactionStreamCntCtrl?.close();
-    _systemStreamCntCtrl?.close();
     _tabIndexTweetStreamCntCtrl?.close();
+    stompClient?.deactivate();
   }
 
   static void handleInstantMessage(ImDTO instruction, {BuildContext context}) async {
@@ -184,11 +152,11 @@ class MessageUtil extends BaseBloc {
     LogUtil.e("Received Command: ${command.toString()}, Data: ${instruction.data.toString()}",
         tag: SingleMessageControl._TAG);
     switch (command) {
-      case 200: // 有新推文内容，data: BaseTweet
+      case ImDTO.COMMAND_TWEET_CREATED: // 有新推文内容，data: BaseTweet
         setTabIndexTweetCnt(tabIndexTweetCnt + 1);
         ToastUtil.showToast(context, "有新的内容，刷新试试 ～", gravity: ToastGravity.BOTTOM);
         break;
-      case 201: // 用户推文被点赞了，data: 点赞的账户模型
+      case ImDTO.COMMAND_TWEET_PRAISED: // 用户推文被点赞了，data: 点赞的账户模型
         setNotificationCnt(notificationCnt + 1);
         Account praiseAcc = Account.fromJson(instruction.data);
         if (praiseAcc != null) {
@@ -197,7 +165,7 @@ class MessageUtil extends BaseBloc {
         }
 
         break;
-      case 202: // 用户被评论，data: 评论的内容
+      case ImDTO.COMMAND_TWEET_REPLIED: // 用户被评论，data: 评论的内容
         // Result<dynamic> r = Result.fromJson(Api.convertResponse((instruction.data)));
         // print(r.toJson());
         setNotificationCnt(notificationCnt + 1);
@@ -211,13 +179,14 @@ class MessageUtil extends BaseBloc {
           ToastUtil.showToast(context, '$displayContent', gravity: ToastGravity.BOTTOM);
         }
         break;
-      case 203: // 推文被删除，data: 删除的推文id
+      case ImDTO.COMMAND_TWEET_DELETED: // 推文被删除，data: 删除的推文id
         int detTweetId = instruction.data;
         Provider.of<TweetProvider>(context).delete(detTweetId);
         break;
       default:
         break;
     }
+    wsCommandEventBus.fire(instruction);
   }
 
   @override

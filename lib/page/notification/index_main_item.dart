@@ -43,7 +43,7 @@ class MainMessageItem extends StatefulWidget {
 
 class _MainMessageItemState extends State<MainMessageItem> {
   final double iconSize = 45.0;
-  double lineHeight = 47.5;
+  double lineHeight = 50;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
             builder: (_, snapshot) => InkWell(
                   onTap: widget.onTap,
                   child: Container(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(10.0),
                     color: isDark ? Colours.dark_bottom_sheet : Colors.white,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
@@ -69,7 +69,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                 color: isDark ? null : widget.color,
                                 border: Border.all(color: Colors.white12, width: isDark ? 1 : 0)),
                             child: Padding(
-                              padding: const EdgeInsets.all(7.0),
+                              padding: const EdgeInsets.all(7.5),
                               child: LoadAssetSvg(
                                 widget.iconPath,
                                 color: widget.iconColor,
@@ -159,7 +159,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
       onTap: widget.onTap,
       child: Container(
 //        width: double.infinity,
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(10.0),
         color: isDark ? Colours.dark_bottom_sheet : Colors.white,
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -173,7 +173,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                   border: Border.all(color: Colors.white12, width: isDark ? 1 : 0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.5),
+                  padding: const EdgeInsets.all(7.5),
                   child: LoadAssetSvg(
                     widget.iconPath,
                     // color: isDark ? widget.color : Colors.white,

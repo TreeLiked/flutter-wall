@@ -477,7 +477,7 @@ class _CreatePageState extends State<CreatePage> {
 
     return new Scaffold(
       backgroundColor: ColorConstant.MAIN_BG,
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: new AppBar(
         title: Text(widget.title,
             style: TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400, letterSpacing: 1.2)),

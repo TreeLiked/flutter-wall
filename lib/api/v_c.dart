@@ -15,7 +15,7 @@ class VCAPI {
     Response response;
     String url = Api.API_CHECK_AVAILABLE +
         "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}";
-    print(url);
+    ;
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -31,7 +31,7 @@ class VCAPI {
     Response response;
     String url = Api.API_CHECK_UPDATE +
         "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}&platform=${ios ? 'IOS' : 'ANDROID'}";
-    print(url);
+    ;
     String error;
     Result<PubVersion> r = new Result();
     try {

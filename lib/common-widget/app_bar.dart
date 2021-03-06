@@ -30,6 +30,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeUtils.isDark(context);
     Color _backgroundColor;
 
     if (backgroundColor == null) {
@@ -98,7 +99,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                       : FlatButton(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                          color: Color(0xffFDF5E6),
+                          color: isDark ? Colors.black12 : Color(0xffFDF5E6),
                           child: Text(
                             actionName,
                             key: const Key('actionName'),

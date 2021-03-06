@@ -14,11 +14,9 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/im_dto.dart';
 import 'package:iap_app/model/page_param.dart';
-import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
@@ -42,7 +40,6 @@ import 'package:iap_app/util/JPushUtil.dart';
 import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -53,8 +50,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/status.dart' as status;
 
 class HomePage extends StatefulWidget {
   final pullDownCallBack;
@@ -110,8 +105,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-
-    _tabController = TabController(vsync: this, length: 3);
+    _tabController = TabController(vsync: this, length: 2);
     // _tabController.addListener(() {
     //   if (_tabController.index.toDouble() == _tabController.animation.value) {
     //     bool _dc = true;
@@ -133,8 +127,9 @@ class _HomePageState extends State<HomePage>
     //   }
     // });
 
-    initRefreshMessage();
-    // loopQueryNewTweet();
+    initRefreshMessageTotalCnt();
+    initQueryNewTweetCnt();
+
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -149,7 +144,7 @@ class _HomePageState extends State<HomePage>
         SharedConstant.AUTH_HEADER_VALUE: Application.getLocalAccountToken,
         SharedConstant.ORG_ID_HEADER_VALUE: Application.getOrgId.toString()
       };
-      final stompClient = StompClient(
+      MessageUtil.setStompClient = StompClient(
           config: StompConfig(
               // url: 'ws://192.168.31.235:8088/wallServer',
               url: Api.API_BASE_WS,
@@ -177,7 +172,7 @@ class _HomePageState extends State<HomePage>
               onWebSocketError: (dynamic error) => ToastUtil.showToast(context, "连接服务器失败"),
               stompConnectHeaders: headers,
               webSocketConnectHeaders: headers));
-      stompClient.activate();
+      MessageUtil.stompClient.activate();
 
       // final channel = await IOWebSocketChannel.connect(Api.API_BASE_WS,
       //     headers: headers);
@@ -192,16 +187,12 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  void initRefreshMessage() async {
-    MessageAPI.queryInteractionMessageCount().then((cnt) {
-      MessageAPI.querySystemMessageCount().then((value) => {MessageUtil.setNotificationCnt(cnt + value)});
-    }).whenComplete(() {
-      // MessageUtil.startLoopQueryNotification();
-    });
+  void initRefreshMessageTotalCnt() async {
+    MessageUtil.queryAndSetInteractionAndSystemMessageCnt();
   }
 
-  void loopQueryNewTweet() async {
-    MessageUtil.loopRefreshNewTweet(Application.context);
+  void initQueryNewTweetCnt() async {
+    MessageUtil.queryAndSetNewTweetCnt(Application.context);
   }
 
   @override
@@ -393,9 +384,9 @@ class _HomePageState extends State<HomePage>
                                 ),
                               ),
                               Tab(child: Text('校园热门', style: pfStyle)),
-                              Tab(
-                                text: '今日话题',
-                              ),
+                              // Tab(
+                              //   text: '今日话题',
+                              // ),
                             ],
                           ),
                         ),
@@ -448,7 +439,10 @@ class _HomePageState extends State<HomePage>
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                    children: [TweetIndexTabView(), HotToday(), DiscussMain()],
+                    children: [
+                      TweetIndexTabView(), HotToday(),
+                      // DiscussMain()
+                    ],
                   ),
                 ),
               ],

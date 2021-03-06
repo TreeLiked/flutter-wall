@@ -121,7 +121,6 @@ class _AccountProfileState extends State<AccountProfile> {
 
   void _loadMoreData() async {
     List<BaseTweet> tweets = await _getTweets();
-    print("${tweets.length}");
     if (!CollectionUtil.isListEmpty(tweets)) {
       _currentPage++;
       setState(() {

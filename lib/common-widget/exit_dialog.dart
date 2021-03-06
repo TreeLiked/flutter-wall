@@ -50,8 +50,8 @@ class _ExitDialog extends State<ExitDialog> {
         await prefix0.SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
         await prefix0.SpUtil.remove(SharedConstant.MY_UN_LIKED);
         await prefix0.SpUtil.clear();
-        MessageUtil.interactionMsgControl.dispose();
-        MessageUtil.systemMsgControl.dispose();
+        // MessageUtil.close();
+
         await MessageUtil.notificationStreamCntCtrl.close();
         httpUtil.clearAuthToken();
         httpUtil2.clearAuthToken();

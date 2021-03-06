@@ -250,7 +250,7 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
     print("create page build");
     sw = ScreenUtil.screenWidthPx;
     return new Scaffold(
-      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomInset: true,
       appBar: new AppBar(
         title: Text(widget.title),
         centerTitle: true,

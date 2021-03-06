@@ -220,7 +220,7 @@ class _SMSLoginPageState extends State<LoginPage> {
     isDark = ThemeUtils.isDark(context);
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
           padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(200)),
           child: defaultTargetPlatform == TargetPlatform.iOS

@@ -10,7 +10,6 @@ class InviteAPI {
   static Future<Result> checkIsInInvitation() async {
     Response response;
     String url = Api.API_IS_ON_INVITATION;
-    print(url);
     Result r;
     try {
       response = await httpUtil.dio.get(Api.API_IS_ON_INVITATION);
@@ -28,7 +27,6 @@ class InviteAPI {
   static Future<Result> checkCodeValid(String code) async {
     Response response;
     String url = Api.API_CHECK_INVITATION_CODE + '?c=$code';
-    print(url);
     Result r;
     try {
       response = await httpUtil.dio.get(url);
@@ -46,7 +44,6 @@ class InviteAPI {
   static Future<Map<String, dynamic>> checkMyInvitation() async {
     Response response;
     String url = Api.API_MY_INVITATION;
-    print(url);
     try {
       response = await httpUtil2.dio.get(Api.API_MY_INVITATION);
       Map<String, dynamic> json = Api.convertResponse(response.data);

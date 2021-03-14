@@ -17,7 +17,6 @@ class Api {
 
   static const String API_BASE_WS_DEV = "ws://127.0.0.1:8088/wallServer";
 
-
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
   static const String API_BASE_INF_DEV = "http://192.168.0.105:8088";
 
@@ -62,6 +61,10 @@ class Api {
   static const String API_TWEET_REPLY_CREATE = "/tweet/reply/add.do";
   static const String API_TWEET_REPLY_QUERY = "/tweet/reply/list.json";
   static const String API_TWEET_REPLY_DELETE = "/tweet/reply/del.do";
+
+  // circle relative start
+  static const String API_CIRCLE_QUERY_SINGLE = "/circle/listSingle.json";
+  static const String API_CIRCLE_QUERY_SINGLE_DETAIL = "/circle/listSingleDetail.json";
 
   // sms
   static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";
@@ -134,7 +137,6 @@ class Api {
   // advertisement
   static const String API_AD_SPLASH = API_BASE_INF_URL + "/adv/splash/g";
 
-
   static Map<String, dynamic> convertResponse(Object responseData) {
     try {
       String jsonTemp = json.encode(responseData);
@@ -175,7 +177,7 @@ class Api {
     }
   }
 
-  static Result<dynamic>  genErrorResult(String errorMsg, {dynamic data}) {
+  static Result<dynamic> genErrorResult(String errorMsg, {dynamic data}) {
     Result r = new Result();
     r.isSuccess = false;
     r.message = errorMsg;

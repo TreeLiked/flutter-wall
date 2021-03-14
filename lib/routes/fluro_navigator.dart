@@ -59,6 +59,14 @@ class NavigatorUtils {
   static goWebViewPage(BuildContext context, String title, String url, {String source = "0"}) {
     //fluro 不支持传中文,需转换
 
+    if (url.contains("music.163.com")) {
+      title = "网易云音乐";
+    } else if (url.contains("y.qq.com")) {
+      title = "QQ音乐";
+    } else if (url.contains("kugou.com")) {
+      title = "酷狗音乐";
+    }
+
     push(context,
         '${Routes.webViewPage}?title=${Uri.encodeComponent(title)}&url=${Uri.encodeComponent(url)}&source=$source');
   }

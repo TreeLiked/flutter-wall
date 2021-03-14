@@ -287,7 +287,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               fit: BoxFit.cover,
             )),
         Gaps.vGap16,
-        Text('快去抢占热门吧~',
+        Text('快去抢占热门吧 ～',
             style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp16, letterSpacing: 1.3)),
       ],
     );

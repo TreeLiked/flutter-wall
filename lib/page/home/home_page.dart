@@ -25,8 +25,9 @@ import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
+import 'package:iap_app/part/circle/circle_main_new.dart';
 import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/part/discuss_main.dart';
+import 'package:iap_app/part/circle/circle_main.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -102,30 +103,35 @@ class _HomePageState extends State<HomePage>
 
   BuildContext _myContext;
 
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
-    // _tabController.addListener(() {
-    //   if (_tabController.index.toDouble() == _tabController.animation.value) {
-    //     bool _dc = true;
-    //     switch (_tabController.index) {
-    //       case 0:
-    //         _dc = true;
-    //         break;
-    //       case 1:
-    //         _dc = false;
-    //         break;
-    //       case 2:
-    //         break;
-    //     }
-    //     if (_displayCreate != _dc) {
-    //       setState(() {
-    //         _displayCreate = _dc;
-    //       });
-    //     }
-    //   }
-    // });
+    _tabController = TabController(vsync: this, length: 3);
+    _tabController.addListener(() {
+      setState(() {
+        _currentTabIndex = _tabController.index;
+      });
+      if (_tabController.index.toDouble() == _tabController.animation.value) {
+        bool _dc = true;
+        switch (_tabController.index) {
+          case 0:
+            _dc = true;
+            break;
+          case 1:
+            _dc = true;
+            break;
+          case 2:
+            _dc = false;
+            break;
+        }
+        if (_displayCreate != _dc) {
+          setState(() {
+            _displayCreate = _dc;
+          });
+        }
+      }
+    });
 
     initRefreshMessageTotalCnt();
     initQueryNewTweetCnt();
@@ -372,7 +378,7 @@ class _HomePageState extends State<HomePage>
                                 builder: (_, snapshot) => Badge(
                                   elevation: 0,
                                   padding: const EdgeInsets.all(4.0),
-                                  child: Text('最新', style: pfStyle),
+                                  child: Text('最新', style: pfStyle.copyWith(color: _getTabColor(0))),
                                   animationType: BadgeAnimationType.fade,
                                   badgeColor: Colors.amber,
                                   showBadge: snapshot.data > 0,
@@ -383,10 +389,8 @@ class _HomePageState extends State<HomePage>
                                           pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
                                 ),
                               ),
-                              Tab(child: Text('校园热门', style: pfStyle)),
-                              // Tab(
-                              //   text: '今日话题',
-                              // ),
+                              Tab(child: Text('热门', style: pfStyle.copyWith(color: _getTabColor(1)))),
+                              Tab(child: Text('圈子', style: pfStyle.copyWith(color: _getTabColor(2)))),
                             ],
                           ),
                         ),
@@ -439,10 +443,7 @@ class _HomePageState extends State<HomePage>
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                    children: [
-                      TweetIndexTabView(), HotToday(),
-                      // DiscussMain()
-                    ],
+                    children: [TweetIndexTabView(), HotToday(), CircleMainNew()],
                   ),
                 ),
               ],
@@ -511,6 +512,14 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+
+  Color _getTabColor(int index) {
+    if (_currentTabIndex == index) {
+      return isDark ? Colors.white : Colors.black;
+    }
+    return isDark ? Colors.white38 : Colors.black54;
+  }
+
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[

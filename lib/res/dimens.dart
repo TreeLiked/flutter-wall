@@ -12,6 +12,12 @@ class Dimens {
   static const double font_sp17 = 17;
   static const double font_sp17p5 = 17.5;
   static const double font_sp18 = 18;
+  static const double font_sp19 = 19;
+  static const double font_sp20 = 20;
+  static const double font_sp21 = 21;
+  static const double font_sp22 = 22;
+  static const double font_sp23 = 23;
+  static const double font_sp24 = 24;
   static const double font_sp25 = 25;
 
   static const double gap_dp5 = 5;

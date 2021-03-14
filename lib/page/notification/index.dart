@@ -192,7 +192,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                     iconColor: Color(0xff87CEFF),
                     title: "私信",
                     body: "暂无私信消息",
-                    color: Color(0xffEBEDFD),
+                    color: Color(0xffF0F8FF),
                     onTap: () => ToastUtil.showToast(context, "当前没有私信消息"),
                   ),
                   MainMessageItem(

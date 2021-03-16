@@ -70,7 +70,7 @@ class StackImageContainer extends StatelessWidget {
           width: width,
           decoration: hasShadow
               ? BoxDecoration(
-                  color: isDark ? Colors.black54 : Colors.black26,
+                  color: isDark ? Colors.black45 : Colors.black26,
                 )
               : null,
           child: centerWidget == null

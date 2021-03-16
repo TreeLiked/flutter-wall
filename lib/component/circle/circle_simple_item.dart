@@ -115,8 +115,9 @@ class CircleSimpleItem extends StatelessWidget {
             child: SimpleTag(
               "娱乐",
               round: true,
-              radius: 2.0,
+              radius: 5.0,
               bgColor: Colors.white70,
+              bgDarkColor: Colors.white70,
               textColor: Colors.black87,
             ),
             left: 5.0,

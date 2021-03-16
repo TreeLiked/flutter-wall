@@ -49,9 +49,14 @@ class CircleSwiperBanner extends StatelessWidget {
       positionedWidgets: [
         Positioned(
             child: SimpleTag("美食",
-                round: true, radius: 10.0, bgColor: Colors.white70, textColor: Colors.black87),
-            left: 5.0,
-            top: 5.0),
+                round: true,
+                radius: 10.0,
+                verticalPadding: 2.0,
+                bgColor: Colors.white70,
+                bgDarkColor: Colors.white,
+                textColor: Colors.black87),
+            left: 10.0,
+            top: 10.0),
       ],
       onTap: () => Navigator.push(
         context,

@@ -217,7 +217,8 @@ class _CircleMainNewState extends State<CircleMainNew>
                       elevation: 0.0,
                       pinned: true,
                       floating: false,
-                      primary: false,
+                      snap: false,
+                      primary: true,
                       title: showRecommendTitleText
                           ? Row(
                               crossAxisAlignment: CrossAxisAlignment.end,

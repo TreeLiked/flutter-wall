@@ -1,38 +1,23 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:extended_text/extended_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/api/circle.dart';
-import 'package:iap_app/api/invite.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/account_avatar.dart';
-import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/my_flat_button.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/text_constant.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
-import 'package:iap_app/model/gender.dart';
-import 'package:iap_app/model/result.dart';
-import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/AccountProfileUtil.dart';
-import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
-import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/widget_util.dart';
-import 'package:provider/provider.dart';
 
 class CircleDetailPage extends StatefulWidget {
   final int _circleId;
@@ -49,7 +34,7 @@ class CircleDetailPage extends StatefulWidget {
 
 class _CircleDetailPageState extends State<CircleDetailPage> {
   bool _loading = false;
-  double avatarSize = 80;
+  double avatarSize = 70;
   Circle _circle;
 
   @override
@@ -111,10 +96,10 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                     '圈主',
                     Application.getAccount.nick,
                   ),
-                  _renderTextLine('', '查看已加入用户', contentOnTap: () {}),
-                  Gaps.vGap20,
+                  // _renderTextLine('', '查看已加入用户', contentOnTap: () {}),
+                  Gaps.vGap15,
                   _renderOptLine(),
-                  Gaps.vGap20,
+                  Gaps.vGap10,
                 ],
               ),
             ),
@@ -249,7 +234,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // MyFlatButton('查看已加入用户', Colors.green, onTap: () {}),
+          MyFlatButton('查看已加入用户', Colors.green, onTap: () {}),
           MyFlatButton('关  闭', ColorConstant.getCommonText(), onTap: () => NavigatorUtils.goBack(context))
         ],
       ),

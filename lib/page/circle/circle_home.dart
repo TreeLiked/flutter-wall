@@ -325,15 +325,15 @@ class _CircleHomeState extends State<CircleHome> {
                   onTap: () => _scrollController.animateTo(0,
                       duration: Duration(milliseconds: 3000), curve: Curves.fastLinearToSlowEaseIn),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: 50,
+                    height: 50,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         color: isDark ? Colors.black : Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: isDark ? Colors.orangeAccent : Colors.lightGreen,
+                            color: isDark ? Colors.orangeAccent : Colors.amberAccent,
                             blurRadius: 5.0,
                           ),
                         ]),
@@ -341,11 +341,11 @@ class _CircleHomeState extends State<CircleHome> {
                       'circle_go_top',
                       width: double.infinity,
                       height: double.infinity,
-                      color: isDark ? Colors.orangeAccent : Colors.lightGreen,
+                      color: isDark ? Colors.orangeAccent : Colors.amber,
                     ),
                   ),
                 ),
-                right: 60,
+                right: (Application.screenWidth - 50) / 2,
                 bottom: 60,
               )
             : Gaps.empty
@@ -392,7 +392,6 @@ class _CircleHomeState extends State<CircleHome> {
           setState(() {
             this.iJoin = !this.iJoin;
             NavigatorUtils.push(context, CircleRouter.CREATE, transitionType: TransitionType.fadeIn);
-
           });
         },
         child: Row(
@@ -466,7 +465,7 @@ class _CircleHomeState extends State<CircleHome> {
   }
 
   void _displayDetail() {
-    BottomSheetUtil.showBottomSheet(context, 0.6, CircleDetailPage(_circle.id, circle: _circle),
+    BottomSheetUtil.showBottomSheet(context, 0.65, CircleDetailPage(_circle.id, circle: _circle),
         topLine: false);
     UMengUtil.userGoPage(UMengUtil.PAGE_CIRCLE_DETAIL);
   }

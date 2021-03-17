@@ -1,23 +1,16 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/component/satck_img_conatiner.dart';
 import 'package:iap_app/component/simgple_tag.dart';
-import 'package:iap_app/component/stack_avatar.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
 import 'package:iap_app/page/circle/circle_home.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 class CircleSwiperBanner extends StatelessWidget {
   static const double TOP_RADIUS = 6.0;

@@ -74,3 +74,7 @@ android
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/lib/api/api.dart
+
+key.jks
+很久没打开问题排查&打包流程等.txt
+lib/global/oss_canstant.dart

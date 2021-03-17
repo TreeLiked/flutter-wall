@@ -3,7 +3,7 @@ import 'package:flustars/flustars.dart';
 
 class TimeUtil {
   static String getShortTime(DateTime dt) {
-    return TimelineUtil.format(dt.millisecondsSinceEpoch, locale: "zh_normal");
+    return TimelineUtil.format(dt.millisecondsSinceEpoch, locale: "zh_normal", dayFormat: DayFormat.Full);
   }
 
   static String getMonth(DateTime dt, {bool zeroFill = true}) {

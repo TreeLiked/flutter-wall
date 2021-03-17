@@ -6,7 +6,7 @@ import 'package:iap_app/util/http_util.dart';
 class TtSubscribe {
   static Future<Result<dynamic>> subscribeType(String tweetTypeName) async {
     String url = Api.API_TWEET_TYPE_SUBSCRIBE + "?ttName=$tweetTypeName";
-    print(url);
+    ;
     Response response;
     String em;
     try {
@@ -23,7 +23,7 @@ class TtSubscribe {
 
   static Future<Result<dynamic>> unSubscribeType(String tweetTypeName) async {
     String url = Api.API_TWEET_TYPE_UN_SUBSCRIBE + "?ttName=$tweetTypeName";
-    print(url);
+    ;
     Response response;
     String em;
     try {
@@ -40,7 +40,7 @@ class TtSubscribe {
 
   static Future<Result<dynamic>> checkSubscribeStatus(String tweetTypeName) async {
     String url = Api.API_TWEET_TYPE_CHECK_SUBSCRIBE + "?ttName=$tweetTypeName";
-    print(url);
+    ;
     Response response;
     String em;
     try {
@@ -57,7 +57,7 @@ class TtSubscribe {
 
   static Future<Result<dynamic>> getMySubscribeTypes() async {
     String url = Api.API_TWEET_TYPE_GET_SUBSCRIBE;
-    print(url);
+    ;
     Response response;
     String em;
     try {

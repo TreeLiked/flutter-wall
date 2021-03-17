@@ -7,6 +7,10 @@ class UMengUtil {
   static const String PAGE_TWEET_INDEX_DETAIL = "推文详情页";
   static const String PAGE_TWEET_INDEX_DETAIL_HOT = "推文热门详情页";
 
+  static const String PAGE_CIRCLE_INDEX = "圈子首页";
+  static const String PAGE_CIRCLE_HOME = "圈子主页";
+  static const String PAGE_CIRCLE_DETAIL = "圈子资料页面";
+
   static const String PAGE_DISCUSS_INDEX = "话题首页";
 
   static const String PAGE_NOTI_INDEX = "通知首页";

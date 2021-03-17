@@ -11,7 +11,6 @@ import 'package:iap_app/util/string.dart';
 class MessageAPI {
   static Future<List<AbstractMessage>> queryInteractionMsg(int currentPage, int pageSize) async {
     String url = Api.API_MSG_LIST_INTERACTION + "?currentPage=$currentPage";
-    print(url);
     try {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -61,7 +60,6 @@ class MessageAPI {
 
   static Future<List<AbstractMessage>> querySystemMsg(int currentPage, int pageSize) async {
     String url = Api.API_MSG_LIST_SYSTEM + "?currentPage=$currentPage";
-    print(url);
     try {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -88,7 +86,6 @@ class MessageAPI {
 
   static Future<Result> readAllInteractionMessage({bool pop = false}) async {
     String url = Api.API_MSG_READ_ALL_INTERACTION;
-    print(url);
     Result r;
     try {
       Response response = await httpUtil.dio.get(url);
@@ -105,7 +102,6 @@ class MessageAPI {
 
   static Future<Result> readThisMessage(int messageId) async {
     String url = Api.API_MSG_READ_THIS + "?mId=$messageId";
-    print(url);
     Result r;
     try {
       Response response = await httpUtil.dio.get(url);
@@ -126,7 +122,6 @@ class MessageAPI {
       return null;
     }
     String url = Api.API_MSG_LATEST + "?c=${type == 0 ? 'SYSTEM' : 'INTERACTION'}";
-    print(url);
     try {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -148,7 +143,6 @@ class MessageAPI {
 
   static Future<Result> deleteInteractionMessage() async {
     String url = Api.API_MSG_READ_ALL_INTERACTION;
-    print(url);
     Result r;
     try {
       Response response = await httpUtil.dio.get(url);
@@ -188,7 +182,6 @@ class MessageAPI {
       url = "${Api.API_NEW_TWEET_CNT}?oId=$orgId&tId=$tweetId&tType=$type";
     }
     try {
-      print(url);
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       Result r = Result.fromJson(json);

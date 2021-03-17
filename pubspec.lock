@@ -225,6 +225,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.9"
+  event_bus:
+    dependency: "direct main"
+    description:
+      name: event_bus
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.1"
   extended_image:
     dependency: "direct main"
     description:
@@ -375,13 +382,27 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.2+1"
+  flutter_staggered_grid_view:
+    dependency: "direct main"
+    description:
+      name: flutter_staggered_grid_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.4"
+  flutter_statusbarcolor:
+    dependency: "direct main"
+    description:
+      name: flutter_statusbarcolor
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.3"
   flutter_svg:
     dependency: "direct main"
     description:
       name: flutter_svg
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.19.0"
+    version: "0.19.1"
   flutter_swiper:
     dependency: "direct main"
     description:
@@ -665,6 +686,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.10"
+  palette_generator:
+    dependency: "direct main"
+    description:
+      name: palette_generator
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.3"
   path:
     dependency: transitive
     description:
@@ -950,6 +978,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.10.0-nullsafety.1"
+  stomp_dart_client:
+    dependency: "direct main"
+    description:
+      name: stomp_dart_client
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.8"
   stream_channel:
     dependency: transitive
     description:
@@ -1056,12 +1091,12 @@ packages:
     source: hosted
     version: "0.9.7+15"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   webview_flutter:
     dependency: "direct main"
     description:

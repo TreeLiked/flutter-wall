@@ -17,6 +17,7 @@ class MainMessageItem extends StatefulWidget {
   final String tagName;
   final String body;
   final Color color;
+  final Color iconColor;
   final DateTime time;
   final Function onTap;
   final bool pointType;
@@ -25,6 +26,7 @@ class MainMessageItem extends StatefulWidget {
   MainMessageItem(
       {this.iconPath,
       this.color = Colours.app_main,
+      this.iconColor,
       this.title,
       this.tagName,
       this.body,
@@ -41,7 +43,7 @@ class MainMessageItem extends StatefulWidget {
 
 class _MainMessageItemState extends State<MainMessageItem> {
   final double iconSize = 45.0;
-  double lineHeight = 47.5;
+  double lineHeight = 50;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
             builder: (_, snapshot) => InkWell(
                   onTap: widget.onTap,
                   child: Container(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+                    padding: const EdgeInsets.all(10.0),
                     color: isDark ? Colours.dark_bottom_sheet : Colors.white,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
@@ -67,10 +69,11 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                 color: isDark ? null : widget.color,
                                 border: Border.all(color: Colors.white12, width: isDark ? 1 : 0)),
                             child: Padding(
-                              padding: const EdgeInsets.all(7.0),
+                              padding: const EdgeInsets.all(7.5),
                               child: LoadAssetSvg(
                                 widget.iconPath,
-                                color: isDark ? widget.color : Colors.white,
+                                color: widget.iconColor,
+                                // color: isDark ? widget.color : Colors.black,
                                 height: iconSize,
                                 width: iconSize,
                               ),
@@ -88,8 +91,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                   child: Text(widget.title,
                                       style: pfStyle.copyWith(
                                           fontSize: Dimens.font_sp16,
-                                          fontWeight: FontWeight.w400,
-                                          letterSpacing: 1.2),
+                                          fontWeight: FontWeight.w400),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1),
                                 ),
@@ -117,7 +119,6 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                         style: pfStyle.copyWith(
                                             fontSize: 14.0,
                                             fontWeight: FontWeight.w400,
-                                            letterSpacing: 1.1,
                                             color: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: 14)
                                                 .color),
                                         overflow: TextOverflow.ellipsis,
@@ -158,7 +159,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
       onTap: widget.onTap,
       child: Container(
 //        width: double.infinity,
-        padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+        padding: const EdgeInsets.all(10.0),
         color: isDark ? Colours.dark_bottom_sheet : Colors.white,
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -172,10 +173,12 @@ class _MainMessageItemState extends State<MainMessageItem> {
                   border: Border.all(color: Colors.white12, width: isDark ? 1 : 0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.5),
+                  padding: const EdgeInsets.all(7.5),
                   child: LoadAssetSvg(
                     widget.iconPath,
-                    color: isDark ? widget.color : Colors.white,
+                    // color: isDark ? widget.color : Colors.white,
+                    color: widget.iconColor,
+
                     height: iconSize,
                     width: iconSize,
                   ),
@@ -193,7 +196,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                     Container(
                       child: Text(widget.title,
                           style: const TextStyle(
-                              fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400, letterSpacing: 1.1),
+                              fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1),
                     ),

@@ -15,7 +15,6 @@ class ReportAPI {
     };
     try {
       Response response = await httpUtil.dio.post(API_SEND_REPORT, data: json);
-      print(response);
       return Result.fromJson(Api.convertResponse(response.data));
     } on DioError catch (e) {
       String error = Api.formatError(e);

@@ -30,7 +30,6 @@ class TopicApi {
 
   static Future<List<Topic>> queryTopics(int currentPage) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_BATCH_QUERY;
-    print(url);
     Response response;
     try {
       response = await httpUtil.dio.get(url + "?currentPage=$currentPage");
@@ -55,7 +54,6 @@ class TopicApi {
 
   static Future<Topic> queryTopicById(int topicId) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_SINGLE_QUERY + "?tId=$topicId";
-    print(url);
     Response response;
     try {
       response = await httpUtil.dio.get(url);
@@ -91,7 +89,7 @@ class TopicApi {
   static Future<List<MainTopicReply>> queryTopicMainReplies(int topicId, int currentPage, int pageSize,
       {String order = BaseTopicReply.QUERY_ORDER_HOT}) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_REPLY_SINGLE_QUERY;
-    print(url);
+    ;
     var data = {"topicId": topicId, "currentPage": currentPage, "pageSize": pageSize, "order": order};
     Response response;
     try {
@@ -124,7 +122,7 @@ class TopicApi {
       int topicId, int refId, int currentPage, int pageSize,
       {String order = BaseTopicReply.QUERY_ORDER_TIME}) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_REPLY_SUB_QUERY;
-    print(url);
+    ;
     var data = {
       "topicId": topicId,
       "refId": refId,
@@ -181,7 +179,7 @@ class TopicApi {
     };
 
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_ADD_REPLY;
-    print(url);
+    ;
     Response response;
     try {
       response = await httpUtil.dio.post(url, data: data);
@@ -197,7 +195,7 @@ class TopicApi {
     String url = Api.API_BASE_INF_URL +
         (praise ? Api.API_TOPIC_REPLY_PRAISE : Api.API_TOPIC_REPLY_CANCEL_PRAISE) +
         "?replyId=$replyId";
-    print(url);
+    ;
     Response response;
     try {
       response = await httpUtil.dio.get(url);

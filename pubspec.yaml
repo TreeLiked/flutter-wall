@@ -60,7 +60,7 @@ dependencies:
   photo_view: ^0.10.3
   # 
   flutter_screenutil: ^2.3.1
-#  flutter_screenutil: ^4.0.3+1
+  #  flutter_screenutil: ^4.0.3+1
 
 
   # 权限管理
@@ -119,10 +119,10 @@ dependencies:
 
   # 极光推送
   jpush_flutter: 0.5.5
-#  jpush_flutter:
-#    git:
-#      url: git://github.com/jpush/jpush-flutter-plugin.git
-#      ref: master
+  #  jpush_flutter:
+  #    git:
+  #      url: git://github.com/jpush/jpush-flutter-plugin.git
+  #      ref: master
 
   # 设备信息
   device_info: ^0.4.2+8
@@ -139,7 +139,7 @@ dependencies:
   # 自定义文本溢出 https://github.com/fluttercandies/extended_text/blob/master/README-ZH.md
   extended_text: ^4.1.0
 
-  flutter_svg: ^0.19.0
+  flutter_svg: ^0.19.1
 
   # social 
   # sharesdk: ^1.1.8
@@ -166,7 +166,22 @@ dependencies:
   # 九宫格图片 https://github.com/flutterchina/nine_grid_view
   nine_grid_view: ^1.0.7
 
+  # ws连接 https://pub.dev/packages/web_socket_channel/install
+  web_socket_channel: ^1.2.0
 
+  stomp_dart_client: ^0.3.8
+
+  # 事件总线
+  event_bus: ^1.1.1
+
+  # 瀑布流
+  flutter_staggered_grid_view: ^0.3.4
+
+  # 提取图像主色
+  palette_generator: ^0.2.3
+
+  # 根据背景色获得字体颜色
+  flutter_statusbarcolor: ^0.2.3
 
 
 dev_dependencies:
@@ -202,6 +217,7 @@ flutter:
     - assets/icons/notification/
     - assets/icons/profile/
     - assets/icons/tweet/
+    - assets/icons/circle/
 
 
   # The following line ensures that the Material Icons font is

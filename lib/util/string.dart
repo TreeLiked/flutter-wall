@@ -3,6 +3,10 @@ class StringUtil {
     return val == null || val.length == 0 || val.trim().length == 0;
   }
 
+  static bool notEmpty(String val) {
+    return !isEmpty(val);
+  }
+
   static String getFirstUrlInStr(String str) {
     if (isEmpty(str)) {
       return null;

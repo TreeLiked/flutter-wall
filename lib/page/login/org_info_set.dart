@@ -8,6 +8,7 @@ import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/common-widget/my_flat_button.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
@@ -306,20 +307,17 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                             letterSpacing: 1.1)),
                     WidgetSpan(
                         child: Container(
-                      child: FlatButton(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-                        color: ColorConstant.TWEET_RICH_BG,
-                        child: Text(
-                          "重新选择",
-                          style: pfStyle.copyWith(color: Colors.green, letterSpacing: 1.1),
-                        ),
-                        onPressed: () => {
+                      child: MyFlatButton(
+                        '重新选择',
+                        Colors.green,
+                        onTap: () {
                           setState(() {
                             _controller.text = "";
                             _queryUnTask = queryUnis("");
                             _haveChoice = false;
-                          })
+                          });
                         },
+                        radius: 6.0,
                       ),
                     )),
                     TextSpan(

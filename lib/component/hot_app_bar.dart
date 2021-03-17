@@ -93,29 +93,31 @@ class HotAppBarWidget extends StatelessWidget {
               content: content,
               background: Stack(
                 children: <Widget>[
-                  backgroundImg.startsWith('http')
-                      ? (CollectionUtil.isListEmpty(backgroundImgs)
-                          ? Utils.showFadeInImage(backgroundImg, imageRadius,
-                              cache: cache, preImgUrl: preBackgroundImg)
-                          : Swiper(
-                              itemBuilder: (BuildContext context, int index) {
-                                return Utils.showFadeInImage(backgroundImgs[index], imageRadius,
-                                    cache: cache);
-                              },
-                              autoplay: true,
-                              loop: false,
-                              layout: SwiperLayout.DEFAULT,
-                              duration: 250,
-                              autoplayDelay: 1500,
-                              scrollDirection: Axis.vertical,
-                              // pagination: new SwiperPagination(builder: SwiperPagination.fraction),
-                              itemCount: backgroundImgs.length))
-                      : Image.asset(
-                          backgroundImg,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                  backgroundImg == null
+                      ? Gaps.empty
+                      : backgroundImg.startsWith('http')
+                          ? (CollectionUtil.isListEmpty(backgroundImgs)
+                              ? Utils.showFadeInImage(backgroundImg, imageRadius,
+                                  cache: cache, preImgUrl: preBackgroundImg)
+                              : Swiper(
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return Utils.showFadeInImage(backgroundImgs[index], imageRadius,
+                                        cache: cache);
+                                  },
+                                  autoplay: true,
+                                  loop: false,
+                                  layout: SwiperLayout.DEFAULT,
+                                  duration: 250,
+                                  autoplayDelay: 1500,
+                                  scrollDirection: Axis.vertical,
+                                  // pagination: new SwiperPagination(builder: SwiperPagination.fraction),
+                                  itemCount: backgroundImgs.length))
+                          : Image.asset(
+                              backgroundImg,
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
                   blurImage
                       ? BackdropFilter(
                           filter: ImageFilter.blur(

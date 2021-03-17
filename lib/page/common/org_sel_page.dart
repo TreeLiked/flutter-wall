@@ -112,7 +112,6 @@ class _OrgChoosePageState extends State<OrgChoosePage> {
     super.initState();
     // List.copyRange(filterList, 0, _orgList);
     _controller = TextEditingController();
-    print(filterList);
   }
 
   @override

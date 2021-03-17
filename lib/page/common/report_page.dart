@@ -16,6 +16,7 @@ class ReportPage extends StatelessWidget {
   static const REPORT_TOPIC = "TOPIC";
   static const REPORT_TOPIC_REPLY = "TOPIC_REPLY";
   static const REPORT_ACCOUNT = "ACCOUNT";
+  static const REPORT_CIRCLE = "CIRCLE";
 
   static const REPORT_SYSTEM = "SYSTEM";
 

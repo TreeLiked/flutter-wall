@@ -194,6 +194,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
               count: 10,
               cache: true,
+              lightShadow: Colors.black38,
               outerMargin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
               outerRadius: BorderRadius.circular(8.0),
               imageRadius: BorderRadius.circular(8.0),
@@ -286,7 +287,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               fit: BoxFit.cover,
             )),
         Gaps.vGap16,
-        Text('快去抢占热门吧~',
+        Text('快去抢占热门吧 ～',
             style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp16, letterSpacing: 1.3)),
       ],
     );

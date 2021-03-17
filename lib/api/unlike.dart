@@ -16,7 +16,6 @@ class UnlikeAPI {
       return Result(isSuccess: false);
     }
 
-    print(UNLIKE_ACCOUNT_ADD);
     Response response;
     try {
       response = await httpUtil.dio.post(UNLIKE_ACCOUNT_ADD, data: targetAccountId);

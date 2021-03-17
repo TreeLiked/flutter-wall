@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/global/theme_constant.dart';
+import 'package:iap_app/model/im_dto.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
@@ -25,6 +28,7 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:event_bus/event_bus.dart';
 
 class NotificationIndexPage extends StatefulWidget {
   @override
@@ -36,10 +40,10 @@ class NotificationIndexPage extends StatefulWidget {
 
 class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
-  String iconSubPath = "heart";
-  String iconSchoolPath = "hat";
-  String iconContactPath = "wave";
-  String iconOfficialPath = "author";
+  String iconSubPath = "self2";
+  String iconSchoolPath = "school2";
+  String iconContactPath = "contact2";
+  String iconOfficialPath = "official2";
 
   final String noMessage = "暂无新通知";
 
@@ -53,17 +57,26 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   SingleMessageControl interactionMsgCtrl = MessageUtil.interactionMsgControl;
   SingleMessageControl sysMsgCtrl = MessageUtil.systemMsgControl;
 
+  // 控制消息总线
+  StreamSubscription _subscription;
+
   @override
   void initState() {
     super.initState();
     // 校验通知权限
     UMengUtil.userGoPage(UMengUtil.PAGE_NOTI_INDEX);
-    _loopQueryInteraction(true);
-    _loopQuerySystem(true);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       checkNotification();
     });
+
+    _subscription = wsCommandEventBus.on<ImDTO>().listen((ImDTO data) {
+      int c = data.command;
+      if (c == ImDTO.COMMAND_TWEET_PRAISED || c == ImDTO.COMMAND_TWEET_REPLIED) {
+        _fetchLatestMessageAndCount();
+      }
+    });
+    _subscription.resume();
   }
 
   void checkNotification() async {
@@ -71,11 +84,20 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39));
   }
 
+  _fetchLatestMessageAndCount() async {
+    await _queryInteractionMsgAndCnt();
+    await _querySystemMsgCnt();
+    if (_refreshController.isRefresh) {
+      _refreshController.refreshCompleted();
+    }
+  }
+
   _fetchLatestMessage() async {
     _fetchLatestSystemMsg();
     _fetchLatestInteractionMsg();
   }
 
+  // 查询的具体的系统消息内容
   Future<void> _fetchLatestSystemMsg() async {
     MessageAPI.fetchLatestMessage(0).then((msg) {
       setState(() {
@@ -84,10 +106,10 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     }).whenComplete(() => _refreshController.refreshCompleted());
   }
 
+  // 查询的具体的互动消息内容
   Future<void> _fetchLatestInteractionMsg() async {
     MessageAPI.fetchLatestMessage(1).then((msg) {
       if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
-        _loopQueryInteraction(false);
         setState(() {
           this._latestInteractionMsg = msg;
         });
@@ -95,50 +117,33 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     }).whenComplete(() => _refreshController.refreshCompleted());
   }
 
-  _loopQueryInteraction(bool loop) {
+  // 查询互动消息数量并查询消息
+  _queryInteractionMsgAndCnt() {
     MessageAPI.queryInteractionMessageCount().then((count) {
+      _fetchLatestInteractionMsg().then((_) {
+        // 刷新完成后增加小红点
+        interactionMsgCtrl.streamCount = count;
+      });
       if (count != -1) {
         if (interactionMsgCtrl.localCount != count) {
           interactionMsgCtrl.localCount = count;
           print('发现新消息，开始刷新');
-          if (!_refreshController.isRefresh) {
-            _refreshController.requestRefresh();
-          }
-          _fetchLatestSystemMsg().then((_) {
-            // 刷新完成后增加小红点
-            interactionMsgCtrl.streamCount = count;
-          });
         }
-      }
-    }).whenComplete(() {
-      if (loop) {
-        Future.delayed(Duration(seconds: 60)).then((_) {
-          _loopQueryInteraction(true);
-        });
       }
     });
   }
 
-  _loopQuerySystem(bool loop) {
+  // 查询系统数量并查询消息
+  _querySystemMsgCnt() {
     MessageAPI.querySystemMessageCount().then((count) {
+      _fetchLatestSystemMsg().then((_) {
+        // 查询完增加小红点
+        sysMsgCtrl.streamCount = count;
+      });
       if (count != -1) {
         if (sysMsgCtrl.localCount != count) {
           sysMsgCtrl.localCount = count;
-          if (!_refreshController.isRefresh) {
-            _refreshController.requestRefresh();
-          }
-          sysMsgCtrl.streamCount = count;
-
-//          print('发现新消息，开始刷新');
-//          _fetchLatestInteractionMsg().then((_) {
-//          });
         }
-      }
-    }).whenComplete(() {
-      if (loop) {
-        Future.delayed(Duration(minutes: 5)).then((_) {
-          _loopQuerySystem(true);
-        });
       }
     });
   }
@@ -154,12 +159,12 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     return Scaffold(
       backgroundColor: ThemeUtils.getBackColor(context),
       appBar: AppBar(
-        backgroundColor: ThemeUtils.getBackColor(context),
+        backgroundColor: isDark ? Colours.dark_bottom_sheet : Colors.white,
         automaticallyImplyLeading: false,
         title: Text('消息',
             style: pfStyle.copyWith(
                 fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.3)),
-        centerTitle: false,
+        centerTitle: true,
         leading: IconButton(
             icon: Icon(Icons.arrow_back), iconSize: 23.0, onPressed: () => NavigatorUtils.goBack(context)),
       ),
@@ -169,35 +174,43 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
             controller: _refreshController,
             enablePullDown: true,
             enablePullUp: false,
-            header: MaterialClassicHeader(
-              color: Colors.amber,
-              backgroundColor: isDark ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
+            // header: MaterialClassicHeader(
+            //   color: Colors.amber,
+            //   backgroundColor: isDark ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
+            // ),
+            header: WaterDropHeader(
+              waterDropColor: isDark ? Color(0xff6E7B8B) : Color(0xffEED2EE),
+              complete: const Text('刷新完成', style: pfStyle),
             ),
 //            header: Utils.getDefaultRefreshHeader(),
-            onRefresh: _fetchLatestMessage,
+            onRefresh: _fetchLatestMessageAndCount,
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   MainMessageItem(
                     iconPath: iconSubPath,
+                    iconColor: Color(0xff87CEFF),
                     title: "私信",
                     body: "暂无私信消息",
-                    color: Colors.pink[300],
+                    color: Color(0xffF0F8FF),
                     onTap: () => ToastUtil.showToast(context, "当前没有私信消息"),
                   ),
                   MainMessageItem(
-                      iconPath: iconSchoolPath,
-                      title: "校园公告",
-                      tagName: "官方",
-                      body: "暂无新通知",
-                      pointType: true,
-                      onTap: () {
-                        NavigatorUtils.push(context, NotificationRouter.campusMain);
-                      },
-                      color: Colors.amber),
+                    iconPath: iconSchoolPath,
+                    title: "校园公告",
+                    tagName: "官方",
+                    body: "暂无新通知",
+                    pointType: true,
+                    onTap: () {
+                      NavigatorUtils.push(context, NotificationRouter.campusMain);
+                    },
+                    color: Color(0xffFCF1F4),
+                    iconColor: Color(0xffFF69B4),
+                  ),
                   MainMessageItem(
                       iconPath: iconContactPath,
-                      color: Colors.lightGreen,
+                      color: Color(0xffEBFAF4),
+                      iconColor: Color(0xff00CED1),
                       title: "与我有关",
                       body: _latestInteractionMsg == null ? noMessage : _getInteractionBody(),
                       time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
@@ -211,10 +224,11 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                   Gaps.vGap8,
                   MainMessageItem(
                     iconPath: iconOfficialPath,
-                    color: Colors.lightBlueAccent,
+                    color: Color(0xffFEF7E7),
+                    iconColor: Color(0xffDAA520),
                     title: "Wall",
                     tagName: "官方",
-                    controller: MessageUtil.systemStreamCntCtrl,
+                    controller: MessageUtil.systemMsgControl.controller,
                     body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
                     time: _latestSystemMsg == null ? null : _latestSystemMsg.sentTime,
                     pointType: false,

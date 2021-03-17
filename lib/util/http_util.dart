@@ -13,6 +13,8 @@ import 'package:iap_app/model/web_link.dart';
 import 'package:iap_app/util/html_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
 var httpUtil2 = HttpUtil(baseUrl: Api.API_BASE_MEMBER_URL, header: headersJson);
@@ -36,7 +38,8 @@ Map<String, dynamic> headersJson = {
 };
 
 class HttpUtil {
-  static final String authKey = "Authorization";
+  static final String _TAG = "HttpUtil";
+  static final String authKey = SharedConstant.AUTH_HEADER_VALUE;
 
   Dio dio;
   BaseOptions options;
@@ -92,7 +95,7 @@ class HttpUtil {
       followRedirects: true,
     );
 
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
 
     String myToken = Application.getLocalAccountToken;
     if (myToken == null) {
@@ -118,7 +121,7 @@ class HttpUtil {
       receiveTimeout: 30000,
       headers: this.headers,
     );
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
   }
 
   void clearAuthToken() {
@@ -130,7 +133,7 @@ class HttpUtil {
       receiveTimeout: 30000,
       headers: this.headers,
     );
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
   }
 
   Future<Result<T>> get<T>(url, {data, options, cancelToken}) async {
@@ -190,5 +193,33 @@ class HttpUtil {
       }
     }
     return null;
+  }
+
+  static InterceptorsWrapper getMyInterceptor() {
+    return InterceptorsWrapper(
+      onRequest: (RequestOptions options) => requestInterceptor(options),
+      onResponse: (Response response) => responseInterceptor(response),
+      // onError: (DioError dioError) => errorInterceptor(dioError)
+    );
+  }
+
+  static dynamic requestInterceptor(RequestOptions options) async {
+    String requestId = new Uuid().v1().substring(0, 8);
+    // LogUtil.e('--> Request  to [ $requestId ] -->  ${options.uri}', tag: _TAG);
+    options.extra.addAll({"RequestId": requestId});
+    return options;
+  }
+
+  static dynamic responseInterceptor(Response resp) async {
+    String val = resp.data.toString();
+    LogUtil.e('<-- Response to [ ${resp.request.extra['RequestId']} ] <-- ${resp.request.path}：${val.length > 100 ? val.substring(0, 100) : val}',
+        tag: _TAG);
+    return resp;
+  }
+
+  static int get lineNumber {
+    final re = RegExp(r'^#1[ \t]+.+:(?<line>[0-9]+):[0-9]+\)$', multiLine: true);
+    final match = re.firstMatch(StackTrace.current.toString());
+    return (match == null) ? -1 : int.parse(match.namedGroup('line'));
   }
 }

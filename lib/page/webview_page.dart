@@ -46,7 +46,6 @@ class _WebViewPageState extends State<WebViewPage> {
       javascriptMode: JavascriptMode.unrestricted,
       onWebViewCreated: (WebViewController webViewController) async {
         _controller.complete(webViewController);
-        print((await webViewController.getTitle()).toString());
       },
     );
 

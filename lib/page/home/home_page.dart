@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:badges/badges.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flustars/flustars.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart' as prefix0;
+import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
@@ -12,6 +15,7 @@ import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/model/im_dto.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -21,8 +25,9 @@ import 'package:iap_app/page/common/tweet_type_select.dart';
 import 'package:iap_app/page/home/home_comment_wrapper.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/TweetIndexTabView.dart';
+import 'package:iap_app/part/circle/circle_main_new.dart';
 import 'package:iap_app/part/hot_today.dart';
-import 'package:iap_app/part/discuss_main.dart';
+import 'package:iap_app/part/circle/circle_main.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -39,10 +44,13 @@ import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/theme_utils.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
 
 class HomePage extends StatefulWidget {
   final pullDownCallBack;
@@ -57,6 +65,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin<HomePage>, SingleTickerProviderStateMixin {
+  static const String _TAG = "_HomePageState";
+
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
@@ -91,34 +101,41 @@ class _HomePageState extends State<HomePage>
   int _currentTabIndex = 0;
   bool _displayCreate = true;
 
+  BuildContext _myContext;
+
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(vsync: this, length: 3);
+    _tabController.addListener(() {
+      setState(() {
+        _currentTabIndex = _tabController.index;
+      });
+      if (_tabController.index.toDouble() == _tabController.animation.value) {
+        bool _dc = true;
+        switch (_tabController.index) {
+          case 0:
+            _dc = true;
+            break;
+          case 1:
+            _dc = true;
+            break;
+          case 2:
+            _dc = false;
+            break;
+        }
+        if (_displayCreate != _dc) {
+          setState(() {
+            _displayCreate = _dc;
+          });
+        }
+      }
+    });
 
-    _tabController = TabController(vsync: this, length: 2);
-    // _tabController.addListener(() {
-    //   if (_tabController.index.toDouble() == _tabController.animation.value) {
-    //     bool _dc = true;
-    //     switch (_tabController.index) {
-    //       case 0:
-    //         _dc = true;
-    //         break;
-    //       case 1:
-    //         _dc = false;
-    //         break;
-    //       case 2:
-    //         break;
-    //     }
-    //     if (_displayCreate != _dc) {
-    //       setState(() {
-    //         _displayCreate = _dc;
-    //       });
-    //     }
-    //   }
-    // });
+    initRefreshMessageTotalCnt();
+    initQueryNewTweetCnt();
 
-    firstRefreshMessage();
-    loopQueryNewTweet();
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -127,20 +144,61 @@ class _HomePageState extends State<HomePage>
         PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39);
       });
     });
-  }
 
-  void firstRefreshMessage() async {
-//    Future.delayed(Duration(seconds: 3)).then((val) {
-    MessageAPI.queryInteractionMessageCount().then((cnt) {
-      MessageAPI.querySystemMessageCount().then((value) => {MessageUtil.setNotificationCnt(cnt + value)});
-    }).whenComplete(() {
-      MessageUtil.startLoopQueryNotification();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Map<String, String> headers = {
+        SharedConstant.AUTH_HEADER_VALUE: Application.getLocalAccountToken,
+        SharedConstant.ORG_ID_HEADER_VALUE: Application.getOrgId.toString()
+      };
+      MessageUtil.setStompClient = StompClient(
+          config: StompConfig(
+              // url: 'ws://192.168.31.235:8088/wallServer',
+              url: Api.API_BASE_WS,
+              onConnect: (client, frame) {
+                LogUtil.e('------------wall server connecting------------', tag: _TAG);
+                // 个人频道订阅
+                client.subscribe(
+                    destination: '/user/queue/myself',
+                    headers: headers,
+                    callback: (resp) {
+                      Map<String, dynamic> jsonData = json.decode(resp.body);
+                      ImDTO dto = ImDTO.fromJson(jsonData);
+                      MessageUtil.handleInstantMessage(dto, context: context);
+                    });
+                // 大学内频道订阅
+                client.subscribe(
+                    destination: '/topic/org' + Application.getOrgId.toString(),
+                    headers: headers,
+                    callback: (resp) {
+                      Map<String, dynamic> jsonData = json.decode(resp.body);
+                      ImDTO dto = ImDTO.fromJson(jsonData);
+                      MessageUtil.handleInstantMessage(dto, context: context);
+                    });
+              },
+              onWebSocketError: (dynamic error) => ToastUtil.showToast(context, "连接服务器失败"),
+              stompConnectHeaders: headers,
+              webSocketConnectHeaders: headers));
+      MessageUtil.stompClient.activate();
+
+      // final channel = await IOWebSocketChannel.connect(Api.API_BASE_WS,
+      //     headers: headers);
+      //
+      // // channel.sink.add('received!');
+      // // channel.sink.addStream(Stream.value(""));
+      //
+      // channel.stream.listen((message) {
+      //   print("接收到---" + message);
+      //   // channel.sink.close(status.goingAway);
+      // });
     });
-//    });
   }
 
-  void loopQueryNewTweet() async {
-    MessageUtil.loopRefreshNewTweet(Application.context);
+  void initRefreshMessageTotalCnt() async {
+    MessageUtil.queryAndSetInteractionAndSystemMessageCnt();
+  }
+
+  void initQueryNewTweetCnt() async {
+    MessageUtil.queryAndSetNewTweetCnt(Application.context);
   }
 
   @override
@@ -234,6 +292,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    _myContext = context;
     super.build(context);
     isDark = ThemeUtils.isDark(context);
 
@@ -256,148 +315,139 @@ class _HomePageState extends State<HomePage>
         bottom: false,
         child: Stack(
           children: <Widget>[
-             Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: double.infinity,
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          left: prefix0.ScreenUtil().setWidth(10.0),
-                          child: Consumer<AccountLocalProvider>(
-                            builder: (_, model, __) {
-                              var acc = model.account;
-                              return IconButton(
-                                  onPressed: () {
-                                    BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
-                                    UMengUtil.userGoPage(UMengUtil.PAGE_PC);
-                                  },
-                                  icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
-                            },
-                          ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        left: prefix0.ScreenUtil().setWidth(10.0),
+                        child: Consumer<AccountLocalProvider>(
+                          builder: (_, model, __) {
+                            var acc = model.account;
+                            return IconButton(
+                                onPressed: () {
+                                  BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
+                                  UMengUtil.userGoPage(UMengUtil.PAGE_PC);
+                                },
+                                icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
+                          },
                         ),
-                        Container(
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
-                            child: TabBar(
-                              labelStyle: pfStyle.copyWith(
-                                  fontSize: 20, fontWeight: FontWeight.w500, color: Colors.amber[600]),
-                              unselectedLabelStyle:
-                              pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
-                              indicatorSize: TabBarIndicatorSize.label,
-                              indicator: const UnderlineTabIndicator(
-                                  borderSide: const BorderSide(color: Colors.amber, width: 2.0)),
-                              controller: _tabController,
-                              labelColor: isDark ? Colors.white30 : Colors.black,
-                              isScrollable: true,
-
-                              onTap: (index) {
-                                if (index == _currentTabIndex) {
-                                  if (index == 0) {
-                                    if (MessageUtil.taIndexTweetCnt > 0) {
-                                      PageSharedWidget.tabIndexRefreshController.requestRefresh();
-                                      MessageUtil.clearTabIndexTweetCnt();
-                                    }
-                                    PageSharedWidget.homepageScrollController.animateTo(.0,
-                                        duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
-                                    return;
+                      ),
+                      Container(
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
+                          child: TabBar(
+                            labelStyle: pfStyle.copyWith(
+                                fontSize: 20, fontWeight: FontWeight.w500, color: Colors.amber[600]),
+                            unselectedLabelStyle:
+                                pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
+                            indicatorSize: TabBarIndicatorSize.label,
+                            indicator: const UnderlineTabIndicator(
+                                borderSide: const BorderSide(color: Colors.amberAccent, width: 2.0)),
+                            controller: _tabController,
+                            labelColor: isDark ? Colors.white30 : Colors.black,
+                            isScrollable: true,
+                            onTap: (index) {
+                              if (index == _currentTabIndex) {
+                                if (index == 0) {
+                                  if (MessageUtil.tabIndexTweetCnt > 0) {
+                                    PageSharedWidget.tabIndexRefreshController.requestRefresh();
+                                    MessageUtil.clearTabIndexTweetCnt();
                                   }
+                                  PageSharedWidget.homepageScrollController.animateTo(.0,
+                                      duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
+                                  return;
                                 }
-                                _tabController.animateTo(index);
-                                setState(() {
-                                  _currentTabIndex = index;
+                              }
+                              _tabController.animateTo(index);
+                              setState(() {
+                                _currentTabIndex = index;
 //                              _displayCreate = _currentTabIndex == 0;
-                                });
-                              },
-                              tabs: [
-                                StreamBuilder(
-                                  initialData: 0,
-                                  stream: MessageUtil.tabIndexStreamCntCtrl.stream,
-                                  builder: (_, snapshot) => Badge(
-                                    elevation: 0,
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Text('最新'),
-                                    animationType: BadgeAnimationType.fade,
-                                    badgeColor: Colors.amber,
-                                    showBadge: snapshot.data > 0,
-                                    shape: BadgeShape.circle,
-                                    // borderRadius: 10.0,
-                                    badgeContent: Text(Utils.getBadgeText(snapshot.data),
-                                        style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
-                                  ),
-                                ),
-                                Tab(
-                                  text: '今日热门',
-                                ),
-                                // Tab(
-                                //   text: '话题',
-                                // ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                            right: prefix0.ScreenUtil().setWidth(10.0),
-//                        top: prefix0.ScreenUtil().setWidth(10.0),
-                            child: IconButton(
-                              icon: StreamBuilder(
+                              });
+                            },
+                            tabs: [
+                              StreamBuilder(
                                 initialData: 0,
-                                stream: MessageUtil.notificationStreamCntCtrl.stream,
+                                stream: MessageUtil.tabIndexStreamCntCtrl.stream,
                                 builder: (_, snapshot) => Badge(
                                   elevation: 0,
-                                  padding: const EdgeInsets.all(3.0),
-                                  child:
-                                  // Icon(
-                                  //     Utils.badgeHasData(snapshot.data)
-                                  //         ? Icons.notifications_active_outlined
-                                  //         : Icons.notifications_none_rounded,
-                                  //     color: Utils.badgeHasData(snapshot.data)
-                                  //         ? Colors.amber
-                                  //         : isDark
-                                  //             ? Colors.white54
-                                  //             : Colors.black54),
-                                  LoadAssetIcon(
-                                    "notification/bell",
-                                    color: Utils.badgeHasData(snapshot.data)
-                                        ? Colors.amber
-                                        : isDark
-                                        ? Colors.white54
-                                        : Colors.black54,
-                                    width: 23.0,
-                                    height: 23.0,
-                                  ),
-                                  badgeColor: Colors.red[400],
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text('最新', style: pfStyle.copyWith(color: _getTabColor(0))),
                                   animationType: BadgeAnimationType.fade,
-                                  showBadge: Utils.badgeHasData(snapshot.data),
-                                  badgeContent: Text(
-                                    Utils.getBadgeText(snapshot.data),
-                                    style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp12),
-                                  ),
+                                  badgeColor: Colors.amber,
+                                  showBadge: snapshot.data > 0,
+                                  shape: BadgeShape.circle,
+                                  // borderRadius: 10.0,
+                                  badgeContent: Text(Utils.getBadgeText(snapshot.data),
+                                      style:
+                                          pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
                                 ),
                               ),
-                              onPressed: () => NavigatorUtils.push(context, Routes.notification),
-                            )),
-                      ],
-                    ),
+                              Tab(child: Text('热门', style: pfStyle.copyWith(color: _getTabColor(1)))),
+                              Tab(child: Text('圈子', style: pfStyle.copyWith(color: _getTabColor(2)))),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                          right: prefix0.ScreenUtil().setWidth(10.0),
+//                        top: prefix0.ScreenUtil().setWidth(10.0),
+                          child: IconButton(
+                            icon: StreamBuilder(
+                              initialData: 0,
+                              stream: MessageUtil.notificationStreamCntCtrl.stream,
+                              builder: (_, snapshot) => Badge(
+                                elevation: 0,
+                                padding: const EdgeInsets.all(3.0),
+                                child:
+                                    // Icon(
+                                    //     Utils.badgeHasData(snapshot.data)
+                                    //         ? Icons.notifications_active_outlined
+                                    //         : Icons.notifications_none_rounded,
+                                    //     color: Utils.badgeHasData(snapshot.data)
+                                    //         ? Colors.amber
+                                    //         : isDark
+                                    //             ? Colors.white54
+                                    //             : Colors.black54),
+                                    LoadAssetIcon(
+                                  "notification/bell",
+                                  color: Utils.badgeHasData(snapshot.data)
+                                      ? Colors.amber
+                                      : isDark
+                                          ? Colors.white54
+                                          : Colors.black54,
+                                  width: 23.0,
+                                  height: 23.0,
+                                ),
+                                badgeColor: Colors.red[400],
+                                animationType: BadgeAnimationType.fade,
+                                showBadge: Utils.badgeHasData(snapshot.data),
+                                badgeContent: Text(
+                                  Utils.getBadgeText(snapshot.data),
+                                  style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp12),
+                                ),
+                              ),
+                            ),
+                            onPressed: () => NavigatorUtils.push(context, Routes.notification),
+                          )),
+                    ],
                   ),
-                  Gaps.vGap5,
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        TweetIndexTabView(),
-                        HotToday(),
-                        // DiscussMain()
-                      ],
-                    ),
+                ),
+                Gaps.vGap5,
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [TweetIndexTabView(), HotToday(), CircleMainNew()],
                   ),
-                ],
-              ),
-
+                ),
+              ],
+            ),
             _displayCreate
                 ? Positioned(
                     left: stickLeft ? 3.9 : null,
@@ -462,6 +512,14 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+
+  Color _getTabColor(int index) {
+    if (_currentTabIndex == index) {
+      return isDark ? Colors.white : Colors.black;
+    }
+    return isDark ? Colors.white38 : Colors.black54;
+  }
+
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[

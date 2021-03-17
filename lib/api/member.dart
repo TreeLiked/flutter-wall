@@ -16,18 +16,14 @@ class MemberApi {
 
   static Future<Account> getMyAccount(String token) async {
     Response response;
-    LogUtil.e(Api.API_QUERY_ACCOUNT, tag: _TAG);
     try {
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       dynamic json2 = json["data"];
-      print(json2);
-      print(response.data);
       if (json2 == null) {
         return null;
       }
       Account account = Account.fromJson(json2);
-      print(account.toJson());
       return account;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -36,12 +32,12 @@ class MemberApi {
   }
 
   static Future<Account> getAccountProfile(String accountId) async {
-    LogUtil.e(Api.API_QUERY_ACCOUNT_PROFILE, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.post(Api.API_QUERY_ACCOUNT_PROFILE);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
+
       dynamic json2 = json["data"];
       if (json2 == null) {
         return null;
@@ -55,13 +51,12 @@ class MemberApi {
   }
 
   static Future<AccountCampusProfile> getAccountCampusProfile(String accountId) async {
-    LogUtil.e(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE, tag: _TAG);
-
     Response response;
     try {
       response = await httpUtil2.dio.get(Api.API_QUERY_ACCOUNT_CAMPUS_PROFILE);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
+
       dynamic json2 = json["data"];
       if (json2 == null) {
         return null;
@@ -75,13 +70,12 @@ class MemberApi {
   }
 
   static Future<AccountDisplayInfo> getAccountDisplayProfile(String accountId) async {
-    LogUtil.e(Api.API_QUERY_FILTERED_ACCOUNT_PROFILE, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.get(
           Api.API_QUERY_FILTERED_ACCOUNT_PROFILE + "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" + accountId);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
       dynamic json2 = json["data"];
       if (json2 == null) {
         return null;
@@ -95,12 +89,12 @@ class MemberApi {
   }
 
   static Future<Result> modAccount(AccountEditParam param) async {
-    LogUtil.e(Api.API_ACCOUNT_MOD_BASIC, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.post(Api.API_ACCOUNT_MOD_BASIC, data: param);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
+
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -111,11 +105,11 @@ class MemberApi {
   static Future<Result> sendPhoneVerificationCode(String phone) async {
     Response response;
     String url = Api.API_SEND_VERIFICATION_CODE + "?p=$phone";
-    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
+
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -126,11 +120,9 @@ class MemberApi {
   static Future<Result> checkVerificationCode(String phone, String vCode) async {
     Response response;
     String url = Api.API_CHECK_VERIFICATION_CODE + "?p=$phone&c=$vCode";
-    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -141,11 +133,10 @@ class MemberApi {
   static Future<Result> checkNickRepeat(String nick) async {
     Response response;
     String url = Api.API_CHECK_NICK_REPEAT + "?n=$nick";
-    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -163,12 +154,10 @@ class MemberApi {
       'orgId': orgId,
       'iCode': iCode,
     };
-    LogUtil.e(url, tag: _TAG);
     try {
       response = await httpUtil2.dio.post(url, data: data);
-      print(response.data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -179,14 +168,13 @@ class MemberApi {
   static Future<Result> login(String phone) async {
     Response response;
     String url = Api.API_LOGIN_BY_PHONE;
-    LogUtil.e(url, tag: _TAG);
     var data = {
       'phone': phone,
     };
     try {
       response = await httpUtil2.dio.post(url, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);
@@ -198,7 +186,6 @@ class MemberApi {
     String url = Api.API_QUERY_ACCOUNT_SETTING +
         "?${SharedConstant.ACCOUNT_ID_IDENTIFIER}=" +
         (passiveAccountId ?? "");
-    LogUtil.e(url, tag: _TAG);
     Response response;
     try {
       response = await httpUtil2.dio.get(url);
@@ -208,7 +195,8 @@ class MemberApi {
         return null;
       }
       Map<String, dynamic> settingMap = Api.convertResponse(json2);
-      print(settingMap);
+      LogUtil.e(settingMap, tag: _TAG);
+
       return settingMap;
     } on DioError catch (e) {
       Api.formatError(e);
@@ -218,12 +206,11 @@ class MemberApi {
 
   static Future<Result> updateAccountSetting(String key, String value) async {
     Response response;
-    LogUtil.e(Api.API_UPDATE_ACCOUNT_SETTING, tag: _TAG);
     try {
       var data = {"key": key, "value": value};
       response = await httpUtil2.dio.post(Api.API_UPDATE_ACCOUNT_SETTING, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
+      LogUtil.e(json, tag: _TAG);
       return Result.fromJson(json);
     } on DioError catch (e) {
       Api.formatError(e);

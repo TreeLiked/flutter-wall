@@ -46,6 +46,10 @@ class ColorConstant {
   static const Color TWEET_TIME_COLOR = Color(0xffADADAD);
   static const Color TWEET_TIME_COLOR_DARK = Color(0xff707070);
 
+  // 饿了么的字体颜色
+  static const Color TEXT_COMMON = Color(0xff606266);
+  static const Color TEXT_MAIN = Color(0xff303133);
+
   // 推文富链接背景颜色
   static const Color TWEET_RICH_BG = Color(0xffF5F4F5);
   static const Color TWEET_RICH_BG_DARK = Color(0xff383838);
@@ -53,10 +57,8 @@ class ColorConstant {
   // 推文富链接背景颜色稍浅
   static const Color TWEET_RICH_BG_2 = Color(0xffF8F7F8);
 
-
   static const Color MAIN_BG = Color(0xffFFFEFF);
   static const Color MAIN_BG_DARK = Color(0xff272829);
-
 
   static const Color TWEET_TYPE_TEXT_DARK = Colors.white60;
 
@@ -66,11 +68,13 @@ class ColorConstant {
   static const Color DEFAULT_BAR_BACK_COLOR_DARK = Color(0xff333333);
 
   static const Color QQ_BLUE = Color(0xff19a9fc);
+  static const Color LINK = Color(0xff02376a);
 
   static const Color MAIN_BAR_COLOR = Color(0xfff9f9f9);
 
   static const Color TWEET_DETAIL_REPLY_ROW_COLOR = Colors.amberAccent;
   static const Color TWEET_DETAIL_PRAISE_ROW_COLOR = Colors.amberAccent;
+
 //  static const Color TWEET_DETAIL_PRAISE_ROW_COLOR = Color(0xffFF1493);
 
   static Color getTweetNickColor(BuildContext context) {
@@ -95,5 +99,13 @@ class ColorConstant {
 
   static Color getNormalTextColor({BuildContext context}) {
     return ThemeUtils.isDark(context ?? Application.context) ? SUB_TEXT_COLOR_DARK : SUB_TEXT_COLOR;
+  }
+
+  static Color getCommonText({BuildContext context}) {
+    return ThemeUtils.isDark(context ?? Application.context) ? Colors.grey : TEXT_COMMON;
+  }
+
+  static Color getMainText({BuildContext context}) {
+    return ThemeUtils.isDark(context ?? Application.context) ? Colors.grey : TEXT_MAIN;
   }
 }

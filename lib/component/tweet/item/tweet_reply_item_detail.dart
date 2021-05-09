@@ -171,7 +171,7 @@ class TweetReplyItemDetail extends StatelessWidget {
                       },
                     text: authorNick ?? "",
                     style: TweetReplyUtil.getTweetReplyStyle(
-                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
+                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp14))
                 : WidgetSpan(
                     child: SimpleTag(
                     '作者',
@@ -196,7 +196,7 @@ class TweetReplyItemDetail extends StatelessWidget {
             !directReply
                 ? TextSpan(
                     text: ' 回复 ',
-                    style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14, context: context))
+                    style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp13p5, context: context))
                 : emptyTs,
             !directReply
                 ? TextSpan(
@@ -208,7 +208,7 @@ class TweetReplyItemDetail extends StatelessWidget {
                       },
                     text: (targetAuthorAndTweetAnon ? TextConstant.TWEET_AUTHOR_TEXT : reply.tarAccount.nick),
                     style: TweetReplyUtil.getTweetReplyStyle(
-                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
+                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp14))
                 : emptyTs
           ]),
         ),
@@ -245,7 +245,7 @@ class TweetReplyItemDetail extends StatelessWidget {
           onSpecialTextTap: (dynamic parameter) {},
           selectionEnabled: false,
           overflowWidget: TextOverflowWidget(
-            fixedOffset: Offset(10.0, 0.0),
+            // fixedOffset: Offset(10.0, 0.0),
               child: Row(children: <Widget>[
             GestureDetector(
                 child: Text(
@@ -261,7 +261,7 @@ class TweetReplyItemDetail extends StatelessWidget {
                       onTap: () => NavigatorUtils.goBack(context));
                 })
           ])),
-          style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp15, context: context)),
+          style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp14, context: context)),
     ));
   }
 

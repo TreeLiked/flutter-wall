@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
+import 'package:iap_app/common-widget/gallery_photo_view_wrapper_circle.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
@@ -99,7 +100,7 @@ class Utils {
               child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black26,
+                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black12,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   alignment: Alignment.center,
@@ -276,13 +277,14 @@ class Utils {
       nextFocus: true,
       actions: List.generate(
           list.length,
-          (i) => KeyboardAction(
-                focusNode: list[i],
-                closeWidget: const Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: const Text("关闭"),
-                ),
-              )),
+          (i) => KeyboardActionsItem(
+              focusNode: list[i],
+              footerBuilder: (_) => PreferredSize(
+                  child: const Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: const Text("关闭"),
+                  ),
+                  preferredSize: Size.fromHeight(40)))),
     );
   }
 
@@ -324,6 +326,38 @@ class Utils {
         context,
         MaterialPageRoute(
             builder: (context) => GalleryPhotoViewWrapper(
+                  usePageViewWrapper: true,
+                  galleryItems: items,
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  loadingChild: new SpinKitRing(
+                    color: Colors.grey,
+                    size: 18.0,
+                    lineWidth: 3.0,
+                  ),
+                  initialIndex: initialIndex,
+                  refId: refId.toString(),
+                ),
+            maintainState: false));
+  }
+
+  static void openPhotoViewForCircle(
+    BuildContext context,
+    List<String> urls,
+    int initialIndex,
+    int refId,
+  ) {
+    if (CollectionUtil.isListEmpty(urls)) {
+      return;
+    }
+
+    List<PhotoWrapItem> items =
+        urls.map((f) => PhotoWrapItem(index: initialIndex, url: Uri.decodeComponent(f))).toList();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CirclePhotoViewWrapper(
                   usePageViewWrapper: true,
                   galleryItems: items,
                   backgroundDecoration: const BoxDecoration(

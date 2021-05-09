@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -69,9 +70,11 @@ class TweetReplyWrapperSimple extends StatelessWidget {
     }
     if (totalCount < tweet.replyCount) {
       return Container(
-        padding: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
         decoration: BoxDecoration(
-//            color: ColorConstant.TWEET_RICH_BG,
+            color: ThemeUtils.isDark(context)
+                ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                : ColorConstant.TWEET_RICH_BG_2,
             borderRadius: BorderRadius.circular(8.0)),
         child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -98,11 +101,12 @@ class TweetReplyWrapperSimple extends StatelessWidget {
       );
     }
     return Container(
-      padding: const EdgeInsets.all(5.0),
-//      decoration: BoxDecoration(
-//        color: ColorConstant.TWEET_RICH_BG,
-//        borderRadius: BorderRadius.circular(8.0)
-//      ),
+      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
+      decoration: BoxDecoration(
+          color: ThemeUtils.isDark(context)
+              ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+              : ColorConstant.TWEET_RICH_BG_2,
+          borderRadius: BorderRadius.circular(5.0)),
       margin: const EdgeInsets.only(bottom: 8.0),
       child: ListView(
           shrinkWrap: true,

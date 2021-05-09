@@ -165,11 +165,11 @@ class InteractionCardItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           optType == 0
-                              ? const LoadAssetSvg("love_fill",
+                              ? LoadAssetSvg("love_fill",
                                   width: 20, height: 20, color: Color(0xffFA8072))
                               : Gaps.empty,
                           optType == 0
-                              ? const Text(' 赞了你', style: const TextStyle())
+                              ? Text(' 赞了你', style: pfStyle.copyWith(fontSize: Dimens.font_sp14))
                               : Flexible(
                                   child: RichText(
                                     softWrap: true,
@@ -184,7 +184,7 @@ class InteractionCardItem extends StatelessWidget {
                                           text: delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : '$replyBody',
                                           style: delete
                                               ? const TextStyle(
-                                                  color: Color(0xffaeb4bd), fontSize: Dimens.font_sp15)
+                                                  color: Color(0xffaeb4bd), fontSize: Dimens.font_sp14)
                                               : MyDefaultTextStyle.getMainTextBodyStyle(isDark,
                                                   fontSize: Dimens.font_sp14)),
                                     ]),
@@ -213,7 +213,7 @@ class InteractionCardItem extends StatelessWidget {
         anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
-        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp15, context: thisContext, bold: false)
+        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: thisContext, bold: false)
             .copyWith(color: isDark ? Colors.grey : Color(0xff6C7B8B)),
       ),
     );
@@ -235,8 +235,15 @@ class InteractionCardItem extends StatelessWidget {
             style: const TextStyle(color: Color(0xffaeb4bd), fontSize: Dimens.font_sp14)),
       );
     } else if (cover != null) {
-      return ImageContainer(
-          url: cover, width: Application.screenWidth / 4, maxHeight: Application.screenHeight / 4);
+      return Container(
+        child: Text('[图片]',
+            softWrap: true,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Color(0xffaeb4bd), fontSize: Dimens.font_sp14)),
+      );
+      // return ImageContainer(
+      //     url: cover, width: Application.screenWidth / 4, maxHeight: Application.screenHeight / 4);
     } else {
       return Gaps.empty;
     }

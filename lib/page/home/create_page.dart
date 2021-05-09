@@ -37,7 +37,6 @@ import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:nine_grid_view/nine_grid_view.dart';
-import 'package:photo/photo.dart';
 
 class CreatePage extends StatefulWidget {
   final String title = "发布内容";
@@ -442,7 +441,7 @@ class _CreatePageState extends State<CreatePage> {
     });
   }
 
-  void pickImage(BuildContext context, PickType type) async {
+  void pickImage(BuildContext context) async {
     bool hasP = await PermissionUtil.checkAndRequestPhotos(context, needCamera: true);
     if (!hasP) {
       return;
@@ -810,7 +809,7 @@ class _CreatePageState extends State<CreatePage> {
   Widget getImageSelWidget() {
     return GestureDetector(
         onTap: () async {
-          pickImage(Application.context, PickType.onlyImage);
+          pickImage(Application.context);
         },
         child: Container(
           height: singleImageWidth,
@@ -846,7 +845,7 @@ class _CreatePageState extends State<CreatePage> {
   Widget _getPhotoAddWidget() {
     return GestureDetector(
         onTap: () async {
-          pickImage(Application.context, PickType.onlyImage);
+          pickImage(Application.context);
         },
         child: Container(
           child: ClipRRect(

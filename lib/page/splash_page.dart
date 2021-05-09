@@ -77,7 +77,7 @@ class _SplashPageState extends State<SplashPage> {
       await SpUtil.getInstance();
       // LogUtil.init();
       // 由于SpUtil未初始化，所以MaterialApp获取的为默认主题配置，这里同步一下。
-      Provider.of<ThemeProvider>(context).syncTheme();
+      Provider.of<ThemeProvider>(context, listen: false).syncTheme();
       // if (SpUtil.getBool(Constant.keyGuide, defValue: true)){
       //   /// 预先缓存图片，避免直接使用时因为首次加载造成闪动
       //   _guideList.forEach((image){
@@ -120,11 +120,14 @@ class _SplashPageState extends State<SplashPage> {
       } else {
         httpUtil.updateAuthToken(storageToken);
         httpUtil2.updateAuthToken(storageToken);
+        LogUtil.e("有storageToken", tag: TAG);
         await MemberApi.getMyAccount(storageToken).then((acc) async {
+          LogUtil.e("登录完成--------", tag: TAG);
           if (acc == null) {
             _goLogin();
           } else {
-            AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+            AccountLocalProvider accountLocalProvider =
+                Provider.of<AccountLocalProvider>(context, listen: false);
             LogUtil.e("调用getMyAccount结果: ${acc.toJson()}", tag: TAG);
             accountLocalProvider.setAccount(acc);
 

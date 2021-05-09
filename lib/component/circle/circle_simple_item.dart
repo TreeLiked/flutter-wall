@@ -2,25 +2,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/component/satck_img_conatiner.dart';
 import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/circle/circle.dart';
-import 'package:iap_app/model/hot_tweet.dart';
-import 'package:iap_app/model/media.dart';
-import 'package:iap_app/model/tweet_type.dart';
+import 'package:iap_app/model/cirlce_type.dart';
 import 'package:iap_app/page/circle/circle_home.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/number_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 
 class CircleSimpleItem extends StatelessWidget {
@@ -59,9 +53,11 @@ class CircleSimpleItem extends StatelessWidget {
   }
 
   _renderRight() {
+    int joined = _circle.participants;
+    int views = _circle.view;
     return Container(
-      height: 100,
-      padding: const EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0),
+      height: 90,
+      padding: const EdgeInsets.only(left: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,8 +76,8 @@ class CircleSimpleItem extends StatelessWidget {
                           selectionEnabled: false,
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
-                          style: MyDefaultTextStyle.getTweetBodyStyle(context, fontSize: Dimens.font_sp16p5)
-                              .copyWith(fontWeight: FontWeight.w500, letterSpacing: 1.1)),
+                          style: MyDefaultTextStyle.getTweetBodyStyle(context, fontSize: Dimens.font_sp15)
+                              .copyWith(fontWeight: FontWeight.w400, letterSpacing: 1.1)),
                     ],
                   )),
               Gaps.vGap5,
@@ -95,12 +91,15 @@ class CircleSimpleItem extends StatelessWidget {
                           selectionEnabled: false,
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
-                          style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
+                          style: pfStyle.copyWith(
+                              color: isDark ? ColorConstant.SUB_TEXT_COLOR_DARK : Colors.grey,
+                              fontSize: Dimens.font_sp14)),
                     ],
                   )),
             ],
           ),
-          Text('70万浏览过，超过1K人加入', style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Colors.grey))
+          Text('${NumberUtil.calCount(views)}人浏览过，${NumberUtil.calCount(joined)}人已加入',
+              style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Colors.grey))
         ],
       ),
     );
@@ -113,7 +112,7 @@ class CircleSimpleItem extends StatelessWidget {
       positionedWidgets: [
         Positioned(
             child: SimpleTag(
-              "娱乐",
+              "${CircleTypeEnum.fromName(_circle.circleType).zhTag}",
               round: true,
               radius: 5.0,
               bgColor: Colors.white70,
@@ -123,8 +122,8 @@ class CircleSimpleItem extends StatelessWidget {
             left: 5.0,
             top: 5.0)
       ],
-      height: 100,
-      width: 100,
+      height: 90,
+      width: 90,
     );
     return Container(
         width: 100,

@@ -43,7 +43,6 @@ class CircleBodyWrapper extends StatelessWidget {
             overflowWidget: maxLine == -1
                 ? null
                 : TextOverflowWidget(
-                    fixedOffset: Offset.zero,
                     child: Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,

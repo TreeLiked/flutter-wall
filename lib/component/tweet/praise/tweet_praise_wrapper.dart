@@ -85,7 +85,7 @@ class TweetPraiseWrapper extends StatelessWidget {
           color: ThemeUtils.isDark(context)
               ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
               : ColorConstant.TWEET_RICH_BG,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(5.0),
         ),
         child: Wrap(
             alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items));

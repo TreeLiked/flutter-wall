@@ -69,7 +69,7 @@ class TweetReplyItemSimple extends StatelessWidget {
                   ? emptyTs
                   : TextSpan(
                       text: ' 回复 ',
-                      style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14, context: context)),
+                      style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp13p5, context: context)),
               dirReply
                   ? emptyTs
                   : TextSpan(

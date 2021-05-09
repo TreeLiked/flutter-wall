@@ -1,43 +1,29 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:common_utils/common_utils.dart';
-import 'package:extended_text/extended_text.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:iap_app/api/tweet.dart';
+import 'package:iap_app/api/circle.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/sticky_row_delegate.dart';
-import 'package:iap_app/component/circle/circle_card.dart';
 import 'package:iap_app/component/circle/circle_simple_item.dart';
 import 'package:iap_app/component/circle/circle_swpier_banner.dart';
-import 'package:iap_app/component/empty_view.dart';
-import 'package:iap_app/component/hot_app_bar.dart';
-import 'package:iap_app/component/tweet/tweet_hot_card.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
-import 'package:iap_app/model/discuss/discuss.dart';
-import 'package:iap_app/model/hot_tweet.dart';
-import 'package:iap_app/model/media.dart';
-import 'package:iap_app/page/circle/circle_home.dart';
-import 'package:iap_app/page/tweet_detail.dart';
+import 'package:iap_app/model/circle_query_param.dart';
 import 'package:iap_app/part/circle/circle_main.dart';
-import 'package:iap_app/part/circle/circle_my_tab.dart';
-import 'package:iap_app/part/circle/circle_square_tab.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/routes/circle_router.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -51,7 +37,9 @@ class CircleMainNew extends StatefulWidget {
 
 class _CircleMainNewState extends State<CircleMainNew>
     with AutomaticKeepAliveClientMixin<CircleMainNew>, SingleTickerProviderStateMixin {
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  static const String _TAG = "_CircleMainNewState";
+
+  RefreshController _refreshController = RefreshController(initialRefresh: true);
 
   // 用来控制titleText的更换
   ScrollController _scrollController = ScrollController();
@@ -62,8 +50,23 @@ class _CircleMainNewState extends State<CircleMainNew>
   // 连接通知器
   LinkHeaderNotifier _headerNotifier;
 
+  int _currentPage = 1;
+
   Future<void> _onRefresh() async {
-    await getData();
+    LogUtil.e("---onRefresh---", tag: _TAG);
+    _refreshController.resetNoData();
+    _currentPage = 1;
+    List<Circle> temp = await getData(_currentPage);
+    // tweetProvider.update(temp, clear: true, append: false);
+    // MessageUtil.clearTabIndexTweetCnt();
+    setState(() {
+      this._circles = temp;
+    });
+    if (temp == null) {
+      _refreshController.refreshFailed();
+    } else {
+      _refreshController.refreshCompleted();
+    }
   }
 
   final String defaultCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
@@ -72,86 +75,7 @@ class _CircleMainNewState extends State<CircleMainNew>
 
   int _currentSelectIndex = 0;
 
-  List<Circle> _circles = List();
-
-  void _initData() {
-    String cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1goi9lajqpvj307705eaaf.jpg";
-    Circle c = new Circle();
-    c.brief = "工程吃货小组";
-    c.desc = "哪里有饭哪里就有我们！！！";
-    c.cover = cover;
-    c.view = 2000;
-    c.participants = 780;
-    c.limit = 1000;
-    c.joinType = Circle.JOIN_TYPE_REFUSE_ALL;
-    c.higher = Random().nextInt(2) == 1;
-
-    Circle c1 = new Circle();
-    c1.brief = "大一计算机学院相亲交流圈子";
-    c1.desc = "想脱单吗？想认识更多的帅哥哥和小姐姐们？？";
-    c1.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1goi9ilaj7pj30u00u0did.jpg";
-    c1.view = 2000;
-    c1.participants = 780;
-    c1.limit = 1000;
-    c1.joinType = Circle.JOIN_TYPE_DIRECT;
-    c1.higher = Random().nextInt(2) == 1;
-
-    Circle c2 = new Circle();
-    c2.brief = "2021届考研学习交流";
-    c2.desc = "这里是21届考研的学习交流圈子，非诚勿扰";
-    c2.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1goi9iu1muuj30jg0jgq3q.jpg";
-    c2.view = 2000;
-    c2.participants = 780;
-    c2.limit = 1000;
-    c2.joinType = Circle.JOIN_TYPE_ADMIN_AGREE;
-
-    c2.higher = Random().nextInt(2) == 1;
-
-    Circle c3 = new Circle();
-    c3.brief = "王者开黑第一小组";
-    c3.desc = "永恒钻石，星耀渣渣，王者低🌟废物都可以来";
-    c3.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1goi9jxjom7j308l04j3yt.jpg";
-    c3.view = 2000;
-    c3.participants = 780;
-    c3.higher = Random().nextInt(2) == 1;
-    c3.limit = 1000;
-    c3.joinType = Circle.JOIN_TYPE_ADMIN_AGREE;
-
-    Circle c4 = new Circle();
-    c4.brief = "音乐爱好交流组";
-    c4.desc = "希望音乐可以治愈你～";
-    c4.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1goi9kfz3b5j308c04oaa6.jpg";
-    c4.view = 2000;
-    c4.participants = 780;
-    c4.higher = Random().nextInt(2) == 1;
-    c.contentPrivate = true;
-    c1.contentPrivate = false;
-    c2.contentPrivate = true;
-    c3.contentPrivate = false;
-    c4.contentPrivate = true;
-
-    CircleAccount ca = CircleAccount();
-    ca.id = Application.getAccount.id;
-    ca.nick = Application.getAccount.nick;
-    ca.avatarUrl = Application.getAccount.avatarUrl;
-
-    c.creator  = ca;
-    c1.creator  = ca;
-    c2.creator  = ca;
-    c3.creator  = ca;
-    c4.creator  = ca;
-
-    _circles.add(c);
-    _circles.add(c1);
-    _circles.add(c2);
-    _circles.add(c3);
-    _circles.add(c4);
-    _circles.add(c);
-    _circles.add(c2);
-    _circles.add(c1);
-    _circles.add(c4);
-    _circles.add(c3);
-  }
+  List<Circle> _circles;
 
   @override
   void initState() {
@@ -160,8 +84,6 @@ class _CircleMainNewState extends State<CircleMainNew>
     UMengUtil.userGoPage(UMengUtil.PAGE_CIRCLE_INDEX);
     _headerNotifier = LinkHeaderNotifier();
     _scrollController.addListener(_scrollListener);
-
-    _initData();
   }
 
   _scrollListener() {
@@ -181,23 +103,6 @@ class _CircleMainNewState extends State<CircleMainNew>
     _headerNotifier.dispose();
 
     super.dispose();
-  }
-
-  Future<void> getData() async {
-    // UniHotTweet ht = await TweetApi.queryOrgHotTweets(Application.getOrgId);
-    //
-    // if (ht == null) {
-    //   ToastUtil.showToast(context, '当前访问人数较多，请稍后重试');
-    //   setState(() {
-    //     this.hotTweet = null;
-    //   });
-    //   return;
-    // }
-    // setState(() {
-    //   this.hotTweet = ht;
-    // });
-    // extractCovers();
-    // ToastUtil.showToast(context, '更新完成');
   }
 
   @override
@@ -233,7 +138,10 @@ class _CircleMainNewState extends State<CircleMainNew>
                               style: pfStyle.copyWith(fontSize: Dimens.font_sp17, letterSpacing: 1.5)),
                       centerTitle: false,
                       actions: [
-                        _getActionItem("circle/circle_create", () => {}),
+                        _getActionItem(
+                            "circle/circle_create",
+                            () => NavigatorUtils.push(context, CircleRouter.CREATE,
+                                transitionType: TransitionType.fadeIn)),
                         _getActionItem("circle/circle_search", () => {}),
                         _getActionItem("circle/circle_me", () => {}),
                       ],
@@ -252,6 +160,7 @@ class _CircleMainNewState extends State<CircleMainNew>
                     //     ),
                     //   ),
                     // ),
+
                     SliverPadding(
                         padding: const EdgeInsets.only(bottom: 10.0),
                         sliver: SliverPersistentHeader(
@@ -283,12 +192,15 @@ class _CircleMainNewState extends State<CircleMainNew>
                     failedText: '更新完成',
                   ),
                   controller: _refreshController,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _circles.length,
-                      itemBuilder: (ctx, index) {
-                        return CircleSimpleItem(_circles[index]);
-                      }),
+                  onRefresh: _onRefresh,
+                  child: CollectionUtil.isListEmpty(_circles)
+                      ? Gaps.empty
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _circles.length,
+                          itemBuilder: (ctx, index) {
+                            return CircleSimpleItem(_circles[index]);
+                          }),
                 ))));
   }
 
@@ -318,16 +230,20 @@ class _CircleMainNewState extends State<CircleMainNew>
 
   Widget _getActionItem(String iconPath, Function ontap) {
     return Container(
-      padding: const EdgeInsets.all(3.0),
-      margin: const EdgeInsets.only(left: 0.0),
-      child: GestureDetector(
-        onTap: ontap,
-        child: CircleAvatar(
-            child:
-                LoadAssetIcon(iconPath, width: 16.0, height: 16.0, color: ThemeUtils.getIconColor(context)),
-            backgroundColor: ThemeUtils.getBackColor(context)),
-      ),
-    );
+        padding: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.only(left: 7.0, top: 10.0, bottom: 10.0, right: 5.0),
+        decoration: BoxDecoration(
+            color: !isDark ? ColorConstant.TWEET_RICH_BG : ColorConstant.TWEET_RICH_BG_DARK, borderRadius: BorderRadius.circular(10.0)),
+        child: GestureDetector(
+            onTap: ontap,
+            child: LoadAssetIcon(iconPath,
+                width: 16.0, height: 16.0, color: isDark ? Colors.grey : Colors.black87)));
+  }
+
+  Future getData(int page) async {
+    List<Circle> pbt =
+        await (CircleApi.queryCircles(CircleQueryParam(page, pageSize: 10, orgId: Application.getOrgId)));
+    return pbt;
   }
 
   @override
@@ -335,7 +251,7 @@ class _CircleMainNewState extends State<CircleMainNew>
 }
 
 class StickySwiperDelegate extends SliverPersistentHeaderDelegate {
-  final List<Circle> children;
+  List<Circle> children;
 
   StickySwiperDelegate({@required this.children});
 
@@ -343,6 +259,10 @@ class StickySwiperDelegate extends SliverPersistentHeaderDelegate {
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     if (children == null || children.isEmpty) {
       return Gaps.empty;
+    }
+    int recommendSize = new CircleQueryParam(1).recommendSize;
+    if(children.length > recommendSize) {
+      children = children.sublist(0, recommendSize);
     }
     return Container(
         padding: const EdgeInsets.only(left: 15.0, right: 15.0),
@@ -366,7 +286,7 @@ class StickySwiperDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 130;
+  double get maxExtent => CollectionUtil.isListEmpty(children) ? 0 : 130;
 
   @override
   double get minExtent => CollectionUtil.isListEmpty(children) ? 0 : 120;

@@ -4,6 +4,7 @@ import 'package:iap_app/component/tweet/tweet_type_wrapper.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetCampusWrapper extends StatelessWidget {
@@ -43,8 +44,8 @@ class TweetCampusWrapper extends StatelessWidget {
                 "$t",
                 backgroundColor: Color(0xffEDF1F7),
                 backgroundDarkColor: Colors.black12,
-                textStyle: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
-                horizontalPadding: 15.0,
+                textStyle:  pfStyle.copyWith(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
+                horizontalPadding: 10.0,
                 verticalPadding: 5.0,
                 roundRadius: 7.0,
                 // prefixIcon: Icon(

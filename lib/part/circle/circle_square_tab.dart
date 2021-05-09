@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iap_app/component/circle/circle_card.dart';
+import 'package:iap_app/api/circle.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/component/circle/circle_simple_item.dart';
-import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/model/circle/circle.dart';
+import 'package:iap_app/model/circle_query_param.dart';
+import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -36,9 +38,12 @@ class CircleSquareTabView extends StatefulWidget {
 
 class _CircleSquareTabView extends State<CircleSquareTabView>
     with AutomaticKeepAliveClientMixin<CircleSquareTabView> {
+  final String _TAG = "CircleSquareTabView";
+
   ScrollController _scrollController = ScrollController();
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  int _currentPage = 1;
   List<Circle> _circles = List();
 
   // 连接通知器
@@ -46,65 +51,24 @@ class _CircleSquareTabView extends State<CircleSquareTabView>
 
   bool isDark = false;
 
-  void _initData() {
-    String cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1go2fiz9279j30u01sxapv.jpg";
-    Circle c = new Circle();
-    c.brief = "永远在干饭的路上";
-    c.desc = "加入我们";
-    c.cover = cover;
-    c.view = 2000;
-    c.participants = 780;
-    c.higher = Random().nextInt(2) == 1;
-
-    Circle c1 = new Circle();
-    c1.brief = "永远在干饭的路上";
-    c1.desc = "检查背景";
-    c1.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1go11zesr83j30go0fmq6w.jpg";
-    c1.view = 2000;
-    c1.participants = 780;
-    c1.higher = Random().nextInt(2) == 1;
-
-    Circle c2 = new Circle();
-    c2.brief = "北一食堂交流";
-    c2.desc = "来啊吃饭啊";
-    c2.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1gob9762hfjj30pr0n5wk5.jpg";
-    c2.view = 2000;
-    c2.participants = 780;
-    c2.higher = Random().nextInt(2) == 1;
-
-    Circle c3 = new Circle();
-    c3.brief = "吃货小组";
-    c3.desc = "哈哈哈哈😄";
-    c3.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1go2ffn1e4nj30u01sxqmp.jpg";
-    c3.view = 2000;
-    c3.participants = 780;
-    c3.higher = Random().nextInt(2) == 1;
-
-    Circle c4 = new Circle();
-    c4.brief = "永远在干饭的路上";
-    c4.desc = "加入我们一起来干饭～～～";
-    c4.cover = "https://tva1.sinaimg.cn/large/008eGmZEgy1go1yns7qstj30lr0ez40j.jpg";
-    c4.view = 2000;
-    c4.participants = 780;
-    c4.higher = Random().nextInt(2) == 1;
-    _circles.add(c);
-    _circles.add(c1);
-    _circles.add(c2);
-    _circles.add(c3);
-    _circles.add(c4);
-    _circles.add(c);
-    _circles.add(c2);
-    _circles.add(c1);
-    _circles.add(c4);
-    _circles.add(c3);
-  }
+  void _initData() {}
 
   Future<void> _onRefresh() async {
-    print("---------refreshiing..........");
+    LogUtil.e("---onRefresh---", tag: _TAG);
+    _refreshController.resetNoData();
+    _currentPage = 1;
+    List<Circle> temp = await getData(_currentPage);
+    // tweetProvider.update(temp, clear: true, append: false);
+    // MessageUtil.clearTabIndexTweetCnt();
     setState(() {
-      _initData();
+      this._circles = temp;
     });
-    _refreshController.refreshCompleted();
+    if (temp == null) {
+      _refreshController.refreshFailed();
+    } else {
+      _refreshController.refreshCompleted();
+    }
+    print("---------refreshiing..........");
   }
 
   Future<void> _onLoading() async {
@@ -248,6 +212,15 @@ class _CircleSquareTabView extends State<CircleSquareTabView>
       MaterialPageRoute(
           builder: (context) => TweetDetail(null, tweetId: tweetId, hotRank: rank, newLink: true)),
     );
+  }
+
+  Future getData(int page) async {
+    List<Circle> pbt = await (CircleApi.queryCircles(CircleQueryParam(
+      page,
+      pageSize: 10,
+      orgId: Application.getOrgId,
+    )));
+    return pbt;
   }
 
   @override

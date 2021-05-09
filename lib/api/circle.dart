@@ -8,6 +8,7 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/circle/circle.dart';
+import 'package:iap_app/model/circle_query_param.dart';
 import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/result.dart';
@@ -18,14 +19,31 @@ import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
 class CircleApi {
-
   static const String TAG = "CircleApi";
 
   static String localAccountToken = SpUtil.getString(SharedConstant.LOCAL_ACCOUNT_TOKEN);
 
-  static Future<Circle> queryCircleById(int circleId) {
+  static Future<List<Circle>> queryCircles(CircleQueryParam param) async {
+    String url = Api.API_BASE_INF_URL + Api.API_CIRCLE_INDEX_LIST;
+    Response response;
+    try {
+      response = await httpUtil.dio.post(url, data: param.toJson());
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      List<dynamic> jsonData = json["data"];
+      if (CollectionUtil.isListEmpty(jsonData)) {
+        return new List<Circle>();
+      }
+      List<Circle> tweetList = jsonData.map((m) => Circle.fromJson(m)).toList();
+      LogUtil.e("------queryCircles------, : ${tweetList.map((e) => e.id)}", tag: TAG);
 
+      return tweetList;
+    } on DioError catch (e) {
+      Api.formatError(e, pop: false);
+    }
+    return [];
   }
+
+  static Future<Circle> queryCircleById(int circleId) {}
 
   static Future<Circle> queryCircleDetail(int circleId) async {
     String url = Api.API_BASE_INF_URL + Api.API_CIRCLE_QUERY_SINGLE_DETAIL;
@@ -33,15 +51,13 @@ class CircleApi {
     Response response;
     try {
       response = await httpUtil.dio.get(url, queryParameters: {
-        "circleId": circleId,
+        "cId": circleId,
       });
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      dynamic jsonData = json["data"];
 
-      List<BaseTweet> tweetList = jsonData.map((m) => BaseTweet.fromJson(m)).toList();
-      LogUtil.e("------queryCircleDetail------, : ${tweetList.map((e) => e.id)}", tag: TAG);
-
-      return null;
+      Circle circle = Circle.fromJson(json);
+      LogUtil.e("------queryCircleDetail------, : ${circle.toJson()}", tag: TAG);
+      return circle;
     } on DioError catch (e) {
       Api.formatError(e, pop: false);
     }
@@ -159,21 +175,17 @@ class CircleApi {
     return null;
   }
 
-  static Future<Map<String, dynamic>> pushTweet(BaseTweet tweet) async {
-    print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERY);
-
+  static Future<Map<String, dynamic>> pushCircle(Circle circle) async {
     Result r;
     try {
       Response response =
-      await httpUtil.dio.post(Api.API_BASE_INF_URL + Api.API_TWEET_CREATE, data: tweet.toJson());
+          await httpUtil.dio.post(Api.API_BASE_INF_URL + Api.API_CIRCLE_CREATE, data: circle.toJson());
       return Api.convertResponse(response.data);
     } on DioError catch (e) {
       String error = Api.formatError(e);
-
       r = Api.genErrorResult(error);
     }
     return r.toJson();
-
   }
 
   static Future<Map<String, dynamic>> requestUploadMediaLink(List<String> fileSuffixes, String type) async {
@@ -226,7 +238,7 @@ class CircleApi {
   }
 
   static Future<Result> delTweetReply(int replyId) async {
-    String url = Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_DELETE + "?id=$replyId" ;
+    String url = Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_DELETE + "?id=$replyId";
     ;
     Result r = Result(isSuccess: false);
     try {
@@ -297,5 +309,4 @@ class CircleApi {
     Map<String, dynamic> json = Api.convertResponse(response.data);
     return UniHotTweet.fromJson(json);
   }
-
 }

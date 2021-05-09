@@ -194,6 +194,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
               // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
               count: 10,
               cache: true,
+              displayLeading: false,
               lightShadow: Colors.black38,
               outerMargin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
               outerRadius: BorderRadius.circular(8.0),
@@ -245,7 +246,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                 ],
               ),
               expandedHeight: _expandedHeight,
-              title: '校园热门',
+              title: '',
             ),
             SliverPadding(
               padding: const EdgeInsets.only(bottom: 10.0, top: 3.0),

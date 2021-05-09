@@ -67,7 +67,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
   Future<void> _onRefresh() async {
     _currentPage = 1;
     await getData(true);
-    ToastUtil.showToast(context, '更新完成');
+    // ToastUtil.showToast(context, '更新完成');
   }
 
   Future<void> _onLoading() async {
@@ -119,17 +119,18 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
           firstRefresh: true,
           slivers: <Widget>[
             HotAppBarWidget(
-              title: typeEntity.zhTag,
+              title: '',
               headerNotifier: _headerNotifier,
               // backgroundImg: TweetTypeUtil.getTweetTypeCover(context),
               backgroundImg: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
+              // backgroundImg: null,
               cache: true,
               count: 10,
-              sigma: 15.5,
-              pinned: true,
-              floating: false,
+              sigma: 0,
+              pinned: false,
+              floating: true,
               snap: false,
-              lightShadow: Colors.black12,
+              lightShadow: Colors.black26,
               outerRadius: BorderRadius.zero,
               imageRadius: BorderRadius.zero,
               content: Container(
@@ -137,8 +138,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                 padding: const EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
                 height: double.maxFinite,
                 width: double.maxFinite,
-                decoration: BoxDecoration(
-                ),
+                decoration: BoxDecoration(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,19 +148,17 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                       child: Container(
                           height: imageSize,
                           width: imageSize,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                width: 1.0, color: isDark ? Colors.white : Colors.white38),
+                          ),
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Container(
-                                padding: const EdgeInsets.all(2.0),
-                                color: Colors.white,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: CachedNetworkImage(
-                                    imageUrl: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
-                                    fit: BoxFit.cover,
-                                    placeholder: (_, __) => const CupertinoActivityIndicator(),
-                                  ),
-                                ),
+                              child: CachedNetworkImage(
+                                imageUrl: TweetTypeUtil.getTweetEntityCoverUrl(typeEntity),
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) => const CupertinoActivityIndicator(),
                               ))),
                     ),
                     Flexible(
@@ -174,13 +172,15 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                           children: [
                             Text('# ${typeEntity.zhTag}',
                                 style: pfStyle.copyWith(
-                                    fontSize: Dimens.font_sp18,
-                                    letterSpacing: 1.5,
+                                    fontSize: Dimens.font_sp15,
+                                    color: isDark ? Colors.white : Colors.white,
+                                    letterSpacing: 1.1,
                                     fontWeight: FontWeight.w500)),
                             Gaps.vGap5,
                             Text('${typeEntity.intro}',
                                 style: pfStyle.copyWith(
-                                    fontSize: Dimens.font_sp14, letterSpacing: 1.1, color: Colors.white70)),
+                                    fontSize: Dimens.font_sp13,
+                                    color: isDark ? Colors.white70 : Colors.white70)),
                           ],
                         ),
                       ),
@@ -196,7 +196,13 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                               children: [
                                 Container(
                                   height: 30,
+                                  decoration: BoxDecoration(
+                                    border: _subThis ? null : Border.all(color: Colors.white60, width: 1.0),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
                                   child: FlatButton(
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    padding: EdgeInsets.all(0),
                                     onPressed: () async {
                                       if (_initSub) {
                                         return;
@@ -209,26 +215,25 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                                       await modSubscribe();
                                     },
                                     textColor: Colors.white,
-                                    color: _subThis ? typeEntity.color : null,
+                                    color: _subThis ? typeEntity.color.withAlpha(150) : null,
                                     disabledTextColor:
                                         isDark ? Colours.dark_text_disabled : Colours.text_disabled,
                                     disabledColor:
                                         isDark ? Colours.dark_button_disabled : Colours.button_disabled,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: Colors.black12, width: _subThis ? 0 : 1.0),
-                                        borderRadius: BorderRadius.circular(15.0)),
+                                        borderRadius: BorderRadius.circular(8.0)),
                                     child: !_initSub
                                         ? (_subThis
                                             ? Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Text("已订阅 ",
+                                                  Text("已关注 ",
                                                       style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
                                                   Icon(Icons.check, size: 15),
-
                                                 ],
                                               )
-                                            : Text("+ 订阅",
+                                            : Text("+ 关注",
                                                 style: pfStyle.copyWith(fontSize: Dimens.font_sp14)))
                                         : SpinKitDoubleBounce(size: 5, color: Colors.white),
                                   ),
@@ -240,7 +245,7 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
                   ],
                 ),
               ),
-              expandedHeight: ScreenUtil().setHeight(450),
+              expandedHeight: kToolbarHeight + 100,
             ),
             // SliverPersistentHeader(
             //   pinned: true,
@@ -300,15 +305,15 @@ class _TweetTypeInfGroPlfPageState extends State<TweetTypeInfGroPlfPage> {
 
     Result r;
     if (_subThis) {
-      // 已经订阅要取消
+      // 已经关注要取消
       r = await TtSubscribe.unSubscribeType(widget.tweetType);
     } else {
-      // 想订阅
+      // 想关注
       r = await TtSubscribe.subscribeType(widget.tweetType);
     }
     NavigatorUtils.goBack(context);
     if (r != null && r.isSuccess) {
-      ToastUtil.showToast(context, _subThis ? "已取消订阅" : "订阅成功～");
+      ToastUtil.showToast(context, _subThis ? "已取消关注╮(╯▽╰)╭" : "关注成功～ (>^ω^<)");
       setState(() {
         _subThis = !_subThis;
       });

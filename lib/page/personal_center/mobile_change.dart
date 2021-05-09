@@ -97,7 +97,7 @@ class _SMSLoginPageState extends State<LoginPage> {
     return Scaffold(
         appBar: MyAppBar(isBack: false),
         body: defaultTargetPlatform == TargetPlatform.iOS
-            ? FormKeyboardActions(
+            ? KeyboardActions(
                 child: _buildBody(),
               )
             : SingleChildScrollView(

@@ -60,7 +60,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     initPlatformState();
     initUMengAnalytics();
 
-    LogUtil.init(tag: "Wall",maxLen: 1024);
+    LogUtil.init(tag: "Wall", maxLen: 1024);
     LogUtil.e("Main 生产环境=${AlmondDonuts.inProduction}", tag: "AlmondDonuts");
     _jPush.getRegistrationID().then((rid) {
       if (rid != null && rid.length != 0) {
@@ -167,11 +167,26 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(builder: (_) => AccountLocalProvider()),
-          ChangeNotifierProvider(builder: (_) => TweetTypesFilterProvider()),
-          ChangeNotifierProvider(builder: (_) => ThemeProvider()),
-          ChangeNotifierProvider(builder: (_) => TweetProvider()),
+          ChangeNotifierProvider(create: (BuildContext context) => AccountLocalProvider()),
+          ChangeNotifierProvider(create: (BuildContext context) => TweetTypesFilterProvider()),
+          ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
+          ChangeNotifierProvider(create: (BuildContext context) => TweetProvider()),
         ],
+        // child:  MaterialApp(
+        //     title: 'Wall',
+        //     //showPerformanceOverlay: true, //显示性能标签
+        //     debugShowCheckedModeBanner: false,
+        //     home: SplashPage(),
+        //     onGenerateRoute: Application.router.generator,
+        //     localizationsDelegates: const [
+        //       GlobalMaterialLocalizations.delegate,
+        //       GlobalWidgetsLocalizations.delegate,
+        //       GlobalCupertinoLocalizations.delegate,
+        //       DefaultCupertinoLocalizations.delegate
+        //     ],
+        //     supportedLocales: const [const Locale('zh', 'CH')],
+        //   )
+        // );
         child: Consumer<ThemeProvider>(builder: (_, provider, __) {
           return MaterialApp(
             title: 'Wall',

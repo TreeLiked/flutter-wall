@@ -10,7 +10,6 @@
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="Wall"
-    android:name="io.flutter.app.FlutterApplication"
     android:usesCleartextTraffic="true">
     <!--    android:name="io.flutter.app.FlutterApplication">-->
     <activity
@@ -35,9 +34,13 @@
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+
       <meta-data
         android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
         android:value="true" />
+      <meta-data
+        android:name="flutterEmbedding"
+        android:value="2" />
     </activity>
   </application>
 

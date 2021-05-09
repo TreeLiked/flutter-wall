@@ -78,7 +78,7 @@ class _SMSLoginPageState extends State<LoginPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await SpUtil.getInstance();
       // 由于SpUtil未初始化，所以MaterialApp获取的为默认主题配置，这里同步一下。
-      Provider.of<ThemeProvider>(context).syncTheme();
+      Provider.of<ThemeProvider>(context, listen: false).syncTheme();
     });
     _phoneController.addListener(_verifyPhone);
 //    _vCodeController.addListener(_verifyCode);
@@ -146,7 +146,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         httpUtil2.updateAuthToken(token);
         await SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
 
-        _loadStorageTweetTypes();
+        // _loadStorageTweetTypes();
         // 查询账户信息
         Account acc = await MemberApi.getMyAccount(token);
         if (acc == null) {
@@ -155,7 +155,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           return;
         }
         // 绑定账户信息到本地账户数据提供器
-        AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+        AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
         accountLocalProvider.setAccount(acc);
         print(accountLocalProvider.account.toJson());
         Application.setAccount(acc);
@@ -211,7 +211,7 @@ class _SMSLoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
+    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
     tweetTypesFilterProvider.updateTypeNames();
   }
 
@@ -224,8 +224,9 @@ class _SMSLoginPageState extends State<LoginPage> {
       body: Container(
           padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(200)),
           child: defaultTargetPlatform == TargetPlatform.iOS
-              ? FormKeyboardActions(
+              ? KeyboardActions(
                   child: _buildBody(),
+                  config: KeyboardActionsConfig(actions: []),
                 )
               : SingleChildScrollView(
                   child: _buildBody(),
@@ -248,7 +249,7 @@ class _SMSLoginPageState extends State<LoginPage> {
           Container(
             decoration: BoxDecoration(
               color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
-              borderRadius: BorderRadius.circular(15.0),
+              borderRadius: BorderRadius.circular(10.0),
             ),
             child: Row(
               children: <Widget>[
@@ -372,7 +373,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         margin: const EdgeInsets.only(top: 15),
         child: FlatButton(
           child: Text(!_codeWaiting ? '获取短信验证码' : '重新获取 $s(s)', style: TextStyle(color: Colors.white)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           color: _canGetCode
               ? Colors.amber
               : !isDark

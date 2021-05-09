@@ -5,6 +5,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -40,6 +41,9 @@ class HotAppBarWidget extends StatelessWidget {
   // 是否模糊图片
   final bool blurImage;
 
+  // 是否显示返回的箭头
+  final bool displayLeading;
+
   HotAppBarWidget(
       {@required this.expandedHeight,
       @required this.content,
@@ -59,10 +63,12 @@ class HotAppBarWidget extends StatelessWidget {
       this.snap = false,
       this.cache = false,
       this.blurImage = true,
+      this.displayLeading = true,
       this.preBackgroundImg});
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeUtils.isDark(context);
     return SliverAppBar(
         actions: headerNotifier != null
             ? <Widget>[
@@ -76,16 +82,25 @@ class HotAppBarWidget extends StatelessWidget {
         pinned: pinned,
         snap: snap,
         floating: floating,
+        leading: displayLeading
+            ? GestureDetector(
+                child: Icon(
+                  Icons.arrow_back,
+                  color: isDark ? Colors.white70 : Colors.white60,
+                ),
+                onTap: () => NavigatorUtils.goBack(context),
+              )
+            : Gaps.empty,
         elevation: 0,
-        brightness: Brightness.dark,
-        iconTheme: IconThemeData(color: Colors.white),
+        // brightness: Brightness.dark,
+        // iconTheme: backgroundImg == null ? null : IconThemeData(color: Colors.white),
         title: Text(
-          title ?? "",
-          style:
-              pfStyle.copyWith(color: ColorConstant.MAIN_BG, fontWeight: FontWeight.w500, letterSpacing: 1.1),
+          '$title',
+          style: pfStyle.copyWith(
+              fontWeight: FontWeight.w500, letterSpacing: 1.1, color: isDark ? Colors.white70 : Colors.white),
         ),
         flexibleSpace: Container(
-          color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
+          // color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
           margin: outerMargin,
           child: ClipRRect(
             borderRadius: outerRadius,
@@ -118,7 +133,7 @@ class HotAppBarWidget extends StatelessWidget {
                               height: double.infinity,
                               fit: BoxFit.cover,
                             ),
-                  blurImage
+                  blurImage && backgroundImg != null
                       ? BackdropFilter(
                           filter: ImageFilter.blur(
                             sigmaY: sigma,

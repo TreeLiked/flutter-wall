@@ -7,9 +7,11 @@ import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
+import 'package:iap_app/model/cirlce_type.dart';
 import 'package:iap_app/page/circle/circle_home.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class CircleSwiperBanner extends StatelessWidget {
@@ -33,7 +35,7 @@ class CircleSwiperBanner extends StatelessWidget {
       width: double.infinity,
       centerWidget: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Text('${_circle.desc}',
+        child: Text('${StringUtil.isEmpty(_circle.desc) ? _circle.brief : _circle.desc}',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: pfStyle.copyWith(
@@ -41,9 +43,9 @@ class CircleSwiperBanner extends StatelessWidget {
       ),
       positionedWidgets: [
         Positioned(
-            child: SimpleTag("美食",
+            child: SimpleTag(CircleTypeEnum.fromName(_circle.circleType).zhTag,
                 round: true,
-                radius: 10.0,
+                radius: 7.0,
                 verticalPadding: 2.0,
                 bgColor: Colors.white70,
                 bgDarkColor: Colors.white,

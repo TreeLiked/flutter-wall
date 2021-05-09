@@ -29,12 +29,12 @@ class MyDefaultTextStyle {
   /// 推文相关
 
   // 推文正文字体
-  static TextStyle getTweetBodyStyle(BuildContext context, {double fontSize = Dimens.font_sp16}) {
+  static TextStyle getTweetBodyStyle(BuildContext context, {double fontSize = Dimens.font_sp15}) {
     return TextStyle(
         color: MyColorStyle.getTweetBodyColor(context: context),
         fontSize: fontSize,
         fontFamily: TextConstant.PING_FANG_FONT,
-        fontWeight: FontWeight.w500);
+        fontWeight: FontWeight.w400);
   }
 
   static TextStyle getSubTextBodyStyle(bool isDark, {double fontSize = Dimens.font_sp15}) {
@@ -116,33 +116,28 @@ class MyDefaultTextStyle {
 
   static TextStyle getTweetHeadNickStyle(BuildContext context, double fontSize,
       {bool anonymous = false, bool bold = false}) {
-    return TextStyle(
+    return pfStyle.copyWith(
         fontSize: SizeConstant.TWEET_FONT_SIZE,
         fontWeight: bold ? FontWeight.w500 : FontWeight.w400,
-        fontFamily: TextConstant.PING_FANG_FONT,
-        letterSpacing: 1.0,
         color: !anonymous ? ColorConstant.getTweetNickColor(context) : Color(0xff828282));
   }
 
   static TextStyle getTweetSigStyle(BuildContext context, {double fontSize = Dimens.font_sp13}) {
-    return TextStyle(
-        fontFamily: TextConstant.PING_FANG_FONT,
+    return pfStyle.copyWith(
         fontSize: fontSize,
         color: ColorConstant.getTweetSigColor(context),
         fontWeight: FontWeight.w400);
   }
 
   static TextStyle getTweetTimeStyle(BuildContext context, {double fontSize = SizeConstant.TWEET_TIME_SIZE}) {
-    return TextStyle(
+    return pfStyle.copyWith(
         fontSize: fontSize,
         color: ColorConstant.getTweetTimeColor(context),
-        fontFamily: TextConstant.PING_FANG_FONT,
-        fontWeight: FontWeight.w500);
+        fontWeight: FontWeight.w400);
   }
 
   static TextStyle getTweetReplyOtherStyle(double fontSize) {
-    return TextStyle(
-      fontFamily: TextConstant.PING_FANG_FONT,
+    return pfStyle.copyWith(
       color: Colors.black87,
       fontSize: fontSize,
     );

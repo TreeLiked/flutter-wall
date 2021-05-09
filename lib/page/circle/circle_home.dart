@@ -4,6 +4,7 @@ import 'package:extended_text/extended_text.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:iap_app/api/circle.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/common-widget/sticky_row_delegate.dart';
@@ -60,7 +61,7 @@ class _CircleHomeState extends State<CircleHome> {
   // 按钮key
   GlobalKey _sortButtonKey = GlobalKey();
 
-  final Circle _circle;
+  Circle _circle;
 
   BuildContext _context;
   bool isDark = false;
@@ -69,7 +70,7 @@ class _CircleHomeState extends State<CircleHome> {
   bool displayGoTopWidget = false;
 
   // 是否当前用户加入了该圈子
-  bool iJoin = false;
+  bool _meJoined = false;
 
   _CircleHomeState(this._circle);
 
@@ -78,6 +79,7 @@ class _CircleHomeState extends State<CircleHome> {
     super.initState();
     _linkHeaderNotifier = LinkHeaderNotifier();
     _scrollController.addListener(_scrollListener);
+    queryDetail();
   }
 
   _scrollListener() {
@@ -168,7 +170,7 @@ class _CircleHomeState extends State<CircleHome> {
                                   style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70)),
                             ),
                             Gaps.vGap20,
-                            iJoin == null
+                            _meJoined == null
                                 ? Gaps.empty
                                 : Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -180,7 +182,7 @@ class _CircleHomeState extends State<CircleHome> {
                                             color: Colors.white24,
                                             borderRadius: BorderRadius.circular(18.0),
                                           ),
-                                          child: iJoin ? _getCreateContentItem() : _getApplyJoinItem()),
+                                          child: _meJoined ? _getCreateContentItem() : _getApplyJoinItem()),
                                     ],
                                   )
                           ],
@@ -333,7 +335,7 @@ class _CircleHomeState extends State<CircleHome> {
                         color: isDark ? Colors.black : Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: isDark ? Colors.orangeAccent : Colors.amberAccent,
+                            color: isDark ? Colors.lightGreen : Colors.lightGreenAccent,
                             blurRadius: 5.0,
                           ),
                         ]),
@@ -341,11 +343,12 @@ class _CircleHomeState extends State<CircleHome> {
                       'circle_go_top',
                       width: double.infinity,
                       height: double.infinity,
-                      color: isDark ? Colors.orangeAccent : Colors.amber,
+                      color: isDark ? Colors.lightGreen : Colors.lightGreen,
                     ),
                   ),
                 ),
-                right: (Application.screenWidth - 50) / 2,
+                // right: (Application.screenWidth - 50) / 2,
+                right: 60,
                 bottom: 60,
               )
             : Gaps.empty
@@ -370,7 +373,7 @@ class _CircleHomeState extends State<CircleHome> {
     return GestureDetector(
         onTap: () {
           setState(() {
-            this.iJoin = !this.iJoin;
+            this._meJoined = !this._meJoined;
           });
         },
         child: Row(
@@ -390,7 +393,7 @@ class _CircleHomeState extends State<CircleHome> {
     return GestureDetector(
         onTap: () {
           setState(() {
-            this.iJoin = !this.iJoin;
+            this._meJoined = !this._meJoined;
             NavigatorUtils.push(context, CircleRouter.CREATE, transitionType: TransitionType.fadeIn);
           });
         },
@@ -464,8 +467,19 @@ class _CircleHomeState extends State<CircleHome> {
     );
   }
 
+  void queryDetail() {
+    CircleApi.queryCircleDetail(widget._circle.id).then((resCircle) {
+      if (resCircle != null) {
+        setState(() {
+          this._circle = resCircle;
+          this._meJoined = _circle.meJoined;
+        });
+      }
+    });
+  }
+
   void _displayDetail() {
-    BottomSheetUtil.showBottomSheet(context, 0.65, CircleDetailPage(_circle.id, circle: _circle),
+    BottomSheetUtil.showBottomSheet(context, 0.6, CircleDetailPage(_circle.id, circle: _circle),
         topLine: false);
     UMengUtil.userGoPage(UMengUtil.PAGE_CIRCLE_DETAIL);
   }
@@ -482,7 +496,7 @@ class _CircleHomeState extends State<CircleHome> {
       NavigatorUtils.goReportPage(context, ReportPage.REPORT_CIRCLE, _circle.id.toString(), "圈子举报");
     }));
 
-    if (iJoin != null && iJoin == true) {
+    if (_meJoined != null && _meJoined == true) {
       items.add(BottomSheetItem(
           Icon(
             Icons.exit_to_app,

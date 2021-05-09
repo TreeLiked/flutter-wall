@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
@@ -35,7 +36,7 @@ class SimpleTag extends StatelessWidget {
                 round ? BorderRadius.vertical(top: Radius.circular(radius), bottom: Radius.circular(radius)) : null),
         child: Text(
           text ?? "",
-          style: pfStyle.copyWith(fontSize: 13, fontWeight: FontWeight.w300, color: textColor),
+          style: pfStyle.copyWith(fontSize: Dimens.font_sp13, fontWeight: FontWeight.w300, color: textColor),
         ));
   }
 }

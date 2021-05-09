@@ -62,6 +62,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                       children: <Widget>[
                         AccountAvatar(
                           cache: true,
+                          whitePadding: true,
                           avatarUrl: curReply != null && curReply.anonymous
                               ? PathConstant.ANONYMOUS_PROFILE
                               : provider.account.avatarUrl,

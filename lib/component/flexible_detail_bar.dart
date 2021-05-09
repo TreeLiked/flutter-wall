@@ -15,7 +15,7 @@ class FlexibleDetailBar extends StatelessWidget {
   final Widget Function(BuildContext context, double t) builder;
 
   static double percentage(BuildContext context) {
-    _FlexibleDetail value = context.inheritFromWidgetOfExactType(FlexibleSpaceBarSettings);
+    _FlexibleDetail value = context.dependOnInheritedWidgetOfExactType();
     assert(value != null, 'ooh , can not find');
     return value.t;
   }
@@ -32,7 +32,7 @@ class FlexibleDetailBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FlexibleSpaceBarSettings settings =
-        context.inheritFromWidgetOfExactType(FlexibleSpaceBarSettings);
+        context.dependOnInheritedWidgetOfExactType();
 
     final List<Widget> children = <Widget>[];
 
@@ -52,7 +52,7 @@ class FlexibleDetailBar extends StatelessWidget {
 
     //为content 添加 底部的 padding
     double bottomPadding = 0;
-    SliverAppBar sliverBar = context.ancestorWidgetOfExactType(SliverAppBar);
+    SliverAppBar sliverBar = context.dependOnInheritedWidgetOfExactType();
     if (sliverBar != null && sliverBar.bottom != null) {
       bottomPadding = sliverBar.bottom.preferredSize.height;
     }

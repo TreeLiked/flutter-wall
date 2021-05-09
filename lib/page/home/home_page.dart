@@ -103,7 +103,6 @@ class _HomePageState extends State<HomePage>
 
   BuildContext _myContext;
 
-
   @override
   void initState() {
     super.initState();
@@ -296,8 +295,8 @@ class _HomePageState extends State<HomePage>
     super.build(context);
     isDark = ThemeUtils.isDark(context);
 
-    typesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
-    accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+    typesFilterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
+    accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
     if (firstBuild) {
       initData();
       tweetProvider = Provider.of<TweetProvider>(context);
@@ -344,7 +343,7 @@ class _HomePageState extends State<HomePage>
                           padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
                           child: TabBar(
                             labelStyle: pfStyle.copyWith(
-                                fontSize: 20, fontWeight: FontWeight.w500, color: Colors.amber[600]),
+                                fontSize: 20, fontWeight: FontWeight.w400, color: Colors.amber[600]),
                             unselectedLabelStyle:
                                 pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
                             indicatorSize: TabBarIndicatorSize.label,
@@ -519,7 +518,6 @@ class _HomePageState extends State<HomePage>
     }
     return isDark ? Colors.white38 : Colors.black54;
   }
-
 
   List<Widget> _sliverBuilder(BuildContext context, bool innerBoxIsScrolled) {
     return <Widget>[

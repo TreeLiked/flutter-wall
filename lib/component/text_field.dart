@@ -97,7 +97,8 @@ class _MyTextFieldState extends State<MyTextField> {
   Widget build(BuildContext context) {
     if (widget.config != null && defaultTargetPlatform == TargetPlatform.iOS) {
       // 因Android平台输入法兼容问题，所以只配置IOS平台
-      FormKeyboardActions.setKeyboardActions(context, widget.config);
+
+      // FormKeyboardActions.setKeyboardActions(context, widget.config);
     }
     ThemeData themeData = Theme.of(context);
     bool isDark = themeData.brightness == Brightness.dark;

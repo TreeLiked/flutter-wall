@@ -11,7 +11,7 @@ class ColorConstant {
   /// 推文相关
   // 推文body颜色
   static const Color TWEET_BODY_COLOR = Color(0xff000000);
-  static const Color TWEET_BODY_COLOR_DARK = Color(0xff909090);
+  static const Color TWEET_BODY_COLOR_DARK = Color(0xffa0a0a0);
 
   /// 回复相关
 
@@ -59,6 +59,7 @@ class ColorConstant {
 
   static const Color MAIN_BG = Color(0xffFFFEFF);
   static const Color MAIN_BG_DARK = Color(0xff272829);
+  static const Color MAIN_BG_DARKER = Color(0xff212121);
 
   static const Color TWEET_TYPE_TEXT_DARK = Colors.white60;
 

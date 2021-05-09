@@ -324,7 +324,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   Container(
                     height: 80,
                     alignment: Alignment.topLeft,
-                    child: SpinKitChasingDots(color: Colours.app_main, size: 18),
+                    child: SpinKitThreeBounce(color: Colors.lightGreen, size: 20),
                   )
                 ],
               )),

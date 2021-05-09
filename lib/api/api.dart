@@ -18,7 +18,7 @@ class Api {
   static const String API_BASE_WS_DEV = "ws://127.0.0.1:8088/wallServer";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
-  static const String API_BASE_INF_DEV = "http://192.168.0.105:8088";
+  static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
 
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
   static const String API_BASE_MEM_DEV = "http://192.168.18.180:9002";
@@ -63,8 +63,10 @@ class Api {
   static const String API_TWEET_REPLY_DELETE = "/tweet/reply/del.do";
 
   // circle relative start
+  static const String API_CIRCLE_INDEX_LIST = "/circle/list.json";
+  static const String API_CIRCLE_CREATE = "/circle/add.do";
   static const String API_CIRCLE_QUERY_SINGLE = "/circle/listSingle.json";
-  static const String API_CIRCLE_QUERY_SINGLE_DETAIL = "/circle/listSingleDetail.json";
+  static const String API_CIRCLE_QUERY_SINGLE_DETAIL = "/circle/listSingle.json";
 
   // sms
   static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";
@@ -137,6 +139,9 @@ class Api {
   // advertisement
   static const String API_AD_SPLASH = API_BASE_INF_URL + "/adv/splash/g";
 
+  // dict service
+  static const String API_DICT_PREFIX = API_BASE_INF_URL + "/dict";
+
   static Map<String, dynamic> convertResponse(Object responseData) {
     try {
       String jsonTemp = json.encode(responseData);
@@ -150,23 +155,23 @@ class Api {
     if (pop) {
       NavigatorUtils.goBack(Application.context);
     }
-    if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+    if (e.type == DioErrorType.connectTimeout) {
       // It occurs when url is opened timeout.
       LogUtil.e("连接超时", tag: _TAG);
       return "连接超时";
-    } else if (e.type == DioErrorType.SEND_TIMEOUT) {
+    } else if (e.type == DioErrorType.sendTimeout) {
       // It occurs when url is sent timeout.
       LogUtil.e("请求超时", tag: _TAG);
       return "请求超时";
-    } else if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+    } else if (e.type == DioErrorType.receiveTimeout) {
       //It occurs when receiving timeout
       LogUtil.e("连接超时", tag: _TAG);
       return "响应超时";
-    } else if (e.type == DioErrorType.RESPONSE) {
+    } else if (e.type == DioErrorType.response) {
       // When the server response, but with a incorrect status, such as 404, 503...
       LogUtil.e("服务出现异常$e", tag: _TAG);
       return "服务出现异常";
-    } else if (e.type == DioErrorType.CANCEL) {
+    } else if (e.type == DioErrorType.cancel) {
       // When the request is cancelled, dio will throw a error with this type.
       LogUtil.e("请求取消", tag: _TAG);
       return "请求取消";

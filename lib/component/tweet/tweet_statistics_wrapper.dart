@@ -8,6 +8,7 @@ import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/number_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 
@@ -70,16 +71,7 @@ class TweetStatisticsWrapper extends StatelessWidget {
   }
 
   String calCount(int count) {
-    if (count < 1000) {
-      return "$count";
-    }
-    if (count < 10000) {
-      return "${count ~/ 1000}k+";
-    }
-    if (count < 100000) {
-      return "${count ~/ 10000}w+";
-    }
-    return "10w+";
+    return NumberUtil.calCount(count);
   }
 }
 

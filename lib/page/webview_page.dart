@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
@@ -41,6 +42,7 @@ class _WebViewPageState extends State<WebViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    // return Gaps.empty;
     wv = WebView(
       initialUrl: widget.url,
       javascriptMode: JavascriptMode.unrestricted,

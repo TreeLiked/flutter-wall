@@ -120,6 +120,6 @@ class CircleMediaWrapper extends StatelessWidget {
   }
 
   void open(BuildContext context, final int index) {
-    Utils.openPhotoView(context, picUrls, index, circleId);
+    Utils.openPhotoViewForCircle(context, picUrls, index, circleId);
   }
 }

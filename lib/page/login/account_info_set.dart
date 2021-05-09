@@ -66,7 +66,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           centerTitle: "基本信息",
         ),
         body: defaultTargetPlatform == TargetPlatform.iOS
-            ? FormKeyboardActions(
+            ? KeyboardActions(
                 child: _buildBody(),
               )
             : SingleChildScrollView(
@@ -77,11 +77,11 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
   _goChoiceAvatar() async {
     bool has = await PermissionUtil.checkAndRequestPhotos(context);
     if (has) {
-      var image = await ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      var image = await ImagePicker().getImage(source: ImageSource.gallery, imageQuality: 80);
       if (image != null) {
         final cropKey = GlobalKey<CropState>();
         File file = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
+            .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: File(image.path))));
         if (file != null) {
           this._avatarFile?.delete();
           setState(() {

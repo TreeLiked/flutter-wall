@@ -94,7 +94,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                   _renderTextLine('访问量', '${_circle.view}+'),
                   _renderCreatorLine(
                     '圈主',
-                    Application.getAccount.nick,
+                    _circle.creator.nick,
                   ),
                   // _renderTextLine('', '查看已加入用户', contentOnTap: () {}),
                   Gaps.vGap15,
@@ -232,10 +232,10 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
     return Container(
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          MyFlatButton('查看已加入用户', Colors.green, onTap: () {}),
-          MyFlatButton('关  闭', ColorConstant.getCommonText(), onTap: () => NavigatorUtils.goBack(context))
+          MyFlatButton('查看已加入用户', Colors.green, onTap: () {},horizontalPadding: 15,),
+          // MyFlatButton('关  闭', ColorConstant.getCommonText(), onTap: () => NavigatorUtils.goBack(context))
         ],
       ),
     );

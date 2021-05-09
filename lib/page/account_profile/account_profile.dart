@@ -260,35 +260,34 @@ class _AccountProfileState extends State<AccountProfile> {
                               ),
                             ),
                             background: Stack(children: <Widget>[
-                              !isDark
-                                  ? Utils.showNetImage(
-                                      widget.avatarUrl,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Gaps.empty,
-                              BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaY: 14,
-                                  sigmaX: 14,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: isDark ? ColorConstant.MAIN_BG_DARK : Colors.white70),
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                ),
-                              ),
+                              // !isDark
+                              //     ? Utils.showNetImage(
+                              //         widget.avatarUrl,
+                              //         width: double.infinity,
+                              //         height: double.infinity,
+                              //         fit: BoxFit.cover,
+                              //       )
+                              //     : Gaps.empty,
+                              // BackdropFilter(
+                              //   filter: ImageFilter.blur(
+                              //     sigmaY: 0,
+                              //     sigmaX: 0,
+                              //   ),
+                              //   child: Container(
+                              //     decoration: BoxDecoration(
+                              //         color: isDark ? ColorConstant.MAIN_BG_DARK : Color(0xfffffeff)),
+                              //     width: double.infinity,
+                              //     height: double.infinity,
+                              //   ),
+                              // ),
                             ])),
                       )),
-
                   SliverToBoxAdapter(
                       child: Container(
                     decoration: BoxDecoration(
                       color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
-                      borderRadius:
-                          BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+                      // borderRadius:
+                      //     BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
                     ),
                     padding: const EdgeInsets.only(top: 20, left: 15.0, right: 15.0, bottom: 10),
                     child: account == null && _initAccount
@@ -351,7 +350,8 @@ class _AccountProfileState extends State<AccountProfile> {
                       ? (!_initTweet
                           ? SliverToBoxAdapter(
                               child: Container(
-                                  margin: EdgeInsets.only(top: 50),
+                                  color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
+                                  padding: EdgeInsets.only(top: 50),
                                   height: 800,
                                   alignment: Alignment.topCenter,
                                   child: Column(
@@ -524,14 +524,14 @@ class _AccountProfileState extends State<AccountProfile> {
               "基础资料",
               {
                 "昵称": _buildSingleTextValue(account.nick),
-                "签名": _buildSingleTextValue(account.signature ?? "未设置"),
+                "签名": _buildSingleTextValue(account.signature ?? " — "),
               }),
           _buildSingleContainer(Icon(Icons.add_a_photo, color: Colors.blueAccent), "个人档案", {
-            "姓名": _buildSingleTextValue(account.displayName ? account.name : ""),
+            "姓名": _buildSingleTextValue(account.displayName ? account.name : " — "),
             "性别": _buildSingleTextValue(genderText),
             // "性别": _buildGenderWidget(),
             "年龄":
-                _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : "未知"),
+                _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : " — "),
             "地区": _buildSingleTextValue(_buildRegionText()),
             "专业": _buildSingleTextValue(_getCampusInfoText()),
           }),
@@ -542,9 +542,9 @@ class _AccountProfileState extends State<AccountProfile> {
               ),
               "联系资料",
               {
-                "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : "未公开"),
-                "Q Q": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : "未公开"),
-                "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : "未公开"),
+                "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : " — "),
+                "Q Q": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : " — "),
+                "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : " — "),
               }),
         ],
       ),
@@ -565,7 +565,7 @@ class _AccountProfileState extends State<AccountProfile> {
                 margin: const EdgeInsets.only(right: 10.0),
                 child: Text(
                   key,
-                  style: pfStyle.copyWith(fontSize: Dimens.font_sp15, color: Colors.grey),
+                  style: pfStyle.copyWith(fontSize: Dimens.font_sp15, color: Colors.grey, fontWeight: FontWeight.w500),
                 ),
               ),
               value,
@@ -610,7 +610,7 @@ class _AccountProfileState extends State<AccountProfile> {
     if (text == null || text.trim().length == 0) {
       text = "";
     }
-    return Text(text, style: pfStyle);
+    return Text(text, style: pfStyle.copyWith(fontWeight: FontWeight.w400));
   }
 
   Widget _buildGenderWidget() {

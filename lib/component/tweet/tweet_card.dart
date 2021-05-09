@@ -121,6 +121,7 @@ class TweetCard2 extends StatelessWidget {
                       timeRight: this.needLeftProfile,
                       official: false
                     ),
+                    Gaps.vGap2,
                     TweetBodyWrapper(tweet.body, maxLine: 3, fontSize: Dimens.font_sp15, height: 1.6),
                     TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
                     displayLink ? TweetLinkWrapper(tweet) : Gaps.empty,
@@ -149,7 +150,7 @@ class TweetCard2 extends StatelessWidget {
 //                    )
 //                        : Gaps.empty,
 //                    displayComment ? Gaps.vGap25 : Gaps.vGap10,
-                    Gaps.line
+//                     Gaps.line
                   ],
                 ),
               )

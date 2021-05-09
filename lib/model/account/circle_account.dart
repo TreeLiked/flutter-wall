@@ -1,6 +1,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
+part 'circle_account.g.dart';
 @JsonSerializable()
 class CircleAccount {
 
@@ -27,5 +28,8 @@ class CircleAccount {
   CircleAccount();
 
 
+  Map<String, dynamic> toJson() => _$CircleAccountToJson(this);
+
+  factory CircleAccount.fromJson(Map<String, dynamic> json) => _$CircleAccountFromJson(json);
 
 }

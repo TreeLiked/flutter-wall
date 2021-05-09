@@ -22,7 +22,6 @@ import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:photo/photo.dart';
 
 class TopicCreatePage extends StatefulWidget {
   final String title = "创建话题";
@@ -230,7 +229,7 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
     });
   }
 
-  void pickImage(PickType type) async {
+  void pickImage() async {
     await loadAssets();
     _updatePushBtnState();
   }
@@ -559,7 +558,7 @@ class _TopicCreatePageState extends State<TopicCreatePage> {
 
     return GestureDetector(
         onTap: () {
-          pickImage(PickType.onlyImage);
+          pickImage();
         },
         child: Container(
           height: width,

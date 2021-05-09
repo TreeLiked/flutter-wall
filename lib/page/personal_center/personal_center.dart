@@ -97,7 +97,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                         margin: const EdgeInsets.only(top: 15.0),
                         child: Text(provider.account.nick ?? "",
                             style:
-                                const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.bold)))),
+                                const TextStyle(fontSize: Dimens.font_sp18)))),
                 GestureDetector(
                     onTap: () => NavigatorUtils.push(context, SettingRouter.accountInfoPage),
                     child: Container(

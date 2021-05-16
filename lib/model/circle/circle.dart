@@ -1,7 +1,5 @@
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_role.dart';
 import 'package:iap_app/model/account/circle_account.dart';
-import 'package:iap_app/util/string.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'circle.g.dart';

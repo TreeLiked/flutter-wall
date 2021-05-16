@@ -133,7 +133,7 @@ class LoadAssetSvg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset("assets/svgs/$svgName.$format",
-        width: width, height: height, fit: fit, color: color);
+        width: width, height: height, fit: fit, color: color, alignment: Alignment.bottomRight,);
     return Image.asset(
       ImageUtils.getIconPath(svgName, format: format),
       height: height,

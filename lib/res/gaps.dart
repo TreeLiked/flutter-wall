@@ -6,6 +6,7 @@ import 'dimens.dart';
 /// 间隔
 class Gaps {
   /// 水平间隔
+  static const Widget hGap2 = const SizedBox(width: 2.0);
   static const Widget hGap4 = const SizedBox(width: 4.0);
   static const Widget hGap5 = const SizedBox(width: Dimens.gap_dp5);
   static const Widget hGap8 = const SizedBox(width: 8.0);

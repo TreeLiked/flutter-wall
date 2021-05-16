@@ -1,35 +1,21 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:common_utils/common_utils.dart';
-import 'package:extended_text/extended_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/component/empty_view.dart';
-import 'package:iap_app/component/hot_app_bar.dart';
-import 'package:iap_app/component/tweet/tweet_hot_card.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/discuss/discuss.dart';
 import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/page/tweet_detail.dart';
-import 'package:iap_app/part/circle/circle_my_tab.dart';
 import 'package:iap_app/part/circle/circle_square_tab.dart';
-import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/theme_utils.dart';
-import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
-import 'package:iap_app/util/widget_util.dart';
 
 class CircleTabMain extends StatefulWidget {
   @override
@@ -217,7 +203,7 @@ class _CircleTabMainState extends State<CircleTabMain>
                 Tab(child: Text('美食', style: pfStyle.copyWith(color: _getTabColor(0)))),
                 Tab(child: Text('学习', style: pfStyle.copyWith(color: _getTabColor(1)))),
                 Tab(child: Text('活动', style: pfStyle.copyWith(color: _getTabColor(2)))),
-                Tab(child: Text('其他', style: pfStyle.copyWith(color: _getTabColor(3)))),
+                Tab(child: Text('其他2', style: pfStyle.copyWith(color: _getTabColor(3)))),
               ],
             ),
           ),

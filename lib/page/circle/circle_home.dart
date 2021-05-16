@@ -30,6 +30,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
@@ -37,20 +38,23 @@ import 'package:iap_app/util/widget_util.dart';
 
 class CircleHome extends StatefulWidget {
   final Circle _circle;
+  final int circleId;
 
-  CircleHome(this._circle);
+  CircleHome(this._circle, {this.circleId});
 
   @override
   State<StatefulWidget> createState() {
-    return _CircleHomeState(this._circle);
+    return _CircleHomeState(this._circle, circleId: circleId);
   }
 }
 
 class _CircleHomeState extends State<CircleHome> {
   EasyRefreshController _refreshController = EasyRefreshController();
   ScrollController _scrollController = ScrollController();
-
   LinkHeaderNotifier _linkHeaderNotifier;
+
+  Circle _circle;
+  final int circleId;
 
   // 两个排序
   List _sortTypeList = ["热门排序", "最新内容"];
@@ -61,8 +65,6 @@ class _CircleHomeState extends State<CircleHome> {
   // 按钮key
   GlobalKey _sortButtonKey = GlobalKey();
 
-  Circle _circle;
-
   BuildContext _context;
   bool isDark = false;
 
@@ -70,9 +72,9 @@ class _CircleHomeState extends State<CircleHome> {
   bool displayGoTopWidget = false;
 
   // 是否当前用户加入了该圈子
-  bool _meJoined = false;
+  bool _meJoined;
 
-  _CircleHomeState(this._circle);
+  _CircleHomeState(this._circle, {this.circleId});
 
   @override
   void initState() {
@@ -143,7 +145,7 @@ class _CircleHomeState extends State<CircleHome> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              '${_circle.brief}',
+                              '${_circle == null ? '正在加载..' : _circle.brief}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: pfStyle.copyWith(
@@ -152,7 +154,7 @@ class _CircleHomeState extends State<CircleHome> {
                             Gaps.vGap10,
                             Container(
                               alignment: Alignment.center,
-                              child: ExtendedText("${_circle.desc}",
+                              child: ExtendedText("${_circle == null ? '' : _circle.desc}",
                                   maxLines: 2,
                                   textAlign: TextAlign.center,
                                   selectionEnabled: true,
@@ -179,8 +181,8 @@ class _CircleHomeState extends State<CircleHome> {
                                           padding:
                                               const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
                                           decoration: BoxDecoration(
-                                            color: Colors.white24,
-                                            borderRadius: BorderRadius.circular(18.0),
+                                            color: _meJoined ? Colors.green.withAlpha(190) : Colors.white24,
+                                            borderRadius: BorderRadius.circular(8.0),
                                           ),
                                           child: _meJoined ? _getCreateContentItem() : _getApplyJoinItem()),
                                     ],
@@ -188,28 +190,30 @@ class _CircleHomeState extends State<CircleHome> {
                           ],
                         ),
                       ),
-                      background: Stack(
-                        children: <Widget>[
-                          Utils.showFadeInImage(_circle.cover, BorderRadius.circular(0.0), cache: true),
-                          BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaY: 3,
-                              sigmaX: 3,
+                      background: _circle == null
+                          ? Gaps.empty
+                          : Stack(
+                              children: <Widget>[
+                                Utils.showFadeInImage(_circle.cover, BorderRadius.circular(0.0), cache: true),
+                                BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaY: 3,
+                                    sigmaX: 3,
+                                  ),
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    decoration: BoxDecoration(
+                                        gradient: new LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: isDark
+                                                ? [Colors.black26, Colors.black45]
+                                                : [Colors.black12, Colors.black38])),
+                                  ),
+                                )
+                              ],
                             ),
-                            child: Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                  gradient: new LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: isDark
-                                          ? [Colors.black26, Colors.black45]
-                                          : [Colors.black12, Colors.black38])),
-                            ),
-                          )
-                        ],
-                      ),
                     ),
                   ),
                 ),
@@ -236,72 +240,77 @@ class _CircleHomeState extends State<CircleHome> {
               ),
             ];
           },
-          body: MediaQuery.removePadding(
-            removeTop: true,
-            context: context,
-            child: Material(
-                child: EasyRefresh.custom(
-                    controller: _refreshController,
-                    header: LinkHeader(
-                      _linkHeaderNotifier,
-                      extent: 50.0,
-                      triggerDistance: 50.0,
-                      // completeDuration: Duration(milliseconds: 5000),
-                      enableHapticFeedback: true,
-                    ),
-                    firstRefresh: false,
-                    slivers: <Widget>[
-                      SliverPersistentHeader(
-                          delegate: StickyRowDelegate(
-                              padding: const EdgeInsets.only(left: 15.0),
-                              bgColor: ThemeUtils.getBackgroundColor(context),
-                              children: [
-                                GestureDetector(
-                                    key: _sortButtonKey,
-                                    onTap: () => _showSortTypeSel(),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Container(
-                                          child: Text('${_sortTypeList[_sortTypeIndex]}',
-                                              style: pfStyle.copyWith(
-                                                  fontSize: Dimens.font_sp14,
-                                                  fontWeight: FontWeight.w500,
-                                                  letterSpacing: 1.0)),
-                                        ),
-                                        Gaps.hGap4,
-                                        LoadAssetSvg("sort_arrow_down",
-                                            width: 17, height: 17, color: ThemeUtils.getIconColor(context)),
-                                      ],
-                                    ))
-                              ],
-                              height: 30,
-                              crossAxisAlignment: CrossAxisAlignment.center)),
-                      SliverPadding(
-                          padding: const EdgeInsets.only(bottom: 10.0, top: 0.0),
-                          sliver: SliverList(
-                            delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
-                              CircleTweet ct = new CircleTweet();
-                              ct.sentTime = DateTime.now();
-                              ct.account = Application.getAccount..gender = Gender.FEMALE.name;
-                              ct.body = 'Flutter - Wrap text on overflow, like insert ellipsis or fade ...' *
-                                  (index % 2 == 1 ? 1 : 10);
-                              ct.view = 2001;
-                              ct.medias = [
-                                new Media.fromUrl(Media.MODULE_CIRCLE, Application.getAccount.avatarUrl)
-                                  ..mediaType = Media.TYPE_IMAGE,
-                                new Media.fromUrl(Media.MODULE_CIRCLE, _circle.cover)
-                                  ..mediaType = Media.TYPE_IMAGE,
-                              ];
-                              ct.displayOnlyCircle = index % 2 == 0;
-                              return CircleTweetCard(ct);
-                            }, childCount: 20),
-                          )),
-                      // Gaps.vGap5
-                    ],
-                    onRefresh: _onRefresh,
-                    onLoad: null)),
-          ),
+          body: _circle == null
+              ? Gaps.empty
+              : MediaQuery.removePadding(
+                  removeTop: true,
+                  context: context,
+                  child: Material(
+                      child: EasyRefresh.custom(
+                          controller: _refreshController,
+                          header: LinkHeader(
+                            _linkHeaderNotifier,
+                            extent: 50.0,
+                            triggerDistance: 50.0,
+                            // completeDuration: Duration(milliseconds: 5000),
+                            enableHapticFeedback: true,
+                          ),
+                          firstRefresh: false,
+                          slivers: <Widget>[
+                            SliverPersistentHeader(
+                                delegate: StickyRowDelegate(
+                                    padding: const EdgeInsets.only(left: 15.0),
+                                    bgColor: ThemeUtils.getBackgroundColor(context),
+                                    children: [
+                                      GestureDetector(
+                                          key: _sortButtonKey,
+                                          onTap: () => _showSortTypeSel(),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Container(
+                                                child: Text('${_sortTypeList[_sortTypeIndex]}',
+                                                    style: pfStyle.copyWith(
+                                                        fontSize: Dimens.font_sp14,
+                                                        fontWeight: FontWeight.w500,
+                                                        letterSpacing: 1.0)),
+                                              ),
+                                              Gaps.hGap4,
+                                              LoadAssetSvg("sort_arrow_down",
+                                                  width: 17,
+                                                  height: 17,
+                                                  color: ThemeUtils.getIconColor(context)),
+                                            ],
+                                          ))
+                                    ],
+                                    height: 30,
+                                    crossAxisAlignment: CrossAxisAlignment.center)),
+                            SliverPadding(
+                                padding: const EdgeInsets.only(bottom: 10.0, top: 0.0),
+                                sliver: SliverList(
+                                  delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
+                                    CircleTweet ct = new CircleTweet();
+                                    ct.sentTime = DateTime.now();
+                                    ct.account = Application.getAccount..gender = Gender.FEMALE.name;
+                                    ct.body =
+                                        'Flutter - Wrap text on overflow, like insert ellipsis or fade ...' *
+                                            (index % 2 == 1 ? 1 : 10);
+                                    ct.view = 2001;
+                                    ct.medias = [
+                                      new Media.fromUrl(Media.MODULE_CIRCLE, Application.getAccount.avatarUrl)
+                                        ..mediaType = Media.TYPE_IMAGE,
+                                      new Media.fromUrl(Media.MODULE_CIRCLE, _circle.cover)
+                                        ..mediaType = Media.TYPE_IMAGE,
+                                    ];
+                                    ct.displayOnlyCircle = index % 2 == 0;
+                                    return CircleTweetCard(ct);
+                                  }, childCount: 20),
+                                )),
+                            // Gaps.vGap5
+                          ],
+                          onRefresh: _onRefresh,
+                          onLoad: null)),
+                ),
           // body: MediaQuery.removePadding(
           //   removeTop: true,
           //   context: context,
@@ -370,44 +379,55 @@ class _CircleHomeState extends State<CircleHome> {
   }
 
   Widget _getApplyJoinItem() {
-    return GestureDetector(
-        onTap: () {
+    return InkWell(
+      onTap: () {
+        if (this._meJoined) {
+          return;
+        }
+        CircleApi.applyJoinCircle(_circle.id).then((res) {
+          if (res.isSuccess) {
+            if (StringUtil.notEmpty(res.message)) {
+              ToastUtil.showToast(context, res.message);
+            }
+          } else {
+            ToastUtil.showToast(context, res.message);
+          }
           setState(() {
-            this._meJoined = !this._meJoined;
+            this._meJoined = res.data;
           });
-        },
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.add,
-              size: 14,
-              color: Colors.white,
-            ),
-            Text(" 申请加入", style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white)),
-          ],
-        ));
+        });
+      },
+      child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.add,
+                size: 14,
+                color: Colors.white,
+              ),
+              Gaps.hGap5,
+              Text("申请加入", style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white)),
+            ],
+          )),
+    );
   }
 
   Widget _getCreateContentItem() {
-    return GestureDetector(
-        onTap: () {
-          setState(() {
-            this._meJoined = !this._meJoined;
-            NavigatorUtils.push(context, CircleRouter.CREATE, transitionType: TransitionType.fadeIn);
-          });
-        },
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.create,
-              size: 14,
-              color: Colors.white,
-            ),
-            Text(" 发布内容", style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white)),
-          ],
-        ));
+    return InkWell(
+        onTap: () => NavigatorUtils.push(context, CircleRouter.CREATE, transitionType: TransitionType.fadeIn),
+        child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(
+                Icons.create,
+                size: 14,
+                color: Colors.white,
+              ),
+              Gaps.hGap5,
+              Text("发布内容", style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white))
+            ])));
   }
 
   void _showSortTypeSel() {
@@ -468,7 +488,7 @@ class _CircleHomeState extends State<CircleHome> {
   }
 
   void queryDetail() {
-    CircleApi.queryCircleDetail(widget._circle.id).then((resCircle) {
+    CircleApi.queryCircleDetail(circleId ?? widget._circle.id).then((resCircle) {
       if (resCircle != null) {
         setState(() {
           this._circle = resCircle;

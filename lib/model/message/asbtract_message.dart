@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/message/circle_system_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
 import 'package:iap_app/model/message/popular_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
@@ -20,7 +22,6 @@ class AbstractMessage {
 
   // 是否消息被删除了
   bool delete;
-
 
   Map<String, dynamic> toJson() => _$AbstractMessageToJson(this);
 
@@ -48,5 +49,14 @@ enum MessageType {
   PLAIN_SYSTEM,
 
   /// 举报消息
-  REPORT
+  REPORT,
+
+  /// 用户申请加入圈子
+  CIRCLE_APPLY,
+
+  /// 用户申请加入圈子结果的消息
+  CIRCLE_APPLY_RES,
+
+  /// 圈子简单通知，例如申请加入圈子结果，用户退出圈子等
+  CIRCLE_SIMPLE_SYS
 }

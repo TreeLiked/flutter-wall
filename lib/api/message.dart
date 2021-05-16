@@ -8,6 +8,8 @@ import 'package:iap_app/model/result.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
+enum MessageCategory { INTERACTION, SYSTEM, CIRCLE_SYS }
+
 class MessageAPI {
   static Future<List<AbstractMessage>> queryInteractionMsg(int currentPage, int pageSize) async {
     String url = Api.API_MSG_LIST_INTERACTION + "?currentPage=$currentPage";
@@ -52,8 +54,7 @@ class MessageAPI {
         return null;
       }
     } on DioError catch (e) {
-      String error = Api.formatError(e);
-      print(error);
+      Api.formatError(e);
     }
     return null;
   }
@@ -78,10 +79,34 @@ class MessageAPI {
         return null;
       }
     } on DioError catch (e) {
-      String error = Api.formatError(e);
-      print(error);
+      Api.formatError(e);
     }
     return null;
+  }
+
+  static Future<List<AbstractMessage>> queryCircleSystemMsg(int currentPage, int pageSize) async {
+    try {
+      Response response = await httpUtil.dio.get(Api.API_MSG_LIST_CIRCLE_SYSTEM,
+          queryParameters: {"currentPage": currentPage, "pageSize": pageSize});
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      bool success = json["isSuccess"];
+      if (success) {
+        Map<String, dynamic> pageData = json["data"];
+        List<dynamic> jsonData = pageData["data"];
+        if (jsonData == null || jsonData.length <= 0) {
+          return [];
+        }
+        List<AbstractMessage> msgList = jsonData.map((m) {
+          return AbstractMessage.fromJson(m);
+        }).toList();
+        return msgList;
+      } else {
+        return [];
+      }
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return [];
   }
 
   static Future<Result> readAllInteractionMessage({bool pop = false}) async {
@@ -95,35 +120,44 @@ class MessageAPI {
       String error = Api.formatError(e, pop: pop);
       r.isSuccess = false;
       r.message = error;
-      print(error);
     }
     return r;
   }
 
   static Future<Result> readThisMessage(int messageId) async {
-    String url = Api.API_MSG_READ_THIS + "?mId=$messageId";
     Result r;
     try {
-      Response response = await httpUtil.dio.get(url);
+      Response response = await httpUtil.dio.get(Api.API_MSG_READ_THIS, queryParameters: {"mId": messageId});
       Map<String, dynamic> json = Api.convertResponse(response.data);
       return Result.fromJson(json);
     } on DioError catch (e) {
       String error = Api.formatError(e);
       r.isSuccess = false;
       r.message = error;
-      print(error);
+    }
+    return r;
+  }
+
+  static Future<Result> ignoreThisMessage(int messageId) async {
+    Result r;
+    try {
+      Response response =
+          await httpUtil.dio.get(Api.API_MSG_IGNORE_THIS, queryParameters: {"mId": messageId});
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      return Result.fromJson(json);
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
+      r = Result(isSuccess: false);
+      r.message = error;
     }
     return r;
   }
 
   // 0 系统消息，1互动消息
-  static Future<dynamic> fetchLatestMessage(int type) async {
-    if (type != 0 && type != 1) {
-      return null;
-    }
-    String url = Api.API_MSG_LATEST + "?c=${type == 0 ? 'SYSTEM' : 'INTERACTION'}";
+  static Future<dynamic> fetchLatestMessage(MessageCategory type) async {
     try {
-      Response response = await httpUtil.dio.get(url);
+      String typeStr = type.toString().substring(type.toString().indexOf('.') + 1);
+      Response response = await httpUtil.dio.get(Api.API_MSG_LATEST, queryParameters: {"c": typeStr});
       Map<String, dynamic> json = Api.convertResponse(response.data);
       bool success = json["isSuccess"];
       if (success) {
@@ -135,8 +169,7 @@ class MessageAPI {
         return null;
       }
     } on DioError catch (e) {
-      String error = Api.formatError(e);
-      print(error);
+      Api.formatError(e);
     }
     return null;
   }
@@ -152,7 +185,6 @@ class MessageAPI {
       String error = Api.formatError(e);
       r.isSuccess = false;
       r.message = error;
-      print(error);
     }
     return r;
   }
@@ -168,8 +200,7 @@ class MessageAPI {
       }
       return -1;
     } on DioError catch (e) {
-      String error = Api.formatError(e);
-      print(error);
+      Api.formatError(e);
     }
     return -1;
   }
@@ -185,14 +216,12 @@ class MessageAPI {
       Response response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
       Result r = Result.fromJson(json);
-      print(r.toJson());
       if (r != null && r.isSuccess) {
         return json['data'];
       }
       return -1;
     } on DioError catch (e) {
-      String error = Api.formatError(e);
-      print(error);
+      Api.formatError(e);
     }
     return -1;
   }
@@ -208,8 +237,7 @@ class MessageAPI {
       }
       return -1;
     } on DioError catch (e) {
-      String error = Api.formatError(e);
-      print(error);
+      Api.formatError(e);
     }
     return -1;
   }

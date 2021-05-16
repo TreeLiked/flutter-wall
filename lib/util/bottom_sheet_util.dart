@@ -1,9 +1,11 @@
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/topic.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/path_constant.dart';
@@ -322,7 +324,7 @@ class BottomSheetUtil {
                                         flex: 1,
                                         child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('详情', style: TextStyles.textSize18))),
+                                            child: Text('回复详情', style: TextStyles.textSize18))),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
@@ -370,10 +372,15 @@ class BottomSheetUtil {
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 10),
-                                  child: Text("${reply.body}",
+                                  child: ExtendedText("${reply.body}",
+                                      maxLines: 999,
+                                      softWrap: true,
+                                      textAlign: TextAlign.left,
+                                      specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
+                                      selectionEnabled: true,
                                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
-                                              fontSize: Dimens.font_sp16)
-                                          .copyWith(height: 2.0, letterSpacing: 1.2)),
+                                          fontSize: Dimens.font_sp16)
+                                          .copyWith(height: 2.0, letterSpacing: 1.2))
                                 )
                               ],
                             )),

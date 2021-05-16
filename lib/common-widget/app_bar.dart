@@ -11,7 +11,8 @@ import 'package:iap_app/util/theme_utils.dart';
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar(
       {Key key,
-      this.backgroundColor,
+      this.actionColor,
+      this.background,
       this.title: "",
       this.centerTitle: "",
       this.actionName: "",
@@ -20,7 +21,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.isBack: true})
       : super(key: key);
 
-  final Color backgroundColor;
+  final Color actionColor;
+  final Color background;
   final String title;
   final String centerTitle;
   final String backImg;
@@ -32,12 +34,10 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     bool isDark = ThemeUtils.isDark(context);
     Color _backgroundColor;
+    Color _actionBtnColor;
 
-    if (backgroundColor == null) {
-      _backgroundColor = ThemeUtils.getBackgroundColor(context);
-    } else {
-      _backgroundColor = backgroundColor;
-    }
+    _backgroundColor = background ?? ThemeUtils.getBackgroundColor(context);
+    _actionBtnColor = actionColor ?? Colors.amber[700];
 
     SystemUiOverlayStyle _overlayStyle =
         ThemeData.estimateBrightnessForColor(_backgroundColor) == Brightness.dark
@@ -96,17 +96,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                   )),
                   child: actionName.isEmpty
                       ? Gaps.empty
-                      : FlatButton(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                          color: isDark ? Colors.black12 : Color(0xffFDF5E6),
+                      : TextButton(
                           child: Text(
                             actionName,
                             key: const Key('actionName'),
-                            style: pfStyle.copyWith(fontSize: Dimens.font_sp13),
+                            style: pfStyle.copyWith(
+                                fontSize: Dimens.font_sp13,
+                                color: onPressed == null ? Colors.grey : _actionBtnColor),
                           ),
-                          textColor: Colors.amber[700],
-                          highlightColor: Colors.transparent,
                           onPressed: onPressed,
                         ),
                 ),

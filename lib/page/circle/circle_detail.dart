@@ -12,6 +12,7 @@ import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/routes/circle_router.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
@@ -234,7 +235,12 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          MyFlatButton('查看已加入用户', Colors.green, onTap: () {},horizontalPadding: 15,),
+          TextButton(
+            child : Text('查看已加入用户',style: pfStyle.copyWith(color: Colors.green)),
+            onPressed: () {
+              NavigatorUtils.push(context, CircleRouter.ACC_LIST + "?circleId=" + _circle.id.toString());
+            },
+          ),
           // MyFlatButton('关  闭', ColorConstant.getCommonText(), onTap: () => NavigatorUtils.goBack(context))
         ],
       ),

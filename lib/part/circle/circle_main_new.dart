@@ -142,7 +142,7 @@ class _CircleMainNewState extends State<CircleMainNew>
                             "circle/circle_create",
                             () => NavigatorUtils.push(context, CircleRouter.CREATE,
                                 transitionType: TransitionType.fadeIn)),
-                        _getActionItem("circle/circle_search", () => {}),
+                        // _getActionItem("circle/circle_noti", () => {}),
                         _getActionItem("circle/circle_me", () => {}),
                       ],
                     ),

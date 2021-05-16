@@ -237,13 +237,13 @@ class TweetReplyItemDetail extends StatelessWidget {
 //        },
         child: Container(
       margin: const EdgeInsets.only(top: 1.5),
-      child: ExtendedText("${body.trimRight()}",
+      child: ExtendedText("${body}",
           maxLines: 3,
           softWrap: true,
           textAlign: TextAlign.left,
           specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
           onSpecialTextTap: (dynamic parameter) {},
-          selectionEnabled: false,
+          selectionEnabled: true,
           overflowWidget: TextOverflowWidget(
             // fixedOffset: Offset(10.0, 0.0),
               child: Row(children: <Widget>[

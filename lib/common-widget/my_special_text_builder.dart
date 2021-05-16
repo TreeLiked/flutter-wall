@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/painting/text_style.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/tweet_at_text.dart';
 import 'package:iap_app/common-widget/tweet_link_text.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
 
 class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
   /// whether show background for @somebody
@@ -30,7 +32,7 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
               fontSize: Dimens.font_sp15,
               decoration: TextDecoration.underline),
           onTap,
-          onTapText: (text) => onTapCb(text),
+          onTapText: (String text) => NavigatorUtils.goWebViewPage(Application.context, text, text.trim()),
           start: index - (TweetLinkText.flag.length - 1),
           showAtBackground: showAtBackground);
     } else if (isStart(flag, TweetAtText.flag)) {

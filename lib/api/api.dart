@@ -63,10 +63,17 @@ class Api {
   static const String API_TWEET_REPLY_DELETE = "/tweet/reply/del.do";
 
   // circle relative start
-  static const String API_CIRCLE_INDEX_LIST = "/circle/list.json";
-  static const String API_CIRCLE_CREATE = "/circle/add.do";
-  static const String API_CIRCLE_QUERY_SINGLE = "/circle/listSingle.json";
-  static const String API_CIRCLE_QUERY_SINGLE_DETAIL = "/circle/listSingle.json";
+  static const String API_CIRCLE_INDEX_LIST = Api.API_BASE_INF_URL + "/circle/list.json";
+  static const String API_CIRCLE_CREATE = Api.API_BASE_INF_URL + "/circle/add.do";
+  static const String API_CIRCLE_QUERY_SINGLE = Api.API_BASE_INF_URL + "/circle/listSingle.json";
+  static const String API_CIRCLE_QUERY_SINGLE_DETAIL = Api.API_BASE_INF_URL + "/circle/listSingle.json";
+
+  static const String API_CIRCLE_APPLY_JOIN = Api.API_BASE_INF_URL + "/circleacc/applyJoin.do";
+  static const String API_CIRCLE_APPLY_HANDLE = Api.API_BASE_INF_URL + "/circleacc/handleApply.do";
+  static const String API_CIRCLE_ACCOUNT_LIST = Api.API_BASE_INF_URL + "/circleacc/list.json";
+  static const String API_CIRCLE_ACCOUNT_SINGLE = Api.API_BASE_INF_URL + "/circleacc/me.json";
+
+  static const String API_CIRCLE_UPDATE_ROLE = Api.API_BASE_INF_URL + "/circleacc/updateUserRole.do";
 
   // sms
   static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";
@@ -114,9 +121,11 @@ class Api {
   // notification message
   static const String API_MSG_LIST_INTERACTION = API_BASE_INF_URL + "/message/listInteractions.json";
   static const String API_MSG_LIST_SYSTEM = API_BASE_INF_URL + "/message/listSystems.json";
+  static const String API_MSG_LIST_CIRCLE_SYSTEM = API_BASE_INF_URL + "/message/listCircleSystems.json";
   static const String API_MSG_READ_ALL_INTERACTION = API_BASE_INF_URL + "/message/interactionsAllRead.do";
   static const String API_MSG_READ_ALL_SYSTEM = API_BASE_INF_URL + "/message/systemsAllRead.do";
   static const String API_MSG_READ_THIS = API_BASE_INF_URL + "/message/read.do";
+  static const String API_MSG_IGNORE_THIS = API_BASE_INF_URL + "/message/ignored.do";
 
   static const String API_MSG_INTERACTION_CNT = API_BASE_INF_URL + "/message/interactionAlertCount.json";
   static const String API_NEW_TWEET_CNT = API_BASE_INF_URL + "/message/listNewTweetCount.json";

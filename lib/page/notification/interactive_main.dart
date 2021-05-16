@@ -100,7 +100,7 @@ class _InteractiveNotificationMainPageState extends State<InteractiveNotificatio
     return Scaffold(
 //        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
         appBar: MyAppBar(
-          centerTitle: "个人通知",
+          centerTitle: "互动消息",
           isBack: true,
           actionName: '全部已读',
           onPressed: CollectionUtil.isListEmpty(msgs) ? null : _readAll,

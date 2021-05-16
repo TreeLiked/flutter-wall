@@ -74,6 +74,10 @@ class Utils {
     }
   }
 
+  static void closeLoading(BuildContext context) {
+    NavigatorUtils.goBack(context);
+  }
+
   static void showDefaultLoadingWithAsyncCall(
     BuildContext context,
     Function call, {

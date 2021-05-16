@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/page/index/index.dart';
@@ -83,6 +84,17 @@ class NavigatorUtils {
   }
 
   static void goAccountProfile2(BuildContext context, Account account) {
+    if (account == null) {
+      return;
+    }
+    push(
+        context,
+        Routes.accountProfile +
+            Utils.packConvertArgs(
+                {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+  }
+
+  static void goAccountProfile3(BuildContext context, CircleAccount account) {
     if (account == null) {
       return;
     }

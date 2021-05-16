@@ -408,7 +408,7 @@ class _HomePageState extends State<HomePage>
                                     // Icon(
                                     //     Utils.badgeHasData(snapshot.data)
                                     //         ? Icons.notifications_active_outlined
-                                    //         : Icons.notifications_none_rounded,
+                                    //         : Icons.circle_notifications,
                                     //     color: Utils.badgeHasData(snapshot.data)
                                     //         ? Colors.amber
                                     //         : isDark
@@ -420,9 +420,9 @@ class _HomePageState extends State<HomePage>
                                       ? Colors.amber
                                       : isDark
                                           ? Colors.white54
-                                          : Colors.black54,
-                                  width: 23.0,
-                                  height: 23.0,
+                                          : Colors.black87,
+                                  width: 25.0,
+                                  height: 25.0,
                                 ),
                                 badgeColor: Colors.red[400],
                                 animationType: BadgeAnimationType.fade,

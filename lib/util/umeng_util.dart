@@ -16,6 +16,7 @@ class UMengUtil {
   static const String PAGE_DISCUSS_INDEX = "话题首页";
 
   static const String PAGE_NOTI_INDEX = "通知首页";
+  static const String PAGE_NOTI_CIRCLE_SYSTEM = "消息-圈子-系统";
 
   static const String  PAGE_AD = "广告页面";
 

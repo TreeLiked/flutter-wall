@@ -8,5 +8,3 @@ enum AccountRole {
   /// 系统管理员
   SYSTEM_ADMIN
 }
-
-enum CircleAccountRole { CREATOR, ADMIN, USER, GUEST }

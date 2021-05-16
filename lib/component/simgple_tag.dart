@@ -10,6 +10,7 @@ class SimpleTag extends StatelessWidget {
   final Color textColor;
   final String text;
   final bool round;
+  final double horizontalPadding;
   final double verticalPadding;
   final double leftMargin;
   final double radius;
@@ -21,6 +22,7 @@ class SimpleTag extends StatelessWidget {
       this.radius = 0,
       this.round = true,
       this.verticalPadding = 1.0,
+      this.horizontalPadding = 5.0,
       this.leftMargin = 0});
 
   @override
@@ -29,7 +31,7 @@ class SimpleTag extends StatelessWidget {
     return Container(
         margin: EdgeInsets.only(left: leftMargin),
 //        alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: verticalPadding),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
         decoration: BoxDecoration(
             color: isDark ? bgDarkColor : bgColor,
             borderRadius:

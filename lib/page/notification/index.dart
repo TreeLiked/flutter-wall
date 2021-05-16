@@ -42,6 +42,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
   String iconSubPath = "self2";
   String iconSchoolPath = "school2";
+  String circleNotiPath = "circle_noti";
   String iconContactPath = "contact2";
   String iconOfficialPath = "official2";
 
@@ -99,7 +100,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 
   // 查询的具体的系统消息内容
   Future<void> _fetchLatestSystemMsg() async {
-    MessageAPI.fetchLatestMessage(0).then((msg) {
+    MessageAPI.fetchLatestMessage(MessageCategory.SYSTEM).then((msg) {
       setState(() {
         this._latestSystemMsg = msg;
       });
@@ -108,7 +109,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 
   // 查询的具体的互动消息内容
   Future<void> _fetchLatestInteractionMsg() async {
-    MessageAPI.fetchLatestMessage(1).then((msg) {
+    MessageAPI.fetchLatestMessage(MessageCategory.INTERACTION).then((msg) {
       if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
         setState(() {
           this._latestInteractionMsg = msg;
@@ -179,7 +180,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
             //   backgroundColor: isDark ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
             // ),
             header: WaterDropHeader(
-              waterDropColor: isDark ? Color(0xff6E7B8B) : Color(0xffEED2EE),
+              waterDropColor: isDark ? Color(0xff6E7B8B) : Color(0xffE6E6FA),
               complete: const Text('刷新完成', style: pfStyle),
             ),
 //            header: Utils.getDefaultRefreshHeader(),
@@ -189,6 +190,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                 children: <Widget>[
                   MainMessageItem(
                     iconPath: iconSubPath,
+                    iconPadding: 8.5,
                     iconColor: Color(0xff87CEFF),
                     title: "私信",
                     body: "暂无私信消息",
@@ -197,8 +199,8 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                   ),
                   MainMessageItem(
                     iconPath: iconSchoolPath,
-                    title: "校园公告",
-                    tagName: "官方",
+                    title: "校园",
+                    official: true,
                     body: "暂无新通知",
                     pointType: true,
                     onTap: () {
@@ -208,10 +210,24 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                     iconColor: Color(0xffFF69B4),
                   ),
                   MainMessageItem(
+                    iconPath: circleNotiPath,
+                    title: "圈子",
+                    official: true,
+                    body: "暂无新通知",
+                    pointType: true,
+                    iconPadding: 8.5,
+                    onTap: () {
+                      NavigatorUtils.push(context, NotificationRouter.circleMain);
+                    },
+                    color: Colors.lightGreen[50],
+                    iconColor: Colors.lightGreen,
+                  ),
+                  MainMessageItem(
                       iconPath: iconContactPath,
                       color: Color(0xffEBFAF4),
                       iconColor: Color(0xff00CED1),
-                      title: "与我有关",
+                      iconPadding: 9.5,
+                      title: "互动",
                       body: _latestInteractionMsg == null ? noMessage : _getInteractionBody(),
                       time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
                       controller: MessageUtil.interactionMsgControl.controller,
@@ -226,7 +242,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                     iconPath: iconOfficialPath,
                     color: Color(0xffFEF7E7),
                     iconColor: Color(0xffDAA520),
-                    title: "Wall",
+                    title: "WALL",
                     tagName: "官方",
                     controller: MessageUtil.systemMsgControl.controller,
                     body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
@@ -247,16 +263,16 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     if (_latestInteractionMsg == null) {
       return noMessage;
     } else {
-      if (_latestInteractionMsg.messageType == MessageType.TWEET_PRAISE) {
+      if (_latestInteractionMsg.mt == MessageType.TWEET_PRAISE) {
         TweetPraiseMessage message = _latestInteractionMsg as TweetPraiseMessage;
         return "${message.praiser.nick} 赞了你";
-      } else if (_latestInteractionMsg.messageType == MessageType.TWEET_REPLY) {
+      } else if (_latestInteractionMsg.mt == MessageType.TWEET_REPLY) {
         TweetReplyMessage message = _latestInteractionMsg as TweetReplyMessage;
         String content = message.delete != null && message.delete
             ? TextConstant.TEXT_TWEET_REPLY_DELETED
             : message.replyContent;
         return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 回复了你: $content";
-      } else if (_latestInteractionMsg.messageType == MessageType.TOPIC_REPLY) {
+      } else if (_latestInteractionMsg.mt == MessageType.TOPIC_REPLY) {
         TopicReplyMessage message = _latestInteractionMsg as TopicReplyMessage;
         String content = message.delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : message.replyContent;
 
@@ -271,10 +287,10 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     if (_latestSystemMsg == null) {
       return noMessage;
     } else {
-      if (_latestSystemMsg.messageType == MessageType.PLAIN_SYSTEM) {
+      if (_latestSystemMsg.mt == MessageType.PLAIN_SYSTEM) {
         PlainSystemMessage message = _latestInteractionMsg as PlainSystemMessage;
         return "${message.title ?? message.content}";
-      } else if (_latestSystemMsg.messageType == MessageType.POPULAR) {
+      } else if (_latestSystemMsg.mt == MessageType.POPULAR) {
 //        PopularMessage message = _latestSystemMsg as PopularMessage;
         return "恭喜，您发布的内容登上了热门排行榜";
       } else {

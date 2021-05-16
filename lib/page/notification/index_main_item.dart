@@ -21,6 +21,9 @@ class MainMessageItem extends StatefulWidget {
   final DateTime time;
   final Function onTap;
   final bool pointType;
+  final bool official;
+  final double iconSize;
+  final double iconPadding;
   final StreamController<int> controller;
 
   MainMessageItem(
@@ -33,6 +36,9 @@ class MainMessageItem extends StatefulWidget {
       this.time,
       this.controller,
       this.pointType = false,
+      this.official = false,
+      this.iconSize = 45,
+      this.iconPadding = 7.5,
       this.onTap});
 
   @override
@@ -42,7 +48,6 @@ class MainMessageItem extends StatefulWidget {
 }
 
 class _MainMessageItemState extends State<MainMessageItem> {
-  final double iconSize = 45.0;
   double lineHeight = 50;
 
   @override
@@ -54,44 +59,51 @@ class _MainMessageItemState extends State<MainMessageItem> {
             initialData: 0,
             stream: widget.controller.stream,
             builder: (_, snapshot) => InkWell(
-                  onTap: widget.onTap,
-                  child: Container(
+                onTap: widget.onTap,
+                child: Container(
                     padding: const EdgeInsets.all(10.0),
                     color: isDark ? Colours.dark_bottom_sheet : Colors.white,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
+                    child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                      Stack(children: [
                         Container(
                             height: lineHeight,
                             width: lineHeight,
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular((50)),
+                                borderRadius: BorderRadius.circular(10),
                                 color: isDark ? null : widget.color,
                                 border: Border.all(color: Colors.white12, width: isDark ? 1 : 0)),
                             child: Padding(
-                              padding: const EdgeInsets.all(7.5),
+                              padding: EdgeInsets.all(widget.iconPadding),
                               child: LoadAssetSvg(
                                 widget.iconPath,
                                 color: widget.iconColor,
                                 // color: isDark ? widget.color : Colors.black,
-                                height: iconSize,
-                                width: iconSize,
+                                height: widget.iconSize,
+                                width: widget.iconSize,
                               ),
                             )),
-                        Gaps.hGap15,
-                        Expanded(
-                            child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
+                        widget.official
+                            ? Positioned(
+                                right: 0,
+                                bottom: 0,
+                                child: Icon(Icons.double_arrow, size: 15, color: widget.iconColor),
+                              )
+                            : Gaps.empty
+                      ]),
+                      Gaps.hGap15,
+                      Expanded(
+                          child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 Container(
                                   child: Text(widget.title,
                                       style: pfStyle.copyWith(
-                                          fontSize: Dimens.font_sp16,
-                                          fontWeight: FontWeight.w400),
+                                          fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1),
                                 ),
@@ -99,9 +111,12 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                     ? SimpleTag(
                                         widget.tagName,
                                         leftMargin: 5.0,
-                                        radius: 20.0,
+                                        radius: 5.0,
+                                        // bgColor: Colors.black,
+                                        // textColor: Colors.amberAccent,
+                                        verticalPadding: 2,
                                       )
-                                    : Container(width: 0),
+                                    : Gaps.empty,
                                 Expanded(
                                     child: Container(
                                   alignment: Alignment.centerRight,
@@ -111,78 +126,79 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                 ))
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                    child: Text(widget.body ?? "暂无消息",
-                                        style: pfStyle.copyWith(
-                                            fontSize: 14.0,
-                                            fontWeight: FontWeight.w400,
-                                            color: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: 14)
-                                                .color),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1)),
-                                Row(
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                              Expanded(
+                                  child: Text(widget.body ?? "暂无消息",
+                                      style: pfStyle.copyWith(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w400,
+                                          color: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: 14)
+                                              .color),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1)),
+                              Row(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
                                     Badge(
-                                      elevation: 0,
-                                      shape: BadgeShape.circle,
-                                      showBadge: snapshot.data > 0,
-                                      padding: const EdgeInsets.all(3.5),
-                                      badgeContent: widget.pointType
-                                          ? const SizedBox(
-                                              height: 0.1,
-                                              width: 0.1,
-                                            )
-                                          : Text(
-                                              '${snapshot.data > 99 ? '99+' : snapshot.data}',
-                                              style: pfStyle.copyWith(color: Colors.white),
-                                            ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            )
-                          ],
-                        ))
-                      ],
-                    ),
-                  ),
-                ));
+                                        elevation: 0,
+                                        shape: BadgeShape.circle,
+                                        showBadge: snapshot.data > 0,
+                                        padding: const EdgeInsets.all(3.5),
+                                        badgeContent: widget.pointType
+                                            ? const SizedBox(
+                                                height: 0.1,
+                                                width: 0.1,
+                                              )
+                                            : Text(
+                                                '${snapshot.data > 99 ? '99+' : snapshot.data}',
+                                                style: pfStyle.copyWith(color: Colors.white),
+                                              ))
+                                  ])
+                            ])
+                          ]))
+                    ]))));
   }
 
   _buildBody(bool isDark) {
     return InkWell(
       onTap: widget.onTap,
       child: Container(
-//        width: double.infinity,
         padding: const EdgeInsets.all(10.0),
         color: isDark ? Colours.dark_bottom_sheet : Colors.white,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Container(
-                height: lineHeight,
-                width: lineHeight,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular((50.0)),
-                  color: isDark ? null : widget.color,
-                  border: Border.all(color: Colors.white12, width: isDark ? 1 : 0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(7.5),
-                  child: LoadAssetSvg(
-                    widget.iconPath,
-                    // color: isDark ? widget.color : Colors.white,
-                    color: widget.iconColor,
+            Stack(
+              children: [
+                Container(
+                    height: lineHeight,
+                    width: lineHeight,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: isDark ? null : widget.color,
+                      border: Border.all(color: Colors.white12, width: isDark ? 1 : 0),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(widget.iconPadding),
+                      child: LoadAssetSvg(
+                        widget.iconPath,
+                        // color: isDark ? widget.color : Colors.white,
+                        color: widget.iconColor,
 
-                    height: iconSize,
-                    width: iconSize,
-                  ),
-                )),
+                        height: widget.iconSize,
+                        width: widget.iconSize,
+                      ),
+                    )),
+                widget.official
+                    ? Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Icon(Icons.double_arrow, size: 15, color: widget.iconColor),
+                      )
+                    : Gaps.empty
+              ],
+            ),
             Gaps.hGap15,
             Expanded(
                 child: Column(
@@ -195,8 +211,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                   children: <Widget>[
                     Container(
                       child: Text(widget.title,
-                          style: const TextStyle(
-                              fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1),
                     ),
@@ -204,7 +219,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                         ? SimpleTag(
                             widget.tagName,
                             leftMargin: 5.0,
-                            radius: 20.0,
+                            radius: 5.0,
                           )
                         : Gaps.empty,
                     Expanded(

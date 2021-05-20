@@ -13,6 +13,7 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/image_utils.dart';
 import 'package:iap_app/util/string.dart';
@@ -160,7 +161,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                               )),
                                           child: Text(
                                             "残忍拒绝",
-                                            style: TextStyle(fontSize: Dimens.font_sp16),
+                                            style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
                                           ),
                                         ),
                                       )
@@ -189,7 +190,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                     ),
                                     child: Text(
                                       "立即更新",
-                                      style: TextStyle(fontSize: Dimens.font_sp16),
+                                      style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
                                     ),
                                   ),
                                 )

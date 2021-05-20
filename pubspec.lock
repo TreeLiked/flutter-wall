@@ -42,7 +42,14 @@ packages:
       name: badges
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.2.0"
+    version: "2.0.1"
+  bloc:
+    dependency: transitive
+    description:
+      name: bloc
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -342,6 +349,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bloc:
+    dependency: "direct main"
+    description:
+      name: flutter_bloc
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.0.0"
   flutter_blurhash:
     dependency: transitive
     description:

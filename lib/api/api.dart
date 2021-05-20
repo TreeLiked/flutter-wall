@@ -18,7 +18,7 @@ class Api {
   static const String API_BASE_WS_DEV = "ws://127.0.0.1:8088/wallServer";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
-  static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
+  static const String API_BASE_INF_DEV = "http://192.168.0.104:8088";
 
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
   static const String API_BASE_MEM_DEV = "http://192.168.18.180:9002";
@@ -130,6 +130,7 @@ class Api {
   static const String API_MSG_INTERACTION_CNT = API_BASE_INF_URL + "/message/interactionAlertCount.json";
   static const String API_NEW_TWEET_CNT = API_BASE_INF_URL + "/message/listNewTweetCount.json";
   static const String API_MSG_SYSTEM_CNT = API_BASE_INF_URL + "/message/systemAlertCount.json";
+  static const String API_MSG_CNT = API_BASE_INF_URL + "/message/alertCnt.json";
 
   static const String API_MSG_LATEST = API_BASE_INF_URL + "/message/latest.json";
 

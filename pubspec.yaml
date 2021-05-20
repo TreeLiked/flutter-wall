@@ -136,7 +136,7 @@ dependencies:
   #  vibrate: ^0.0.4
 
   # 小红点
-  badges: ^1.1.6
+  badges: ^2.0.1
 
   # 侧滑菜单
   #  flutter_slidable: ^0.5.4
@@ -190,6 +190,9 @@ dependencies:
 
   # 虚线container边框
   dotted_border: ^2.0.0
+
+  # bloc 状态管理
+  flutter_bloc: ^7.0.0
 
 
 dev_dependencies:

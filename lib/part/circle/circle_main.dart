@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/discuss/discuss.dart';
@@ -182,7 +183,6 @@ class _CircleTabMainState extends State<CircleTabMain>
         centerTitle: '全部圈子',
       ),
       body: CustomScrollView(slivers: <Widget>[
-
         SliverPersistentHeader(
           // 可以吸顶的TabBar
           pinned: true,
@@ -273,13 +273,17 @@ class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
+      color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARKER:Colors.white,
       padding: const EdgeInsets.only(bottom: 15.0),
       child: this.child,
     );
   }
 
   @override
-  double get maxExtent => this.child.preferredSize.height;
+  double get maxExtent {
+    print('=> this.child.preferredSize.height + 20 ${this.child.preferredSize.height}');
+    return this.child.preferredSize.height;
+  }
 
   @override
   double get minExtent => this.child.preferredSize.height;

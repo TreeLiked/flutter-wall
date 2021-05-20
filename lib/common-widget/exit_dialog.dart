@@ -5,6 +5,7 @@ import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/base_dialog.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/fluro_navigator.dart' as prefix1;
@@ -12,6 +13,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/message_util.dart';
+import 'package:provider/provider.dart';
 
 class ExitDialog extends StatefulWidget {
   ExitDialog({
@@ -52,7 +54,8 @@ class _ExitDialog extends State<ExitDialog> {
         await prefix0.SpUtil.clear();
         // MessageUtil.close();
 
-        await MessageUtil.notificationStreamCntCtrl.close();
+        Provider.of<MsgProvider>(context, listen: false).clear();
+
         httpUtil.clearAuthToken();
         httpUtil2.clearAuthToken();
         prefix1.NavigatorUtils.goBack(context);

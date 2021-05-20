@@ -29,7 +29,7 @@ class MyDefaultTextStyle {
   /// 推文相关
 
   // 推文正文字体
-  static TextStyle getTweetBodyStyle(BuildContext context, {double fontSize = Dimens.font_sp15}) {
+  static TextStyle getTweetBodyStyle(BuildContext context, {double fontSize = Dimens.font_sp16}) {
     return TextStyle(
         color: MyColorStyle.getTweetBodyColor(context: context),
         fontSize: fontSize,

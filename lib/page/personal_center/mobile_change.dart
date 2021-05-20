@@ -71,7 +71,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         Account acc = await MemberApi.getMyAccount(token);
         // 绑定账户数据到本地账户数据提供器
         AccountLocalProvider accountLocalProvider =
-            Provider.of<AccountLocalProvider>(context);
+            Provider.of<AccountLocalProvider>(context, listen: false);
         accountLocalProvider.setAccount(acc);
         Application.setAccount(acc);
         Application.setAccountId(acc.id);
@@ -88,7 +88,7 @@ class _SMSLoginPageState extends State<LoginPage> {
 
   Future<void> _loadStorageTweetTypes() async {
     TweetTypesFilterProvider tweetTypesFilterProvider =
-        Provider.of<TweetTypesFilterProvider>(context);
+        Provider.of<TweetTypesFilterProvider>(context, listen: false);
     tweetTypesFilterProvider.updateTypeNames();
   }
 

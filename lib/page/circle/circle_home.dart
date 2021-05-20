@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:iap_app/api/circle.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/dialog/ab_dialog.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/common-widget/sticky_row_delegate.dart';
 import 'package:iap_app/component/circle/circle_card.dart';
@@ -75,6 +76,9 @@ class _CircleHomeState extends State<CircleHome> {
   bool _meJoined;
 
   _CircleHomeState(this._circle, {this.circleId});
+
+  // 申请加入按钮禁用
+  bool _applyIng = false;
 
   @override
   void initState() {
@@ -384,13 +388,24 @@ class _CircleHomeState extends State<CircleHome> {
         if (this._meJoined) {
           return;
         }
+        Utils.showDefaultLoadingWithBounds(context, text: '正在处理');
         CircleApi.applyJoinCircle(_circle.id).then((res) {
+          Utils.closeLoading(context);
           if (res.isSuccess) {
             if (StringUtil.notEmpty(res.message)) {
               ToastUtil.showToast(context, res.message);
             }
           } else {
-            ToastUtil.showToast(context, res.message);
+            if (res.code == "201") {
+              // 201表示被管理员拒绝，是否需要重新申请
+              setState(() {
+                this._meJoined = res.data;
+              });
+              _displayReApplyDialog();
+              return;
+            } else {
+              ToastUtil.showToast(context, res.message);
+            }
           }
           setState(() {
             this._meJoined = res.data;
@@ -529,5 +544,34 @@ class _CircleHomeState extends State<CircleHome> {
     }
 
     BottomSheetUtil.showBottomSheetView(context, items);
+  }
+
+  _displayReApplyDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AbDialog(
+              leftText: '取消',
+              rightText: '重新申请',
+              title: '申请结果',
+              content: '您的圈子加入申请被管理员拒绝了，是否需要重新申请',
+              barryOnDismiss: false,
+              onTapRight: () {
+                CircleApi.applyJoinCircle(_circle.id, reApply: true).then((res) {
+                  if (res.isSuccess) {
+                    if (StringUtil.notEmpty(res.message)) {
+                      ToastUtil.showToast(context, res.message);
+                    }
+                  } else {
+                    ToastUtil.showToast(context, res.message);
+                  }
+                  setState(() {
+                    this._meJoined = res.data;
+                  });
+                  NavigatorUtils.goBack(context);
+                });
+              });
+        });
   }
 }

@@ -5,10 +5,11 @@ import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
-enum MessageCategory { INTERACTION, SYSTEM, CIRCLE_SYS }
+enum MessageCategory { INTERACTION, TWEET_NEW, SYSTEM, CIRCLE_SYS, CIRCLE_INTERACTION, CIRCLE, ALL }
 
 class MessageAPI {
   static Future<List<AbstractMessage>> queryInteractionMsg(int currentPage, int pageSize) async {
@@ -240,5 +241,20 @@ class MessageAPI {
       Api.formatError(e);
     }
     return -1;
+  }
+
+  static Future<int> queryMsgCount(MessageCategory category) async {
+    try {
+      Response response = await httpUtil.dio.get(Api.API_MSG_CNT + "?t=" + Utils.getEnumValue(category));
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      Result r = Result.fromJson(json);
+      if (r.isSuccess) {
+        return json['data'] ?? 0;
+      }
+      return 0;
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return 0;
   }
 }

@@ -95,8 +95,8 @@ class TweetPraiseWrapper extends StatelessWidget {
     if (tweet.latestPraise == null) {
       tweet.latestPraise = List();
     }
-    final _tweetProvider = Provider.of<TweetProvider>(context);
-    final _localAccProvider = Provider.of<AccountLocalProvider>(context);
+    final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
+    final _localAccProvider = Provider.of<AccountLocalProvider>(context, listen: false);
     _tweetProvider.updatePraise(context, _localAccProvider.account, tweet.id, !tweet.loved);
     await TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
     if (tweet.loved) {

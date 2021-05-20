@@ -226,18 +226,6 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
     }
   }
 
-  void _reverseAnonymous() {
-    setState(() {
-      this._anonymous = !this._anonymous;
-    });
-  }
-
-  void _reverseEnableReply() {
-    setState(() {
-      this._enableReply = !this._enableReply;
-    });
-  }
-
   void _forwardSelPage() {
     BottomSheetUtil.showBottomSheet(context, 0.4, _buildTypeSelection(),
         topLine: false, topWidget: _buildTopWidget());
@@ -293,12 +281,12 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
               ? BoxDecoration(
                   // color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
                   color: isDark ? entity.color.withAlpha(30) : entity.color.withAlpha(79),
-                  borderRadius: BorderRadius.circular(14.0),
+                  borderRadius: BorderRadius.circular(8.0),
                   border: new Border.all(color: isDark ? entity.color : Color(0xffdcdcdc), width: 0.5),
                 )
               : BoxDecoration(
                   color: isDark ? Color(0xff303030) : Color(0xffEDEDED),
-                  borderRadius: BorderRadius.circular(14.0),
+                  borderRadius: BorderRadius.circular(8.0),
                   boxShadow: [
                       BoxShadow(
                         color: isDark ? Colors.transparent : Color(0xffDCDCDC),
@@ -388,42 +376,6 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
         elevation: 0,
         toolbarOpacity: 1,
         actions: <Widget>[
-          // Container(
-          //   height: 5.0,
-          //   width: 69.0,
-          //   margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(16.0),
-          //     color: _isPushBtnEnabled && !_publishing ? Colors.amber : null,
-          //   ),
-          //   child: FlatButton(
-          //     padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-          //     onPressed: _isPushBtnEnabled && !_publishing
-          //         ? () {
-          //             this._assembleAndPushTweet();
-          //           }
-          //         : () {
-          //             if (StringUtil.isEmpty(_typeName)) {
-          //               ToastUtil.showToast(context, "请选择内容标签");
-          //               return;
-          //             }
-          //             if (StringUtil.isEmpty(_controller.text) && CollectionUtil.isListEmpty(pics)) {
-          //               ToastUtil.showToast(context, "请输入内容或至少选择一张图片");
-          //               return;
-          //             }
-          //             ToastUtil.showToast(context, "正在上传内容，请稍后");
-          //           },
-          //     child: Text(
-          //       '发表',
-          //       style: TextStyle(
-          //         color: _isPushBtnEnabled ? Colors.white : Colors.grey,
-          //         fontWeight: FontWeight.w400,
-          //       ),
-          //     ),
-          //     disabledTextColor: Colors.grey,
-          //     textColor: Colors.blue,
-          //   ),
-          // )
         ],
       ),
       body: Stack(
@@ -604,7 +556,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
                               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                               decoration: BoxDecoration(
                                   color: isDark ? ColorConstant.MAIN_BG_DARKER : Color(0xffF8F8F8),
-                                  borderRadius: BorderRadius.all(Radius.circular(7))),
+                                  borderRadius: BorderRadius.circular(8.0)),
                               child: Text(
                                 "# $_typeText",
                                 style: pfStyle.copyWith(
@@ -621,7 +573,9 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
                             child: MyFlatButton(widget.create ? '创 建' : '保 存', Colors.white,
                                 onTap: (_isPushBtnEnabled && !_publishing) ? _assembleAndPushTweet : null,
                                 fillColor: Colors.lightGreen,
-                                horizontalPadding: 40.0,
+                                horizontalPadding: 50.0,
+                                verticalPadding: 10.0,
+                                radius: 8.0,
                                 disabled: !_canCreateOrUpdate())),
                         // Container(
                         //   margin: EdgeInsets.only(

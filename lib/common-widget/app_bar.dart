@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -36,7 +37,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     Color _backgroundColor;
     Color _actionBtnColor;
 
-    _backgroundColor = background ?? ThemeUtils.getBackgroundColor(context);
+    _backgroundColor = background ?? isDark ? ColorConstant.MAIN_BG_DARKER: Colors.white;
     _actionBtnColor = actionColor ?? Colors.amber[700];
 
     SystemUiOverlayStyle _overlayStyle =

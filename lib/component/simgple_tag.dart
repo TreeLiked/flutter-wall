@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 class SimpleTag extends StatelessWidget {
@@ -27,6 +29,9 @@ class SimpleTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (StringUtil.isEmpty(text)) {
+      return Gaps.empty;
+    }
     bool isDark = ThemeUtils.isDark(context);
     return Container(
         margin: EdgeInsets.only(left: leftMargin),
@@ -34,8 +39,9 @@ class SimpleTag extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
         decoration: BoxDecoration(
             color: isDark ? bgDarkColor : bgColor,
-            borderRadius:
-                round ? BorderRadius.vertical(top: Radius.circular(radius), bottom: Radius.circular(radius)) : null),
+            borderRadius: round
+                ? BorderRadius.vertical(top: Radius.circular(radius), bottom: Radius.circular(radius))
+                : null),
         child: Text(
           text ?? "",
           style: pfStyle.copyWith(fontSize: Dimens.font_sp13, fontWeight: FontWeight.w300, color: textColor),

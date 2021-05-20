@@ -17,6 +17,7 @@ import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/number_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/widget_util.dart';
 
@@ -92,12 +93,11 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                   _renderTextLine('加入方式', _getJoinTypeZhTag()),
                   _renderTextLine('加入/上限', '${_circle.participants} / ${_circle.limit}'),
                   _renderTextLine('内容可见', '${_circle.contentPrivate ? '圈内可见' : '公开'}'),
-                  _renderTextLine('访问量', '${_circle.view}+'),
+                  _renderTextLine('访问量', '${NumberUtil.calCountHundred(_circle.view)}'),
                   _renderCreatorLine(
                     '圈主',
                     _circle.creator.nick,
                   ),
-                  // _renderTextLine('', '查看已加入用户', contentOnTap: () {}),
                   Gaps.vGap15,
                   _renderOptLine(),
                   Gaps.vGap10,
@@ -236,7 +236,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
-            child : Text('查看已加入用户',style: pfStyle.copyWith(color: Colors.green)),
+            child: Text('查看已加入用户', style: pfStyle.copyWith(color: Colors.green)),
             onPressed: () {
               NavigatorUtils.push(context, CircleRouter.ACC_LIST + "?circleId=" + _circle.id.toString());
             },

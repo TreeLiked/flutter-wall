@@ -61,6 +61,7 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeUtils.isDark(context);
     return Scaffold(
         appBar: MyAppBar(
           isBack: true,
@@ -128,12 +129,12 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                     child: Container(
                         padding: const EdgeInsets.all(20.0),
                         decoration: BoxDecoration(color: Color(0xffD7D6D9), shape: BoxShape.circle),
-                        child: const LoadAssetImage(
+                        child: LoadAssetImage(
                           "profile_sel",
                           format: 'png',
                           width: SizeConstant.TWEET_PROFILE_SIZE - 10,
                           fit: BoxFit.cover,
-                          color: Colors.white,
+                          color: isDark ? Colors.black54 : Colors.white,
                         )))
                 : GestureDetector(
                     onTap: _goChoiceAvatar,
@@ -147,17 +148,24 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                     ))),
           ),
           Container(
-            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(8.0)),
-            padding: const EdgeInsets.only(left: 20),
+
+            decoration: BoxDecoration(
+                color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
+
+                borderRadius: BorderRadius.circular(8.0)
+            ),
+            // padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.only(top: 25),
             child: Row(
               children: <Widget>[
+                Gaps.vGap10,
                 Expanded(
                   child: MyTextField(
                     focusNode: _nodeText1,
                     config: Utils.getKeyboardActionsConfig(context, [
                       _nodeText1,
                     ]),
+                    bgColor: Colors.transparent,
                     controller: _nickController,
                     maxLength: 16,
                     keyboardType: TextInputType.text,

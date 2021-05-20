@@ -229,13 +229,14 @@ class _CircleMainNewState extends State<CircleMainNew>
   }
 
   Widget _getActionItem(String iconPath, Function ontap) {
-    return Container(
-        padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.only(left: 7.0, top: 10.0, bottom: 10.0, right: 5.0),
-        decoration: BoxDecoration(
-            color: !isDark ? ColorConstant.TWEET_RICH_BG : ColorConstant.TWEET_RICH_BG_DARK, borderRadius: BorderRadius.circular(10.0)),
-        child: GestureDetector(
-            onTap: ontap,
+    return GestureDetector(
+        onTap: ontap,
+        child: Container(
+            padding: const EdgeInsets.all(10.0),
+            margin: const EdgeInsets.only(left: 7.0, top: 10.0, bottom: 10.0, right: 5.0),
+            decoration: BoxDecoration(
+                color: !isDark ? ColorConstant.TWEET_RICH_BG : ColorConstant.TWEET_RICH_BG_DARK,
+                borderRadius: BorderRadius.circular(8.0)),
             child: LoadAssetIcon(iconPath,
                 width: 16.0, height: 16.0, color: isDark ? Colors.grey : Colors.black87)));
   }
@@ -261,7 +262,7 @@ class StickySwiperDelegate extends SliverPersistentHeaderDelegate {
       return Gaps.empty;
     }
     int recommendSize = new CircleQueryParam(1).recommendSize;
-    if(children.length > recommendSize) {
+    if (children.length > recommendSize) {
       children = children.sublist(0, recommendSize);
     }
     return Container(

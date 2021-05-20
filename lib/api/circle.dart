@@ -63,7 +63,7 @@ class CircleApi {
     Result r;
     try {
       Response response =
-          await httpUtil.dio.post(Api.API_BASE_INF_URL + Api.API_CIRCLE_CREATE, data: circle.toJson());
+          await httpUtil.dio.post(Api.API_CIRCLE_CREATE, data: circle.toJson());
       return Api.convertResponse(response.data);
     } on DioError catch (e) {
       String error = Api.formatError(e);
@@ -156,4 +156,7 @@ class CircleApi {
       return Api.genErrorResult(Api.formatError(e, pop: false));
     }
   }
+
+
+
 }

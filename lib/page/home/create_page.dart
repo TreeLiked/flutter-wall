@@ -258,7 +258,7 @@ class _CreatePageState extends State<CreatePage> {
       height: 50.0,
       padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
       alignment: Alignment.center,
-      child: Text("请选择内容标签", style: pfStyle.copyWith(fontSize: Dimens.font_sp15,color: Colors.grey)),
+      child: Text("请选择内容标签", style: pfStyle.copyWith(fontSize: Dimens.font_sp15, color: Colors.grey)),
     );
   }
 
@@ -785,7 +785,7 @@ class _CreatePageState extends State<CreatePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        border: _canDelete? null: Border.all(color: Colors.black26),
+                        border: _canDelete ? null : Border.all(color: Colors.black26),
                         color: _canDelete ? Colors.redAccent : Colors.transparent,
                       ),
                       child: Text("删 除",

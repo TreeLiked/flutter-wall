@@ -61,7 +61,7 @@ class TextStyles {
   );
 
   static const TextStyle textClickable = const TextStyle(
-      fontSize: Dimens.font_sp14, color: ColorConstant.LINK, fontFamily: TextConstant.PING_FANG_FONT);
+      fontSize: Dimens.font_sp14, color: ColorConstant.QQ_BLUE, fontFamily: TextConstant.PING_FANG_FONT);
 
   static const commonTextStyle =
       const TextStyle(fontSize: 16, color: Colors.black87, fontFamily: TextConstant.PING_FANG_FONT);

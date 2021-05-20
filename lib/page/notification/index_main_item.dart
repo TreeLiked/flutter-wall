@@ -155,7 +155,7 @@ class _MainMessageItemState extends State<MainMessageItem> {
                                                 style: pfStyle.copyWith(color: Colors.white),
                                               ))
                                   ])
-                            ])
+                            ]),
                           ]))
                     ]))));
   }

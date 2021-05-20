@@ -7,10 +7,13 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/bloc/msg_bloc.dart';
 import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -165,52 +168,55 @@ class AlmondDonutsState extends State<AlmondDonuts> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (BuildContext context) => AccountLocalProvider()),
-          ChangeNotifierProvider(create: (BuildContext context) => TweetTypesFilterProvider()),
-          ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
-          ChangeNotifierProvider(create: (BuildContext context) => TweetProvider()),
-        ],
-        // child:  MaterialApp(
-        //     title: 'Wall',
-        //     //showPerformanceOverlay: true, //显示性能标签
-        //     debugShowCheckedModeBanner: false,
-        //     home: SplashPage(),
-        //     onGenerateRoute: Application.router.generator,
-        //     localizationsDelegates: const [
-        //       GlobalMaterialLocalizations.delegate,
-        //       GlobalWidgetsLocalizations.delegate,
-        //       GlobalCupertinoLocalizations.delegate,
-        //       DefaultCupertinoLocalizations.delegate
-        //     ],
-        //     supportedLocales: const [const Locale('zh', 'CH')],
-        //   )
-        // );
-        child: Consumer<ThemeProvider>(builder: (_, provider, __) {
-          return MaterialApp(
-            title: 'Wall',
-            //showPerformanceOverlay: true, //显示性能标签
-            debugShowCheckedModeBanner: false,
-            theme: provider.getTheme(),
-            darkTheme: provider.getTheme(isDarkMode: true),
+
+    return  MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (BuildContext context) => AccountLocalProvider()),
+            ChangeNotifierProvider(create: (BuildContext context) => TweetTypesFilterProvider()),
+            ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
+            ChangeNotifierProvider(create: (BuildContext context) => TweetProvider()),
+            ChangeNotifierProvider(create: (BuildContext context) => MsgProvider()),
+          ],
+          // child:  MaterialApp(
+          //     title: 'Wall',
+          //     //showPerformanceOverlay: true, //显示性能标签
+          //     debugShowCheckedModeBanner: false,
+          //     home: SplashPage(),
+          //     onGenerateRoute: Application.router.generator,
+          //     localizationsDelegates: const [
+          //       GlobalMaterialLocalizations.delegate,
+          //       GlobalWidgetsLocalizations.delegate,
+          //       GlobalCupertinoLocalizations.delegate,
+          //       DefaultCupertinoLocalizations.delegate
+          //     ],
+          //     supportedLocales: const [const Locale('zh', 'CH')],
+          //   )
+          // );
+          child: Consumer<ThemeProvider>(builder: (_, provider, __) {
+            return MaterialApp(
+              title: 'Wall',
+              //showPerformanceOverlay: true, //显示性能标签
+              debugShowCheckedModeBanner: false,
+              theme: provider.getTheme(),
+              darkTheme: provider.getTheme(isDarkMode: true),
+           home: SplashPage(),
 //            home: SplashPage(),
-            home: SplashPage(),
-            onGenerateRoute: Application.router.generator,
-            // localizationsDelegates: const [
-            //   GlobalMaterialLocalizations.delegate,
-            //   GlobalWidgetsLocalizations.delegate,
-            //   GlobalCupertinoLocalizations.delegate,
-            // ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              DefaultCupertinoLocalizations.delegate
-            ],
-            supportedLocales: const [const Locale('zh', 'CH')],
-          );
-        }));
+              onGenerateRoute: Application.router.generator,
+              // localizationsDelegates: const [
+              //   GlobalMaterialLocalizations.delegate,
+              //   GlobalWidgetsLocalizations.delegate,
+              //   GlobalCupertinoLocalizations.delegate,
+              // ],
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                DefaultCupertinoLocalizations.delegate
+              ],
+              supportedLocales: const [const Locale('zh', 'CH')],
+            );
+          }),
+    );
 
     // return ChangeNotifierProvider<ThemeProvider>(
     //   builder: (_) => ThemeProvider(),

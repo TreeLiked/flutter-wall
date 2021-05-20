@@ -29,6 +29,7 @@ import 'package:iap_app/part/circle/circle_main_new.dart';
 import 'package:iap_app/part/hot_today.dart';
 import 'package:iap_app/part/circle/circle_main.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/res/colors.dart';
@@ -132,8 +133,7 @@ class _HomePageState extends State<HomePage>
       }
     });
 
-    initRefreshMessageTotalCnt();
-    initQueryNewTweetCnt();
+    initMessageTotalCnt();
 
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX);
 
@@ -192,12 +192,8 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  void initRefreshMessageTotalCnt() async {
-    MessageUtil.queryAndSetInteractionAndSystemMessageCnt();
-  }
-
-  void initQueryNewTweetCnt() async {
-    MessageUtil.queryAndSetNewTweetCnt(Application.context);
+  void initMessageTotalCnt() async {
+    MessageUtil.queryMessageCntTotal(context);
   }
 
   @override
@@ -299,217 +295,195 @@ class _HomePageState extends State<HomePage>
     accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
     if (firstBuild) {
       initData();
-      tweetProvider = Provider.of<TweetProvider>(context);
+      tweetProvider = Provider.of<TweetProvider>(context, listen: false);
     }
     firstBuild = false;
 
-    return Scaffold(
-      appBar: PreferredSize(
-        child: AppBar(
-          elevation: 0,
+    return Consumer<MsgProvider>(builder: (_, msgProvider, __) {
+      return Scaffold(
+        appBar: PreferredSize(
+          child: AppBar(
+            elevation: 0,
+          ),
+          preferredSize: Size.zero,
         ),
-        preferredSize: Size.zero,
-      ),
-      body: SafeArea(
-        bottom: false,
-        child: Stack(
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: prefix0.ScreenUtil().setWidth(10.0),
-                        child: Consumer<AccountLocalProvider>(
-                          builder: (_, model, __) {
-                            var acc = model.account;
-                            return IconButton(
-                                onPressed: () {
-                                  BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
-                                  UMengUtil.userGoPage(UMengUtil.PAGE_PC);
-                                },
-                                icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
-                          },
-                        ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
-                          child: TabBar(
-                            labelStyle: pfStyle.copyWith(
-                                fontSize: 20, fontWeight: FontWeight.w400, color: Colors.amber[600]),
-                            unselectedLabelStyle:
-                                pfStyle.copyWith(fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
-                            indicatorSize: TabBarIndicatorSize.label,
-                            indicator: const UnderlineTabIndicator(
-                                borderSide: const BorderSide(color: Colors.amberAccent, width: 2.0)),
-                            controller: _tabController,
-                            labelColor: isDark ? Colors.white30 : Colors.black,
-                            isScrollable: true,
-                            onTap: (index) {
-                              if (index == _currentTabIndex) {
-                                if (index == 0) {
-                                  if (MessageUtil.tabIndexTweetCnt > 0) {
-                                    PageSharedWidget.tabIndexRefreshController.requestRefresh();
-                                    MessageUtil.clearTabIndexTweetCnt();
-                                  }
-                                  PageSharedWidget.homepageScrollController.animateTo(.0,
-                                      duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
-                                  return;
-                                }
-                              }
-                              _tabController.animateTo(index);
-                              setState(() {
-                                _currentTabIndex = index;
-//                              _displayCreate = _currentTabIndex == 0;
-                              });
+        body: SafeArea(
+          bottom: false,
+          child: Stack(
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: double.infinity,
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: prefix0.ScreenUtil().setWidth(10.0),
+                          child: Consumer<AccountLocalProvider>(
+                            builder: (_, model, __) {
+                              var acc = model.account;
+                              return IconButton(
+                                  onPressed: () {
+                                    BottomSheetUtil.showBottomSheet(context, 0.7, PersonalCenter());
+                                    UMengUtil.userGoPage(UMengUtil.PAGE_PC);
+                                  },
+                                  icon: AccountAvatar(avatarUrl: acc.avatarUrl, size: 33.0, cache: true));
                             },
-                            tabs: [
-                              StreamBuilder(
-                                initialData: 0,
-                                stream: MessageUtil.tabIndexStreamCntCtrl.stream,
-                                builder: (_, snapshot) => Badge(
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: prefix0.ScreenUtil().setWidth(150)),
+                            child: TabBar(
+                              labelStyle: pfStyle.copyWith(
+                                  fontSize: 20, fontWeight: FontWeight.w400, color: Colors.amber[600]),
+                              unselectedLabelStyle: pfStyle.copyWith(
+                                  fontSize: 14, color: isDark ? Colors.white24 : Colors.black),
+                              indicatorSize: TabBarIndicatorSize.label,
+                              indicator: const UnderlineTabIndicator(
+                                  borderSide: const BorderSide(color: Colors.amberAccent, width: 2.0)),
+                              controller: _tabController,
+                              labelColor: isDark ? Colors.white30 : Colors.black,
+                              isScrollable: true,
+                              onTap: (index) {
+                                if (index == _currentTabIndex) {
+                                  if (index == 0) {
+                                    if (msgProvider.tweetNewCnt > 0) {
+                                      PageSharedWidget.tabIndexRefreshController.requestRefresh();
+                                      Provider.of<MsgProvider>(context, listen: false).updateTweetNewCnt(0);
+                                    }
+                                    PageSharedWidget.homepageScrollController.animateTo(.0,
+                                        duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
+                                    return;
+                                  }
+                                }
+                                _tabController.animateTo(index);
+                                setState(() {
+                                  _currentTabIndex = index;
+//                              _displayCreate = _currentTabIndex == 0;
+                                });
+                              },
+                              tabs: [
+                                Badge(
                                   elevation: 0,
                                   padding: const EdgeInsets.all(4.0),
                                   child: Text('最新', style: pfStyle.copyWith(color: _getTabColor(0))),
-                                  animationType: BadgeAnimationType.fade,
+                                  animationType: BadgeAnimationType.scale,
                                   badgeColor: Colors.amber,
-                                  showBadge: snapshot.data > 0,
+                                  showBadge: msgProvider.tweetInterCnt > 0,
                                   shape: BadgeShape.circle,
                                   // borderRadius: 10.0,
-                                  badgeContent: Text(Utils.getBadgeText(snapshot.data),
-                                      style:
-                                          pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp10)),
+                                  badgeContent: Utils.getRpWidget(msgProvider.tweetInterCnt),
                                 ),
-                              ),
-                              Tab(child: Text('热门', style: pfStyle.copyWith(color: _getTabColor(1)))),
-                              Tab(child: Text('圈子', style: pfStyle.copyWith(color: _getTabColor(2)))),
-                            ],
+                                Tab(child: Text('热门', style: pfStyle.copyWith(color: _getTabColor(1)))),
+                                Tab(child: Text('圈子', style: pfStyle.copyWith(color: _getTabColor(2)))),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                          right: prefix0.ScreenUtil().setWidth(10.0),
+                        Positioned(
+                            right: prefix0.ScreenUtil().setWidth(10.0),
 //                        top: prefix0.ScreenUtil().setWidth(10.0),
-                          child: IconButton(
-                            icon: StreamBuilder(
-                              initialData: 0,
-                              stream: MessageUtil.notificationStreamCntCtrl.stream,
-                              builder: (_, snapshot) => Badge(
-                                elevation: 0,
-                                padding: const EdgeInsets.all(3.0),
-                                child:
-                                    // Icon(
-                                    //     Utils.badgeHasData(snapshot.data)
-                                    //         ? Icons.notifications_active_outlined
-                                    //         : Icons.circle_notifications,
-                                    //     color: Utils.badgeHasData(snapshot.data)
-                                    //         ? Colors.amber
-                                    //         : isDark
-                                    //             ? Colors.white54
-                                    //             : Colors.black54),
-                                    LoadAssetIcon(
-                                  "notification/bell",
-                                  color: Utils.badgeHasData(snapshot.data)
-                                      ? Colors.amber
-                                      : isDark
-                                          ? Colors.white54
-                                          : Colors.black87,
-                                  width: 25.0,
-                                  height: 25.0,
-                                ),
-                                badgeColor: Colors.red[400],
-                                animationType: BadgeAnimationType.fade,
-                                showBadge: Utils.badgeHasData(snapshot.data),
-                                badgeContent: Text(
-                                  Utils.getBadgeText(snapshot.data),
-                                  style: pfStyle.copyWith(color: Colors.white, fontSize: Dimens.font_sp12),
-                                ),
+                            child: IconButton(
+                              icon: Badge(
+                                  elevation: 0,
+                                  child: LoadAssetIcon(
+                                    "notification/bell",
+                                    color: Utils.badgeHasData(msgProvider.totalCnt)
+                                        ? Colors.amber
+                                        : isDark
+                                            ? Colors.white54
+                                            : Colors.black87,
+                                    width: 25.0,
+                                    height: 25.0,
+                                  ),
+                                  badgeColor: Colors.red[400],
+                                  padding: EdgeInsets.all(msgProvider.totalCnt >= 10 ? 2 : 5),
+                                  animationType: BadgeAnimationType.fade,
+                                  showBadge: Utils.badgeHasData(msgProvider.totalCnt),
+                                  badgeContent: Utils.getRpWidget(msgProvider.totalCnt)),
+                              onPressed: () => NavigatorUtils.push(context, Routes.notification),
+                            )),
+                      ],
+                    ),
+                  ),
+                  Gaps.vGap5,
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [TweetIndexTabView(), HotToday(), CircleMainNew()],
+                    ),
+                  ),
+                ],
+              ),
+              _displayCreate
+                  ? Positioned(
+                      left: stickLeft ? 3.9 : null,
+                      right: stickLeft ? null : 20,
+                      top: floatingOffset.dy,
+                      child: Container(
+                        width: 55,
+                        height: 55,
+                        child: Draggable(
+                          feedback: FloatingActionButton(
+                              // child: LoadAssetIcon(
+                              //   "create",
+                              //   color: isDark ? Colors.yellow : Colors.amberAccent,
+                              //   width: 23.0,
+                              //   height: 23.0,
+                              // ),
+                              child: Icon(
+                                Icons.add,
+                                color: isDark ? Colors.amber[300] : Colors.black,
                               ),
-                            ),
-                            onPressed: () => NavigatorUtils.push(context, Routes.notification),
-                          )),
-                    ],
-                  ),
-                ),
-                Gaps.vGap5,
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [TweetIndexTabView(), HotToday(), CircleMainNew()],
-                  ),
-                ),
-              ],
-            ),
-            _displayCreate
-                ? Positioned(
-                    left: stickLeft ? 3.9 : null,
-                    right: stickLeft ? null : 20,
-                    top: floatingOffset.dy,
-                    child: Container(
-                      width: 55,
-                      height: 55,
-                      child: Draggable(
-                        feedback: FloatingActionButton(
-                            // child: LoadAssetIcon(
-                            //   "create",
-                            //   color: isDark ? Colors.yellow : Colors.amberAccent,
-                            //   width: 23.0,
-                            //   height: 23.0,
-                            // ),
-                            child: Icon(
-                              Icons.add,
-                              color: isDark ? Colors.amber[300] : Colors.black,
-                            ),
-                            backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
-                            splashColor: Colors.white12,
-                            elevation: 10.0,
-                            onPressed: null),
-                        child: FloatingActionButton(
-                            child: Icon(
-                              Icons.add,
-                              color: isDark ? Colors.amber[300] : Colors.black,
-                            ),
-                            // child: LoadAssetIcon(
-                            //   "create",
-                            //   color: isDark ? Colors.yellow : Colors.lightBlueAccent,
-                            //   width: 23.0,
-                            //   height: 23.0,
-                            // ),
-                            backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
-                            elevation: 10.0,
-                            foregroundColor: Colors.yellow,
-                            splashColor: Colors.white12,
-                            onPressed: () => NavigatorUtils.push(context, Routes.create,
-                                transitionType: TransitionType.fadeIn)),
+                              backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
+                              splashColor: Colors.white12,
+                              elevation: 10.0,
+                              onPressed: null),
+                          child: FloatingActionButton(
+                              child: Icon(
+                                Icons.add,
+                                color: isDark ? Colors.amber[300] : Colors.black,
+                              ),
+                              // child: LoadAssetIcon(
+                              //   "create",
+                              //   color: isDark ? Colors.yellow : Colors.lightBlueAccent,
+                              //   width: 23.0,
+                              //   height: 23.0,
+                              // ),
+                              backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
+                              elevation: 10.0,
+                              foregroundColor: Colors.yellow,
+                              splashColor: Colors.white12,
+                              onPressed: () => NavigatorUtils.push(context, Routes.create,
+                                  transitionType: TransitionType.fadeIn)),
 
-                        //拖动过程中，在原来位置停留的Widget，设定这个可以保留原本位置的残影，如果不需要可以直接设置为Container()
-                        childWhenDragging: Container(),
-                        //拖动结束后的Widget
-                        onDragEnd: (details) {
-                          double targetX = details.offset.dx;
-                          double targetY = details.offset.dy - 50;
-                          if (targetY >= Application.screenHeight - 190 || targetY <= 20) {
-                            targetY = Application.screenHeight - 190;
-                          }
-                          setState(() {
-                            stickLeft = targetX < middle;
-                            floatingOffset = new Offset(0.0, targetY);
-                          });
-                        },
-                      ),
-                    ))
-                : Gaps.empty,
-          ],
+                          //拖动过程中，在原来位置停留的Widget，设定这个可以保留原本位置的残影，如果不需要可以直接设置为Container()
+                          childWhenDragging: Container(),
+                          //拖动结束后的Widget
+                          onDragEnd: (details) {
+                            double targetX = details.offset.dx;
+                            double targetY = details.offset.dy - 50;
+                            if (targetY >= Application.screenHeight - 190 || targetY <= 20) {
+                              targetY = Application.screenHeight - 190;
+                            }
+                            setState(() {
+                              stickLeft = targetX < middle;
+                              floatingOffset = new Offset(0.0, targetY);
+                            });
+                          },
+                        ),
+                      ))
+                  : Gaps.empty,
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Color _getTabColor(int index) {

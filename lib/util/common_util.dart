@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -62,7 +63,7 @@ class Utils {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return SpinKitThreeBounce(color: Colors.amber, size: size);
+          return SpinKitThreeBounce(color: Colors.white, size: size);
           // return CupertinoActivityIndicator();
 //        const CupertinoActivityIndicator()
 //          );
@@ -306,6 +307,10 @@ class Utils {
     return '$count';
   }
 
+  static Text getRpWidget(int cnt, {int maxCount = 99, Color textColor = Colors.white, double fontSize = 12.0}) {
+    return Text('${getBadgeText(cnt, maxCount: maxCount)}', style: pfStyle.copyWith(color: textColor, fontSize: fontSize));
+  }
+
   static bool badgeHasData(int data) {
     return data > 0;
   }
@@ -393,6 +398,10 @@ class Utils {
       completeDuration: Duration(milliseconds: 0),
       completeIcon: null,
     );
+  }
+
+  static String getEnumValue(a) {
+    return a.toString().substring(a.toString().indexOf('.') + 1);
   }
 }
 

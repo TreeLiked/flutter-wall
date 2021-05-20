@@ -81,7 +81,7 @@ class _CircleSystemCardState extends State<CircleSystemCard> {
           }
         },
         child: Container(
-            margin: const EdgeInsets.only(left: 15.0, bottom: 4.0, right: 15.0, top: 4.0),
+            margin: const EdgeInsets.only(left: 15.0, bottom: 2.0, right: 15.0, top: 10.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

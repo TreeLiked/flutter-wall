@@ -3,7 +3,9 @@ import 'dart:core';
 import 'package:common_utils/common_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
@@ -46,5 +48,26 @@ class CommonApi {
       Api.formatError(e);
     }
     return null;
+  }
+
+  static Future<int> getAlertCount(MessageType msgType) async {
+    Response response;
+    try {
+      String type = msgType.toString().substring(msgType.toString().indexOf('.') + 1);
+      response = await httpUtil.dio.get(Api.API_MSG_CNT, queryParameters: {"t": type});
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      if (CollectionUtil.isMapEmpty(json)) {
+        return -1;
+      }
+      Result r = Result.fromJson(json);
+      if (r.isSuccess) {
+        return r.data;
+      }
+      LogUtil.e("getAlertCount error, ${r.toJson()}", tag: _tag);
+      return -1;
+    } on DioError catch (e) {
+      Api.formatError(e, pop: false);
+      return -1;
+    }
   }
 }

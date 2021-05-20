@@ -90,7 +90,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
         NavigatorUtils.goBack(context);
         return;
       }
-      AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+      AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
       accountLocalProvider.setAccount(acc);
       _loadStorageTweetTypes();
       Application.setAccount(acc);
@@ -141,7 +141,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   }
 
   Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
+    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
     tweetTypesFilterProvider.updateTypeNames();
   }
 
@@ -157,16 +157,17 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
         body: !_haveChoice
             ? Column(
                 children: <Widget>[
-                  Gaps.vGap16,
+                  Gaps.vGap10,
                   Container(
 //                    height: ScreenUtil().setHeight(80),
                     padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 3.0),
+
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(13.0),
+                      borderRadius: BorderRadius.circular(8.0),
                       color: ThemeUtils.isDark(context) ? Color(0xff363636) : ColorConstant.TWEET_RICH_BG,
                     ),
-                    margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
+                    margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: TextField(
                       controller: _controller,
                       textInputAction: TextInputAction.search,

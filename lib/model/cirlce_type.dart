@@ -18,13 +18,13 @@ class CircleTypeEnum {
 
   const CircleTypeEnum(this.name, this.zhTag, this.icon, this.color);
 
-  static const DELICIOUS = const CircleTypeEnum("DELICIOUS", "美食", Icons.local_dining, Colors.orange);
-  static const GAME = const CircleTypeEnum("GAME", "游戏", Icons.auto_awesome, Colors.green);
-  static const SOCIAL = const CircleTypeEnum("SOCIAL", "社交", Icons.pets, Colors.blue);
-  static const STUDY = const CircleTypeEnum("STUDY", "学习", Icons.school, Colors.deepPurple);
-  static const LIFE = const CircleTypeEnum("LIFE", "生活", Icons.camera, Colors.lime);
-  static const SHARE = const CircleTypeEnum("SHARE", "共享", Icons.music_note, Colors.lightBlueAccent);
-  static const UNKNOWN = const CircleTypeEnum("OTHER", "其他", Icons.exposure_minus_1, Colors.blueGrey);
+  static const DELICIOUS = const CircleTypeEnum("DELICIOUS", "美食", Icons.local_dining, Color(0xffDAA520));
+  static const GAME = const CircleTypeEnum("GAME", "游戏", Icons.auto_awesome, Color(0xff00BFFF));
+  static const SOCIAL = const CircleTypeEnum("SOCIAL", "社交", Icons.pets, Color(0xffCDB38B));
+  static const STUDY = const CircleTypeEnum("STUDY", "学习", Icons.school, Color(0xffCD5C5C));
+  static const LIFE = const CircleTypeEnum("LIFE", "生活", Icons.camera, Color(0xff8B658B));
+  static const SHARE = const CircleTypeEnum("SHARE", "共享", Icons.music_note, Color(0xff9ACD32));
+  static const UNKNOWN = const CircleTypeEnum("OTHER", "其他", Icons.exposure_minus_1, Color(0xff00BFFF));
 
   static CircleTypeEnum fromName(String name) {
     var firstWhere = circleTypeMap.values.firstWhere((element) => element.name == name);

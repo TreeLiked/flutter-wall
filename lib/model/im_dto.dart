@@ -13,6 +13,8 @@ class ImDTO<D> {
   static const int COMMAND_TWEET_PRAISED = 201;
   static const int COMMAND_TWEET_REPLIED = 202;
   static const int COMMAND_TWEET_DELETED = 203;
+
+  static const int FLUSH_MSG_CNT = 203;
   int command;
   D data;
 

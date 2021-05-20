@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:badges/badges.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ import 'package:iap_app/part/circle/circle_main.dart';
 import 'package:iap_app/part/circle/circle_square_tab.dart';
 import 'package:iap_app/part/notification/circle_system_card.dart';
 import 'package:iap_app/part/notification/interation_card.dart';
+import 'package:iap_app/provider/msg_provider.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -27,6 +30,7 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CircleNotificationMainPage extends StatefulWidget {
@@ -72,45 +76,145 @@ class _CircleNotificationMainPageState extends State<CircleNotificationMainPage>
   Widget build(BuildContext context) {
     super.build(context);
     isDark = ThemeUtils.isDark(context);
-    return Scaffold(
-//        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
-      appBar: MyAppBar(
-        centerTitle: "圈子消息",
-        isBack: true,
-        actionColor: Colors.green,
-        actionName: _currentSelectIndex == 1 ? '' : '全部已读',
-        onPressed: _currentSelectIndex == 1 ? null : _readAll,
-      ),
-      body: CustomScrollView(slivers: <Widget>[
-        SliverPersistentHeader(
-          // 可以吸顶的TabBar
-          pinned: true,
-          delegate: StickyTabBarDelegate(
-            child: TabBar(
-              labelColor: Colors.black,
-              isScrollable: false,
-              controller: _tabController,
-              indicatorSize: TabBarIndicatorSize.label,
-              indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(width: 2.0, color: Colors.green),
-                  insets: EdgeInsets.symmetric(horizontal: 1.0, vertical: 0.0)),
-              tabs: <Widget>[
-                Tab(child: Text('互动', style: pfStyle.copyWith(color: _getTabColor(0)))),
-                Tab(child: Text('系统', style: pfStyle.copyWith(color: _getTabColor(1)))),
-              ],
+    return Consumer<MsgProvider>(builder: (_, provider, __) {
+      return Scaffold(
+        backgroundColor: isDark ? Colours.dark_bg_color : Colours.bg_color,
+        appBar: MyAppBar(
+          centerTitle: "圈子消息",
+          isBack: true,
+          actionColor: Colors.green,
+          actionName: _currentSelectIndex == 1 ? '' : '全部已读',
+          onPressed: _currentSelectIndex == 1 ? null : _readAll,
+        ),
+//         appBar: AppBar(
+//           title: Text('圈子消息'),
+//           bottom: TabBar(
+//             controller: _tabController,
+//             tabs: [
+//               Badge(
+//                   elevation: 0,
+//                   shape: BadgeShape.circle,
+//                   // position: BadgePosition.topEnd(end: -20),
+//                   showBadge: provider.cirInterCnt > 0,
+//                   badgeColor: Colors.lightGreen,
+//                   animationType: BadgeAnimationType.fade,
+//                   child: Text('互动', style: pfStyle.copyWith(color: _getTabColor(0))),
+//                   badgeContent: Utils.getRpWidget(provider.cirInterCnt)),
+//               Badge(
+//                   elevation: 0,
+//                   shape: BadgeShape.circle,
+//                   // position: BadgePosition.topEnd(end: -20),
+//                   showBadge: provider.cirSysCnt > 0,
+//                   badgeColor: Colors.lightGreen,
+//                   animationType: BadgeAnimationType.fade,
+//                   child: Text('系统', style: pfStyle.copyWith(color: _getTabColor(1))),
+//                   badgeContent: Utils.getRpWidget(provider.cirSysCnt))
+//             ],
+//           ),
+//         ),
+        // body: TabBarView(
+        //   controller: _tabController,
+        //   children: [
+        //     CircleInteractionTabView(refreshWidgetColor: Color(0xffE6E6FA)),
+        //     CircleSystemTabView(refreshWidgetColor: Color(0xffE6E6FA))
+        //   ],
+        // ),
+        // body: NestedScrollView(
+        //     headerSliverBuilder: (context, innerBoxIsScrolled) => [
+        //           SliverPersistentHeader(
+        //             // 可以吸顶的TabBar
+        //             pinned: true,
+        //             delegate: StickyTabBarDelegate(
+        //               child: TabBar(
+        //                 labelColor: Colors.black,
+        //                 isScrollable: false,
+        //                 controller: _tabController,
+        //                 indicatorSize: TabBarIndicatorSize.label,
+        //                 indicator: UnderlineTabIndicator(
+        //                     borderSide: BorderSide(width: 2.0, color: Colors.green),
+        //                     insets: EdgeInsets.symmetric(horizontal: 1.0, vertical: 0.0)),
+        //                 tabs: <Widget>[
+        //                   SizedBox(
+        //                       child: Badge(
+        //                           elevation: 0,
+        //                           shape: BadgeShape.circle,
+        //                           // position: BadgePosition.topEnd(end: -20),
+        //                           showBadge: provider.cirInterCnt > 0,
+        //                           badgeColor: Colors.lightGreen,
+        //                           animationType: BadgeAnimationType.fade,
+        //                           child: Text('互动', style: pfStyle.copyWith(color: _getTabColor(0))),
+        //                           badgeContent: Utils.getRpWidget(provider.cirInterCnt)),
+        //                       height: 100),
+        //                   SizedBox(
+        //                       child: Badge(
+        //                           elevation: 0,
+        //                           shape: BadgeShape.circle,
+        //                           // position: BadgePosition.topEnd(end: -20),
+        //                           showBadge: provider.cirSysCnt > 0,
+        //                           badgeColor: Colors.lightGreen,
+        //                           animationType: BadgeAnimationType.fade,
+        //                           child: Text('系统', style: pfStyle.copyWith(color: _getTabColor(1))),
+        //                           badgeContent: Utils.getRpWidget(provider.cirSysCnt)),
+        //                       height: 100)
+        //                 ],
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //     body: TabBarView(controller: _tabController, children: <Widget>[
+        //       CircleInteractionTabView(refreshWidgetColor: Color(0xffE6E6FA)),
+        //       CircleSystemTabView(refreshWidgetColor: Color(0xffE6E6FA))
+        //     ])),
+        body: CustomScrollView(slivers: <Widget>[
+          SliverPersistentHeader(
+            // 可以吸顶的TabBar
+            pinned: true,
+            delegate: StickyTabBarDelegate(
+              child: TabBar(
+                labelColor: Colors.black,
+                isScrollable: false,
+                controller: _tabController,
+                indicatorSize: TabBarIndicatorSize.label,
+                indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(width: 2.0, color: Colors.green),
+                    insets: EdgeInsets.symmetric(horizontal: 1.0, vertical: 0.0)),
+                tabs: <Widget>[
+                  SizedBox(
+                      height: 100,
+                      child: Badge(
+                          elevation: 0,
+                          shape: BadgeShape.circle,
+                          position: BadgePosition.topEnd(end: -18, top: -3),
+                          showBadge: provider.cirInterCnt > 0,
+                          badgeColor: Colors.lightGreen,
+                          animationType: BadgeAnimationType.fade,
+                          child: Text('互动', style: pfStyle.copyWith(color: _getTabColor(0))),
+                          badgeContent: Utils.getRpWidget(provider.cirInterCnt))),
+                  SizedBox(
+                      height: 100,
+                      child: Badge(
+                          elevation: 0,
+                          shape: BadgeShape.circle,
+                          position: BadgePosition.topEnd(end: -18, top: -3),
+                          showBadge: provider.cirSysCnt > 0,
+                          animationType: BadgeAnimationType.fade,
+                          child: Text('系统', style: pfStyle.copyWith(color: _getTabColor(1))),
+                          badgeContent: Utils.getRpWidget(provider.cirSysCnt)))
+                ],
+              ),
             ),
           ),
-        ),
-        SliverPadding(
-            padding: const EdgeInsets.only(bottom: 0.0),
-            sliver: SliverFillRemaining(
-                // 剩余补充内容TabBarView
-                child: TabBarView(controller: _tabController, children: <Widget>[
-              CircleInteractionTabView(refreshWidgetColor: Color(0xffE6E6FA)),
-              CircleSystemTabView(refreshWidgetColor: Color(0xffE6E6FA))
-            ])))
-      ]),
-    );
+          SliverPadding(
+              padding: const EdgeInsets.only(bottom: 0.0),
+              sliver: SliverFillRemaining(
+                  // 剩余补充内容TabBarView
+                  child: TabBarView(controller: _tabController, children: <Widget>[
+                CircleInteractionTabView(refreshWidgetColor: Color(0xffE6E6FA)),
+                CircleSystemTabView(refreshWidgetColor: Color(0xffE6E6FA))
+              ])))
+        ]),
+      );
+    });
   }
 
   Color _getTabColor(int index) {
@@ -164,6 +268,7 @@ class _CircleInteractionTabViewState extends State<CircleInteractionTabView> {
     } else {
       _refreshController.refreshCompleted();
     }
+    Provider.of<MsgProvider>(context, listen: false).updateCirInterCnt(0);
   }
 
   Future<void> _onLoading() async {
@@ -295,6 +400,7 @@ class _CircleSystemTabViewState extends State<CircleSystemTabView> {
       this.msgs = msgs;
     });
     _refreshController.refreshCompleted(resetFooterState: true);
+    Provider.of<MsgProvider>(context, listen: false).updateCirSysCnt(0);
   }
 
   Future<void> _onLoading() async {

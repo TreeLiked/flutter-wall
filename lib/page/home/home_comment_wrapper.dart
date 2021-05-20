@@ -132,7 +132,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
         TweetReply newReply = TweetReply.fromJson(result.data);
         _controller.clear();
         hideReplyContainer();
-        final _tweetProvider = Provider.of<TweetProvider>(context);
+        final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
         _tweetProvider.updateReply(context, newReply);
       } else {
         _controller.clear();

@@ -109,7 +109,6 @@ class _CircleSystemCardState extends State<CircleSystemCard> {
                       _buildBody(),
                       Gaps.vGap5,
                       _buildOptions(),
-                      Gaps.vGap10,
                       Gaps.line
                     ],
                   ),
@@ -124,7 +123,7 @@ class _CircleSystemCardState extends State<CircleSystemCard> {
       children: <Widget>[
         Flexible(
             child: GestureDetector(
-          child: Text('${message.title}', style: pfStyle.copyWith(fontSize: Dimens.font_sp13p5)),
+          child: Text('${message.title}', style: pfStyle.copyWith(fontSize: Dimens.font_sp14)),
           onTap: () => _handleGoAccount(message.applyAccount),
         )),
         Expanded(

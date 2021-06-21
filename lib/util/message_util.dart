@@ -106,6 +106,28 @@ class MessageUtil extends BaseBloc {
     return val;
   }
 
+  static Future<Map<String, int>> batchQueryMsgCnt(
+      BuildContext context, List<MessageCategory> msgCategory) async {
+    Map<String, int> map =
+        await MessageAPI.batchQueryMsgCount(msgCategory.map((e) => msgCategoryCodeMap[e]).toList());
+    if (CollectionUtil.isMapEmpty(map)) {
+      return {};
+    }
+    map.forEach((msgCode, msgCnt) {
+      MessageCategory c = codeMsgCategoryMap[msgCode];
+      if (c == MessageCategory.INTERACTION) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateTweetInterCnt(msgCnt);
+      } else if (c == MessageCategory.SYSTEM) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateSysCnt(msgCnt);
+      } else if (c == MessageCategory.CIRCLE_SYS) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateCirSysCnt(msgCnt);
+      } else if (c == MessageCategory.CIRCLE_INTERACTION) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateCirInterCnt(msgCnt);
+      }
+    });
+    return map;
+  }
+
   static void close() {
     stompClient?.deactivate();
   }
@@ -135,8 +157,6 @@ class MessageUtil extends BaseBloc {
         }
         break;
       case ImDTO.COMMAND_TWEET_REPLIED: // 用户被评论，data: 评论的内容
-        // Result<dynamic> r = Result.fromJson(Api.convertResponse((instruction.data)));
-        // print(r.toJson());
         queryCircleInterMsgCnt(context);
         TweetReply tr = TweetReply.fromJson(instruction.data);
         if (tr != null) {
@@ -151,6 +171,9 @@ class MessageUtil extends BaseBloc {
       case ImDTO.COMMAND_TWEET_DELETED: // 推文被删除，data: 删除的推文id
         int detTweetId = instruction.data;
         Provider.of<TweetProvider>(context, listen: false).delete(detTweetId);
+        break;
+      case ImDTO.COMMAND_PULL_MSG:
+        // 在消息页面用消息总线处理
         break;
       default:
         break;

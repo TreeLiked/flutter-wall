@@ -6,7 +6,7 @@ part 'im_dto.g.dart';
 
 @JsonSerializable()
 // ws 命令消息总线
-EventBus wsCommandEventBus = EventBus();
+final EventBus wsCommandEventBus = EventBus();
 
 class ImDTO<D> {
   static const int COMMAND_TWEET_CREATED = 200;
@@ -14,7 +14,8 @@ class ImDTO<D> {
   static const int COMMAND_TWEET_REPLIED = 202;
   static const int COMMAND_TWEET_DELETED = 203;
 
-  static const int FLUSH_MSG_CNT = 203;
+  static const int COMMAND_PULL_MSG = 900;
+
   int command;
   D data;
 

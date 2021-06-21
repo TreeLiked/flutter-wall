@@ -43,6 +43,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _SMSLoginPageState extends State<LoginPage> {
+  static const String _TAG = "_SMSLoginPageState";
+
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _vCodeController = TextEditingController();
   TextEditingController _iCodeController = TextEditingController();
@@ -157,7 +159,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 绑定账户信息到本地账户数据提供器
         AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
         accountLocalProvider.setAccount(acc);
-        print(accountLocalProvider.account.toJson());
+        LogUtil.e(accountLocalProvider.account.toJson(), tag: _TAG);
         Application.setAccount(acc);
         Application.setAccountId(acc.id);
 

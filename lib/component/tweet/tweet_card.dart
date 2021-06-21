@@ -90,7 +90,7 @@ class TweetCard2 extends StatelessWidget {
 
   Widget cardContainer2(BuildContext context) {
     Widget wd = Container(
-        padding: EdgeInsets.only(bottom: 5.0, top: indexInList == 0 ? 12.0 : 4.0, left: 15.0, right: 20.0),
+        padding: EdgeInsets.only(bottom: 5.0, top: indexInList == 0 ? 12.0 : 4.0, left: 10.0, right: 15.0),
         color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
         child: GestureDetector(
           onTap: () => _forwardDetail(context),
@@ -101,8 +101,9 @@ class TweetCard2 extends StatelessWidget {
               this.needLeftProfile
                   ? Flexible(
                       flex: 1,
-                      child:
-                          Container(padding: const EdgeInsets.only(right: 15.0), child: _profileContainer()),
+                      child: Container(
+                          padding: const EdgeInsets.only(top: 5.0, right: 15.0, left: 5.0),
+                          child: _profileContainer()),
                     )
                   : Gaps.empty,
               Flexible(
@@ -112,15 +113,12 @@ class TweetCard2 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Gaps.vGap5,
 //                    TweetTypeWrapper(tweet.type),
-                    TweetSimpleHeader(
-                      tweet.account,
-                      tweet.anonymous,
-                      tweet.sentTime,
-                      myNickClickable: this.myNickClickable,
-                      timeRight: this.needLeftProfile,
-                      official: false
-                    ),
+                    TweetSimpleHeader(tweet.account, tweet.anonymous, tweet.sentTime,
+                        myNickClickable: this.myNickClickable,
+                        timeRight: this.needLeftProfile,
+                        official: false),
                     Gaps.vGap2,
                     TweetBodyWrapper(tweet.body, maxLine: 3, fontSize: Dimens.font_sp15, height: 1.6),
                     TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),

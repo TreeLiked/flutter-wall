@@ -46,6 +46,7 @@ class OssUtil {
   }
 
   static const String DEST_TWEET = "tweet";
+  static const String DEST_CIRCLE = "circle";
   static const String DEST_TOPIC = "topic";
   static const String DEST_AVATAR = "avatar";
   static const String DEST_CIRCLE_COVER = "circle-cover";

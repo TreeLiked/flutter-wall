@@ -31,7 +31,7 @@ class _ImageCropContainerState extends State<ImageCropContainer> {
 
     return Scaffold(
         appBar: MyAppBar(
-          actionColor: Colors.black,
+          actionColor: Colors.amber,
           actionName: "完成",
           onPressed: () async {
             final scale = widget.cropKey.currentState.scale;

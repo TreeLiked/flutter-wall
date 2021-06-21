@@ -74,7 +74,6 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                               child: TextField(
                                 controller: _controller,
                                 focusNode: _focusNode,
-
                                 maxLength: 512,
                                 maxLines: 1,
                                 maxLengthEnforced: false,
@@ -126,6 +125,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
     curReply.body = value;
     Account acc = Account.fromId(Application.getAccountId);
     curReply.account = acc;
+    curReply.bizCode = "1";
 
     await TweetApi.pushReply(curReply, curReply.tweetId).then((result) {
       if (result.isSuccess) {

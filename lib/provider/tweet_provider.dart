@@ -13,7 +13,7 @@ class TweetProvider extends ChangeNotifier {
   List<BaseTweet> get displayTweets => _displayTweets;
 
   void refresh() {
-    print('------------NOTIFY--------------');
+    print('------------TweetProvider NOTIFY--------------');
     notifyListeners();
   }
 

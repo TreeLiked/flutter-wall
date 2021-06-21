@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:iap_app/page/circle/circle_account_list.dart';
 import 'package:iap_app/page/circle/circle_create.dart';
+import 'package:iap_app/page/circle/circle_my.dart';
 import 'package:iap_app/page/common/org_sel_page.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/util/fluro_convert_utils.dart';
@@ -9,6 +10,7 @@ class CircleRouter implements IRouterProvider {
   static const String HOME = "/circle/home";
   static const String CREATE = "/circle/home/create";
   static const String ACC_LIST = "/circle/home/accList";
+  static const String CIRCLE_MY = "/circle/my";
 
   @override
   void initRouter(FluroRouter router) {
@@ -27,6 +29,10 @@ class CircleRouter implements IRouterProvider {
     router.define(ACC_LIST, handler: Handler(handlerFunc: (_, params) {
       int circleId = int.parse(params['circleId'].first);
       return CircleAccountListPage(circleId);
+    }));
+
+    router.define(CIRCLE_MY, handler: Handler(handlerFunc: (_, params) {
+      return CircleMyPage();
     }));
     // router.define(accountManagerPage, handler: Handler(handlerFunc: (_, params) => AccountManagerPage()));
   }

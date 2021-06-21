@@ -7,6 +7,7 @@ import 'package:iap_app/api/api.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
+import 'package:iap_app/model/circle/circle_tweet.dart';
 import 'package:iap_app/model/circle_query_param.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/result.dart';
@@ -38,7 +39,22 @@ class CircleApi {
     return [];
   }
 
-  static Future<Circle> queryCircleById(int circleId) {}
+  static Future<List<Circle>> queryUserCircles() async {
+    String url = Api.API_CIRCLE_LIST_ME;
+    Response response;
+    try {
+      response = await httpUtil.dio.get(url);
+      List<dynamic> jsonData = response.data;
+      if (CollectionUtil.isListEmpty(jsonData)) {
+        return <Circle>[];
+      }
+      List<Circle> tweetList = jsonData.map((m) => Circle.fromJson(m)).toList();
+      return tweetList;
+    } on DioError catch (e) {
+      Api.formatError(e, pop: false);
+    }
+    return [];
+  }
 
   static Future<Circle> queryCircleDetail(int circleId) async {
     String url = Api.API_CIRCLE_QUERY_SINGLE_DETAIL;
@@ -62,8 +78,7 @@ class CircleApi {
   static Future<Map<String, dynamic>> pushCircle(Circle circle) async {
     Result r;
     try {
-      Response response =
-          await httpUtil.dio.post(Api.API_CIRCLE_CREATE, data: circle.toJson());
+      Response response = await httpUtil.dio.post(Api.API_CIRCLE_CREATE, data: circle.toJson());
       return Api.convertResponse(response.data);
     } on DioError catch (e) {
       String error = Api.formatError(e);
@@ -157,6 +172,18 @@ class CircleApi {
     }
   }
 
+  /// tweet rel
+  static Future<Map<String, dynamic>> pushTweet(CircleTweet tweet) async {
+    Result r;
+    try {
+      Response response =
+          await httpUtil.dio.post(Api.API_CIRCLE_TWEET_CRATE, data: tweet.toJson());
+      return Api.convertResponse(response.data);
+    } on DioError catch (e) {
+      String error = Api.formatError(e);
 
-
+      r = Api.genErrorResult(error);
+    }
+    return r.toJson();
+  }
 }

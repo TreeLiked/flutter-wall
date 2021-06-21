@@ -43,12 +43,9 @@ class InviteAPI {
 
   static Future<Map<String, dynamic>> checkMyInvitation() async {
     Response response;
-    String url = Api.API_MY_INVITATION;
     try {
       response = await httpUtil2.dio.get(Api.API_MY_INVITATION);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
-      print('-------------------------------');
       if (json['data'] != null) {
         return json['data'];
       }

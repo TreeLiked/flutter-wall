@@ -199,7 +199,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
         NavigatorUtils.goBack(context);
         // 退出创建页面
         ToastUtil.showToast(context, '创建成功');
-        print(r.data);
+        LogUtil.e(r.data, tag: _TAG);
         _circle.id = Circle.fromJson(r.data).id;
         Navigator.push(
           context,
@@ -375,8 +375,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
         ),
         elevation: 0,
         toolbarOpacity: 1,
-        actions: <Widget>[
-        ],
+        actions: <Widget>[],
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -430,7 +429,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
                         Container(
                           padding: const EdgeInsets.all(5.0),
                           decoration: BoxDecoration(
-                              color: isDark ? ColorConstant.MAIN_BG_DARKER : Color(0xffF5F5F5),
+                              color: isDark ? ColorConstant.TWEET_RICH_BG_DARK : Color(0xffF5F5F5),
                               borderRadius: BorderRadius.circular(7.0)),
                           child: TextField(
                             keyboardAppearance: Theme.of(context).brightness,
@@ -454,7 +453,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
                             style: pfStyle.copyWith(
                                 height: 1.5,
                                 fontSize: SizeConstant.TWEET_FONT_SIZE,
-                                color: Colors.black,
+                                color: isDark ? null : Colors.black,
                                 letterSpacing: 1.1),
                             decoration: new InputDecoration(
                               hintText: '圈子标题，必填',
@@ -480,7 +479,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
                         Container(
                           padding: const EdgeInsets.all(5.0),
                           decoration: BoxDecoration(
-                              color: isDark ? ColorConstant.MAIN_BG_DARKER : Color(0xffF5F5F5),
+                              color: isDark ? ColorConstant.TWEET_RICH_BG_DARK : Color(0xffF5F5F5),
                               borderRadius: BorderRadius.circular(7.0)),
                           child: TextField(
                             keyboardAppearance: Theme.of(context).brightness,
@@ -495,7 +494,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
                             style: pfStyle.copyWith(
                                 height: 1.5,
                                 fontSize: SizeConstant.TWEET_FONT_SIZE,
-                                color: Colors.black,
+                                color: isDark ? null : Colors.black,
                                 letterSpacing: 1.1),
                             decoration: new InputDecoration(
                                 hintText: '圈子简介，可选',
@@ -626,7 +625,7 @@ class _CircleCreatePageState extends State<CircleCreatePage> {
 
   Widget _lineTitle(String text) {
     return Container(
-      padding: const EdgeInsets.only(left: 2.0, bottom: 5.0),
+      padding: const EdgeInsets.only(left: 2.0, bottom: 8.0),
       child: Text('$text', style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.grey)),
     );
   }

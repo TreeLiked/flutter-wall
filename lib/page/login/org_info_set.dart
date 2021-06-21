@@ -41,6 +41,9 @@ class OrgInfoCPage extends StatefulWidget {
 }
 
 class _OrgInfoCPageState extends State<OrgInfoCPage> {
+
+  static const String _TAG = "_OrgInfoCPageState";
+
   List<University> filterList = [];
 
   TextEditingController _controller;
@@ -102,7 +105,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
     } else {
       NavigatorUtils.goBack(context);
       if (res != null) {
-        print(res.toString());
+        prefix0.LogUtil.e(res.toString(), tag: _TAG);
 
         if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
           ToastUtil.showToast(context, '该手机号已被注册，请登录');
@@ -245,10 +248,6 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                           padding: const EdgeInsets.only(top: 37),
                                           child: Text('没有满足条件的数据', style: TextStyles.textGray14));
                                     }
-
-                                    list.forEach((element) {
-                                      print(element.toJson());
-                                    });
                                     return ListView.builder(
                                         itemCount: list.length,
                                         itemBuilder: (context, index) {

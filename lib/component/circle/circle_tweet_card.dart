@@ -15,6 +15,7 @@ import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
 import 'package:iap_app/model/circle/circle_tweet.dart';
@@ -250,7 +251,7 @@ class CircleTweetCard extends StatelessWidget {
   }
 
   void _goAccountDetail(BuildContext context) {
-    Account account = _circleTweet.account;
+    CircleAccount account = _circleTweet.account;
     NavigatorUtils.push(
         context,
         Routes.accountProfile +

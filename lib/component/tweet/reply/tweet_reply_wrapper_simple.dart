@@ -6,6 +6,7 @@ import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -100,12 +101,16 @@ class TweetReplyWrapperSimple extends StatelessWidget {
             ]),
       );
     }
+    TweetTypeEntity typeEntity = tweetTypeMap[tweet.type];
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
       decoration: BoxDecoration(
-          color: ThemeUtils.isDark(context)
-              ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
-              : ColorConstant.TWEET_RICH_BG_2,
+          color: typeEntity.renderBg
+              ? null
+              : ThemeUtils.isDark(context)
+                  ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                  : ColorConstant.TWEET_RICH_BG_2,
           borderRadius: BorderRadius.circular(5.0)),
       margin: const EdgeInsets.only(bottom: 8.0),
       child: ListView(

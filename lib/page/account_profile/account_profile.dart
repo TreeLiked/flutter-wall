@@ -260,26 +260,24 @@ class _AccountProfileState extends State<AccountProfile> {
                               ),
                             ),
                             background: Stack(children: <Widget>[
-                              // !isDark
-                              //     ? Utils.showNetImage(
-                              //         widget.avatarUrl,
-                              //         width: double.infinity,
-                              //         height: double.infinity,
-                              //         fit: BoxFit.cover,
-                              //       )
-                              //     : Gaps.empty,
-                              // BackdropFilter(
-                              //   filter: ImageFilter.blur(
-                              //     sigmaY: 0,
-                              //     sigmaX: 0,
-                              //   ),
-                              //   child: Container(
-                              //     decoration: BoxDecoration(
-                              //         color: isDark ? ColorConstant.MAIN_BG_DARK : Color(0xfffffeff)),
-                              //     width: double.infinity,
-                              //     height: double.infinity,
-                              //   ),
-                              // ),
+                              Utils.showNetImage(
+                                widget.avatarUrl,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                              BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaY: 12,
+                                  sigmaX: 12,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: isDark ? ColorConstant.MAIN_BG_DARK : Colors.white12),
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                              ),
                             ])),
                       )),
                   SliverToBoxAdapter(
@@ -565,7 +563,8 @@ class _AccountProfileState extends State<AccountProfile> {
                 margin: const EdgeInsets.only(right: 10.0),
                 child: Text(
                   key,
-                  style: pfStyle.copyWith(fontSize: Dimens.font_sp15, color: Colors.grey, fontWeight: FontWeight.w500),
+                  style: pfStyle.copyWith(
+                      fontSize: Dimens.font_sp15, color: Colors.grey, fontWeight: FontWeight.w500),
                 ),
               ),
               value,

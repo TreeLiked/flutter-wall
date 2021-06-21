@@ -1,11 +1,14 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:iap_app/api/circle.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/dialog/ab_dialog.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/common-widget/sticky_row_delegate.dart';
@@ -15,6 +18,7 @@ import 'package:iap_app/component/custom_header.dart';
 import 'package:iap_app/component/flexible_detail_bar.dart';
 import 'package:iap_app/component/satck_img_conatiner.dart';
 import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
 import 'package:iap_app/model/circle/circle_tweet.dart';
 import 'package:iap_app/model/gender.dart';
@@ -31,6 +35,7 @@ import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/number_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -124,9 +129,7 @@ class _CircleHomeState extends State<CircleHome> {
                 centerTitle: true,
                 title: MyCustomHeader(_linkHeaderNotifier),
                 expandedHeight: 230.0,
-
-                snap: false,
-                floating: false,
+                pinned: true,
                 elevation: 0.0,
 
                 leading: IconButton(
@@ -141,59 +144,98 @@ class _CircleHomeState extends State<CircleHome> {
                   color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
                   child: ClipRRect(
                     child: FlexibleDetailBar(
+
                       content: Container(
-                        padding: const EdgeInsets.only(top: kToolbarHeight, left: 20.0, right: 20.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              '${_circle == null ? '正在加载..' : _circle.brief}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: pfStyle.copyWith(
-                                  fontSize: Dimens.font_sp20, color: Colors.white, letterSpacing: 1.1),
-                            ),
-                            Gaps.vGap10,
-                            Container(
-                              alignment: Alignment.center,
-                              child: ExtendedText("${_circle == null ? '' : _circle.desc}",
-                                  maxLines: 2,
-                                  textAlign: TextAlign.center,
-                                  selectionEnabled: true,
-                                  overflowWidget: TextOverflowWidget(
-                                      child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                                    const Text(' \u2026 '),
-                                    GestureDetector(
-                                        child: Text('查看更多',
-                                            style: pfStyle.copyWith(
-                                                fontSize: Dimens.font_sp13, color: Colors.white70)),
-                                        onTap: () => _displayDetail()),
-                                  ])),
-                                  softWrap: true,
-                                  overflow: TextOverflow.fade,
-                                  style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70)),
-                            ),
-                            Gaps.vGap20,
-                            _meJoined == null
-                                ? Gaps.empty
-                                : Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                          padding:
-                                              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-                                          decoration: BoxDecoration(
-                                            color: _meJoined ? Colors.green.withAlpha(190) : Colors.white24,
-                                            borderRadius: BorderRadius.circular(8.0),
+                          height: 100,
+                          margin: const EdgeInsets.only(
+                              top: kToolbarHeight, left: 20.0, right: 20.0, bottom: 30.0),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                _circle == null
+                                    ? Center(
+                                        child: Text('正在加载...'),
+                                      )
+                                    : Row(children: [
+                                        ClipRRect(
+                                          child: CachedNetworkImage(
+                                            imageUrl: _circle.cover,
+                                            fit: BoxFit.cover,
+                                            width: 120,
+                                            height: 120,
                                           ),
-                                          child: _meJoined ? _getCreateContentItem() : _getApplyJoinItem()),
-                                    ],
-                                  )
-                          ],
-                        ),
-                      ),
+                                          borderRadius: BorderRadius.circular(8.0),
+                                        ),
+                                        Gaps.hGap20,
+                                        Expanded(
+                                          child: Column(
+                                              children: [
+                                                Text('${_circle == null ? '正在加载..' : _circle.brief}',
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: pfStyle.copyWith(
+                                                        fontSize: Dimens.font_sp17,
+                                                        color: Colors.white,
+                                                        letterSpacing: 1.1)),
+                                                Gaps.vGap10,
+                                                RichText(
+                                                    maxLines: 1,
+                                                    softWrap: true,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    text: TextSpan(children: [
+                                                      WidgetSpan(
+                                                          child: (_circle != null &&
+                                                                  _circle.creator != null &&
+                                                                  _circle.creator.avatarUrl != null)
+                                                              ? AccountAvatar(
+                                                                  cache: true,
+                                                                  avatarUrl: _circle.creator.avatarUrl,
+                                                                  size: 23)
+                                                              : Gaps.empty),
+                                                      TextSpan(
+                                                          text:
+                                                              " ${_circle == null ? '' : _circle.desc}",
+                                                          style: pfStyle.copyWith(
+                                                              fontSize: Dimens.font_sp14,
+                                                              color: Colors.white70),
+                                                          recognizer: TapGestureRecognizer()
+                                                            ..onTap = () => _displayDetail()),
+                                                    ])),
+                                                Gaps.vGap10,
+                                                Text(
+                                                    '浏览${NumberUtil.calCount(_circle.view)}次，${NumberUtil.calCount(_circle.participants)}人已加入',
+                                                    style: pfStyle.copyWith(
+                                                        fontSize: Dimens.font_sp13, color: Colors.white70)),
+                                                Gaps.vGap10,
+                                                Container(
+                                                    child: _meJoined == null
+                                                        ? Gaps.empty
+                                                        : Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              Container(
+                                                                  padding: const EdgeInsets.symmetric(
+                                                                      horizontal: 10.0, vertical: 4.0),
+                                                                  decoration: BoxDecoration(
+                                                                    color: _meJoined
+                                                                        ? Colors.green.withAlpha(180)
+                                                                        : Colors.white24,
+                                                                    borderRadius: BorderRadius.circular(8.0),
+                                                                  ),
+                                                                  child: _meJoined
+                                                                      ? _getCreateContentItem()
+                                                                      : _getApplyJoinItem()),
+                                                            ],
+                                                          ))
+                                              ],
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max),
+                                        )
+                                      ]),
+                              ])),
                       background: _circle == null
                           ? Gaps.empty
                           : Stack(
@@ -201,8 +243,8 @@ class _CircleHomeState extends State<CircleHome> {
                                 Utils.showFadeInImage(_circle.cover, BorderRadius.circular(0.0), cache: true),
                                 BackdropFilter(
                                   filter: ImageFilter.blur(
-                                    sigmaY: 3,
-                                    sigmaX: 3,
+                                    sigmaY: 5,
+                                    sigmaX: 5,
                                   ),
                                   child: Container(
                                     width: double.infinity,
@@ -259,6 +301,7 @@ class _CircleHomeState extends State<CircleHome> {
                             // completeDuration: Duration(milliseconds: 5000),
                             enableHapticFeedback: true,
                           ),
+
                           firstRefresh: false,
                           slivers: <Widget>[
                             SliverPersistentHeader(
@@ -295,11 +338,11 @@ class _CircleHomeState extends State<CircleHome> {
                                   delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
                                     CircleTweet ct = new CircleTweet();
                                     ct.sentTime = DateTime.now();
-                                    ct.account = Application.getAccount..gender = Gender.FEMALE.name;
+                                    ct.account = CircleAccount()..gender = Gender.FEMALE.name;
                                     ct.body =
                                         'Flutter - Wrap text on overflow, like insert ellipsis or fade ...' *
                                             (index % 2 == 1 ? 1 : 10);
-                                    ct.view = 2001;
+                                    ct.views = 2001;
                                     ct.medias = [
                                       new Media.fromUrl(Media.MODULE_CIRCLE, Application.getAccount.avatarUrl)
                                         ..mediaType = Media.TYPE_IMAGE,
@@ -431,7 +474,12 @@ class _CircleHomeState extends State<CircleHome> {
 
   Widget _getCreateContentItem() {
     return InkWell(
-        onTap: () => NavigatorUtils.push(context, CircleRouter.CREATE, transitionType: TransitionType.fadeIn),
+        onTap: () => NavigatorUtils.push(
+            context,
+            Routes.create +
+                Routes.assembleArgs(
+                    {"type": 1, "title": "发布内容", "hintText": "分享到圈子"}),
+            transitionType: TransitionType.fadeIn),
         child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
             child: Row(mainAxisSize: MainAxisSize.min, children: [

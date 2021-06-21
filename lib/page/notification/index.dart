@@ -73,12 +73,12 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       checkNotification();
     });
-    _fetchLatestMessage();
-
     _subscription = wsCommandEventBus.on<ImDTO>().listen((ImDTO data) {
       int c = data.command;
-      if (c == ImDTO.COMMAND_TWEET_PRAISED || c == ImDTO.COMMAND_TWEET_REPLIED) {
-        _fetchLatestMessageAndCount();
+      if (c == ImDTO.COMMAND_TWEET_PRAISED ||
+          c == ImDTO.COMMAND_TWEET_REPLIED ||
+          c == ImDTO.COMMAND_PULL_MSG) {
+        _fetchLatestMessage();
       }
     });
     _subscription.resume();
@@ -90,29 +90,43 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   }
 
   _fetchLatestMessageAndCount() async {
+    _fetchLatestMessage();
     _refreshController.refreshCompleted();
   }
 
   _fetchLatestMessage() async {
-    MessageUtil.queryTweetInterMsgCnt(context).then((value) {
-      if (value > 0) {
-        _fetchLatestInteractionMsg();
-      }
-    });
-    MessageUtil.querySysMsgCnt(context).then((value) {
-      if (value > 0) {
-        _fetchLatestSystemMsg();
-      }
-    });
-    MessageUtil.queryCircleMsgCntTotal(context).then((value) {
-      if (value > 0) {
-        _fetchLatestCircleMsg();
-      }
+    MessageUtil.batchQueryMsgCnt(
+            context, [MessageCategory.INTERACTION, MessageCategory.SYSTEM, MessageCategory.CIRCLE])
+        .then((Map<String, int> cateCodeMsgCnt) {
+      List<String> codes = [];
+      cateCodeMsgCnt.forEach((code, msgCnt) {
+        if (msgCnt > 0) {
+          codes.add(code);
+        }
+      });
+      MessageAPI.batchFetchLatestMessage(codes).then((Map<String, AbstractMessage> cateCodeMsg) {
+        cateCodeMsg.forEach((code, msg) {
+          MessageCategory c = codeMsgCategoryMap[code];
+          if (c == MessageCategory.INTERACTION) {
+            _fetchLatestInteractionMsg(msg: msg);
+          } else if (c == MessageCategory.SYSTEM) {
+            _fetchLatestSystemMsg(msg: msg);
+          } else if (c == MessageCategory.CIRCLE) {
+            _fetchLatestCircleMsg(msg: msg);
+          }
+        });
+      });
     });
   }
 
   // 查询的具体的系统消息内容
-  Future<void> _fetchLatestSystemMsg() async {
+  Future<void> _fetchLatestSystemMsg({AbstractMessage msg}) async {
+    if (msg != null) {
+      setState(() {
+        this._latestSystemMsg = msg;
+      });
+      return;
+    }
     MessageAPI.fetchLatestMessage(MessageCategory.SYSTEM).then((msg) {
       setState(() {
         this._latestSystemMsg = msg;
@@ -121,7 +135,13 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   }
 
   // 查询的具体的互动消息内容
-  Future<void> _fetchLatestInteractionMsg() async {
+  Future<void> _fetchLatestInteractionMsg({AbstractMessage msg}) async {
+    if (msg != null) {
+      setState(() {
+        this._latestInteractionMsg = msg;
+      });
+      return;
+    }
     MessageAPI.fetchLatestMessage(MessageCategory.INTERACTION).then((msg) {
       if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
         setState(() {
@@ -132,7 +152,13 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
   }
 
   // 查询最新的圈子内容
-  Future<void> _fetchLatestCircleMsg() async {
+  Future<void> _fetchLatestCircleMsg({AbstractMessage msg}) async {
+    if (msg != null) {
+      setState(() {
+        this._latestCircleMsg = msg;
+      });
+      return;
+    }
     AbstractMessage msg1 = await MessageAPI.fetchLatestMessage(MessageCategory.CIRCLE_INTERACTION);
     AbstractMessage msg2 = await MessageAPI.fetchLatestMessage(MessageCategory.CIRCLE_SYS);
     if (msg1 == null) {

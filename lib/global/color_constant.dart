@@ -52,13 +52,13 @@ class ColorConstant {
 
   // 推文富链接背景颜色
   static const Color TWEET_RICH_BG = Color(0xffF5F4F5);
-  static const Color TWEET_RICH_BG_DARK = Color(0xff383838);
+  static const Color TWEET_RICH_BG_DARK = Color(0xff202122);
 
   // 推文富链接背景颜色稍浅
   static const Color TWEET_RICH_BG_2 = Color(0xffF8F7F8);
 
   static const Color MAIN_BG = Color(0xffFFFEFF);
-  static const Color MAIN_BG_DARK = Color(0xff272829);
+  static const Color MAIN_BG_DARK = Color(0xff121314);
   static const Color MAIN_BG_DARKER = Color(0xff212121);
 
   static const Color TWEET_TYPE_TEXT_DARK = Colors.white60;
@@ -66,7 +66,7 @@ class ColorConstant {
   static const Color DEFAULT_BACK_COLOR = Color(0xffeef2f6);
 
   static const Color DEFAULT_BAR_BACK_COLOR = Color(0xfff9f9f9);
-  static const Color DEFAULT_BAR_BACK_COLOR_DARK = Color(0xff333333);
+  static const Color DEFAULT_BAR_BACK_COLOR_DARK = Color(0xff202122);
 
   static const Color QQ_BLUE = Color(0xff19a9fc);
   static const Color LINK = Color(0xff02376a);

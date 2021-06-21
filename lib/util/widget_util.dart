@@ -2,8 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/res/dimens.dart';
+import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/image_utils.dart';
+import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/theme_utils.dart';
 
 class WidgetUtil {
   static Widget getAsset(String path, {double size = 20, bool click = false, final callback}) {
@@ -66,6 +72,30 @@ class WidgetUtil {
 
   static Widget getEmptyContainer({double height = 0}) {
     return Container(height: height);
+  }
+
+  static Widget getEmptyView(String lightIconPath, {String dartIconPath, String text}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Gaps.vGap50,
+        SizedBox(
+            height: ScreenUtil().setHeight(500),
+            child: LoadAssetImage(
+              ThemeUtils.isDark(Application.context) ? (dartIconPath ?? lightIconPath) : lightIconPath,
+              fit: BoxFit.cover,
+            )),
+        StringUtil.isEmpty(text)
+            ? Gaps.empty
+            : Container(
+                margin: const EdgeInsets.only(top: 16.0),
+                child: Text('快去加入或创建一个圈子吧 ～',
+                    style:
+                        pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15, letterSpacing: 1.1)))
+      ],
+    );
   }
 }
 
@@ -132,8 +162,14 @@ class LoadAssetSvg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset("assets/svgs/$svgName.$format",
-        width: width, height: height, fit: fit, color: color, alignment: Alignment.bottomRight,);
+    return SvgPicture.asset(
+      "assets/svgs/$svgName.$format",
+      width: width,
+      height: height,
+      fit: fit,
+      color: color,
+      alignment: Alignment.bottomRight,
+    );
     return Image.asset(
       ImageUtils.getIconPath(svgName, format: format),
       height: height,

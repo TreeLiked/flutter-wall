@@ -5,16 +5,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iap_app/api/circle.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/my_button.dart';
+import 'package:iap_app/common-widget/my_flat_button.dart';
 import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
+import 'package:iap_app/model/circle/circle_tweet.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -39,7 +43,11 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:nine_grid_view/nine_grid_view.dart';
 
 class CreatePage extends StatefulWidget {
-  final String title = "发布内容";
+  final String type;
+  final String title;
+  final String hintText;
+
+  CreatePage({this.type, this.title, this.hintText});
 
   @override
   State<StatefulWidget> createState() {
@@ -57,6 +65,9 @@ class _CreatePageState extends State<CreatePage> {
 
   // 是否匿名
   bool _anonymous = false;
+
+  // 是否匿名
+  bool _displayOnlyCircle = false;
 
   String _typeText = "选择标签";
 
@@ -93,6 +104,11 @@ class _CreatePageState extends State<CreatePage> {
   // 是否当前拖拽的图片是否可以删除
   bool _canDelete = false;
 
+  // 是否是校园推文，否则圈子推文
+  bool _schoolTweet = true;
+
+  bool _isDark = false;
+
   void _updatePushBtnState() {
     if (((_controller.text.length > 0 && _controller.text.length < 256) ||
             !CollectionUtil.isListEmpty(this.pics)) &&
@@ -117,7 +133,7 @@ class _CreatePageState extends State<CreatePage> {
     UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX_CREATE);
   }
 
-  void _assembleAndPushTweet() async {
+  void _assembleAndPushSchoolTweet() async {
     if (_controller.text.length >= GlobalConfig.TWEET_MAX_LENGTH) {
       ToastUtil.showToast(context, '内容超出最大字符限制');
       return;
@@ -226,6 +242,109 @@ class _CreatePageState extends State<CreatePage> {
     _updatePushBtnState();
   }
 
+  void _assembleAndCircleTweet() async {
+    if (_controller.text.length >= GlobalConfig.TWEET_MAX_LENGTH) {
+      ToastUtil.showToast(context, '内容超出最大字符限制');
+      return;
+    }
+
+    double totalSize = 0;
+    if (CollectionUtil.isListNotEmpty(this.pics)) {
+      Utils.showDefaultLoadingWithBounds(context);
+      for (int i = 0; i < this.pics.length; i++) {
+        ByteData bd = await this.pics[i].getByteData();
+        if (bd != null) {
+          int byte = bd.lengthInBytes;
+          double mb = byte / 1024 / 1024;
+          totalSize += mb;
+        }
+      }
+      NavigatorUtils.goBack(context);
+    }
+
+    if (totalSize > OssConstant.TWEET_MAX_SIZE_ONCE) {
+      ToastUtil.showToast(context, '图片过大');
+      return;
+    }
+
+    _focusNode?.unfocus();
+    setState(() {
+      this._isPushBtnEnabled = false;
+      this._publishing = true;
+    });
+    CircleTweet _baseTweet = CircleTweet();
+    _baseTweet.sentTime = DateTime.now();
+    bool hasError = false;
+
+    if (CollectionUtil.isListNotEmpty(this.picDragBeans)) {
+      Utils.showDefaultLoadingWithBounds(context, text: '上传媒体');
+      for (int i = 0; i < this.picDragBeans.length; i++) {
+        ByteData bd = await this.picDragBeans[i].getByteData();
+        if (bd == null) {
+          NavigatorUtils.goBack(context);
+          ToastUtil.showToast(context, '图片上传失败');
+          return;
+        }
+        try {
+          String result =
+              await OssUtil.uploadImage(this.pics[i].name, bd.buffer.asUint8List(), OssUtil.DEST_CIRCLE);
+          if (result != "-1") {
+            if (_baseTweet.medias == null) {
+              _baseTweet.medias = List();
+            }
+            // TODO MEDIA
+            Media m = new Media();
+            m.module = Media.MODULE_CIRCLE;
+            m.name = this.pics[i].name;
+            m.mediaType = Media.TYPE_IMAGE;
+            m.url = result;
+            m.index = i;
+            _baseTweet.medias.add(m);
+          } else {
+            hasError = true;
+            break;
+          }
+        } catch (exp) {
+          hasError = true;
+          LogUtil.e("$exp", tag: _TAG);
+        } finally {
+          LogUtil.e("第$i张图片上传完成", tag: _TAG);
+        }
+      }
+      Navigator.pop(context);
+    }
+    Utils.showDefaultLoadingWithBounds(context, text: '正在发布');
+    if (!hasError) {
+      _baseTweet.displayOnlyCircle = _displayOnlyCircle;
+      _baseTweet.body = _controller.text;
+      CircleAccount ta = CircleAccount();
+      Account temp = Application.getAccount;
+      ta.id = temp.id ?? "";
+      _baseTweet.account = ta;
+      _baseTweet.orgId = Application.getOrgId;
+      LogUtil.e("Tweet to push: ${_baseTweet.toJson()}", tag: _TAG);
+
+      CircleApi.pushTweet(_baseTweet).then((result) {
+        Navigator.of(context).pop();
+        Result r = Result.fromJson(result);
+        LogUtil.e("Tweet push result: ${r.toJson()}", tag: _TAG);
+
+        if (r.isSuccess) {
+          NavigatorUtils.goBack(context);
+        } else {
+          ToastUtil.showToast(context, r.message);
+        }
+      });
+    } else {
+      Navigator.pop(context);
+      ToastUtil.showToast(context, '发布出错，请稍后重试');
+    }
+    setState(() {
+      this._publishing = false;
+    });
+    _updatePushBtnState();
+  }
+
   void _selectTypeCallback(String typeName) {
     if (!StringUtil.isEmpty(typeName)) {
       setState(() {
@@ -245,6 +364,12 @@ class _CreatePageState extends State<CreatePage> {
   void _reverseEnableReply() {
     setState(() {
       this._enableReply = !this._enableReply;
+    });
+  }
+
+  void _reverseDisplayOnlyCircle() {
+    setState(() {
+      this._displayOnlyCircle = !this._displayOnlyCircle;
     });
   }
 
@@ -354,58 +479,6 @@ class _CreatePageState extends State<CreatePage> {
         ));
   }
 
-  // _buildSingleTypeItem(TweetTypeEntity entity, bool selected) {
-  //   return GestureDetector(
-  //       behavior: HitTestBehavior.opaque,
-  //       onTap: () {
-  //         setState(() {
-  //           _selectTypeCallback(entity.name);
-  //           NavigatorUtils.goBack(context);
-  //         });
-  //       },
-  //       child: Container(
-  //         width: double.infinity,
-  //         margin: const EdgeInsets.only(bottom: 5.0),
-  //         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
-  //         alignment: Alignment.centerLeft,
-  //         decoration: selected
-  //             ? BoxDecoration(
-  //                 color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc),
-  //                 borderRadius: const BorderRadius.all(Radius.circular(7.9)),
-  //                 border: new Border.all(
-  //                     color: ThemeUtils.isDark(context) ? Colors.black : Color(0xffdcdcdc), width: 0.5),
-  //               )
-  //             : null,
-  //         child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.start,
-  //           children: <Widget>[
-  //             Container(
-  //               margin: const EdgeInsets.only(right: 5.0),
-  //               child: Icon(
-  //                 entity.iconData,
-  //                 size: 40,
-  //                 color: entity.iconColor,
-  //               ),
-  //             ),
-  //             Expanded(
-  //                 child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //               children: [
-  //                 Text(entity.zhTag,
-  //                     style: pfStyle.copyWith(
-  //                         fontSize: Dimens.font_sp15, color: selected ? entity.color : null)),
-  //                 Text(entity.intro,
-  //                     style: pfStyle.copyWith(
-  //                         fontSize: Dimens.font_sp13p5, color: selected ? entity.color : Colors.grey)),
-  //                 Gaps.vGap5,
-  //               ],
-  //             ))
-  //           ],
-  //         ),
-  //       ));
-  // }
-
   Future<void> loadAssets() async {
     List<Asset> resultList = List<Asset>();
 
@@ -463,9 +536,11 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   Widget build(BuildContext context) {
-    LogUtil.e("create page build", tag: _TAG);
+    LogUtil.e("create page build ${widget.type}", tag: _TAG);
+    _isDark = ThemeUtils.isDark(context);
 
     sw = Application.screenWidth;
+    _schoolTweet = "0" == widget.type;
 
     singleImageWidth = (sw - 10 - spacing * 3) / 3;
     bool isDark = ThemeUtils.isDark(context);
@@ -482,12 +557,8 @@ class _CreatePageState extends State<CreatePage> {
             style: TextStyle(fontSize: Dimens.font_sp16, fontWeight: FontWeight.w400, letterSpacing: 1.2)),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Text("取消",
-              style: TextStyle(
-                color: Theme.of(context).textTheme.subhead.color,
-              )),
-        ),
+            onPressed: () => Navigator.pop(context),
+            icon: Text("取消", style: pfStyle.copyWith(color: Theme.of(context).textTheme.subhead.color))),
         elevation: 0,
         toolbarOpacity: 0.8,
         actions: <Widget>[
@@ -499,11 +570,13 @@ class _CreatePageState extends State<CreatePage> {
               borderRadius: BorderRadius.circular(16.0),
               color: _isPushBtnEnabled && !_publishing ? Colors.amber : null,
             ),
-            child: FlatButton(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-              onPressed: _isPushBtnEnabled && !_publishing
+            child: MyFlatButton(
+              '发表',
+              Colors.white,
+              fillColor: Colors.amber,
+              onTap: _isPushBtnEnabled && !_publishing
                   ? () {
-                      this._assembleAndPushTweet();
+                      this._assembleAndPushSchoolTweet();
                     }
                   : () {
                       if (StringUtil.isEmpty(_typeName)) {
@@ -516,15 +589,7 @@ class _CreatePageState extends State<CreatePage> {
                       }
                       ToastUtil.showToast(context, "正在上传内容，请稍后");
                     },
-              child: Text(
-                '发表',
-                style: TextStyle(
-                  color: _isPushBtnEnabled ? Colors.white : Colors.grey,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              disabledTextColor: Colors.grey,
-              textColor: Colors.blue,
+              disabled: !_isPushBtnEnabled || _publishing,
             ),
           )
         ],
@@ -570,7 +635,7 @@ class _CreatePageState extends State<CreatePage> {
                                 color: Colors.black,
                                 letterSpacing: 1.1),
                             decoration: new InputDecoration(
-                                hintText: '分享校园新鲜事',
+                                hintText: widget.hintText,
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.all(5),
                                 counter: Text(
@@ -660,84 +725,7 @@ class _CreatePageState extends State<CreatePage> {
                           ),
                         ),
 
-                        Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                          constraints: BoxConstraints(
-                            maxHeight: Application.screenHeight * 0.1,
-                          ),
-                          child: Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () => _reverseEnableReply(),
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 10),
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xffF5F5F5),
-                                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                                  child: Wrap(
-                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                        _enableReply ? Icons.lock_open : Icons.lock,
-                                        color: _enableReply ? Color(0xff87CEEB) : Colors.grey,
-                                        size: 16,
-                                      ),
-                                      Text(" ${_enableReply ? '允许评论' : '禁止评论'}",
-                                          style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => _reverseAnonymous(),
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 10),
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xffF5F5F5),
-                                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                                  child: Wrap(
-                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                        _anonymous ? Icons.visibility_off : Icons.visibility,
-                                        color: _anonymous ? Color(0xff87CEEB) : Colors.grey,
-                                        size: 16,
-                                      ),
-                                      Text(
-                                        " ${_anonymous ? '匿名' : '公开'}",
-                                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () => _forwardSelPage(),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: const BoxDecoration(
-                                          color: Color(0xffF5F5F5),
-                                          borderRadius: BorderRadius.all(Radius.circular(15))),
-                                      child: Text(
-                                        "# $_typeText",
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            color:
-                                                !StringUtil.isEmpty(_typeName) ? Colors.blue : Colors.grey),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )),
-                            ],
-                          ),
-                        ),
+                        _renderTweetExtraOpt()
                         // Container(
                         //   margin: EdgeInsets.only(
                         //       top: picWidgets.length < 4
@@ -760,16 +748,6 @@ class _CreatePageState extends State<CreatePage> {
                 //   backgroundColor: _canDelete ? Colors.red : Colors.white,
                 //   child: Icon(_canDelete ? Icons.delete : Icons.delete_outline,
                 //       color: _canDelete ? Colors.white : Colors.grey),
-                // )
-                // Positioned(
-                //   bottom: 0,
-                //   left: 0,
-                //   child: Container(
-                //     width: sw,
-                //     alignment: Alignment.bottomCenter,
-                //     child: Text('请勿发布广告、色情、政治等标签无关或违法内容\n否则您的账号会被永久封禁',
-                //         textAlign: TextAlign.center, style: TextStyles.textGray12, softWrap: true),
-                //   ),
                 // )
               )),
           moveAction == MotionEvent.actionUp
@@ -794,7 +772,7 @@ class _CreatePageState extends State<CreatePage> {
                               letterSpacing: 2,
                               fontSize: Dimens.font_sp15)),
                     ),
-                  ))
+                  )),
         ],
       ),
     );
@@ -893,6 +871,114 @@ class _CreatePageState extends State<CreatePage> {
             ),
           ),
         ));
+  }
+
+  Widget _renderTweetExtraOpt() {
+    if (!_schoolTweet) {
+      return Container(
+        margin: const EdgeInsets.only(top: 20.0),
+        constraints: BoxConstraints(
+          maxHeight: Application.screenHeight * 0.1,
+        ),
+        child: Row(
+          children: <Widget>[
+            GestureDetector(
+              onTap: () => _reverseDisplayOnlyCircle(),
+              child: Container(
+                margin: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(color: Color(0xffF5F5F5), borderRadius: BorderRadius.circular(8.0)),
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      _displayOnlyCircle ? Icons.visibility_off : Icons.visibility,
+                      color: _displayOnlyCircle ? Colors.grey : Colors.lightGreen,
+                      size: 16,
+                    ),
+                    Text(
+                      " ${_displayOnlyCircle ? '仅圈内可见' : '任何人可见'}",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return Container(
+      margin: const EdgeInsets.only(top: 20.0, left: 5.0, right: 5.0),
+      constraints: BoxConstraints(
+        maxHeight: Application.screenHeight * 0.1,
+      ),
+      child: Row(
+        children: <Widget>[
+          GestureDetector(
+            onTap: () => _reverseEnableReply(),
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: Color(0xffF5F5F5), borderRadius: BorderRadius.circular(8.0)),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    _enableReply ? Icons.lock_open : Icons.lock,
+                    color: _enableReply ? Color(0xff87CEEB) : Colors.grey,
+                    size: 16,
+                  ),
+                  Text(" ${_enableReply ? '允许评论' : '禁止评论'}",
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => _reverseAnonymous(),
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: Color(0xffF5F5F5), borderRadius: BorderRadius.circular(8.0)),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    _anonymous ? Icons.visibility_off : Icons.visibility,
+                    color: _anonymous ? Color(0xff87CEEB) : Colors.grey,
+                    size: 16,
+                  ),
+                  Text(
+                    " ${_anonymous ? '匿名' : '公开'}",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () => _forwardSelPage(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration:
+                      BoxDecoration(color: Color(0xffF5F5F5), borderRadius: BorderRadius.circular(8.0)),
+                  child: Text(
+                    "# $_typeText",
+                    style: TextStyle(
+                        fontSize: 12, color: !StringUtil.isEmpty(_typeName) ? Colors.blue : Colors.grey),
+                  ),
+                ),
+              ),
+            ],
+          )),
+        ],
+      ),
+    );
   }
 }
 

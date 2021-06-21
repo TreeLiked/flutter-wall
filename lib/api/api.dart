@@ -18,7 +18,7 @@ class Api {
   static const String API_BASE_WS_DEV = "ws://127.0.0.1:8088/wallServer";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
-  static const String API_BASE_INF_DEV = "http://192.168.0.104:8088";
+  static const String API_BASE_INF_DEV = "http://192.168.0.103:8088";
 
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
   static const String API_BASE_MEM_DEV = "http://192.168.18.180:9002";
@@ -64,6 +64,7 @@ class Api {
 
   // circle relative start
   static const String API_CIRCLE_INDEX_LIST = Api.API_BASE_INF_URL + "/circle/list.json";
+  static const String API_CIRCLE_LIST_ME = Api.API_BASE_INF_URL + "/circle/listM.json";
   static const String API_CIRCLE_CREATE = Api.API_BASE_INF_URL + "/circle/add.do";
   static const String API_CIRCLE_QUERY_SINGLE = Api.API_BASE_INF_URL + "/circle/listSingle.json";
   static const String API_CIRCLE_QUERY_SINGLE_DETAIL = Api.API_BASE_INF_URL + "/circle/listSingle.json";
@@ -74,6 +75,8 @@ class Api {
   static const String API_CIRCLE_ACCOUNT_SINGLE = Api.API_BASE_INF_URL + "/circleacc/me.json";
 
   static const String API_CIRCLE_UPDATE_ROLE = Api.API_BASE_INF_URL + "/circleacc/updateUserRole.do";
+
+  static const String API_CIRCLE_TWEET_CRATE = Api.API_BASE_INF_URL + "/circletweet/add.do";
 
   // sms
   static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";
@@ -131,8 +134,10 @@ class Api {
   static const String API_NEW_TWEET_CNT = API_BASE_INF_URL + "/message/listNewTweetCount.json";
   static const String API_MSG_SYSTEM_CNT = API_BASE_INF_URL + "/message/systemAlertCount.json";
   static const String API_MSG_CNT = API_BASE_INF_URL + "/message/alertCnt.json";
+  static const String API_MSG_CNT_BATCH = API_BASE_INF_URL + "/message/batchAlertCnt.json";
 
   static const String API_MSG_LATEST = API_BASE_INF_URL + "/message/latest.json";
+  static const String API_MSG_LATEST_BATCH = API_BASE_INF_URL + "/message/batchLatest.json";
 
   // subscribe
   static const String API_TWEET_TYPE_SUBSCRIBE = API_BASE_INF_URL + "/tt/s/s.action";

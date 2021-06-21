@@ -31,6 +31,8 @@ class TweetReply {
   DateTime gmtCreated;
   DateTime sentTime;
 
+  String bizCode;
+
   TweetReply();
 
   Map<String, dynamic> toJson() => _$TweetReplyToJson(this);

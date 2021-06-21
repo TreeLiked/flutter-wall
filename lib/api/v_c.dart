@@ -37,7 +37,6 @@ class VCAPI {
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json.toString());
       bool success = json["isSuccess"];
       dynamic json2 = json["data"];
       if (success) {

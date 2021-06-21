@@ -15,11 +15,10 @@ class ThemeProvider extends ChangeNotifier {
   };
 
   void syncTheme() {
-    // String theme = SpUtil.getString(SharedConstant.THEME);
-    // if (theme.isNotEmpty && theme != themes[Themes.SYSTEM]) {
-    //   notifyListeners();
-    // }
-    setTheme(Themes.DARK);
+    String theme = SpUtil.getString(SharedConstant.THEME);
+    if (theme.isNotEmpty && theme != themes[Themes.SYSTEM]) {
+      notifyListeners();
+    }
   }
 
   void setTheme(Themes theme) {

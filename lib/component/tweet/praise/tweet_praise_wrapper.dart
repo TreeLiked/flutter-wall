@@ -6,6 +6,7 @@ import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -83,8 +84,8 @@ class TweetPraiseWrapper extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
         decoration: BoxDecoration(
           color: ThemeUtils.isDark(context)
-              ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
-              : ColorConstant.TWEET_RICH_BG,
+                  ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                  : ColorConstant.TWEET_RICH_BG_2,
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: Wrap(

@@ -17,6 +17,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/circle/circle.dart';
 import 'package:iap_app/model/circle_query_param.dart';
 import 'package:iap_app/part/circle/circle_main.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/circle_router.dart';
@@ -45,7 +46,7 @@ class _CircleMainNewState extends State<CircleMainNew>
   ScrollController _scrollController = ScrollController();
 
   // 主标题展示"精彩"/"推荐"
-  bool showRecommendTitleText = false;
+  bool hideRecommendTitleText = false;
 
   // 连接通知器
   LinkHeaderNotifier _headerNotifier;
@@ -87,9 +88,9 @@ class _CircleMainNewState extends State<CircleMainNew>
   }
 
   _scrollListener() {
-    if (showRecommend != showRecommendTitleText) {
+    if (showRecommend != hideRecommendTitleText) {
       setState(() {
-        showRecommendTitleText = showRecommend;
+        hideRecommendTitleText = showRecommend;
       });
     }
   }
@@ -112,6 +113,7 @@ class _CircleMainNewState extends State<CircleMainNew>
 
     return SafeArea(
         bottom: false,
+        top: false,
         child: Scaffold(
             body: NestedScrollView(
                 controller: _scrollController,
@@ -119,31 +121,35 @@ class _CircleMainNewState extends State<CircleMainNew>
                 headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
                     SliverAppBar(
+                      backgroundColor: isDark ? Colours.dark_bg_color: Colors.white,
                       elevation: 0.0,
                       pinned: true,
                       floating: false,
                       snap: false,
                       primary: true,
-                      title: showRecommendTitleText
+                      title: hideRecommendTitleText
                           ? Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text('更多',
                                     style: pfStyle.copyWith(fontSize: Dimens.font_sp17, letterSpacing: 1.5)),
-                                Gaps.hGap5,
+                                Gaps.hGap10,
                                 _goCircleAllWidget(),
                               ],
                             )
-                          : Text('推荐',
-                              style: pfStyle.copyWith(fontSize: Dimens.font_sp17, letterSpacing: 1.5)),
+                          : CollectionUtil.isListEmpty(_circles)
+                              ? Gaps.empty
+                              : Text('推荐',
+                                  style: pfStyle.copyWith(fontSize: Dimens.font_sp17, letterSpacing: 1.5)),
                       centerTitle: false,
                       actions: [
                         _getActionItem(
                             "circle/circle_create",
                             () => NavigatorUtils.push(context, CircleRouter.CREATE,
                                 transitionType: TransitionType.fadeIn)),
-                        // _getActionItem("circle/circle_noti", () => {}),
-                        _getActionItem("circle/circle_me", () => {}),
+                        _getActionItem(
+                            "circle/circle_me", () => NavigatorUtils.push(context, CircleRouter.CIRCLE_MY)),
+                        Gaps.hGap10
                       ],
                     ),
 

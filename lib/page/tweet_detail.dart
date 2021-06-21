@@ -339,7 +339,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         // backgroundColor: !isDark
         //     ? (widget._fromHot ? Color(0xffe9e9e9) : null)
         //     : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
-        backgroundColor: !isDark ? null : Colours.dark_bg_color,
+        // backgroundColor: !isDark ? null : Colours.dark_bg_color,
         body: Builder(builder: (context) {
           this.myContext = context;
           return Listener(
@@ -358,7 +358,6 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   ? SingleChildScrollView(
                       child: Container(
                       decoration: BoxDecoration(
-                          color: isDark ? Colours.dark_bg_color : null,
                           borderRadius: const BorderRadius.all(Radius.circular(18))),
                       padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
                       child: Column(

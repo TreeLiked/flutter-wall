@@ -1,6 +1,8 @@
-import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+part 'circle_tweet.g.dart';
 
 @JsonSerializable()
 class CircleTweet {
@@ -12,12 +14,12 @@ class CircleTweet {
   // 归属的组织ID
   int orgId;
 
-  Account account;
+  CircleAccount account;
 
   String body;
 
   // 浏览量
-  int view;
+  int views;
 
   // 回复人数
   int replyCount;
@@ -28,9 +30,20 @@ class CircleTweet {
   // 媒体，图片或者视频
   List<Media> medias;
 
+  // 标签
+  List<String> tags;
+
+  // 是否被删除
+  bool deleted;
 
   // 时间等
   DateTime sentTime;
   DateTime gmtCreated;
   DateTime gmtModified;
+
+  CircleTweet();
+
+  Map<String, dynamic> toJson() => _$CircleTweetToJson(this);
+
+  factory CircleTweet.fromJson(Map<String, dynamic> json) => _$CircleTweetFromJson(json);
 }

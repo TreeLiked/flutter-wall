@@ -20,6 +20,7 @@ import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/routes/square_router.dart';
+import 'package:iap_app/util/fluro_convert_utils.dart';
 
 import './route_handlers.dart';
 
@@ -120,5 +121,22 @@ class Routes {
     _listRouter.forEach((routerProvider) {
       routerProvider.initRouter(router);
     });
+  }
+
+  static String assembleArgs(Map<String, dynamic> args) {
+    StringBuffer sb = new StringBuffer("?");
+    args.forEach((key, value) {
+      sb.write(key);
+      sb.write("=");
+      if(value is String) {
+        sb.write(FluroConvertUtils.fluroCnParamsEncode(value));
+      } else {
+        sb.write(value);
+      }
+      sb.write("&");
+    });
+    String url = sb.toString();
+    print(url);
+    return url.substring(0, url.length - 1);
   }
 }

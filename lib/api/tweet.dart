@@ -121,7 +121,6 @@ class TweetApi {
     }
     String requestUrl =
         Api.API_TWEET_DELETE + "?" + SharedConstant.ACCOUNT_ID_IDENTIFIER + "=$accountId&tId=$tweetId";
-    print(requestUrl);
     Response response;
     try {
       response = await httpUtil.dio.post(requestUrl);
@@ -134,8 +133,6 @@ class TweetApi {
   }
 
   static Future<Map<String, dynamic>> pushTweet(BaseTweet tweet) async {
-    print(Api.API_BASE_INF_URL + Api.API_TWEET_QUERY);
-
     Result r;
     try {
       Response response =
@@ -166,7 +163,6 @@ class TweetApi {
   }
 
   static Future<Result> pushReply(TweetReply reply, int tweetId) async {
-    print(Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE);
     reply.sentTime = DateTime.now();
     Response response = await httpUtil.dio
         .post(Api.API_BASE_INF_URL + Api.API_TWEET_REPLY_CREATE + '?tId=$tweetId', data: reply.toJson());
@@ -237,7 +233,6 @@ class TweetApi {
   }
 
   //   static Future<Result> modPraise() async {
-  //   print(Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE);
 
   //   Response response = await httpUtil.dio.post(
   //       Api.API_BASE_URL + Api.API_TWEET_REPLY_CREATE,
@@ -265,7 +260,6 @@ class TweetApi {
   }
 
   static Future<UniHotTweet> queryPraise(int tweetId) async {
-    print(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY);
     Response response =
         await httpUtil.dio.get(Api.API_BASE_INF_URL + Api.API_TWEET_HOT_QUERY + '?tId=$tweetId');
     Map<String, dynamic> json = Api.convertResponse(response.data);

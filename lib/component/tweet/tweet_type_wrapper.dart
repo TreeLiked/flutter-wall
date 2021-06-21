@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -29,13 +30,14 @@ class TweetTypeWrapper extends StatelessWidget {
     TweetTypeEntity typeEntity = tweetTypeMap[t];
 
     bool isDark = ThemeUtils.isDark(context);
+
     return GestureDetector(
         onTap: () =>
             NavigatorUtils.push(context, Routes.tweetTypeInfProPlf + "?tweetId=$tweetId&tweetType=$type"),
         child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
             decoration: BoxDecoration(
-              color: isDark ? Colors.black12 : Color(0xffF3F6F8),
+              color: typeEntity.renderBg ? null :isDark ? Colors.black12 : ColorConstant.TWEET_RICH_BG,
               borderRadius: BorderRadius.circular(7.0),
             ),
             child: Row(
@@ -50,7 +52,7 @@ class TweetTypeWrapper extends StatelessWidget {
                         style: pfStyle.copyWith(
                             color: isDark ? Colors.white70 : Colors.white, fontSize: Dimens.font_sp12))),
                 Gaps.hGap4,
-                Text('${typeEntity.zhTag}...',
+                Text('${typeEntity.zhTag}..',
                     style: pfStyle.copyWith(color: typeEntity.color, fontSize: Dimens.font_sp12,fontWeight: FontWeight.bold))
               ],
             )));

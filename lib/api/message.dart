@@ -5,11 +5,32 @@ import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
 enum MessageCategory { INTERACTION, TWEET_NEW, SYSTEM, CIRCLE_SYS, CIRCLE_INTERACTION, CIRCLE, ALL }
+
+final msgCategoryCodeMap = {
+  MessageCategory.INTERACTION: "21",
+  MessageCategory.TWEET_NEW: "22",
+  MessageCategory.SYSTEM: "11",
+  MessageCategory.CIRCLE_INTERACTION: "31",
+  MessageCategory.CIRCLE_SYS: "32",
+  MessageCategory.CIRCLE: "30",
+  MessageCategory.ALL: "0",
+};
+
+final codeMsgCategoryMap = {
+  "21": MessageCategory.INTERACTION,
+  "22": MessageCategory.TWEET_NEW,
+  "11": MessageCategory.SYSTEM,
+  "31": MessageCategory.CIRCLE_INTERACTION,
+  "32": MessageCategory.CIRCLE_SYS,
+  "30": MessageCategory.CIRCLE,
+  "0": MessageCategory.ALL
+};
 
 class MessageAPI {
   static Future<List<AbstractMessage>> queryInteractionMsg(int currentPage, int pageSize) async {
@@ -27,29 +48,6 @@ class MessageAPI {
         List<AbstractMessage> msgList = jsonData.map((m) {
           return AbstractMessage.fromJson(m);
         }).toList();
-//        msgList.forEach((msg) {
-//          MessageType mst = msg.messageType;
-//          switch (mst) {
-//            case MessageType.TOPIC_REPLY:
-//              print((msg as TopicReplyMessage).toJson());
-//              break;
-//            case MessageType.TWEET_PRAISE:
-//              print((msg as TweetPraiseMessage).toJson());
-//              break;
-//            case MessageType.TWEET_REPLY:
-//              print((msg as TweetReplyMessage).toJson());
-//              break;
-//            case MessageType.POPULAR:
-//              // TODO: Handle this case.
-//              break;
-//            case MessageType.PLAIN_SYSTEM:
-//              // TODO: Handle this case.
-//              break;
-//            case MessageType.REPORT:
-//              // TODO: Handle this case.
-//              break;
-//          }
-//        });
         return msgList;
       } else {
         return null;
@@ -256,5 +254,49 @@ class MessageAPI {
       Api.formatError(e);
     }
     return 0;
+  }
+
+  static Future<Map<String, int>> batchQueryMsgCount(List<String> categoryCodes) async {
+    try {
+      Response response =
+          await httpUtil.dio.get(Api.API_MSG_CNT_BATCH, queryParameters: {"t": categoryCodes});
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      Result r = Result.fromJson(json);
+
+      if (r.isSuccess) {
+        Map<String, dynamic> map = json['data'];
+        if (CollectionUtil.isMapEmpty(map)) {
+          return {};
+        }
+        ;
+        print(map);
+        return map.map((key, value) => prefix1.MapEntry(key, value as int));
+      }
+      return {};
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return {};
+  }
+
+  static Future<Map<String, AbstractMessage>> batchFetchLatestMessage(List<String> categoryCodes) async {
+    try {
+      Response response =
+          await httpUtil.dio.get(Api.API_MSG_LATEST_BATCH, queryParameters: {"t": categoryCodes});
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      bool success = json["isSuccess"];
+      if (success) {
+        Map<String, dynamic> msgs = json['data'];
+        if (CollectionUtil.isMapEmpty(msgs)) {
+          return {};
+        }
+        return msgs.map((key, value) => prefix1.MapEntry(key, AbstractMessage.fromJson(value)));
+      } else {
+        return {};
+      }
+    } on DioError catch (e) {
+      Api.formatError(e);
+    }
+    return {};
   }
 }

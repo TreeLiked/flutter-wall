@@ -14,7 +14,9 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/popup_window.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/model/im_dto.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -221,7 +223,6 @@ class _HomePageState extends State<HomePage>
   }
 
   Future getData(int page) async {
-    print('get data ------$page------');
     List<BaseTweet> pbt = await (TweetApi.queryTweets(PageParam(page,
         pageSize: 10,
         orgId: Application.getOrgId,
@@ -317,6 +318,7 @@ class _HomePageState extends State<HomePage>
                 children: <Widget>[
                   Container(
                     width: double.infinity,
+                    color: isDark ? ColorConstant.MAIN_BG_DARK:ThemeConstant.lightBG,
                     child: Stack(
                       children: <Widget>[
                         Positioned(
@@ -356,7 +358,7 @@ class _HomePageState extends State<HomePage>
                                       PageSharedWidget.tabIndexRefreshController.requestRefresh();
                                       Provider.of<MsgProvider>(context, listen: false).updateTweetNewCnt(0);
                                     }
-                                    PageSharedWidget.homepageScrollController.animateTo(.0,
+                                    PageSharedWidget.homepageScrollController.animateTo(0.0,
                                         duration: Duration(milliseconds: 1688), curve: Curves.easeInOutQuint);
                                     return;
                                   }
@@ -387,7 +389,6 @@ class _HomePageState extends State<HomePage>
                         ),
                         Positioned(
                             right: prefix0.ScreenUtil().setWidth(10.0),
-//                        top: prefix0.ScreenUtil().setWidth(10.0),
                             child: IconButton(
                               icon: Badge(
                                   elevation: 0,
@@ -430,36 +431,57 @@ class _HomePageState extends State<HomePage>
                         height: 55,
                         child: Draggable(
                           feedback: FloatingActionButton(
-                              // child: LoadAssetIcon(
-                              //   "create",
-                              //   color: isDark ? Colors.yellow : Colors.amberAccent,
-                              //   width: 23.0,
-                              //   height: 23.0,
-                              // ),
-                              child: Icon(
-                                Icons.add,
-                                color: isDark ? Colors.amber[300] : Colors.black,
-                              ),
+                              child: Container(
+                                  width: 55,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(27.5),
+                                      gradient: new LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: isDark
+                                              ? ([Colors.black26, Colors.black45])
+                                              : [Color(0xffFFFFFF), Color(0xffdfe9f3)])),
+                                  child: Icon(Icons.add,
+                                      size: 28.0, color: isDark ? Colors.amber[300] : Colors.grey)),
                               backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
                               splashColor: Colors.white12,
                               elevation: 10.0,
                               onPressed: null),
                           child: FloatingActionButton(
-                              child: Icon(
-                                Icons.add,
-                                color: isDark ? Colors.amber[300] : Colors.black,
-                              ),
+                              // child: Icon(
+                              //   Icons.add,
+                              //   color: isDark ? Colors.amber[300] : Colors.black,
+                              // ),
+                              child: Container(
+                                  width: 55,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(27.5),
+                                      gradient: new LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: isDark
+                                              ? ([Colors.black26, Colors.black45])
+                                              : [Color(0xffFFFFFF), Color(0xffdfe9f3)])),
+                                  child: Icon(Icons.add,
+                                      size: 28.0, color: isDark ? Colors.amber[300] : Colors.green)),
                               // child: LoadAssetIcon(
                               //   "create",
                               //   color: isDark ? Colors.yellow : Colors.lightBlueAccent,
                               //   width: 23.0,
                               //   height: 23.0,
                               // ),
-                              backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
+                              // backgroundColor: isDark ? Colors.black45 : Color(0xffF8F8FF),
                               elevation: 10.0,
-                              foregroundColor: Colors.yellow,
+                              // foregroundColor: Colors.yellow,
+
                               splashColor: Colors.white12,
-                              onPressed: () => NavigatorUtils.push(context, Routes.create,
+                              onPressed: () => NavigatorUtils.push(
+                                  context,
+                                  Routes.create +
+                                      Routes.assembleArgs(
+                                          {"type": 0, "title": "发布内容", "hintText": "分享校园新鲜事"}),
                                   transitionType: TransitionType.fadeIn)),
 
                           //拖动过程中，在原来位置停留的Widget，设定这个可以保留原本位置的残影，如果不需要可以直接设置为Container()

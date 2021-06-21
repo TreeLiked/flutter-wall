@@ -181,6 +181,9 @@ class _CircleTabMainState extends State<CircleTabMain>
       appBar: MyAppBar(
         isBack: true,
         centerTitle: '全部圈子',
+        actionWidget: Icon(
+          Icons.search_outlined,
+        ),
       ),
       body: CustomScrollView(slivers: <Widget>[
         SliverPersistentHeader(

@@ -296,7 +296,6 @@ class TweetReplyItemDetail extends StatelessWidget {
       } else {
         ToastUtil.showToast(context, '删除成功');
       }
-      print(tweetId);
       Provider.of<TweetProvider>(context, listen: false).deleteReply(tweetId, parentId, replyId, reply.type);
     } else {
       ToastUtil.showToast(context, '删除失败');

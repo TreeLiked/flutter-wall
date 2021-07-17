@@ -1,19 +1,31 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/message.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/bloc/count_bloc.dart';
+import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/im_dto.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
+import 'package:stomp_dart_client/stomp.dart';
 
 class SingleMessageControl extends BaseBloc {
+  static final String _TAG = "SingleMessageControl";
+
   StreamController<int> _controller;
 
   /// 维护一个本地计数器，三种状态，-1初始｜0没有消息｜x(x>0)显示小红点数目
-  int _localCount = -1;
+  int _localCount = 0;
 
   SingleMessageControl() {
     this._controller = new StreamController<int>.broadcast();
@@ -21,7 +33,7 @@ class SingleMessageControl extends BaseBloc {
 
   void clear() {
     _localCount = 0;
-    _controller.sink.add(-1);
+    _controller.sink.add(0);
   }
 
   set streamCount(int count) {
@@ -43,125 +55,132 @@ class SingleMessageControl extends BaseBloc {
 }
 
 class MessageUtil extends BaseBloc {
-  static bool _loopQueryNotification = true;
+  // ws 长连接客户端
+  static StompClient _stompClient;
 
-  static void startLoopQueryNotification() {
-    _loopQueryNotification = true;
-    loopRefreshMessage();
+  static StompClient get stompClient => _stompClient;
+
+  static set setStompClient(StompClient value) {
+    _stompClient = value;
   }
 
-  static void stopLoopQueryNotification() {
-    _loopQueryNotification = false;
+  static Future<int> queryMessageCntTotal(BuildContext context) async {
+    int value = await MessageAPI.queryMsgCount(MessageCategory.ALL);
+    Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateTotal(value);
+    return value;
   }
 
-  static loopRefreshMessage() async {
-    if (_loopQueryNotification) {
-      Future.delayed(Duration(seconds: 60)).then((_) {
-        MessageAPI.queryInteractionMessageCount().then((cnt) {
-          MessageUtil.setNotificationCnt(cnt);
-        }).whenComplete(() {
-          if (_loopQueryNotification) {
-            loopRefreshMessage();
-          }
-        });
-      });
+  static Future<int> queryCircleMsgCntTotal(BuildContext context) async {
+    int i1 = await queryCircleInterMsgCnt(context);
+    int i2 = await queryCircleSysMsgCntTotal(context);
+    return i1 + i2;
+  }
+
+  static Future<int> queryCircleInterMsgCnt(BuildContext context) async {
+    int val = await MessageAPI.queryMsgCount(MessageCategory.CIRCLE_INTERACTION);
+    Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateCirInterCnt(val);
+    return val;
+  }
+
+  static Future<int> queryCircleSysMsgCntTotal(BuildContext context) async {
+    int val = await MessageAPI.queryMsgCount(MessageCategory.CIRCLE_SYS);
+    Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateCirSysCnt(val);
+    return val;
+  }
+
+  static Future<int> queryTweetInterMsgCnt(BuildContext context) async {
+    int val = await MessageAPI.queryMsgCount(MessageCategory.INTERACTION);
+    Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateTweetInterCnt(val);
+    return val;
+  }
+
+  static Future<int> queryTweetNewMsgCnt(BuildContext context) async {
+    int val = await MessageAPI.queryMsgCount(MessageCategory.TWEET_NEW);
+    Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateTweetNewCnt(val);
+    return val;
+  }
+
+  static Future<int> querySysMsgCnt(BuildContext context) async {
+    int val = await MessageAPI.queryMsgCount(MessageCategory.SYSTEM);
+    Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateSysCnt(val);
+    return val;
+  }
+
+  static Future<Map<String, int>> batchQueryMsgCnt(
+      BuildContext context, List<MessageCategory> msgCategory) async {
+    Map<String, int> map =
+        await MessageAPI.batchQueryMsgCount(msgCategory.map((e) => msgCategoryCodeMap[e]).toList());
+    if (CollectionUtil.isMapEmpty(map)) {
+      return {};
     }
-  }
-
-  static loopRefreshNewTweet(BuildContext context) async {
-    final _tweetProvider = Provider.of<TweetProvider>(context);
-    List<BaseTweet> tweets = _tweetProvider.displayTweets;
-
-    if (CollectionUtil.isListEmpty(tweets)) {
-      await Future.delayed(Duration(seconds: 60)).then((value) => loopRefreshNewTweet(context));
-      return;
-    }
-
-    Future.delayed(Duration(seconds: 60)).then((_) {
-      final _tweetProvider = Provider.of<TweetProvider>(context);
-      List<BaseTweet> tweets = _tweetProvider.displayTweets;
-      MessageAPI.queryNewTweetCount(Application.getOrgId, tweets[0].id, null).then((cnt) {
-        MessageUtil.setTabIndexTweetCnt(cnt);
-      }).whenComplete(() {
-        loopRefreshNewTweet(context);
-      });
+    map.forEach((msgCode, msgCnt) {
+      MessageCategory c = codeMsgCategoryMap[msgCode];
+      if (c == MessageCategory.INTERACTION) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateTweetInterCnt(msgCnt);
+      } else if (c == MessageCategory.SYSTEM) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateSysCnt(msgCnt);
+      } else if (c == MessageCategory.CIRCLE_SYS) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateCirSysCnt(msgCnt);
+      } else if (c == MessageCategory.CIRCLE_INTERACTION) {
+        Provider.of<MsgProvider>(context ?? Application.context, listen: false).updateCirInterCnt(msgCnt);
+      }
     });
-  }
-
-  static int interactionCnt = -1;
-  static int notificationCnt = -1;
-  static int taIndexTweetCnt = -1;
-
-  static final SingleMessageControl interactionMsgControl = new SingleMessageControl();
-  static final SingleMessageControl systemMsgControl = new SingleMessageControl();
-
-  // 消息红点
-  static final StreamController<int> _notificationStreamCntCtrl = new StreamController<int>.broadcast();
-
-  // 首页 tab红点
-  static final StreamController<int> _tabIndexTweetStreamCntCtrl = new StreamController<int>.broadcast();
-
-  static final StreamController<int> _interactionStreamCntCtrl = new StreamController<int>.broadcast();
-  static final StreamController<int> _systemStreamCntCtrl = new StreamController<int>.broadcast();
-
-  static StreamController<int> get notificationStreamCntCtrl => _notificationStreamCntCtrl;
-
-  static StreamController<int> get interactionStreamCntCtrl => _interactionStreamCntCtrl;
-
-  static StreamController<int> get systemStreamCntCtrl => _systemStreamCntCtrl;
-
-  static StreamController<int> get tabIndexStreamCntCtrl => _tabIndexTweetStreamCntCtrl;
-
-  static void setNotificationCnt(int count) {
-    if (notificationCnt != count && _notificationStreamCntCtrl != null) {
-      notificationCnt = count;
-      _notificationStreamCntCtrl.sink.add(count);
-    }
-  }
-
-  static void clearNotificationCnt() {
-    notificationCnt = -1;
-    _notificationStreamCntCtrl.sink.add(-1);
-  }
-
-  static void setTabIndexTweetCnt(int count) {
-    if (taIndexTweetCnt != count && _tabIndexTweetStreamCntCtrl != null) {
-      taIndexTweetCnt = count;
-      _tabIndexTweetStreamCntCtrl.sink.add(count);
-    }
-  }
-
-  static void clearTabIndexTweetCnt() {
-    taIndexTweetCnt = -1;
-    _tabIndexTweetStreamCntCtrl.sink.add(-1);
-  }
-
-  static void clearInteractionCnt() {
-    notificationCnt = -1;
-    _interactionStreamCntCtrl.sink.add(-1);
-  }
-
-  static void setInteractionCnt(int count) {
-    _interactionStreamCntCtrl.sink.add(count);
-  }
-
-  static void showSystemRedPoint() {
-    _notificationStreamCntCtrl.sink.add(1);
-  }
-
-  static void hideSystemRedPoint() {
-    _notificationStreamCntCtrl.sink.add(-1);
+    return map;
   }
 
   static void close() {
-    _notificationStreamCntCtrl?.close();
-    _interactionStreamCntCtrl?.close();
-    _systemStreamCntCtrl?.close();
-    _tabIndexTweetStreamCntCtrl?.close();
+    stompClient?.deactivate();
+  }
+
+  static void handleInstantMessage(ImDTO instruction, {BuildContext context}) async {
+    if (instruction == null) {
+      return;
+    }
+    if (context == null) {
+      context = Application.context;
+    }
+    int command = instruction.command;
+
+    LogUtil.e("Received Command: ${command.toString()}, Data: ${instruction.data.toString()}",
+        tag: SingleMessageControl._TAG);
+    switch (command) {
+      case ImDTO.COMMAND_TWEET_CREATED: // 有新推文内容，data: BaseTweet
+        queryTweetNewMsgCnt(context);
+        ToastUtil.showToast(context, "有新的内容，刷新试试 ～", gravity: ToastGravity.BOTTOM);
+        break;
+      case ImDTO.COMMAND_TWEET_PRAISED: // 用户推文被点赞了，data: 点赞的账户模型
+        queryCircleInterMsgCnt(context);
+        Account praiseAcc = Account.fromJson(instruction.data);
+        if (praiseAcc != null) {
+          ToastUtil.showToast(context, "${praiseAcc.nick} 刚刚赞了你 ～",
+              gravity: ToastGravity.BOTTOM, length: Toast.LENGTH_LONG);
+        }
+        break;
+      case ImDTO.COMMAND_TWEET_REPLIED: // 用户被评论，data: 评论的内容
+        queryCircleInterMsgCnt(context);
+        TweetReply tr = TweetReply.fromJson(instruction.data);
+        if (tr != null) {
+          String displayReply =
+              StringUtil.isEmpty(tr.body) ? null : (tr.body.length > 6 ? tr.body.substring(0, 6) : tr.body);
+          String displayContent = (tr.anonymous || tr.account == null || StringUtil.isEmpty(tr.account.nick))
+              ? "有位童鞋默默回复了你 ～"
+              : "${tr.account.nick} 刚刚回复了你${displayReply == null ? ' ～ ' : '：$displayReply'}";
+          ToastUtil.showToast(context, '$displayContent', gravity: ToastGravity.BOTTOM);
+        }
+        break;
+      case ImDTO.COMMAND_TWEET_DELETED: // 推文被删除，data: 删除的推文id
+        int detTweetId = instruction.data;
+        Provider.of<TweetProvider>(context, listen: false).delete(detTweetId);
+        break;
+      case ImDTO.COMMAND_PULL_MSG:
+        // 在消息页面用消息总线处理
+        break;
+      default:
+        break;
+    }
+    wsCommandEventBus.fire(instruction);
   }
 
   @override
-  void dispose() {
-    _notificationStreamCntCtrl?.close();
-  }
+  void dispose() {}
 }

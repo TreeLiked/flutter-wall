@@ -33,7 +33,6 @@ class TopicReplyCardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("topic reply card build");
     return !isSub ? _renderMainCard(context, reply) : _renderSubCard(context, subTopicReply);
   }
 

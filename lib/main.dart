@@ -7,10 +7,13 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/bloc/msg_bloc.dart';
 import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
@@ -45,6 +48,8 @@ class AlmondDonuts extends StatefulWidget {
 }
 
 class AlmondDonutsState extends State<AlmondDonuts> {
+  static const String _TAG = "AlmondDonutsState";
+
   final JPush _jPush = JPush();
 
   AlmondDonutsState() {
@@ -60,7 +65,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     initPlatformState();
     initUMengAnalytics();
 
-    LogUtil.init(tag: "Wall",maxLen: 1024);
+    LogUtil.init(tag: "Wall", maxLen: 1024);
     LogUtil.e("Main 生产环境=${AlmondDonuts.inProduction}", tag: "AlmondDonuts");
     _jPush.getRegistrationID().then((rid) {
       if (rid != null && rid.length != 0) {
@@ -94,11 +99,12 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     _jPush.addEventHandler(
       // 接收通知回调方法。
       onReceiveNotification: (Map<String, dynamic> message) async {
-        print("flutter onReceiveNotification: $message");
+        LogUtil.e("flutter onReceiveNotification: $message", tag: _TAG);
       },
       // 点击通知回调方法。
       onOpenNotification: (Map<String, dynamic> message) async {
-        print("flutter onOpenNotification: $message");
+        LogUtil.e("flutter onOpenNotification: $message", tag: _TAG);
+
         _jPush.clearAllNotifications();
 
         Map<String, dynamic> extraMap;
@@ -109,7 +115,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
         } else {
           return;
         }
-        print(extraMap);
+        LogUtil.e(extraMap, tag: _TAG);
         if (extraMap == null) {
           return;
         }
@@ -119,7 +125,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       },
       // 接收自定义消息回调方法。
       onReceiveMessage: (Map<String, dynamic> message) async {
-        print("flutter onReceiveMessage: $message");
+        LogUtil.e("flutter onReceiveMessage: $message", tag: _TAG);
       },
     );
   }
@@ -166,36 +172,53 @@ class AlmondDonutsState extends State<AlmondDonuts> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(builder: (_) => AccountLocalProvider()),
-          ChangeNotifierProvider(builder: (_) => TweetTypesFilterProvider()),
-          ChangeNotifierProvider(builder: (_) => ThemeProvider()),
-          ChangeNotifierProvider(builder: (_) => TweetProvider()),
-        ],
-        child: Consumer<ThemeProvider>(builder: (_, provider, __) {
-          return MaterialApp(
-            title: 'Wall',
-            //showPerformanceOverlay: true, //显示性能标签
-            debugShowCheckedModeBanner: false,
-            theme: provider.getTheme(),
-            darkTheme: provider.getTheme(isDarkMode: true),
+      providers: [
+        ChangeNotifierProvider(create: (BuildContext context) => AccountLocalProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => TweetTypesFilterProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => TweetProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => MsgProvider()),
+      ],
+      // child:  MaterialApp(
+      //     title: 'Wall',
+      //     //showPerformanceOverlay: true, //显示性能标签
+      //     debugShowCheckedModeBanner: false,
+      //     home: SplashPage(),
+      //     onGenerateRoute: Application.router.generator,
+      //     localizationsDelegates: const [
+      //       GlobalMaterialLocalizations.delegate,
+      //       GlobalWidgetsLocalizations.delegate,
+      //       GlobalCupertinoLocalizations.delegate,
+      //       DefaultCupertinoLocalizations.delegate
+      //     ],
+      //     supportedLocales: const [const Locale('zh', 'CH')],
+      //   )
+      // );
+      child: Consumer<ThemeProvider>(builder: (_, provider, __) {
+        return MaterialApp(
+          title: 'Wall',
+          //showPerformanceOverlay: true, //显示性能标签
+          debugShowCheckedModeBanner: false,
+          theme: provider.getTheme(),
+          darkTheme: provider.getTheme(isDarkMode: true),
+          home: SplashPage(),
 //            home: SplashPage(),
-            home: SplashPage(),
-            onGenerateRoute: Application.router.generator,
-            // localizationsDelegates: const [
-            //   GlobalMaterialLocalizations.delegate,
-            //   GlobalWidgetsLocalizations.delegate,
-            //   GlobalCupertinoLocalizations.delegate,
-            // ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              DefaultCupertinoLocalizations.delegate
-            ],
-            supportedLocales: const [const Locale('zh', 'CH')],
-          );
-        }));
+          onGenerateRoute: Application.router.generator,
+          // localizationsDelegates: const [
+          //   GlobalMaterialLocalizations.delegate,
+          //   GlobalWidgetsLocalizations.delegate,
+          //   GlobalCupertinoLocalizations.delegate,
+          // ],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            DefaultCupertinoLocalizations.delegate
+          ],
+          supportedLocales: const [const Locale('zh', 'CH')],
+        );
+      }),
+    );
 
     // return ChangeNotifierProvider<ThemeProvider>(
     //   builder: (_) => ThemeProvider(),

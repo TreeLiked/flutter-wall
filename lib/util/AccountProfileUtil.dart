@@ -21,11 +21,12 @@ class AccountProfileUtil {
     if (!hasP) {
       return;
     }
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker().getImage(source: ImageSource.gallery);
     if (image != null) {
+      final File imageFile = File(image.path);
       final cropKey = GlobalKey<CropState>();
-      File file = await Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
+      File file = await Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: imageFile)));
       if (file != null) {
         Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
         String resultUrl = await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);

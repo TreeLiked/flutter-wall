@@ -62,7 +62,7 @@ class _ActivityPageView extends State<ActivityPageView>
         controller: SwiperController(),
         scrollDirection: Axis.horizontal,
         autoplay: true,
-        onTap: (index) => print('点击了第$index'),
+        onTap: (index) {},
       ),
     );
   }

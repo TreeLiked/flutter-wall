@@ -6,6 +6,7 @@ import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -83,9 +84,9 @@ class TweetPraiseWrapper extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
         decoration: BoxDecoration(
           color: ThemeUtils.isDark(context)
-              ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
-              : ColorConstant.TWEET_RICH_BG,
-          borderRadius: BorderRadius.circular(8.0),
+                  ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                  : ColorConstant.TWEET_RICH_BG_2,
+          borderRadius: BorderRadius.circular(5.0),
         ),
         child: Wrap(
             alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items));
@@ -95,8 +96,8 @@ class TweetPraiseWrapper extends StatelessWidget {
     if (tweet.latestPraise == null) {
       tweet.latestPraise = List();
     }
-    final _tweetProvider = Provider.of<TweetProvider>(context);
-    final _localAccProvider = Provider.of<AccountLocalProvider>(context);
+    final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
+    final _localAccProvider = Provider.of<AccountLocalProvider>(context, listen: false);
     _tweetProvider.updatePraise(context, _localAccProvider.account, tweet.id, !tweet.loved);
     await TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
     if (tweet.loved) {

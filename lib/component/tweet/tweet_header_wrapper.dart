@@ -121,7 +121,7 @@ class TweetCardHeaderWrapper extends StatelessWidget {
       style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: SizeConstant.TWEET_TIME_SIZE),
       overflow: TextOverflow.ellipsis,
       softWrap: true,
-      maxLines: 2,
+      maxLines: 1,
     ));
   }
 }
@@ -156,7 +156,7 @@ class TweetSimpleHeader extends StatelessWidget {
               children: <Widget>[
                 _nickContainer(context),
                 official ? SimpleTag("官方") : Gaps.empty,
-//                  _signatureContainer(context),
+                _signatureContainer(context),
               ],
             ),
           ),
@@ -246,17 +246,17 @@ class TweetSimpleHeader extends StatelessWidget {
       // 当天的内容
       spans.add(
         TextSpan(
-            text: '~ ' + TimeUtil.getShortTime(tweetSent) + ' ~',
+            text: TimeUtil.getShortTime(tweetSent),
             style: pfStyle.copyWith(color: Colors.amber[600], fontSize: Dimens.font_sp14)),
       );
     } else {
       if (TimeUtil.sameYear(tweetSent)) {
         // 当年的内容
         spans.add(
-          TextSpan(text: '${tweetSent.day}', style: pfStyle.copyWith(fontSize: Dimens.font_sp18)),
+          TextSpan(text: '${tweetSent.day}日', style: pfStyle.copyWith(fontSize: Dimens.font_sp18)),
         );
         spans.add(
-          TextSpan(text: ' /', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
+          TextSpan(text: ' / ', style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
         );
         spans.add(
           TextSpan(
@@ -288,15 +288,16 @@ class TweetSimpleHeader extends StatelessWidget {
   }
 
   Widget _signatureContainer(BuildContext context) {
+    if (anonymous || account == null || StringUtil.isEmpty(account.signature)) {
+      return Gaps.empty;
+    }
     return Container(
         child: Text(
-      !anonymous
-          ? (StringUtil.isEmpty(account.signature) ? "" : account.signature)
-          : TextConstant.TWEET_ANONYMOUS_SIG,
+      account.signature,
       style: MyDefaultTextStyle.getTweetSigStyle(context, fontSize: SizeConstant.TWEET_TIME_SIZE),
       overflow: TextOverflow.ellipsis,
       softWrap: true,
-      maxLines: 2,
+      maxLines: 1,
     ));
   }
 }

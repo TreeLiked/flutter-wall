@@ -90,6 +90,9 @@ class TweetTypeEntity {
   // 是否用户可见
   final bool visible;
 
+  // 是否渲染卡片背景颜色
+  final bool renderBg;
+
   const TweetTypeEntity(
       {this.iconData,
       this.iconColor,
@@ -102,7 +105,8 @@ class TweetTypeEntity {
       this.pushable = true,
       this.canUnSubscribe = true,
       this.typeImage = PathConstant.APP_LAUNCH_IMAGE,
-      this.visible = true});
+      this.visible = true,
+      this.renderBg = false});
 
   static const LOVE_CONFESSION = const TweetTypeEntity(
       iconData: Icons.favorite,
@@ -112,6 +116,7 @@ class TweetTypeEntity {
       color: Color(0xffcd9cf2),
       intro: "对你何止一句中意",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
+      renderBg: true,
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_confession.png");
   static const ASK_FOR_MARRIAGE = const TweetTypeEntity(
@@ -122,6 +127,7 @@ class TweetTypeEntity {
       intro: "我想早恋，但已经晚了",
       typeImage: "https://tva1.sinaimg.cn/large/007S8ZIlgy1gjbz0jt9h9j31910u0k49.jpg",
       color: Color(0xffCD5C5C),
+      renderBg: true,
       coverUrl:
           "https://iutr-image.oss-cn-hangzhou.aliyuncs.com/almond-donuts/default/type_cover_marriage.png");
   static const SOMEONE_FIND = const TweetTypeEntity(

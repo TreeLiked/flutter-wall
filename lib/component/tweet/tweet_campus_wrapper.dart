@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/component/square_tag.dart';
 import 'package:iap_app/component/tweet/tweet_type_wrapper.dart';
 import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetCampusWrapper extends StatelessWidget {
@@ -28,6 +30,8 @@ class TweetCampusWrapper extends StatelessWidget {
       }
     }
     String t = insEmpty ? cla : (claEmpty ? institute : '$institute，$cla');
+    TweetTypeEntity typeEntity = tweetTypeMap[tweetType];
+
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       crossAxisAlignment: WrapCrossAlignment.end,
@@ -41,10 +45,10 @@ class TweetCampusWrapper extends StatelessWidget {
             ? Gaps.empty
             : SquareTag(
                 "$t",
-                backgroundColor: Color(0xffEDF1F7),
+                backgroundColor: typeEntity.renderBg ? null: Color(0xffEDF1F7),
                 backgroundDarkColor: Colors.black12,
-                textStyle: const TextStyle(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
-                horizontalPadding: 15.0,
+                textStyle:  pfStyle.copyWith(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
+                horizontalPadding: 10.0,
                 verticalPadding: 5.0,
                 roundRadius: 7.0,
                 // prefixIcon: Icon(

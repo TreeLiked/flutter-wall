@@ -14,11 +14,13 @@ import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/page/tweet/tweet_type_infgroplf_page.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/page/webview_page.dart';
+import 'package:iap_app/routes/circle_router.dart';
 import 'package:iap_app/routes/login_router.dart';
 import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/router_init.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/routes/square_router.dart';
+import 'package:iap_app/util/fluro_convert_utils.dart';
 
 import './route_handlers.dart';
 
@@ -113,10 +115,28 @@ class Routes {
     _listRouter.add(LoginRouter());
     _listRouter.add(SquareRouter());
     _listRouter.add(NotificationRouter());
+    _listRouter.add(CircleRouter());
 
     /// 初始化路由
     _listRouter.forEach((routerProvider) {
       routerProvider.initRouter(router);
     });
+  }
+
+  static String assembleArgs(Map<String, dynamic> args) {
+    StringBuffer sb = new StringBuffer("?");
+    args.forEach((key, value) {
+      sb.write(key);
+      sb.write("=");
+      if(value is String) {
+        sb.write(FluroConvertUtils.fluroCnParamsEncode(value));
+      } else {
+        sb.write(value);
+      }
+      sb.write("&");
+    });
+    String url = sb.toString();
+    print(url);
+    return url.substring(0, url.length - 1);
   }
 }

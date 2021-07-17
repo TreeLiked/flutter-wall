@@ -13,12 +13,13 @@ class TweetProvider extends ChangeNotifier {
   List<BaseTweet> get displayTweets => _displayTweets;
 
   void refresh() {
-    print('------------NOTIFY--------------');
+    print('------------TweetProvider NOTIFY--------------');
     notifyListeners();
   }
 
   void delete(int tweetId) {
     _displayTweets.removeWhere((t) => t != null && t.id == tweetId);
+    refresh();
   }
 
   void deleteReply(int tweetId, int parentId, int replyId, int type) {
@@ -43,10 +44,12 @@ class TweetProvider extends ChangeNotifier {
         }
       }
     }
+    refresh();
   }
 
   void deleteByAccount(String accountId) {
     _displayTweets.removeWhere((t) => t != null && !t.anonymous && t.account.id == accountId);
+    refresh();
   }
 
   void updateReply(BuildContext context, TweetReply tr) {

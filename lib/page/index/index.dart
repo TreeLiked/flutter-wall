@@ -37,7 +37,6 @@ class _IndexState extends State<Index> with TickerProviderStateMixin, AutomaticK
 
   @override
   void dispose() {
-    MessageUtil.close();
 //    _homePageStreamCntCtrl?.close();
     super.dispose();
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iap_app/style/text_style.dart';
 
 class ClickableText extends StatefulWidget {
   final String text;
@@ -17,7 +18,7 @@ class _ClickableText extends State<ClickableText> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: Text(widget.text ?? ""),
+      child: Text(widget.text ?? "", style: pfStyle.copyWith(color: Colors.blueAccent)),
     );
   }
 }

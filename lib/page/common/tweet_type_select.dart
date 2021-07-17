@@ -39,7 +39,7 @@ class _TweetTypeSelectPage extends State<TweetTypeSelectPage> {
   @override
   Widget build(BuildContext context) {
     // if (filterProvider == null) {
-    //   filterProvider = Provider.of<TweetTypesFilterProvider>(context);
+    //   filterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
     // }
 
     // if (widget.filter) {

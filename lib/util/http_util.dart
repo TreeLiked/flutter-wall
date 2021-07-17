@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:html/dom.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/widgets.dart';
+import 'package:html/dom.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
@@ -13,6 +13,7 @@ import 'package:iap_app/model/web_link.dart';
 import 'package:iap_app/util/html_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:uuid/uuid.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
 var httpUtil2 = HttpUtil(baseUrl: Api.API_BASE_MEMBER_URL, header: headersJson);
@@ -29,14 +30,15 @@ Map<String, dynamic> headersJson = {
   "Content-Type": "application/json; charset=UTF-8",
   "identify-id": Application.getAccountId ?? "",
   "user-agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
   "version": Platform.isAndroid
       ? "${SharedConstant.VERSION_ID_ANDROID}_${SharedConstant.VERSION_REMARK_ANDROID}"
       : "${SharedConstant.VERSION_ID_IOS}_${SharedConstant.VERSION_REMARK_IOS}",
 };
 
 class HttpUtil {
-  static final String authKey = "Authorization";
+  static final String _TAG = "HttpUtil";
+  static final String authKey = SharedConstant.AUTH_HEADER_VALUE;
 
   Dio dio;
   BaseOptions options;
@@ -89,10 +91,11 @@ class HttpUtil {
       ///  注意: 这并不是接收数据的总时限.
       receiveTimeout: 30000,
       headers: header,
-      followRedirects: true,
+      followRedirects: true
     );
 
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
+    // dio = new Dio(options)..interceptors.add(getMyInterceptor());
 
     String myToken = Application.getLocalAccountToken;
     if (myToken == null) {
@@ -118,7 +121,7 @@ class HttpUtil {
       receiveTimeout: 30000,
       headers: this.headers,
     );
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
   }
 
   void clearAuthToken() {
@@ -130,7 +133,7 @@ class HttpUtil {
       receiveTimeout: 30000,
       headers: this.headers,
     );
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
   }
 
   Future<Result<T>> get<T>(url, {data, options, cancelToken}) async {
@@ -160,10 +163,7 @@ class HttpUtil {
     Result result = Result(isSuccess: false);
     Response response;
     try {
-      response = await dio.post(
-        url,
-        data: data,
-      );
+      response = await dio.post(url, data: data, options: options, cancelToken: cancelToken);
       print('post请求成功!response.data：${response.data}');
       Map<String, dynamic> json = response.data;
       return Result.fromJson(json);
@@ -190,5 +190,36 @@ class HttpUtil {
       }
     }
     return null;
+  }
+
+  static InterceptorsWrapper getMyInterceptor() {
+    return InterceptorsWrapper(
+      onRequest: (options, handler) => requestInterceptor(options, handler),
+      onResponse: (response, handler) => responseInterceptor(response, handler),
+      // onError: (DioError dioError) => errorInterceptor(dioError)
+    );
+  }
+
+  static dynamic requestInterceptor(RequestOptions options, RequestInterceptorHandler handler) async {
+    String requestId = new Uuid().v1().substring(0, 8);
+    LogUtil.e('--> Request  to [ $requestId ] -->  ${options.uri}', tag: _TAG);
+    options.extra.addAll({"RequestId": requestId});
+    return handler.next(options);
+  }
+
+  static dynamic responseInterceptor(Response resp, ResponseInterceptorHandler handler) async {
+    String val = resp.data.toString();
+    String requestPath = resp.requestOptions.path;
+    String requestId = resp.requestOptions.extra['RequestId'];
+    LogUtil.e(
+        '<-- Response to [ $requestId ] <-- $requestPath: ${val.length > 100 ? val.substring(0, 100) : val}',
+        tag: _TAG);
+    return handler.next(resp);
+  }
+
+  static int get lineNumber {
+    final re = RegExp(r'^#1[ \t]+.+:(?<line>[0-9]+):[0-9]+\)$', multiLine: true);
+    final match = re.firstMatch(StackTrace.current.toString());
+    return (match == null) ? -1 : int.parse(match.namedGroup('line'));
   }
 }

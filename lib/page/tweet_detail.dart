@@ -202,27 +202,28 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
           ],
         ),
         Gaps.hGap8,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              RichText(
-                  softWrap: true,
-                  text: TextSpan(children: [
-                    TextSpan(
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
-                        text: t.anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : (t.account.nick ?? ""),
-                        style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                                context, SizeConstant.TWEET_NICK_SIZE + 3,
-                                anonymous: t.anonymous)
-                            .copyWith(fontFamily: TextConstant.PING_FANG_FONT)),
-                  ])),
-              Text(TimeUtil.getShortTime(widget._tweet.sentTime),
-                  style: pfStyle.copyWith(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
-            ],
-          ),
-        )
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            RichText(
+                softWrap: true,
+                text: TextSpan(children: [
+                  TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
+                      text: t.anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : (t.account.nick ?? ""),
+                      style: MyDefaultTextStyle.getTweetHeadNickStyle(
+                              context, SizeConstant.TWEET_NICK_SIZE + 3,
+                              bold: true, anonymous: t.anonymous)
+                          .copyWith(fontFamily: TextConstant.PING_FANG_FONT)),
+                ])),
+            Gaps.vGap5,
+            Text('发布于 ${TimeUtil.getShortTime(widget._tweet.sentTime)}',
+                style: pfStyle.copyWith(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
+          ],
+        ),
       ],
     );
   }
@@ -282,8 +283,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         }
       });
       // 只在首页的推文有效
-      final _tweetProvider = Provider.of<TweetProvider>(context);
-      final _localAccProvider = Provider.of<AccountLocalProvider>(context);
+      final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
+      final _localAccProvider = Provider.of<AccountLocalProvider>(context, listen: false);
       _tweetProvider.updatePraise(context, _localAccProvider.account, tweet.id, tweet.loved);
     });
   }
@@ -324,7 +325,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   Container(
                     height: 80,
                     alignment: Alignment.topLeft,
-                    child: SpinKitChasingDots(color: Colours.app_main, size: 18),
+                    child: SpinKitThreeBounce(color: Colors.lightGreen, size: 20),
                   )
                 ],
               )),
@@ -338,7 +339,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         // backgroundColor: !isDark
         //     ? (widget._fromHot ? Color(0xffe9e9e9) : null)
         //     : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
-        backgroundColor: !isDark ? null : Colours.dark_bg_color,
+        // backgroundColor: !isDark ? null : Colours.dark_bg_color,
         body: Builder(builder: (context) {
           this.myContext = context;
           return Listener(
@@ -357,7 +358,6 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   ? SingleChildScrollView(
                       child: Container(
                       decoration: BoxDecoration(
-                          color: isDark ? Colours.dark_bg_color : null,
                           borderRadius: const BorderRadius.all(Radius.circular(18))),
                       padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
                       child: Column(

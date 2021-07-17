@@ -8,6 +8,7 @@ import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/page/tweet/tweet_comment_wrapper.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/message_util.dart';
@@ -45,7 +46,7 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
 
   @override
   Widget build(BuildContext context) {
-    tweetProvider = Provider.of<TweetProvider>(context);
+    tweetProvider = Provider.of<TweetProvider>(context, listen: false);
     return Scaffold(
       // bottomSheet: Container(
       //   child: Text("12333213"),
@@ -106,7 +107,8 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
                               displayLink: true,
                               canPraise: true,
                               indexInList: index,
-                              onClickComment: (TweetReply subReply, String targetNick, String targetAccountId) {
+                              onClickComment:
+                                  (TweetReply subReply, String targetNick, String targetAccountId) {
                                 _bottomSheetController =
                                     Scaffold.of(context).showBottomSheet((context) => Container(
                                             child: TweetIndexCommentWrapper(
@@ -116,13 +118,14 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
                                           hintText: targetNick != null ? '回复: $targetNick' : '评论',
                                           onSend: (String value, bool anonymous) async {
                                             TweetReply reply = TRUtil.assembleReply(
-                                                tweets[index], value, anonymous, true, subReply: subReply);
+                                                tweets[index], value, anonymous, true,
+                                                subReply: subReply);
 
                                             await TRUtil.publicReply(context, reply,
                                                 (bool success, TweetReply newReply) {
                                               if (success) {
                                                 closeReplyInput();
-                                                final _tweetProvider = Provider.of<TweetProvider>(context);
+                                                final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
                                                 _tweetProvider.updateReply(context, newReply);
                                               } else {
                                                 ToastUtil.showToast(context, "评论失败，请稍后再试");
@@ -147,12 +150,11 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   Future<void> _onRefresh(BuildContext context) async {
-    print('On refresh');
     _refreshController.resetNoData();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
     tweetProvider.update(temp, clear: true, append: false);
-    MessageUtil.clearTabIndexTweetCnt();
+    Provider.of<MsgProvider>(context, listen: false).updateTweetNewCnt(0);
     if (temp == null) {
       _refreshController.refreshFailed();
     } else {
@@ -164,7 +166,6 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
     List<BaseTweet> temp = await getData(1);
     tweetProvider.update(temp, clear: true, append: false);
     _refreshController.refreshCompleted();
-
   }
 
   Future<void> _onLoading() async {
@@ -179,12 +180,10 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   Future getData(int page) async {
-    print('get data ------$page------');
     List<BaseTweet> pbt = await (TweetApi.queryTweets(PageParam(
       page,
       pageSize: 10,
       orgId: Application.getOrgId,
-//        types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames)))
       types: null,
     )));
     return pbt;

@@ -26,6 +26,7 @@ import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/page/common/avatar_origin.dart';
 import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
@@ -121,7 +122,6 @@ class _AccountProfileState extends State<AccountProfile> {
 
   void _loadMoreData() async {
     List<BaseTweet> tweets = await _getTweets();
-    print("${tweets.length}");
     if (!CollectionUtil.isListEmpty(tweets)) {
       _currentPage++;
       setState(() {
@@ -137,150 +137,157 @@ class _AccountProfileState extends State<AccountProfile> {
   Widget build(BuildContext context) {
     bool isDark = ThemeUtils.isDark(context);
     return Scaffold(
-        body: EasyRefresh(
-            controller: _hisTweetController,
-            enableControlFinishLoad: true,
-            footer: ClassicalFooter(
-                textColor: Colors.grey,
-                extent: 40.0,
-                noMoreText: '没有更多了～',
-                loadedText: '加载完成',
-                loadFailedText: '加载失败',
-                loadingText: '正在加载',
-                loadText: '上滑加载',
-                loadReadyText: '释放加载',
-                showInfo: false,
-                enableHapticFeedback: true,
-                enableInfiniteLoad: true),
-            onLoad: () => _onLoadHisTweet(),
-            child: CustomScrollView(slivers: <Widget>[
-              SliverAppBar(
-                  pinned: true,
-                  snap: false,
-                  floating: false,
-                  expandedHeight: ScreenUtil().setWidth(580),
-                  elevation: 0.5,
-                  titleSpacing: 1.2,
-                  title: Text(
-                    "${widget.nick ?? ''}的资料",
-                    style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  centerTitle: true,
-                  leading: IconButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      Navigator.maybePop(context);
-                    },
-                    icon: Image.asset(
-                      PathConstant.ICON_GO_BACK_ARROW,
-                      width: 20,
-                      color: isDark ? Colors.grey : Colors.black54,
-                    ),
-                  ),
-                  actions: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.more_horiz,
-                        color: isDark ? Colors.grey : Colors.black54,
+        backgroundColor: ThemeUtils.getBackColor(context),
+        body: Stack(
+          children: [
+            EasyRefresh(
+                controller: _hisTweetController,
+                enableControlFinishLoad: true,
+                footer: ClassicalFooter(
+                    textColor: Colors.grey,
+                    extent: 40.0,
+                    noMoreText: '没有更多了～',
+                    loadedText: '加载完成',
+                    loadFailedText: '加载失败',
+                    loadingText: '正在加载',
+                    loadText: '上滑加载',
+                    loadReadyText: '释放加载',
+                    showInfo: false,
+                    enableHapticFeedback: true,
+                    enableInfiniteLoad: true),
+                onLoad: () => _onLoadHisTweet(),
+                child: CustomScrollView(slivers: <Widget>[
+                  SliverAppBar(
+                      pinned: true,
+                      snap: false,
+                      floating: false,
+                      expandedHeight: ScreenUtil().setWidth(580),
+                      elevation: 0.5,
+                      titleSpacing: 1.2,
+                      title: Text(
+                        "${widget.nick ?? ''}的资料",
+                        style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
-                      onPressed: () {
-                        List<BottomSheetItem> items = List();
-                        items.add(BottomSheetItem(
-                            Icon(
-                              Icons.warning,
-                              color: Colors.grey,
-                            ),
-                            '举报', () {
-                          Navigator.pop(context);
-                          NavigatorUtils.goReportPage(
-                              context, ReportPage.REPORT_ACCOUNT, widget.accountId, "账户举报");
-                        }));
-                        if (Application.getAccountId != null &&
-                            Application.getAccountId != widget.accountId) {
-                          items.add(BottomSheetItem(
-                              Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
-                            Navigator.pop(context);
-                            _showShieldedAccountBottomSheet();
-                          }));
-                        }
-                        BottomSheetUtil.showBottomSheetView(context, items);
-                      },
-                    ),
-                  ],
-                  flexibleSpace: ClipRRect(
-                    child: FlexibleDetailBar(
-                        content: Container(
-                          alignment: Alignment.bottomCenter,
-                          margin: EdgeInsets.only(
-                              top: ScreenUtil.statusBarHeight, left: 30.0, right: 30.0, bottom: 10.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Hero(
-                                  tag: 'avatar',
-                                  child: AccountAvatar(
-                                      avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
-                                      whitePadding: true,
-                                      size: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
-                                      cache: true,
-                                      gender: calGender(account),
-                                      onTap: () {
-                                        Navigator.push(context, PageRouteBuilder(pageBuilder:
-                                            (BuildContext context, Animation animation,
-                                                Animation secondaryAnimation) {
-                                          return new FadeTransition(
-                                              opacity: animation, child: AvatarOriginPage(widget.avatarUrl));
-                                        }));
-                                      })),
-                              Gaps.vGap8,
-                              Text(
-                                widget.nick ?? "",
-                                style: pfStyle.copyWith(
-                                    fontSize: Dimens.font_sp15,
-                                    color: !isDark ? Colors.black : Colors.white70),
-                              ),
-                              Gaps.vGap10,
-                              Text(
-                                account == null ? "" : account.signature ?? "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: pfStyle.copyWith(
-                                    fontSize: Dimens.font_sp13p5,
-                                    color: isDark ? Colors.grey : Colors.black54),
-                              ),
-                            ],
-                          ),
+                      centerTitle: true,
+                      leading: IconButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.maybePop(context);
+                        },
+                        icon: Image.asset(
+                          PathConstant.ICON_GO_BACK_ARROW,
+                          width: 20,
+                          color: isDark ? Colors.grey : Colors.black54,
                         ),
-                        background: Stack(children: <Widget>[
-                          !isDark
-                              ? Utils.showNetImage(
-                                  widget.avatarUrl,
+                      ),
+                      actions: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.more_horiz,
+                            color: isDark ? Colors.grey : Colors.black54,
+                          ),
+                          onPressed: () {
+                            List<BottomSheetItem> items = List();
+                            items.add(BottomSheetItem(
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.grey,
+                                ),
+                                '举报', () {
+                              Navigator.pop(context);
+                              NavigatorUtils.goReportPage(
+                                  context, ReportPage.REPORT_ACCOUNT, widget.accountId, "账户举报");
+                            }));
+                            if (Application.getAccountId != null &&
+                                Application.getAccountId != widget.accountId) {
+                              items.add(BottomSheetItem(
+                                  Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人', () {
+                                Navigator.pop(context);
+                                _showShieldedAccountBottomSheet();
+                              }));
+                            }
+                            BottomSheetUtil.showBottomSheetView(context, items);
+                          },
+                        ),
+                      ],
+                      flexibleSpace: ClipRRect(
+                        child: FlexibleDetailBar(
+                            content: Container(
+                              alignment: Alignment.bottomCenter,
+                              margin: EdgeInsets.only(
+                                  top: ScreenUtil.statusBarHeight, left: 30.0, right: 30.0, bottom: 10.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Hero(
+                                      tag: 'avatar',
+                                      child: AccountAvatar(
+                                          avatarUrl: widget.avatarUrl + OssConstant.THUMBNAIL_SUFFIX,
+                                          whitePadding: true,
+                                          size: SizeConstant.TWEET_PROFILE_SIZE * 1.5,
+                                          cache: true,
+                                          gender: calGender(account),
+                                          onTap: () {
+                                            Navigator.push(context, PageRouteBuilder(pageBuilder:
+                                                (BuildContext context, Animation animation,
+                                                    Animation secondaryAnimation) {
+                                              return new FadeTransition(
+                                                  opacity: animation,
+                                                  child: AvatarOriginPage(widget.avatarUrl));
+                                            }));
+                                          })),
+                                  Gaps.vGap8,
+                                  Text(
+                                    widget.nick ?? "",
+                                    style: pfStyle.copyWith(
+                                        fontSize: Dimens.font_sp15,
+                                        color: !isDark ? Colors.black : Colors.white70),
+                                  ),
+                                  Gaps.vGap10,
+                                  Text(
+                                    account == null ? "" : account.signature ?? "",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: pfStyle.copyWith(
+                                        fontSize: Dimens.font_sp13p5,
+                                        color: isDark ? Colors.grey : Colors.black54),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            background: Stack(children: <Widget>[
+                              Utils.showNetImage(
+                                widget.avatarUrl,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                              BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaY: 12,
+                                  sigmaX: 12,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: isDark ? ColorConstant.MAIN_BG_DARK : Colors.white12),
                                   width: double.infinity,
                                   height: double.infinity,
-                                  fit: BoxFit.cover,
-                                )
-                              : Gaps.empty,
-                          BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaY: 14,
-                              sigmaX: 14,
-                            ),
-                            child: Container(
-                              decoration:
-                                  BoxDecoration(color: isDark ? ColorConstant.MAIN_BG_DARK : Colors.white70),
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                          ),
-                        ])),
-                  )),
-              SliverToBoxAdapter(
-                child: Container(
-                    margin: EdgeInsets.only(top: 15, left: 15.0, right: 10.0, bottom: 10),
+                                ),
+                              ),
+                            ])),
+                      )),
+                  SliverToBoxAdapter(
+                      child: Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
+                      // borderRadius:
+                      //     BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+                    ),
+                    padding: const EdgeInsets.only(top: 20, left: 15.0, right: 15.0, bottom: 10),
                     child: account == null && _initAccount
                         ? SpinKitThreeBounce(
                             color: Colors.lightGreen,
@@ -300,12 +307,14 @@ class _AccountProfileState extends State<AccountProfile> {
                                         softWrap: false,
                                         overflow: TextOverflow.ellipsis,
                                         text: TextSpan(children: [
-                                          WidgetSpan(child: Icon(Icons.school, size: 16, color: Colors.grey)),
+                                          WidgetSpan(
+                                              child: Icon(Icons.school,
+                                                  size: 16, color: isDark ? Colors.white60 : Colors.black87)),
                                           // WidgetSpan(
                                           //     child: _wrapIcon(LoadAssetSvg("count",
                                           //         width: 19, height: 19, color: Colors.green))),
                                           TextSpan(
-                                              text: " " + _getCampusInfoText(),
+                                              text: "  ${_getCampusInfoText()}",
                                               style: TextStyle(
                                                   fontSize: Dimens.font_sp15,
                                                   fontFamily: TextConstant.PING_FANG_FONT,
@@ -333,54 +342,57 @@ class _AccountProfileState extends State<AccountProfile> {
                                         ),
                                       )),
                                 ],
-                              )),
-              ),
-              CollectionUtil.isListEmpty(_accountTweets) || _initTweet
-                  ? (!_initTweet
-                      ? SliverToBoxAdapter(
-                          child: Container(
-                              margin: EdgeInsets.only(top: 50),
-                              height: 800,
-                              alignment: Alignment.topCenter,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  SizedBox(
-                                      // width: ScreenUtil().setWidth(600),
-                                      height: ScreenUtil().setHeight(400),
-                                      child: LoadAssetImage(
-                                        ThemeUtils.isDark(context) ? 'no_data_dark' : 'no_data',
-                                        fit: BoxFit.cover,
-                                      )),
-                                  Gaps.vGap16,
-                                  Text('该用户暂未发布过内容~',
-                                      style:
-                                          pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp14)),
-                                ],
-                              )),
-                        )
-                      : SliverToBoxAdapter(
-                          child: Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: SpinKitThreeBounce(color: Colors.lightGreen, size: 20),
-                        )))
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) {
-                          return TweetCard2(_accountTweets[index],
-                              displayLink: false,
-                              upClickable: false,
-                              downClickable: false,
-                              myNickClickable: false,
-                              needLeftProfile: false,
-                              displayPraise: true);
-                        },
-                        childCount: _accountTweets.length,
-                      ),
-                    ),
-            ])));
+                              ),
+                  )),
+                  CollectionUtil.isListEmpty(_accountTweets) || _initTweet
+                      ? (!_initTweet
+                          ? SliverToBoxAdapter(
+                              child: Container(
+                                  color: isDark ? Colours.dark_bg_color : Color(0xfffffeff),
+                                  padding: EdgeInsets.only(top: 50),
+                                  height: 800,
+                                  alignment: Alignment.topCenter,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      SizedBox(
+                                          // width: ScreenUtil().setWidth(600),
+                                          height: ScreenUtil().setHeight(400),
+                                          child: LoadAssetImage(
+                                            ThemeUtils.isDark(context) ? 'no_data_dark' : 'no_data',
+                                            fit: BoxFit.cover,
+                                          )),
+                                      Gaps.vGap16,
+                                      Text('该用户暂未发布过内容~',
+                                          style: pfStyle.copyWith(
+                                              color: Colors.grey, fontSize: Dimens.font_sp14)),
+                                    ],
+                                  )),
+                            )
+                          : SliverToBoxAdapter(
+                              child: Container(
+                              margin: const EdgeInsets.only(top: 30),
+                              child: SpinKitThreeBounce(color: Colors.lightGreen, size: 20),
+                            )))
+                      : SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                              return TweetCard2(_accountTweets[index],
+                                  displayLink: false,
+                                  upClickable: false,
+                                  downClickable: false,
+                                  myNickClickable: false,
+                                  needLeftProfile: false,
+                                  displayPraise: true);
+                            },
+                            childCount: _accountTweets.length,
+                          ),
+                        ),
+                ]))
+          ],
+        ));
   }
 
   calGender(AccountDisplayInfo acc) {
@@ -510,14 +522,14 @@ class _AccountProfileState extends State<AccountProfile> {
               "基础资料",
               {
                 "昵称": _buildSingleTextValue(account.nick),
-                "签名": _buildSingleTextValue(account.signature ?? "未设置"),
+                "签名": _buildSingleTextValue(account.signature ?? " — "),
               }),
           _buildSingleContainer(Icon(Icons.add_a_photo, color: Colors.blueAccent), "个人档案", {
-            "姓名": _buildSingleTextValue(account.displayName ? account.name : ""),
+            "姓名": _buildSingleTextValue(account.displayName ? account.name : " — "),
             "性别": _buildSingleTextValue(genderText),
             // "性别": _buildGenderWidget(),
             "年龄":
-                _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : "未知"),
+                _buildSingleTextValue(account.displayAge && account.age > 0 ? account.age.toString() : " — "),
             "地区": _buildSingleTextValue(_buildRegionText()),
             "专业": _buildSingleTextValue(_getCampusInfoText()),
           }),
@@ -528,9 +540,9 @@ class _AccountProfileState extends State<AccountProfile> {
               ),
               "联系资料",
               {
-                "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : "未公开"),
-                "Q Q": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : "未公开"),
-                "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : "未公开"),
+                "手机": _buildSingleTextValue(account.displayPhone ? account.mobile : " — "),
+                "Q Q": _buildSingleTextValue(account.displayQQ && account.qq != null ? account.qq : " — "),
+                "微信": _buildSingleTextValue(account.displayWeChat ? account.wechat : " — "),
               }),
         ],
       ),
@@ -551,7 +563,8 @@ class _AccountProfileState extends State<AccountProfile> {
                 margin: const EdgeInsets.only(right: 10.0),
                 child: Text(
                   key,
-                  style: pfStyle.copyWith(fontSize: Dimens.font_sp15, color: Colors.grey),
+                  style: pfStyle.copyWith(
+                      fontSize: Dimens.font_sp15, color: Colors.grey, fontWeight: FontWeight.w500),
                 ),
               ),
               value,
@@ -596,7 +609,7 @@ class _AccountProfileState extends State<AccountProfile> {
     if (text == null || text.trim().length == 0) {
       text = "";
     }
-    return Text(text, style: pfStyle);
+    return Text(text, style: pfStyle.copyWith(fontWeight: FontWeight.w400));
   }
 
   Widget _buildGenderWidget() {

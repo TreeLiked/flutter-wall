@@ -6,11 +6,13 @@ import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/common-widget/gallery_photo_view_wrapper.dart';
+import 'package:iap_app/common-widget/gallery_photo_view_wrapper_circle.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
@@ -61,7 +63,7 @@ class Utils {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return SpinKitThreeBounce(color: Colors.amber, size: size);
+          return SpinKitThreeBounce(color: Colors.white, size: size);
           // return CupertinoActivityIndicator();
 //        const CupertinoActivityIndicator()
 //          );
@@ -71,6 +73,10 @@ class Utils {
       call();
       NavigatorUtils.goBack(context);
     }
+  }
+
+  static void closeLoading(BuildContext context) {
+    NavigatorUtils.goBack(context);
   }
 
   static void showDefaultLoadingWithAsyncCall(
@@ -99,7 +105,7 @@ class Utils {
               child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black26,
+                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black12,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   alignment: Alignment.center,
@@ -276,13 +282,14 @@ class Utils {
       nextFocus: true,
       actions: List.generate(
           list.length,
-          (i) => KeyboardAction(
-                focusNode: list[i],
-                closeWidget: const Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: const Text("关闭"),
-                ),
-              )),
+          (i) => KeyboardActionsItem(
+              focusNode: list[i],
+              footerBuilder: (_) => PreferredSize(
+                  child: const Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: const Text("关闭"),
+                  ),
+                  preferredSize: Size.fromHeight(40)))),
     );
   }
 
@@ -291,10 +298,17 @@ class Utils {
   }
 
   static String getBadgeText(int count, {int maxCount = 99}) {
+    if (count <= 0) {
+      return "";
+    }
     if (count > maxCount) {
       return '$maxCount+';
     }
     return '$count';
+  }
+
+  static Text getRpWidget(int cnt, {int maxCount = 99, Color textColor = Colors.white, double fontSize = 12.0}) {
+    return Text('${getBadgeText(cnt, maxCount: maxCount)}', style: pfStyle.copyWith(color: textColor, fontSize: fontSize));
   }
 
   static bool badgeHasData(int data) {
@@ -337,6 +351,38 @@ class Utils {
             maintainState: false));
   }
 
+  static void openPhotoViewForCircle(
+    BuildContext context,
+    List<String> urls,
+    int initialIndex,
+    int refId,
+  ) {
+    if (CollectionUtil.isListEmpty(urls)) {
+      return;
+    }
+
+    List<PhotoWrapItem> items =
+        urls.map((f) => PhotoWrapItem(index: initialIndex, url: Uri.decodeComponent(f))).toList();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CirclePhotoViewWrapper(
+                  usePageViewWrapper: true,
+                  galleryItems: items,
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  loadingChild: new SpinKitRing(
+                    color: Colors.grey,
+                    size: 18.0,
+                    lineWidth: 3.0,
+                  ),
+                  initialIndex: initialIndex,
+                  refId: refId.toString(),
+                ),
+            maintainState: false));
+  }
+
   static Widget loadingIconStatic =
       SizedBox(width: 25.0, height: 25.0, child: const CupertinoActivityIndicator(animating: false));
 
@@ -353,6 +399,10 @@ class Utils {
       completeIcon: null,
     );
   }
+
+  static String getEnumValue(a) {
+    return a.toString().substring(a.toString().indexOf('.') + 1);
+  }
 }
 
 Future<T> showElasticDialog<T>({
@@ -360,7 +410,7 @@ Future<T> showElasticDialog<T>({
   bool barrierDismissible = true,
   WidgetBuilder builder,
 }) {
-  final ThemeData theme = Theme.of(context, shadowThemeOnly: true);
+  final ThemeData theme = Theme.of(context);
   return showGeneralDialog(
     context: context,
     pageBuilder:

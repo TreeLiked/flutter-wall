@@ -25,7 +25,8 @@ class TweetBodyWrapper extends StatelessWidget {
       return Gaps.empty;
     }
     return Container(
-        child: ExtendedText("${body.contains("@") ? body : body.trimRight()}",
+        child: ExtendedText("$body",
+        // child: ExtendedText("$body",
             maxLines: maxLine == -1 ? null : maxLine,
             softWrap: true,
             textAlign: TextAlign.left,
@@ -42,14 +43,13 @@ class TweetBodyWrapper extends StatelessWidget {
             overflowWidget: maxLine == -1
                 ? null
                 : TextOverflowWidget(
-                    fixedOffset: Offset.zero,
                     child: Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          const Text(".. 查看全部",
-                              style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp13p5))
-                        ])),
+                        const Text(".. 查看全部",
+                            style: const TextStyle(color: Colors.blue, fontSize: Dimens.font_sp13p5))
+                      ])),
             style: height == -1
                 ? MyDefaultTextStyle.getTweetBodyStyle(context)
                 : MyDefaultTextStyle.getTweetBodyStyle(context).copyWith(height: height)));

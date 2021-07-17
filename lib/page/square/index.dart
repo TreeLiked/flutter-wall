@@ -1,3 +1,4 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/page/square/topic/topic_page_view.dart';
@@ -13,7 +14,6 @@ import 'package:unicorndial/unicorndial.dart';
 class SquareIndexPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    print('square index create state');
     return _SquareIndexPage();
   }
 }
@@ -21,6 +21,9 @@ class SquareIndexPage extends StatefulWidget {
 class _SquareIndexPage extends State<SquareIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<SquareIndexPage> {
   int _currentIndex = 0;
+
+  static const String _TAG = "_SquareIndexPage";
+
 
   List<String> tabs;
 
@@ -35,7 +38,7 @@ class _SquareIndexPage extends State<SquareIndexPage>
   @override
   void initState() {
     super.initState();
-    print('square index craete state');
+    LogUtil.e('square index init state', tag: _TAG);
 
     initPageData();
 
@@ -44,10 +47,8 @@ class _SquareIndexPage extends State<SquareIndexPage>
         if (_controller.index.toDouble() == _controller.animation.value) {
           switch (_controller.index) {
             case 0:
-              print(1);
               break;
             case 1:
-              print(2);
               break;
           }
         }
@@ -103,14 +104,16 @@ class _SquareIndexPage extends State<SquareIndexPage>
   Widget build(BuildContext context) {
     super.build(context);
     isDark = ThemeUtils.isDark(context);
-    print('square index build');
+    LogUtil.e('square index build', tag: _TAG);
+
+
 
     Color _badgeColor = isDark ? Colours.dark_app_main : Colours.app_main;
 
     return Scaffold(
       // 设置没有高度的 appbar，目的是为了设置状态栏的颜色
-              backgroundColor: isDark ? Color(0xff303233) : Color(0xfff6f7f8),
-    appBar: AppBar(
+      backgroundColor: isDark ? Color(0xff303233) : Color(0xfff6f7f8),
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
 //        leading:
 //            IconButton(icon: Icon(Icons.close, size: 20), onPressed: () => NavigatorUtils.goBack(context)),
@@ -118,7 +121,7 @@ class _SquareIndexPage extends State<SquareIndexPage>
         automaticallyImplyLeading: false,
         title: Text('话题广场'),
         centerTitle: true,
-actions: _renderActions(),
+        actions: _renderActions(),
 //        actions: <Widget>[Icon(Icons.close)],
 //        title: Stack(
 //          children: <Widget>[
@@ -228,8 +231,8 @@ actions: _renderActions(),
   List<Widget> _renderActions() {
     return [
       FlatButton(
-        child: Text('退出',style: MyDefaultTextStyle.getSubTextBodyStyle(isDark)),
-        onPressed: ()=>NavigatorUtils.goBack(context)
+          child: Text('退出', style: MyDefaultTextStyle.getSubTextBodyStyle(isDark)),
+          onPressed: () => NavigatorUtils.goBack(context)
       )
     ];
   }

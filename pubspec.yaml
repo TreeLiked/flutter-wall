@@ -27,13 +27,14 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  dio: ^3.0.9
-  json_annotation: ^2.0.0
+  dio: ^4.0.0
+  html: ^0.15.0
+  json_annotation: ^4.0.1
   # 动画
   flare_flutter: ^2.0.3
   flustars: ^0.3.3
   # 下拉刷新
-  pull_to_refresh: ^1.6.2
+  pull_to_refresh: ^1.6.5
 
   # 响应式编程 https://github.com/ReactiveX/rxdart
   rxdart: ^0.24.1
@@ -42,10 +43,10 @@ dependencies:
   flutter_easyrefresh: ^2.1.8
 
   # 全局数据存储，类vuex
-  provider: ^3.1.0
+  provider: ^5.0.0
 
   # 本地存储
-  shared_preferences: ^0.5.12+4
+  shared_preferences: ^2.0.5
 
   # 微信登录
   # fluwx: ^1.1.1
@@ -57,10 +58,10 @@ dependencies:
   flutter_cache_manager: ^2.1.1
 
   # 图片预览
-  photo_view: ^0.10.3
+  photo_view: ^0.11.1
   # 
   flutter_screenutil: ^2.3.1
-#  flutter_screenutil: ^4.0.3+1
+  #  flutter_screenutil: ^4.0.3+1
 
 
   # 权限管理
@@ -72,10 +73,10 @@ dependencies:
   image_gallery_saver: ^1.6.8
 
   # 单图选择
-  image_picker: ^0.6.7+8
+  image_picker: ^0.7.4
 
   # 扩展图片预览
-  extended_image: ^1.1.1
+  extended_image: ^4.0.1
   # 图片裁剪
   image_crop: ^0.3.4
 
@@ -84,12 +85,12 @@ dependencies:
   # Toast插件 https://github.com/OpenFlutter/flutter_oktoast
   oktoast: ^2.3.2
   # WebView插件 https://github.com/flutter/plugins/tree/master/packages/webview_flutter
-  webview_flutter: ^0.3.22+1
+  webview_flutter: ^2.0.4
 
   # 键盘增强工具
-  keyboard_actions: ^2.1.2
+  keyboard_actions: ^3.4.0
 
-  common_utils: ^1.2.4
+  common_utils: ^2.0.2
 
   # fluro路由
   fluro: ^1.7.8
@@ -98,15 +99,15 @@ dependencies:
   flutter_spinkit: ^4.1.2+1
 
   # 图片多选
-  photo: ^0.4.8
+#  photo: ^0.5.0-dev.3
 
-  multi_image_picker: ^4.7.15
+  multi_image_picker: ^4.8.0
 
   # 加密库
-  crypto: ^2.1.4
+  crypto: ^3.0.1
 
   # uuid
-  uuid: ^2.0.4
+  uuid: ^3.0.4
 
   # 加载模态框
   modal_progress_hud: ^0.1.3
@@ -115,14 +116,18 @@ dependencies:
   city_pickers: ^0.2.0
 
   # 日期选择
-  flutter_datetime_picker: ^1.4.0
+#  flutter_datetime_picker: 1.5.1
+  flutter_datetime_picker:
+    git:
+      url: https://github.com/Realank/flutter_datetime_picker.git
+      ref: master
 
   # 极光推送
-  jpush_flutter: 0.5.5
-#  jpush_flutter:
-#    git:
-#      url: git://github.com/jpush/jpush-flutter-plugin.git
-#      ref: master
+  jpush_flutter: ^2.0.5
+  #  jpush_flutter:
+  #    git:
+  #      url: git://github.com/jpush/jpush-flutter-plugin.git
+  #      ref: master
 
   # 设备信息
   device_info: ^0.4.2+8
@@ -131,15 +136,15 @@ dependencies:
   #  vibrate: ^0.0.4
 
   # 小红点
-  badges: ^1.1.6
+  badges: ^2.0.1
 
   # 侧滑菜单
   #  flutter_slidable: ^0.5.4
 
   # 自定义文本溢出 https://github.com/fluttercandies/extended_text/blob/master/README-ZH.md
-  extended_text: ^4.1.0
+  extended_text: ^6.0.4
 
-  flutter_svg: ^0.19.0
+  flutter_svg: ^0.22.0
 
   # social 
   # sharesdk: ^1.1.8
@@ -161,19 +166,40 @@ dependencies:
   #
   transparent_image: ^1.0.0
 
-  umeng_analytics_plugin: ^1.0.3
+#  umeng_analytics_plugin: ^1.0.3
 
   # 九宫格图片 https://github.com/flutterchina/nine_grid_view
   nine_grid_view: ^1.0.7
 
+  # ws连接 https://pub.dev/packages/web_socket_channel/install
+  web_socket_channel: ^1.2.0
 
+  stomp_dart_client: ^0.3.8
+
+  # 事件总线
+  event_bus: ^1.1.1
+
+  # 瀑布流
+  flutter_staggered_grid_view: ^0.3.4
+
+  # 提取图像主色
+  palette_generator: ^0.2.3
+
+  # 根据背景色获得字体颜色
+  flutter_statusbarcolor: ^0.2.3
+
+  # 虚线container边框
+  dotted_border: ^2.0.0
+
+  # bloc 状态管理
+  flutter_bloc: ^7.0.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^1.0.0
-  json_serializable: ^2.0.0
+  json_serializable: ^4.1.1
 
 
 # For information on the generic Dart part of this file, see the
@@ -202,6 +228,7 @@ flutter:
     - assets/icons/notification/
     - assets/icons/profile/
     - assets/icons/tweet/
+    - assets/icons/circle/
 
 
   # The following line ensures that the Material Icons font is

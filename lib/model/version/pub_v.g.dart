@@ -31,5 +31,5 @@ Map<String, dynamic> _$PubVersionToJson(PubVersion instance) =>
       'pubTime': instance.pubTime?.toIso8601String(),
       'description': instance.description,
       'updateDesc': instance.updateDesc,
-      'cover': instance.cover,
+      'cover': instance.cover
     };

@@ -21,6 +21,6 @@ class TextConstant {
   static const String TWEET_REPLY_FAIL = "回复失败，请稍后再试";
 
 
-  static const String PING_FANG_FONT = "PingFang";
+  static const String PING_FANG_FONT = null;
 
 }

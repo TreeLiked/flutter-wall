@@ -200,7 +200,6 @@ class _PrivateSettingPageState extends State<PrivateSettingPage> {
             onTap: () {
               _showRadioDialog(
                   '展示我的学院', settingMap[AccountSettingKeys.displayInstitute].toString().toUpperCase(), (k, v) {
-                    print(k);
                 _updateSomething(AccountSettingKeys.displayInstitute, k, (trueCallback) {
                   setState(() {
                     settingMap[AccountSettingKeys.displayInstitute] = (k == _TRUE) ? true : false;

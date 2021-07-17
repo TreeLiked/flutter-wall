@@ -19,22 +19,22 @@ class TweetNoDataView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(bottom: 15.0, top: ScreenUtil().setHeight(200)),
+          margin: EdgeInsets.only(bottom: 15.0, top: ScreenUtil().setHeight(160)),
           color: Colors.transparent,
           child: Image.asset(
             ImageUtils.getImgPath(ThemeUtils.isDark(context) ? "no_data_dark" : "no_data", format: "png"),
             fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width * 0.6,
+            width: MediaQuery.of(context).size.width * 0.4,
           ),
         ),
         Gaps.vGap10,
-        GestureDetector(
-          onTap: () => onTapReload == null ? null : onTapReload(),
-          child: Text(
-            '点击重新加载',
-            style: pfStyle.copyWith(color: Colors.blueAccent, letterSpacing: 1.1, fontSize: Dimens.font_sp16),
-          ),
-        )
+        // GestureDetector(
+        //   onTap: () => onTapReload == null ? null : onTapReload(),
+        //   child: Text(
+        //     '点击重新加载',
+        //     style: pfStyle.copyWith(color: Colors.blueAccent, fontSize: Dimens.font_sp16, letterSpacing: 1.2),
+        //   ),
+        // )
       ],
     );
   }

@@ -8,6 +8,7 @@ import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/number_util.dart';
 import 'package:iap_app/util/widget_util.dart';
 import 'package:provider/provider.dart';
 
@@ -59,8 +60,8 @@ class TweetStatisticsWrapper extends StatelessWidget {
     if (tweet.latestPraise == null) {
       tweet.latestPraise = List();
     }
-    final _tweetProvider = Provider.of<TweetProvider>(context);
-    final _localAccProvider = Provider.of<AccountLocalProvider>(context);
+    final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
+    final _localAccProvider = Provider.of<AccountLocalProvider>(context, listen: false);
     _tweetProvider.updatePraise(context, _localAccProvider.account, tweet.id, !tweet.loved);
     await TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
     if (tweet.loved) {
@@ -70,16 +71,7 @@ class TweetStatisticsWrapper extends StatelessWidget {
   }
 
   String calCount(int count) {
-    if (count < 1000) {
-      return "$count";
-    }
-    if (count < 10000) {
-      return "${count ~/ 1000}k+";
-    }
-    if (count < 100000) {
-      return "${count ~/ 10000}w+";
-    }
-    return "10w+";
+    return NumberUtil.calCount(count);
   }
 }
 

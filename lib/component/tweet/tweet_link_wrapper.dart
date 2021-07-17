@@ -1,3 +1,4 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/TweetRichWrapper.dart';
 import 'package:iap_app/common-widget/my_future_builder.dart';
@@ -8,6 +9,8 @@ import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetLinkWrapper extends StatelessWidget {
+  static const String _TAG = "TweetLinkWrapper";
+
   final BaseTweet tweet;
   final bool fromHot;
 
@@ -28,7 +31,6 @@ class TweetLinkWrapper extends StatelessWidget {
     }
 
     String link = StringUtil.getFirstUrlInStr(body);
-    print("$link");
     if (link == null || link == "") {
       return Gaps.empty;
     }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/common-widget/my_flat_button.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
@@ -60,28 +61,26 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeUtils.isDark(context);
     return Scaffold(
         appBar: MyAppBar(
           isBack: true,
           centerTitle: "基本信息",
         ),
-        body: defaultTargetPlatform == TargetPlatform.iOS
-            ? FormKeyboardActions(
-                child: _buildBody(),
-              )
-            : SingleChildScrollView(
-                child: _buildBody(),
-              ));
+        body: KeyboardActions(
+          child: _buildBody(),
+          config: KeyboardActionsConfig(keyboardActionsPlatform: KeyboardActionsPlatform.IOS, actions: []),
+        ));
   }
 
   _goChoiceAvatar() async {
     bool has = await PermissionUtil.checkAndRequestPhotos(context);
     if (has) {
-      var image = await ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      var image = await ImagePicker().getImage(source: ImageSource.gallery, imageQuality: 80);
       if (image != null) {
         final cropKey = GlobalKey<CropState>();
-        File file = await Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
+        File file = await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ImageCropContainer(cropKey: cropKey, file: File(image.path))));
         if (file != null) {
           this._avatarFile?.delete();
           setState(() {
@@ -129,15 +128,13 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                     onTap: _goChoiceAvatar,
                     child: Container(
                         padding: const EdgeInsets.all(20.0),
-                        decoration: BoxDecoration(
-                            color: Color(0xffD7D6D9),
-                            shape: BoxShape.circle),
-                        child: const LoadAssetImage(
+                        decoration: BoxDecoration(color: Color(0xffD7D6D9), shape: BoxShape.circle),
+                        child: LoadAssetImage(
                           "profile_sel",
                           format: 'png',
                           width: SizeConstant.TWEET_PROFILE_SIZE - 10,
                           fit: BoxFit.cover,
-                          color: Colors.white,
+                          color: isDark ? Colors.black54 : Colors.white,
                         )))
                 : GestureDetector(
                     onTap: _goChoiceAvatar,
@@ -151,17 +148,24 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
                     ))),
           ),
           Container(
-            decoration: BoxDecoration(color: Color(0xfff7f8f8), borderRadius: BorderRadius.circular(15.0)),
-            padding: const EdgeInsets.only(left: 20),
+
+            decoration: BoxDecoration(
+                color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
+
+                borderRadius: BorderRadius.circular(8.0)
+            ),
+            // padding: const EdgeInsets.only(left: 20),
             margin: const EdgeInsets.only(top: 25),
             child: Row(
               children: <Widget>[
+                Gaps.vGap10,
                 Expanded(
                   child: MyTextField(
                     focusNode: _nodeText1,
                     config: Utils.getKeyboardActionsConfig(context, [
                       _nodeText1,
                     ]),
+                    bgColor: Colors.transparent,
                     controller: _nickController,
                     maxLength: 16,
                     keyboardType: TextInputType.text,
@@ -174,16 +178,18 @@ class _AccountInfoCPageState extends State<AccountInfoCPage> {
           Gaps.vGap12,
           Container(
             width: double.infinity,
+            // padding: const EdgeInsets.symmetric(horizontal: 5.0),
 //            color: _canGoNext ? Colors.amber : Color(0xffD7D6D9),
             margin: const EdgeInsets.only(top: 15),
-            child: FlatButton(
-                disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
-                color:
+            child: MyFlatButton('下一步', Colors.white,
+                // disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
+                disabled: !_canGoNext,
+                verticalPadding: 10.0,
+                fillColor:
                     _canGoNext ? Colors.amber : (!isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-                child: Text('下一步', style: TextStyle(color: Colors.white)),
-                padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                onPressed: _canGoNext ? _chooseOrg : null),
+                // child: Text('下一步', style: TextStyle(color: Colors.white)),
+                // padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                onTap: _canGoNext ? _chooseOrg : null),
           ),
           Gaps.vGap15,
           Gaps.line,

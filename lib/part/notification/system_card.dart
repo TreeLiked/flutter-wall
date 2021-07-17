@@ -148,7 +148,7 @@ class SystemCardItem extends StatelessWidget {
                     msg.readStatus == ReadStatus.UNREAD
                         ? RedPoint(
                             msg,
-                            color: Colors.pinkAccent,
+                            color: Color(0xff00CED1),
                           )
                         : Gaps.empty,
                     Images.arrowRight,
@@ -177,7 +177,7 @@ class SystemCardItem extends StatelessWidget {
             softWrap: true,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp15)),
+            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
       );
     } else if (cover != null) {
       return Container(

@@ -8,6 +8,7 @@ import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/common-widget/my_flat_button.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
@@ -40,6 +41,9 @@ class OrgInfoCPage extends StatefulWidget {
 }
 
 class _OrgInfoCPageState extends State<OrgInfoCPage> {
+
+  static const String _TAG = "_OrgInfoCPageState";
+
   List<University> filterList = [];
 
   TextEditingController _controller;
@@ -89,7 +93,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
         NavigatorUtils.goBack(context);
         return;
       }
-      AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+      AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
       accountLocalProvider.setAccount(acc);
       _loadStorageTweetTypes();
       Application.setAccount(acc);
@@ -101,7 +105,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
     } else {
       NavigatorUtils.goBack(context);
       if (res != null) {
-        print(res.toString());
+        prefix0.LogUtil.e(res.toString(), tag: _TAG);
 
         if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
           ToastUtil.showToast(context, '该手机号已被注册，请登录');
@@ -140,7 +144,7 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
   }
 
   Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
+    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
     tweetTypesFilterProvider.updateTypeNames();
   }
 
@@ -156,16 +160,17 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
         body: !_haveChoice
             ? Column(
                 children: <Widget>[
-                  Gaps.vGap16,
+                  Gaps.vGap10,
                   Container(
 //                    height: ScreenUtil().setHeight(80),
                     padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 3.0),
+
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(13.0),
+                      borderRadius: BorderRadius.circular(8.0),
                       color: ThemeUtils.isDark(context) ? Color(0xff363636) : ColorConstant.TWEET_RICH_BG,
                     ),
-                    margin: EdgeInsets.symmetric(horizontal: Dimens.gap_dp5),
+                    margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: TextField(
                       controller: _controller,
                       textInputAction: TextInputAction.search,
@@ -243,10 +248,6 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                                           padding: const EdgeInsets.only(top: 37),
                                           child: Text('没有满足条件的数据', style: TextStyles.textGray14));
                                     }
-
-                                    list.forEach((element) {
-                                      print(element.toJson());
-                                    });
                                     return ListView.builder(
                                         itemCount: list.length,
                                         itemBuilder: (context, index) {
@@ -306,20 +307,17 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
                             letterSpacing: 1.1)),
                     WidgetSpan(
                         child: Container(
-                      child: FlatButton(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-                        color: ColorConstant.TWEET_RICH_BG,
-                        child: Text(
-                          "重新选择",
-                          style: pfStyle.copyWith(color: Colors.green, letterSpacing: 1.1),
-                        ),
-                        onPressed: () => {
+                      child: MyFlatButton(
+                        '重新选择',
+                        Colors.green,
+                        onTap: () {
                           setState(() {
                             _controller.text = "";
                             _queryUnTask = queryUnis("");
                             _haveChoice = false;
-                          })
+                          });
                         },
+                        radius: 6.0,
                       ),
                     )),
                     TextSpan(

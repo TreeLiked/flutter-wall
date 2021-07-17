@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/page/index/index.dart';
@@ -59,6 +60,14 @@ class NavigatorUtils {
   static goWebViewPage(BuildContext context, String title, String url, {String source = "0"}) {
     //fluro 不支持传中文,需转换
 
+    if (url.contains("music.163.com")) {
+      title = "网易云音乐";
+    } else if (url.contains("y.qq.com")) {
+      title = "QQ音乐";
+    } else if (url.contains("kugou.com")) {
+      title = "酷狗音乐";
+    }
+
     push(context,
         '${Routes.webViewPage}?title=${Uri.encodeComponent(title)}&url=${Uri.encodeComponent(url)}&source=$source');
   }
@@ -75,6 +84,17 @@ class NavigatorUtils {
   }
 
   static void goAccountProfile2(BuildContext context, Account account) {
+    if (account == null) {
+      return;
+    }
+    push(
+        context,
+        Routes.accountProfile +
+            Utils.packConvertArgs(
+                {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+  }
+
+  static void goAccountProfile3(BuildContext context, CircleAccount account) {
     if (account == null) {
       return;
     }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:iap_app/global/color_constant.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
@@ -82,6 +83,7 @@ class HotAppBarWidget extends StatelessWidget {
         pinned: pinned,
         snap: snap,
         floating: floating,
+        backgroundColor: isDark ? Colours.dark_bg_color : Colors.white,
         leading: displayLeading
             ? GestureDetector(
                 child: Icon(

@@ -107,32 +107,32 @@ class _OrgInfoCPageState extends State<OrgInfoCPage> {
       if (res != null) {
         prefix0.LogUtil.e(res.toString(), tag: _TAG);
 
-        if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
+        if (res.code == ResultCode.UN_REGISTERED_PHONE) {
           ToastUtil.showToast(context, '该手机号已被注册，请登录');
           await Future.delayed(Duration(seconds: 1)).then((_) {
             NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
           });
           return;
         }
-        if (res.code == MemberResultCode.ERROR_REGISTER) {
+        if (res.code == ResultCode.ERROR_REGISTER) {
           ToastUtil.showToast(context, '注册失败');
           NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
           return;
         }
 
-        if (res.code == MemberResultCode.INVALID_INVOCATION_CODE) {
+        if (res.code == ResultCode.INVALID_INVOCATION_CODE) {
           ToastUtil.showToast(context, '邀请码无效');
           NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
           return;
         }
 
-        if (res.code == MemberResultCode.ERROR_NICK_EXISTED) {
+        if (res.code == ResultCode.ERROR_NICK_EXISTED) {
           ToastUtil.showToast(context, '昵称已存在');
           NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
           return;
         }
 
-        if (res.code == MemberResultCode.ERROR_NICK_EXISTED) {
+        if (res.code == ResultCode.ERROR_NICK_EXISTED) {
           ToastUtil.showToast(context, '昵称已存在');
           NavigatorUtils.push(context, LoginRouter.loginIndex, clearStack: true);
           return;

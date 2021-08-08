@@ -38,10 +38,12 @@ var tweetDetailHandler = Handler(handlerFunc: (BuildContext context, Map<String,
 
 var createHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {
   String type = params['type'].first;
+  print(params['circleId'].first);
   return CreatePage(
       type: type,
       title: FluroConvertUtils.fluroCnParamsDecode(params['title'].first),
-      hintText: FluroConvertUtils.fluroCnParamsDecode(params['hintText'].first));
+      hintText: FluroConvertUtils.fluroCnParamsDecode(params['hintText'].first),
+      circleId: int.parse(FluroConvertUtils.fluroCnParamsDecode(params['circleId'].first)));
 });
 
 var notificationHandler = Handler(handlerFunc: (BuildContext context, Map<String, List<String>> params) {

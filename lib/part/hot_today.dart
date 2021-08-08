@@ -8,6 +8,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/empty_view.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/component/tweet/tweet_hot_card.dart';
 import 'package:iap_app/global/oss_canstant.dart';
@@ -22,7 +23,6 @@ import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/umeng_util.dart';
-import 'package:iap_app/util/widget_util.dart';
 
 class HotToday extends StatefulWidget {
   @override
@@ -139,7 +139,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       setState(() {
         _covers = _covers;
         _currentCover = _covers[0];
-        if(!CollectionUtil.isListEmpty(_covers)) {
+        if (!CollectionUtil.isListEmpty(_covers)) {
           _currentCover = _covers[Random().nextInt(_covers.length)];
         }
       });
@@ -178,6 +178,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     }
     return SafeArea(
         child: Scaffold(
+      backgroundColor: ThemeUtils.isDark(context) ? null : Colors.white,
       body: EasyRefresh.custom(
           header: LinkHeader(
             _headerNotifier,
@@ -212,10 +213,10 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                         children: [
                           TextSpan(
                               text: '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
-                              style: pfStyle.copyWith(fontSize: Dimens.font_sp15 * 2)),
+                              style: pfStyle.copyWith(fontSize: Dimens.font_sp15 * 2, color: Colors.white)),
                           TextSpan(
                               text: '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
-                              style: pfStyle.copyWith(fontSize: Dimens.font_sp16)),
+                              style: pfStyle.copyWith(fontSize: Dimens.font_sp16, color: Colors.white)),
                         ],
                       ),
                     ),
@@ -230,7 +231,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                           '精选20条校园最热门的内容，每半小时更新一次',
                           softWrap: true,
                           maxLines: 2,
-                          style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Colors.white70),
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Color(0xddffffff)),
                         ),
                         Gaps.vGap2,
                         Text(
@@ -238,7 +239,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                               (hotTweet != null
                                   ? DateUtil.formatDate(hotTweet.lastFetched, format: "HH:mm").toString()
                                   : '暂未更新'),
-                          style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Colors.white60),
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Color(0xddffffff)),
                         )
                       ],
                     ),
@@ -258,7 +259,8 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                   }
                   var tweets = hotTweet.tweets;
                   if (tweets == null || tweets.length == 0) {
-                    return _noDataView();
+                    return EmptyView(
+                        lightImg: "no_data", darkImg: "no_data_dark", text: '快去抢占热门吧 ～', topMargin: 50);
                   }
                   return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1),
                       showTrend: showTrend);
@@ -271,27 +273,6 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
           onRefresh: _onRefresh,
           onLoad: null),
     ));
-  }
-
-  _noDataView() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Gaps.vGap50,
-        SizedBox(
-            // width: ScreenUtil().setWidth(600),
-            height: ScreenUtil().setHeight(500),
-            child: LoadAssetImage(
-              ThemeUtils.isDark(context) ? 'no_data_dark' : 'no_data',
-              fit: BoxFit.cover,
-            )),
-        Gaps.vGap16,
-        Text('快去抢占热门吧 ～',
-            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp16, letterSpacing: 1.3)),
-      ],
-    );
   }
 
   _forwardDetail(int tweetId, int rank) {

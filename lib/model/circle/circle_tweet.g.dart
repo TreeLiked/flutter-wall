@@ -48,7 +48,7 @@ Map<String, dynamic> _$CircleTweetToJson(CircleTweet instance) =>
       'medias': instance.medias,
       'tags': instance.tags,
       'deleted': instance.deleted,
-      'sentTime': instance.sentTime?.toIso8601String(),
+      'sentTime': DateUtil.formatDate(instance.sentTime, format: DateFormats.full),
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'gmtModified': instance.gmtModified?.toIso8601String(),
     };

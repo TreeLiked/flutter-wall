@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';

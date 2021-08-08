@@ -22,7 +22,7 @@ class TweetMediaWrapper extends StatelessWidget {
   final BaseTweet tweet;
 
   TweetMediaWrapper(this.tweetId, {this.medias, this.tweet}) {
-    this.sw = (Application.screenWidth - 30.0) / 6 * 5;
+    this.sw = (Application.screenWidth - 30.0);
     this.sh = Application.screenHeight;
     if (medias != null) {
       List<Media> temp = List.from(medias)..retainWhere((media) => media.mediaType == Media.TYPE_IMAGE);

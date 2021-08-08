@@ -194,10 +194,14 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
           automaticallyImplyLeading: false,
           title: Text('我的消息',
               style: pfStyle.copyWith(
-                  fontSize: Dimens.font_sp16p5, fontWeight: FontWeight.w400, letterSpacing: 1.2)),
+                  fontSize: Dimens.font_sp16p5, fontWeight: FontWeight.w500, letterSpacing: 1.1)),
           centerTitle: true,
           leading: IconButton(
-              icon: Icon(Icons.arrow_back), iconSize: 23.0, onPressed: () => NavigatorUtils.goBack(context)),
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                size: 18,
+              ),
+              onPressed: () => NavigatorUtils.goBack(context)),
         ),
         body: SafeArea(
           top: false,
@@ -247,7 +251,8 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                       iconPadding: 8.5,
                       msgCnt: provider.circleTotal,
                       onTap: () {
-                        NavigatorUtils.push(context, NotificationRouter.circleMain);
+                        ToastUtil.showToast(context, '圈子即将开放，敬请期待');
+                        // NavigatorUtils.push(context, NotificationRouter.circleMain);
                       },
                       color: Colors.lightGreen[50],
                       iconColor: Colors.lightGreen,
@@ -265,7 +270,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
                           _latestInteractionMsg = null;
                           NavigatorUtils.push(context, NotificationRouter.interactiveMain);
                         }),
-                    Gaps.vGap8,
+                    Gaps.vGap5,
                     MainMessageItemNew(
                       iconPath: iconOfficialPath,
                       color: Color(0xffFEF7E7),

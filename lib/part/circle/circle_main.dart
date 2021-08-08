@@ -13,6 +13,7 @@ import 'package:iap_app/model/hot_tweet.dart';
 import 'package:iap_app/model/media.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/part/circle/circle_square_tab.dart';
+import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -276,7 +277,7 @@ class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: ThemeUtils.isDark(context) ? ColorConstant.MAIN_BG_DARKER:Colors.white,
+      color: ThemeUtils.isDark(context) ? Colours.dark_app_bar_bg_color :Colors.white,
       padding: const EdgeInsets.only(bottom: 15.0),
       child: this.child,
     );

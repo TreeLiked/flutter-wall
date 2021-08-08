@@ -4,15 +4,23 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html/dom.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/model/result_code.dart';
 import 'package:iap_app/model/web_link.dart';
+import 'package:iap_app/provider/msg_provider.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/html_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
@@ -78,21 +86,20 @@ class HttpUtil {
   HttpUtil({String baseUrl = Api.API_BASE_INF_URL, Map<String, dynamic> header}) {
     this.headers = header;
     options = BaseOptions(
-      // 请求基地址，一般为域名，可以包含路径
-      // baseUrl: baseUrl,
-      //连接服务器超时时间，单位是毫秒.
-      connectTimeout: 10000,
+        // 请求基地址，一般为域名，可以包含路径
+        // baseUrl: baseUrl,
+        //连接服务器超时时间，单位是毫秒.
+        connectTimeout: 10000,
 
-      //[如果返回数据是json(content-type)，dio默认会自动将数据转为json，无需再手动转](https://github.com/flutterchina/dio/issues/30)
-      // responseType: ResponseType.plain,
+        //[如果返回数据是json(content-type)，dio默认会自动将数据转为json，无需再手动转](https://github.com/flutterchina/dio/issues/30)
+        // responseType: ResponseType.plain,
 
-      ///  响应流上前后两次接受到数据的间隔，单位为毫秒。如果两次间隔超过[receiveTimeout]，
-      ///  [Dio] 将会抛出一个[DioErrorType.RECEIVE_TIMEOUT]的异常.
-      ///  注意: 这并不是接收数据的总时限.
-      receiveTimeout: 30000,
-      headers: header,
-      followRedirects: true
-    );
+        ///  响应流上前后两次接受到数据的间隔，单位为毫秒。如果两次间隔超过[receiveTimeout]，
+        ///  [Dio] 将会抛出一个[DioErrorType.RECEIVE_TIMEOUT]的异常.
+        ///  注意: 这并不是接收数据的总时限.
+        receiveTimeout: 30000,
+        headers: header,
+        followRedirects: true);
 
     dio = new Dio(options)..interceptors.add(getMyInterceptor());
     // dio = new Dio(options)..interceptors.add(getMyInterceptor());
@@ -214,6 +221,45 @@ class HttpUtil {
     LogUtil.e(
         '<-- Response to [ $requestId ] <-- $requestPath: ${val.length > 100 ? val.substring(0, 100) : val}',
         tag: _TAG);
+    Map<String, dynamic> resMap = Api.convertResponse(resp.data);
+    if (resMap != null && resMap.isNotEmpty && resMap.containsKey("code") && resMap.containsKey("success")) {
+      String code = resMap["code"].toString();
+      if (code == ResultCode.LOGIN_OUT) {
+        print("登出了哦-------");
+
+        BuildContext context = Application.context;
+
+        if (Application.getDeviceId != null) {
+          DeviceApi.removeDeviceInfo(Application.getAccountId, Application.getDeviceId);
+        }
+        Application.setLocalAccountToken(null);
+        Application.setAccount(null);
+        Application.setAccountId(null);
+        await SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+        await SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_ID);
+
+        await SpUtil.remove(SharedConstant.LOCAL_ORG_ID);
+        await SpUtil.remove(SharedConstant.LOCAL_ORG_NAME);
+
+        await SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
+        await SpUtil.remove(SharedConstant.MY_UN_LIKED);
+        await SpUtil.clear();
+
+        Provider.of<MsgProvider>(context, listen: false).clear();
+
+        httpUtil.clearAuthToken();
+        httpUtil2.clearAuthToken();
+
+        if (resMap["message"] != null) {
+          ToastUtil.showToast(context, resMap["message"], gravity: ToastGravity.CENTER);
+        }
+        NavigatorUtils.push(context, Routes.loginPage, clearStack: true);
+
+        print("-------------------------------finish---------------------------------");
+
+        return handler.next(resp);
+      }
+    }
     return handler.next(resp);
   }
 

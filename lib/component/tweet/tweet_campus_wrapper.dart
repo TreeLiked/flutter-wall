@@ -43,22 +43,10 @@ class TweetCampusWrapper extends StatelessWidget {
 
         (insEmpty && claEmpty) || anonymous
             ? Gaps.empty
-            : SquareTag(
-                "$t",
-                backgroundColor: typeEntity.renderBg ? null: Color(0xffEDF1F7),
-                backgroundDarkColor: Colors.black12,
-                textStyle:  pfStyle.copyWith(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
-                horizontalPadding: 10.0,
-                verticalPadding: 5.0,
-                roundRadius: 7.0,
-                // prefixIcon: Icon(
-                //   Icons.school,
-                //   color: ColorConstant.TWEET_NICK_COLOR,
-                //   size: 16.0,
-                // ),
-              ),
+            : _campusWrapper(typeEntity, t)
       ],
     );
+
     return Container(
       alignment: Alignment.centerLeft,
       margin: const EdgeInsets.only(bottom: 10.0),
@@ -68,4 +56,22 @@ class TweetCampusWrapper extends StatelessWidget {
       ),
     );
   }
+
+  Widget _campusWrapper(TweetTypeEntity typeEntity, String t) {
+    return SquareTag(
+      "$t",
+      backgroundColor: typeEntity.renderBg ? null : Color(0xffEDF1F7),
+      backgroundDarkColor: Colors.black12,
+      textStyle: pfStyle.copyWith(color: ColorConstant.TWEET_NICK_COLOR, fontSize: Dimens.font_sp12),
+      horizontalPadding: 10.0,
+      verticalPadding: 5.0,
+      roundRadius: 7.0,
+      prefixIcon: Icon(
+        Icons.school_outlined,
+        color: ColorConstant.TWEET_NICK_COLOR,
+        size: 16.0,
+      ),
+    );
+  }
+
 }

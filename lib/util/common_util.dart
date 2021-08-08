@@ -105,7 +105,7 @@ class Utils {
               child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.black12,
+                    color: ThemeUtils.isDark(context) ? Colors.black54 : Colors.white30,
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   alignment: Alignment.center,
@@ -266,7 +266,7 @@ class Utils {
       if (Platform.isAndroid) {
         return !StringUtil.isEmpty(result) && result.toString().startsWith("file");
       } else if (Platform.isIOS) {
-        return true == result;
+        return true == result['isSuccess'];
       }
     } on Exception catch (e) {
       debugPrint(e.toString());

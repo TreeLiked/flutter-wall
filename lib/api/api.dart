@@ -18,10 +18,10 @@ class Api {
   static const String API_BASE_WS_DEV = "ws://127.0.0.1:8088/wallServer";
 
   // static const String API_BASE_INF_DEV = "http://awakelee.top:8088";
-  static const String API_BASE_INF_DEV = "http://192.168.0.103:8088";
+  static const String API_BASE_INF_DEV = "http://192.168.31.235:8088";
 
   // static const String API_BASE_MEM_DEV = "http://awakelee.top:9002";
-  static const String API_BASE_MEM_DEV = "http://192.168.18.180:9002";
+  static const String API_BASE_MEM_DEV = "http://192.168.31.235:9002";
 
   static const String API_BASE_INF_URL = (devInf ? API_BASE_INF_DEV : API_BASE_AL) + "/iap/api";
   static const String API_BASE_MEMBER_URL = (devMem ? API_BASE_MEM_DEV : API_BASE_TR) + "/trms/api";
@@ -77,6 +77,7 @@ class Api {
   static const String API_CIRCLE_UPDATE_ROLE = Api.API_BASE_INF_URL + "/circleacc/updateUserRole.do";
 
   static const String API_CIRCLE_TWEET_CRATE = Api.API_BASE_INF_URL + "/circletweet/add.do";
+  static const String API_CIRCLE_TWEET_LIST = Api.API_BASE_INF_URL + "/circletweet/list.json";
 
   // sms
   static const String API_SEND_VERIFICATION_CODE = API_BASE_INF_URL + "/sms/send.do";

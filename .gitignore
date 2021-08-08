@@ -76,7 +76,7 @@ android
 !/lib/api/api.dart
 
 key.jks
-很久没打开问题排查&打包流程等.txt
+很久没打开问题排查&打包流程.txt
 lib/global/oss_canstant.dart
 ./*.log
 !/lib/global/oss_canstant.dart

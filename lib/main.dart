@@ -13,6 +13,7 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/bloc/msg_bloc.dart';
 import 'package:iap_app/page/splash_page.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/circle_tweet_provider.dart';
 import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
@@ -177,6 +178,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
         ChangeNotifierProvider(create: (BuildContext context) => TweetTypesFilterProvider()),
         ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
         ChangeNotifierProvider(create: (BuildContext context) => TweetProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => CircleTweetProvider()),
         ChangeNotifierProvider(create: (BuildContext context) => MsgProvider()),
       ],
       // child:  MaterialApp(

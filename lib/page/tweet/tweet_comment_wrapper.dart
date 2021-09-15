@@ -149,12 +149,12 @@ class _TweetIndexCommentWrapperState extends State<TweetIndexCommentWrapper> {
                               // ),
                               // focusedErrorBorder: InputBorder.none,
                               focusedBorder: OutlineInputBorder(
-                                // borderSide: BorderSide.none,
+                                borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(5),
-                                borderSide: BorderSide(
-                                  color: Colors.amber[100], //边线颜色为白色
-                                  width: 1, //边线宽度为2
-                                ),
+                                // borderSide: BorderSide(
+                                //   color: Colors.amber[100], //边线颜色为白色
+                                //   width: 0.3,
+                                // ),
                               ),
                               hintStyle: pfStyle.copyWith(
                                   color: ColorConstant.TWEET_TIME_COLOR,

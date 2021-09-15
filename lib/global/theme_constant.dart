@@ -11,7 +11,7 @@ class ThemeConstant {
   static Color lightAccent = Colors.blue;
   static Color darkAccent = Colors.blueAccent;
 
-  static Color lightBG = Color(0xffEDEDED);
+  static Color lightBG = Color(0xffFFFFFF);
   // 暗色模式appbar颜色
   static Color darkBG = Color(0xff121314);
   static Color badgeColor = Colors.red;

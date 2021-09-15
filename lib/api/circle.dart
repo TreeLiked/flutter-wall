@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/circle/circle.dart';
@@ -176,8 +177,7 @@ class CircleApi {
   static Future<Map<String, dynamic>> pushTweet(CircleTweet tweet) async {
     Result r;
     try {
-      Response response =
-          await httpUtil.dio.post(Api.API_CIRCLE_TWEET_CRATE, data: tweet.toJson());
+      Response response = await httpUtil.dio.post(Api.API_CIRCLE_TWEET_CRATE, data: tweet.toJson());
       return Api.convertResponse(response.data);
     } on DioError catch (e) {
       String error = Api.formatError(e);
@@ -185,5 +185,32 @@ class CircleApi {
       r = Api.genErrorResult(error);
     }
     return r.toJson();
+  }
+
+  static Future<List<CircleTweet>> queryTweets(int sortType, int circleId, PageParam param) async {
+    String url = Api.API_CIRCLE_TWEET_LIST;
+    Response response;
+    Map<String, dynamic> args = {
+      "orgId": Application.getOrgId,
+      "circleId": circleId,
+      "currentPage": param.currentPage,
+      "pageSize": param.pageSize,
+      "sortType": sortType
+    };
+    print(args);
+    try {
+      response = await httpUtil.dio.post(url, data: args);
+      Map<String, dynamic> json = Api.convertResponse(response.data);
+      List<dynamic> jsonData = json["data"];
+      if (CollectionUtil.isListEmpty(jsonData)) {
+        return [];
+      }
+      List<CircleTweet> tweetList = jsonData.map((m) => CircleTweet.fromJson(m)).toList();
+      LogUtil.e("------queryCircleTweets------, : ${tweetList.map((e) => e.id)}", tag: TAG);
+      return tweetList;
+    } on DioError catch (e) {
+      Api.formatError(e, pop: false);
+    }
+    return [];
   }
 }

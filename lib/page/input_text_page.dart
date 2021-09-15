@@ -92,7 +92,7 @@ class _InputTextPageState extends State<InputTextPage> {
               decoration: BoxDecoration(
                   color: ThemeUtils.isDark(context)
                       ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
-                      : ColorConstant.DEFAULT_BAR_BACK_COLOR,
+                      : ColorConstant.TWEET_RICH_BG,
                   borderRadius: BorderRadius.circular(8.0)),
               child: TextField(
                   maxLength: widget.limit,

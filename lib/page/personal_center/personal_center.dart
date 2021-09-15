@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iap_app/api/invite.dart';
@@ -36,7 +35,6 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
     checkOnInvite();
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -52,9 +50,7 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
     });
   }
 
-  void loopColor() {
-
-  }
+  void loopColor() {}
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +92,17 @@ class PersonCenterState extends State<PersonalCenter> with AutomaticKeepAliveCli
                     child: Container(
                         margin: const EdgeInsets.only(top: 15.0),
                         child: Text(provider.account.nick ?? "",
-                            style:
-                                const TextStyle(fontSize: Dimens.font_sp18)))),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: Dimens.font_sp18)))),
                 GestureDetector(
                     onTap: () => NavigatorUtils.push(context, SettingRouter.accountInfoPage),
                     child: Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.only(top: 15.0),
                       child: Text(provider.account.signature ?? "",
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: Dimens.font_sp14, color: Color(0xffaeb4bd))),
                     )),
               ],

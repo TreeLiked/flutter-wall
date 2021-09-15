@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/component/container_text.dart';
 import 'package:iap_app/component/tweet/tweet_body_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_campus_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_extra_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_header_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_header_wrapper_new.dart';
 import 'package:iap_app/component/tweet/tweet_image_wrapper.dart';
 import 'package:iap_app/component/tweet/tweet_link_wrapper.dart';
 import 'package:iap_app/global/path_constant.dart';
@@ -24,7 +26,7 @@ import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
-class TweetCard2 extends StatelessWidget {
+class TweetCardNew extends StatelessWidget {
 //  final recomKey = GlobalKey<RecommendationState>();
 
   final BaseTweet tweet;
@@ -59,7 +61,7 @@ class TweetCard2 extends StatelessWidget {
 
   final int indexInList;
 
-  TweetCard2(this.tweet,
+  TweetCardNew(this.tweet,
       {this.upClickable = true,
       this.downClickable = true,
       this.onClickComment,
@@ -98,14 +100,6 @@ class TweetCard2 extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              this.needLeftProfile
-                  ? Flexible(
-                      flex: 1,
-                      child: Container(
-                          padding: const EdgeInsets.only(top: 5.0, right: 15.0, left: 5.0),
-                          child: _profileContainer()),
-                    )
-                  : Gaps.empty,
               Flexible(
                 flex: 5,
                 fit: FlexFit.loose,
@@ -113,12 +107,19 @@ class TweetCard2 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Row(
+                      children: [
+                        Container(child: _profileContainer(), margin: const EdgeInsets.only(right: 10.0)),
+                        Expanded(
+                            child: TweetSimpleHeaderNew(tweet.account, tweet.anonymous, tweet.sentTime,
+                                myNickClickable: this.myNickClickable,
+                                timeRight: this.needLeftProfile,
+                                official: false))
+                      ],
+                    ),
                     Gaps.vGap5,
 //                    TweetTypeWrapper(tweet.type),
-                    TweetSimpleHeader(tweet.account, tweet.anonymous, tweet.sentTime,
-                        myNickClickable: this.myNickClickable,
-                        timeRight: this.needLeftProfile,
-                        official: false),
+
                     Gaps.vGap2,
                     TweetBodyWrapper(tweet.body, maxLine: 3, fontSize: Dimens.font_sp15, height: 1.6),
                     TweetMediaWrapper(tweet.id, medias: tweet.medias, tweet: tweet),
@@ -148,7 +149,9 @@ class TweetCard2 extends StatelessWidget {
 //                    )
 //                        : Gaps.empty,
 //                    displayComment ? Gaps.vGap25 : Gaps.vGap10,
-//                     Gaps.line
+
+                    Gaps.line,
+                    Gaps.vGap10
                   ],
                 ),
               )
@@ -193,6 +196,22 @@ class TweetCard2 extends StatelessWidget {
     return wd;
   }
 
+  Widget _profileContainer() {
+    bool anonymous = tweet.anonymous;
+    Gender gender = anonymous ? Gender.UNKNOWN : Gender.parseGender(tweet.account.gender);
+    return GestureDetector(
+        onTap: () => anonymous || !myNickClickable ? null : goAccountDetail2(context, tweet.account, true),
+        child: Container(
+            child: AccountAvatar(
+          cache: true,
+          avatarUrl: !anonymous
+              ? (tweet.account.avatarUrl ?? PathConstant.AVATAR_FAILED)
+              : PathConstant.ANONYMOUS_PROFILE,
+          size: SizeConstant.TWEET_PROFILE_SIZE,
+          gender: gender,
+        )));
+  }
+
   void _forwardDetail(BuildContext context) {
     Navigator.push(
       context,
@@ -213,22 +232,6 @@ class TweetCard2 extends StatelessWidget {
               Utils.packConvertArgs(
                   {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
     }
-  }
-
-  Widget _profileContainer() {
-    bool anonymous = tweet.anonymous;
-    Gender gender = anonymous ? Gender.UNKNOWN : Gender.parseGender(tweet.account.gender);
-    return GestureDetector(
-        onTap: () => anonymous || !myNickClickable ? null : goAccountDetail2(context, tweet.account, true),
-        child: Container(
-            child: AccountAvatar(
-          cache: true,
-          avatarUrl: !anonymous
-              ? (tweet.account.avatarUrl ?? PathConstant.AVATAR_FAILED)
-              : PathConstant.ANONYMOUS_PROFILE,
-          size: SizeConstant.TWEET_PROFILE_SIZE,
-          gender: gender,
-        )));
   }
 
   void goAccountDetail2(BuildContext context, TweetAccount account, bool up) {

@@ -18,9 +18,9 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
 
 class CircleSimpleItem extends StatelessWidget {
-  final Circle _circle;
+  Circle _circle;
   BuildContext context;
-  final double bottomMargin;
+  double bottomMargin;
 
   CircleSimpleItem(this._circle, {this.bottomMargin = 15.0});
 
@@ -37,10 +37,12 @@ class CircleSimpleItem extends StatelessWidget {
 
     return GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CircleHome(_circle)),
-            ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CircleHome(_circle)),
+          );
+        },
         child: Container(
             // height: double.negativeInfinity,
             margin: EdgeInsets.only(bottom: bottomMargin),

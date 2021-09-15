@@ -47,7 +47,10 @@ class CreatePage extends StatefulWidget {
   final String title;
   final String hintText;
 
-  CreatePage({this.type, this.title, this.hintText});
+  // 如果是圈子推文，就需要圈子ID
+  final int circleId;
+
+  CreatePage({this.type, this.title, this.hintText, this.circleId});
 
   @override
   State<StatefulWidget> createState() {
@@ -110,13 +113,14 @@ class _CreatePageState extends State<CreatePage> {
   bool _isDark = false;
 
   void _updatePushBtnState() {
-    if (((_controller.text.length > 0 && _controller.text.length < 256) ||
-            !CollectionUtil.isListEmpty(this.pics)) &&
-        !StringUtil.isEmpty(this._typeName)) {
-      if (this._isPushBtnEnabled == false) {
-        setState(() {
-          this._isPushBtnEnabled = true;
-        });
+    int len = _controller.text.length;
+    if (((len > 0 && len < GlobalConfig.TWEET_MAX_LENGTH) || CollectionUtil.isListNotEmpty(this.pics))) {
+      if (!_schoolTweet || StringUtil.notEmpty(this._typeName)) {
+        if (this._isPushBtnEnabled == false) {
+          setState(() {
+            this._isPushBtnEnabled = true;
+          });
+        }
       }
     } else {
       if (this._isPushBtnEnabled == true) {
@@ -242,7 +246,7 @@ class _CreatePageState extends State<CreatePage> {
     _updatePushBtnState();
   }
 
-  void _assembleAndCircleTweet() async {
+  void _assembleAndPushCircleTweet() async {
     if (_controller.text.length >= GlobalConfig.TWEET_MAX_LENGTH) {
       ToastUtil.showToast(context, '内容超出最大字符限制');
       return;
@@ -317,6 +321,7 @@ class _CreatePageState extends State<CreatePage> {
     if (!hasError) {
       _baseTweet.displayOnlyCircle = _displayOnlyCircle;
       _baseTweet.body = _controller.text;
+      _baseTweet.circleId = widget.circleId;
       CircleAccount ta = CircleAccount();
       Account temp = Application.getAccount;
       ta.id = temp.id ?? "";
@@ -545,10 +550,6 @@ class _CreatePageState extends State<CreatePage> {
     singleImageWidth = (sw - 10 - spacing * 3) / 3;
     bool isDark = ThemeUtils.isDark(context);
 
-    // 0.3 + 0.1 + 0.15
-    // double limit = (Application.screenHeight * 0.3 - 10) / 3;
-    // singleImageWidth = singleImageWidth > limit ? limit : singleImageWidth;
-
     return new Scaffold(
       backgroundColor: ColorConstant.MAIN_BG,
       resizeToAvoidBottomInset: false,
@@ -573,13 +574,17 @@ class _CreatePageState extends State<CreatePage> {
             child: MyFlatButton(
               '发表',
               Colors.white,
-              fillColor: Colors.amber,
+              fillColor: _schoolTweet ? Colors.amber : Colors.lightGreen,
               onTap: _isPushBtnEnabled && !_publishing
                   ? () {
-                      this._assembleAndPushSchoolTweet();
+                      if (_schoolTweet) {
+                        this._assembleAndPushSchoolTweet();
+                      } else {
+                        this._assembleAndPushCircleTweet();
+                      }
                     }
                   : () {
-                      if (StringUtil.isEmpty(_typeName)) {
+                      if (_schoolTweet && StringUtil.isEmpty(_typeName)) {
                         ToastUtil.showToast(context, "请选择内容标签");
                         return;
                       }
@@ -594,7 +599,6 @@ class _CreatePageState extends State<CreatePage> {
           )
         ],
       ),
-//      backgroundColor: Color(0xfff7f8f9),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -876,7 +880,7 @@ class _CreatePageState extends State<CreatePage> {
   Widget _renderTweetExtraOpt() {
     if (!_schoolTweet) {
       return Container(
-        margin: const EdgeInsets.only(top: 20.0),
+        margin: const EdgeInsets.only(top: 20.0, left: 5.0, right: 5.0),
         constraints: BoxConstraints(
           maxHeight: Application.screenHeight * 0.1,
         ),

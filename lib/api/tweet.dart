@@ -24,7 +24,6 @@ class TweetApi {
 
   static Future<List<BaseTweet>> queryTweets(PageParam param) async {
     String url = Api.API_BASE_INF_URL + Api.API_TWEET_QUERY2;
-    ;
     Response response;
     try {
       response = await httpUtil.dio.post(url, data: param.toJson());

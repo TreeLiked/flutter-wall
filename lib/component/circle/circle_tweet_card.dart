@@ -206,7 +206,7 @@ class CircleTweetCard extends StatelessWidget {
   }
 
   Widget _displayOnlyInCircleWidget() {
-    if (_circleTweet.displayOnlyCircle) {
+    if (!_circleTweet.displayOnlyCircle) {
       return Gaps.empty;
     }
     return Container(

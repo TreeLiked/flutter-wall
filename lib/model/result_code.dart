@@ -1,4 +1,4 @@
-class MemberResultCode {
+class ResultCode {
   /// 参数不合法
   static const String INVALID_PARAM = "519";
 
@@ -23,4 +23,6 @@ class MemberResultCode {
   // 昵称存在
   static const String ERROR_NICK_EXISTED = "526";
 
+  /// 登出
+  static const String LOGIN_OUT = "1000";
 }

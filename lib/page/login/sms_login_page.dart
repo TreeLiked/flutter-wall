@@ -12,6 +12,7 @@ import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
@@ -180,12 +181,12 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 跳转到首页
         NavigatorUtils.push(context, Routes.splash, clearStack: true);
       } else {
-        if (res.code == MemberResultCode.INVALID_PHONE) {
+        if (res.code == ResultCode.INVALID_PHONE) {
           NavigatorUtils.goBack(context);
           ToastUtil.showToast(context, '错误的手机号，非法请求');
           return;
         }
-        if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
+        if (res.code == ResultCode.UN_REGISTERED_PHONE) {
           // 未注册流程
           NavigatorUtils.goBack(context);
           Result r = await InviteAPI.checkIsInInvitation();
@@ -210,11 +211,6 @@ class _SMSLoginPageState extends State<LoginPage> {
         }
       }
     });
-  }
-
-  Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
-    tweetTypesFilterProvider.updateTypeNames();
   }
 
   @override
@@ -250,9 +246,8 @@ class _SMSLoginPageState extends State<LoginPage> {
           Gaps.vGap30,
           Container(
             decoration: BoxDecoration(
-              color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
-              borderRadius: BorderRadius.circular(10.0),
-            ),
+                color: isDark ? ColorConstant.TWEET_RICH_BG_DARK : Color(0xffF5F5F5),
+                borderRadius: BorderRadius.circular(10.0)),
             child: Row(
               children: <Widget>[
                 Container(
@@ -380,7 +375,7 @@ class _SMSLoginPageState extends State<LoginPage> {
               ? Colors.amber
               : !isDark
                   ? Color(0xffD7D6D9)
-                  : Colours.dark_bg_color_darker,
+                  : ColorConstant.TWEET_RICH_BG_DARK,
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
           onPressed: _codeWaiting

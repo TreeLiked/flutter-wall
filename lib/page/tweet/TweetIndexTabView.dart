@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
+import 'package:iap_app/component/tweet/tweet_card_new.dart';
 import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
@@ -99,7 +100,7 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
                           primary: true,
                           itemCount: tweets.length,
                           itemBuilder: (context, index) {
-                            return TweetCard2(
+                            return TweetCardNew(
                               tweets[index],
                               displayExtra: true,
                               displayPraise: true,

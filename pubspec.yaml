@@ -34,13 +34,13 @@ dependencies:
   flare_flutter: ^2.0.3
   flustars: ^0.3.3
   # 下拉刷新
-  pull_to_refresh: ^1.6.5
+  pull_to_refresh: ^2.0.0
 
   # 响应式编程 https://github.com/ReactiveX/rxdart
   rxdart: ^0.24.1
 
   # 下拉刷新2
-  flutter_easyrefresh: ^2.1.8
+  flutter_easyrefresh: ^2.2.1
 
   # 全局数据存储，类vuex
   provider: ^5.0.0

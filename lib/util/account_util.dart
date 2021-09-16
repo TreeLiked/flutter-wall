@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
@@ -29,6 +28,9 @@ class TweetReplyUtil {
   static String getTweetReplyTargetAccountText(Account targetAcc, bool tweetAnonymous, bool replyAuthor) {
     if (tweetAnonymous && replyAuthor) {
       return AUTHOR_TEXT;
+    }
+    if (targetAcc == null) {
+      return UNKNOWN_REPLY;
     }
     return targetAcc.nick ?? UNKNOWN_REPLY;
   }

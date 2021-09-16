@@ -2,32 +2,26 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
 import 'package:iap_app/common-widget/exit_dialog.dart';
-import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
-import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
-import 'package:iap_app/util/bottom_sheet_util.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/oss_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class AccountInfoPage extends StatefulWidget {
@@ -57,26 +51,26 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                 size: SizeConstant.TWEET_PROFILE_SIZE * 0.9,
               ),
               onTap: () async {
-                Map<PermissionGroup, PermissionStatus> permissions =
-                    await PermissionHandler().requestPermissions([PermissionGroup.camera]);
-                //校验权限
-                if (permissions[PermissionGroup.camera] != PermissionStatus.granted) {
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (_) => SimpleConfirmDialog(
-                            '无法访问照片',
-                            '你未开启"允许Wall访问照片"选项',
-                            leftItem: ClickableText('知道了', () {
-                              NavigatorUtils.goBack(context);
-                            }),
-                            rightItem: ClickableText('去设置', () async {
-                              await PermissionHandler().openAppSettings();
-                            }),
-                          ));
-
-                  return;
-                }
+                // Map<PermissionGroup, PermissionStatus> permissions =
+                //     await PermissionHandler().requestPermissions([PermissionGroup.camera]);
+                // //校验权限
+                // if (permissions[PermissionGroup.camera] != PermissionStatus.granted) {
+                //   showDialog(
+                //       context: context,
+                //       barrierDismissible: false,
+                //       builder: (_) => SimpleConfirmDialog(
+                //             '无法访问照片',
+                //             '你未开启"允许Wall访问照片"选项',
+                //             leftItem: ClickableText('知道了', () {
+                //               NavigatorUtils.goBack(context);
+                //             }),
+                //             rightItem: ClickableText('去设置', () async {
+                //               await PermissionHandler().openAppSettings();
+                //             }),
+                //           ));
+                //
+                //   return;
+                // }
                 _cropAndUpload(provider);
               },
             ),
@@ -157,11 +151,15 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   }
 
   void _cropAndUpload(AccountLocalProvider provider) async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    bool hasP = await PermissionUtil.checkAndRequestPhotos(context);
+    if (!hasP) {
+      return;
+    }
+    var image = await ImagePicker().getImage(source: ImageSource.gallery);
     if (image != null) {
       final cropKey = GlobalKey<CropState>();
       File file = await Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: image)));
+          .push(MaterialPageRoute(builder: (context) => ImageCropContainer(cropKey: cropKey, file: File(image.path))));
       if (file != null) {
         Utils.showDefaultLoadingWithBounds(context, text: '正在更新');
         String resultUrl = await OssUtil.uploadImage(file.path, file.readAsBytesSync(), OssUtil.DEST_AVATAR);

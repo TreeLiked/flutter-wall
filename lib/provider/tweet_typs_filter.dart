@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/util/collection.dart';
-import 'package:iap_app/util/shared.dart';
 
 class TweetTypesFilterProvider extends ChangeNotifier {
   List<String> _selTypeNames;

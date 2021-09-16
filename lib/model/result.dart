@@ -5,8 +5,8 @@ class Result<T> {
   T data;
 
   Result.fromJson(Map<String, dynamic> json)
-      : isSuccess = json['isSuccess'],
-        code = json['code'],
+      : isSuccess = json['isSuccess'] ?? json['success'],
+        code = json['code'] is String ? json['code'] : json['code'].toString(),
         message = json['message'],
         data = json['data'];
 
@@ -16,6 +16,9 @@ class Result<T> {
       : isSuccess = r.isSuccess,
         code = r.code,
         message = r.message;
+
+  Map<String, dynamic> toJson() =>
+      <String, dynamic>{'isSuccess': isSuccess, 'code': code, 'message': message, 'data': data};
 
   void toText() {
     print("$isSuccess, $message, $code, $data");

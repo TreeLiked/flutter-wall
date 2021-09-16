@@ -3,7 +3,6 @@
 * PostObject方式上传图片官方文档：https://help.aliyun.com/document_detail/31988.html
 */
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:crypto/crypto.dart';
@@ -47,8 +46,10 @@ class OssUtil {
   }
 
   static const String DEST_TWEET = "tweet";
+  static const String DEST_CIRCLE = "circle";
   static const String DEST_TOPIC = "topic";
   static const String DEST_AVATAR = "avatar";
+  static const String DEST_CIRCLE_COVER = "circle-cover";
 
   static Future<Result> requestPostUrls(int count) async {
     String requestUrl =
@@ -76,7 +77,11 @@ class OssUtil {
       nameKey = "almond-donuts/image/avatar/" + newFileName;
     } else {
       String date = DateUtil.formatDate(DateTime.now(), format: "yyyy-MM-dd");
-      nameKey = "almond-donuts/image/$destDir/$date/" + newFileName;
+      if (destDir == DEST_CIRCLE_COVER) {
+        nameKey = "almond-donuts/image/circle-cover/" + newFileName;
+      } else {
+        nameKey = "almond-donuts/image/$destDir/$date/" + newFileName;
+      }
     }
     String policyText =
         '{"expiration": "2050-01-01T12:00:00.000Z","conditions": [["content-length-range", 0, 1048576000]]}';
@@ -98,7 +103,7 @@ class OssUtil {
       'success_action_status': '200',
       'signature': signature,
       'Access-Control-Allow-Origin': '*',
-      'file': MultipartFile.fromBytes(fileBytes,filename: fileName)
+      'file': MultipartFile.fromBytes(fileBytes, filename: fileName)
 //      'file': new UploadFileInfo.fromBytes(fileBytes, fileName),
     });
     try {

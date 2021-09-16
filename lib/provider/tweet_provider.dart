@@ -5,7 +5,6 @@ import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 
 class TweetProvider extends ChangeNotifier {
@@ -14,12 +13,13 @@ class TweetProvider extends ChangeNotifier {
   List<BaseTweet> get displayTweets => _displayTweets;
 
   void refresh() {
-    print('------------NOTIFY--------------');
+    print('------------TweetProvider NOTIFY--------------');
     notifyListeners();
   }
 
   void delete(int tweetId) {
     _displayTweets.removeWhere((t) => t != null && t.id == tweetId);
+    refresh();
   }
 
   void deleteReply(int tweetId, int parentId, int replyId, int type) {
@@ -44,10 +44,12 @@ class TweetProvider extends ChangeNotifier {
         }
       }
     }
+    refresh();
   }
 
   void deleteByAccount(String accountId) {
     _displayTweets.removeWhere((t) => t != null && !t.anonymous && t.account.id == accountId);
+    refresh();
   }
 
   void updateReply(BuildContext context, TweetReply tr) {
@@ -113,7 +115,7 @@ class TweetProvider extends ChangeNotifier {
       throw 'append and clear must have different value';
     }
     if (tweets == null) {
-      _displayTweets = null;
+      // _displayTweets = null;
     } else {
       List<String> unlikes = SpUtil.getStringList(SharedConstant.MY_UN_LIKED);
       if (unlikes != null && unlikes.length > 0) {

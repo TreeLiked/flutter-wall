@@ -1,35 +1,24 @@
 import 'dart:async';
 
-import 'package:city_pickers/city_pickers.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/api/member.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
-import 'package:iap_app/common-widget/dialog/radio_sel_dialog.dart';
-import 'package:iap_app/common-widget/radio_item.dart';
 import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/global/color_constant.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
-import 'package:iap_app/model/account/account_profile.dart';
 import 'package:iap_app/model/account/school/account_campus_profile.dart';
 import 'package:iap_app/model/account/school/institute.dart';
-import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart' as prefix1;
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
-import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 
 class AccountSchoolInfoPage extends StatefulWidget {
@@ -72,7 +61,7 @@ class _AccountSchoolInfoPageState extends State<AccountSchoolInfoPage> {
               Utils.displayDialog(
                   context,
                   SimpleConfirmDialog(
-                      '学校信息说明', '您可以对所在学校信息进行编辑\n\n我们会确保这些信息不被泄漏\n\n或者您可以在隐私设置中选择哪些信息公开在个人资料页面'));
+                      '学校信息说明', '您可以对所在学校信息进行编辑，我们会确保这些信息不被泄。\n或者您可以在隐私设置中选择哪些信息公开在个人资料页面。'));
             }),
         body: _profileFutureContainer());
   }

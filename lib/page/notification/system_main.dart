@@ -1,51 +1,20 @@
-import 'dart:io';
 import 'dart:ui';
 
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iap_app/api/member.dart';
 import 'package:iap_app/api/message.dart';
-import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
-import 'package:iap_app/common-widget/click_item.dart';
-import 'package:iap_app/common-widget/exit_dialog.dart';
-import 'package:iap_app/common-widget/simple_confirm.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
-import 'package:iap_app/component/bottom_sheet_choic_item.dart';
-import 'package:iap_app/global/path_constant.dart';
-import 'package:iap_app/global/size_constant.dart';
-import 'package:iap_app/global/text_constant.dart';
-import 'package:iap_app/model/account/account_edit_param.dart';
-import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
-import 'package:iap_app/model/result.dart';
-import 'package:iap_app/page/common/image_crop.dart';
 import 'package:iap_app/part/notification/my_sn_card.dart';
 import 'package:iap_app/part/notification/system_card.dart';
-import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/resources.dart';
-import 'package:iap_app/res/styles.dart';
-import 'package:iap_app/routes/fluro_navigator.dart';
-import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/bottom_sheet_util.dart';
-import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/image_utils.dart';
-import 'package:iap_app/util/oss_util.dart';
-import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
-import 'package:iap_app/util/toast_util.dart';
-import 'package:image_crop/image_crop.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SystemNotificationMainPage extends StatefulWidget {
@@ -126,7 +95,7 @@ class _SystemNotificationMainPageState extends State<SystemNotificationMainPage>
                 enablePullDown: true,
                 enablePullUp: true,
                 header: WaterDropHeader(
-                  waterDropColor: Colors.pinkAccent,
+                  waterDropColor: Color(0xff00CED1),
                   complete: const Text('刷新完成'),
                 ),
                 footer: ClassicFooter(

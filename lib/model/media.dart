@@ -5,6 +5,7 @@ part 'media.g.dart';
 @JsonSerializable()
 class Media {
   static const String MODULE_TOPIC = "TOPIC";
+  static const String MODULE_CIRCLE = "CIRCLE";
   static const String MODULE_TWEET = "TWEET";
   static const String MODULE_AVATAR = "AVATAR";
 
@@ -13,7 +14,7 @@ class Media {
 
   int index;
   String module;
-  String mediaType = "PICTURE";
+  String mediaType;
   String url;
   String name;
 

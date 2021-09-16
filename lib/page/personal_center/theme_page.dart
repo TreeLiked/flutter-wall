@@ -51,7 +51,7 @@ class _ThemePageState extends State<ThemePage> {
               onTap: () {
                 flutter_stars.SpUtil.putString(SharedConstant.THEME,
                     index == 0 ? "" : (index == 1 ? "Dark" : "Light"));
-                Provider.of<ThemeProvider>(context).setTheme(index == 0
+                Provider.of<ThemeProvider>(context, listen: false).setTheme(index == 0
                     ? Themes.SYSTEM
                     : (index == 1 ? Themes.DARK : Themes.LIGHT));
               },

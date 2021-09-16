@@ -99,9 +99,9 @@ class _TweetTypeSelectState extends State<TweetTypeSelect> {
           bool sel = selects[typeKeysList[index]] != null && selects[typeKeysList[index]];
           return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(6)),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
               color: sel
-                  ? (!ThemeUtils.isDark(context) ? Color(0xff87CEEB) : Theme.of(context).backgroundColor)
+                  ? (!ThemeUtils.isDark(context) ? Color(0xEEE6E6FA) : Theme.of(context).backgroundColor)
                   : Theme.of(context).appBarTheme.color,
             ),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),

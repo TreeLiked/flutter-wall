@@ -22,6 +22,7 @@ import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/tweet_account.dart';
+import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
@@ -44,6 +45,7 @@ import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/time_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/tweet_reply_util.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:iap_app/util/widget_util.dart' as prefix0;
 import 'package:provider/provider.dart';
 
@@ -54,12 +56,17 @@ class TweetDetail extends StatefulWidget {
   final int hotRank;
   final bool newLink;
   final bool accountMore;
+  final Function onDelete;
 
   int tweetId;
   bool _fromHot = false;
 
   TweetDetail(this._tweet,
-      {this.tweetId, this.hotRank = -1, this.accountMore = false, this.newLink = false}) {
+      {this.tweetId,
+      this.hotRank = -1,
+      this.accountMore = false,
+      this.newLink = false,
+      this.onDelete}) {
     if (this.hotRank >= 0) {
       _fromHot = true;
     }
@@ -72,7 +79,8 @@ class TweetDetail extends StatefulWidget {
   }
 }
 
-class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientMixin<TweetDetail> {
+class TweetDetailState extends State<TweetDetail>
+    with AutomaticKeepAliveClientMixin<TweetDetail> {
   Future _getPraiseTask;
   Future _getReplyTask;
   Future _getLinkTask;
@@ -80,8 +88,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
   BuildContext myContext;
   PersistentBottomSheetController _bottomSheetController;
 
-  List<Account> praiseAccounts = [];
-  List<TweetReply> replies = [];
+  List<Account> praiseAccounts;
+  List<TweetReply> replies;
 
   // 回复相关
   TextEditingController _controller = TextEditingController();
@@ -107,6 +115,10 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
 
 //    _getPraiseTask = _loadData();
     _fetchTweetIfNullAndFetchExtra();
+
+    UMengUtil.userGoPage(widget._fromHot
+        ? UMengUtil.PAGE_TWEET_INDEX_DETAIL_HOT
+        : UMengUtil.PAGE_TWEET_INDEX_DETAIL);
   }
 
   _fetchTweetIfNullAndFetchExtra() async {
@@ -151,7 +163,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
   }
 
   Future<List<TweetReply>> getTweetReply() async {
-    List<TweetReply> replies = await TweetApi.queryTweetReply(widget._tweet.id, true);
+    List<TweetReply> replies =
+        await TweetApi.queryTweetReply(widget._tweet.id, true);
     setState(() {
       this.replies = replies;
     });
@@ -186,35 +199,49 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             GestureDetector(
-                onTap: t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
+                onTap: t.anonymous
+                    ? null
+                    : () => _forwardAccountProfile3(true, t.account),
                 child: AccountAvatar(
-                    avatarUrl: !t.anonymous ? t.account.avatarUrl : PathConstant.ANONYMOUS_PROFILE,
+                    avatarUrl: !t.anonymous
+                        ? t.account.avatarUrl
+                        : PathConstant.ANONYMOUS_PROFILE,
                     size: SizeConstant.TWEET_PROFILE_SIZE,
                     cache: true,
-                    whitePadding: false))
+                    gender: t.anonymous
+                        ? Gender.UNKNOWN
+                        : Gender.parseGenderByTweetAccount(t.account),
+                    whitePadding: true))
           ],
         ),
         Gaps.hGap8,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              RichText(
-                  softWrap: true,
-                  text: TextSpan(children: [
-                    TextSpan(
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = t.anonymous ? null : () => _forwardAccountProfile3(true, t.account),
-                        text: t.anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : (t.account.nick ?? ""),
-                        style: MyDefaultTextStyle.getTweetHeadNickStyle(
-                            context, SizeConstant.TWEET_NICK_SIZE + 3,
-                            anonymous: t.anonymous)),
-                  ])),
-              Text(TimeUtil.getShortTime(widget._tweet.sentTime),
-                  style: TextStyle(fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
-            ],
-          ),
-        )
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            RichText(
+                softWrap: true,
+                text: TextSpan(children: [
+                  TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = t.anonymous
+                            ? null
+                            : () => _forwardAccountProfile3(true, t.account),
+                      text: t.anonymous
+                          ? TextConstant.TWEET_ANONYMOUS_NICK
+                          : (t.account.nick ?? ""),
+                      style: MyDefaultTextStyle.getTweetHeadNickStyle(
+                              context, SizeConstant.TWEET_NICK_SIZE + 3,
+                              bold: true, anonymous: t.anonymous)
+                          .copyWith(fontFamily: TextConstant.PING_FANG_FONT)),
+                ])),
+            Gaps.vGap5,
+            Text('发布于 ${TimeUtil.getShortTime(widget._tweet.sentTime)}',
+                style: pfStyle.copyWith(
+                    fontSize: SizeConstant.TWEET_TIME_SIZE, color: Colors.grey))
+          ],
+        ),
       ],
     );
   }
@@ -227,12 +254,14 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         Container(
             child: Text(
           "${tweet.views > 0 ? '${tweet.views} 次浏览' : ''}",
-          style: MyDefaultTextStyle.getTweetTimeStyle(context, fontSize: Dimens.font_sp13p5),
+          style: MyDefaultTextStyle.getTweetTimeStyle(context,
+              fontSize: Dimens.font_sp13p5),
         )),
         Expanded(
             child: Container(
           alignment: Alignment.centerRight,
           child: TweetTypeWrapper(
+            tweet.id,
             tweet.type,
             reverseDir: true,
           ),
@@ -248,7 +277,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
 
     if (!tweet.loved) {
       Utils.showFavoriteAnimation(context);
-      Future.delayed(Duration(milliseconds: 1800)).then((_) => NavigatorUtils.goBack(context));
+      Future.delayed(Duration(milliseconds: 1800))
+          .then((_) => NavigatorUtils.goBack(context));
     }
     TweetApi.operateTweet(tweet.id, 'PRAISE', !tweet.loved).then((_) {
       setState(() {
@@ -264,7 +294,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         } else {
           if (tweet.praise > 0) {
             if (!CollectionUtil.isListEmpty(praiseAccounts)) {
-              praiseAccounts.removeWhere((account) => account.id == Application.getAccountId);
+              praiseAccounts.removeWhere(
+                  (account) => account.id == Application.getAccountId);
             }
             if (widget._fromHot) {
               tweet.praise--;
@@ -273,9 +304,11 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         }
       });
       // 只在首页的推文有效
-      final _tweetProvider = Provider.of<TweetProvider>(context);
-      final _localAccProvider = Provider.of<AccountLocalProvider>(context);
-      _tweetProvider.updatePraise(context, _localAccProvider.account, tweet.id, tweet.loved);
+      final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
+      final _localAccProvider =
+          Provider.of<AccountLocalProvider>(context, listen: false);
+      _tweetProvider.updatePraise(
+          context, _localAccProvider.account, tweet.id, tweet.loved);
     });
   }
 
@@ -284,18 +317,25 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       NavigatorUtils.push(
           context,
           Routes.accountProfile +
-              Utils.packConvertArgs(
-                  {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+              Utils.packConvertArgs({
+                'nick': account.nick,
+                'accId': account.id,
+                'avatarUrl': account.avatarUrl
+              }));
     }
   }
 
-  _forwardAccountProfile3(bool up, TweetAccount account, {bool forceForbid = false}) {
+  _forwardAccountProfile3(bool up, TweetAccount account,
+      {bool forceForbid = false}) {
     if (((up && !widget._tweet.anonymous) || !up) && !forceForbid) {
       NavigatorUtils.push(
           context,
           Routes.accountProfile +
-              Utils.packConvertArgs(
-                  {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+              Utils.packConvertArgs({
+                'nick': account.nick,
+                'accId': account.id,
+                'avatarUrl': account.avatarUrl
+              }));
     }
   }
 
@@ -315,7 +355,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   Container(
                     height: 80,
                     alignment: Alignment.topLeft,
-                    child: SpinKitChasingDots(color: Colours.app_main, size: 18),
+                    child:
+                        SpinKitThreeBounce(color: Colors.lightGreen, size: 20),
                   )
                 ],
               )),
@@ -326,78 +367,85 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
     }
 
     return Scaffold(
-        backgroundColor: !isDark
-            ? (widget._fromHot ? Color(0xffe9e9e9) : null)
-            : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
+        // backgroundColor: !isDark
+        //     ? (widget._fromHot ? Color(0xffe9e9e9) : null)
+        //     : (widget._fromHot ? Color(0xff2c2c2c) : Colours.dark_bg_color),
+        // backgroundColor: !isDark ? null : Colours.dark_bg_color,
         body: Builder(builder: (context) {
-          this.myContext = context;
-          return Listener(
+      this.myContext = context;
+      return Listener(
 //                behavior: HitTestBehavior.opaque,
 //                onPanDown: (_) {
 //                  hideReplyContainer();
 //                  hideBottomSheetReplyContainer();
 //                },
-            onPointerDown: (_) {
-              hideBottomSheetReplyContainer();
-            },
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) =>
-                  _sliverBuilder(context, innerBoxIsScrolled),
-              body: widget._tweet != null
-                  ? SingleChildScrollView(
-                      child: Container(
-                      decoration: BoxDecoration(
-                          color: isDark ? Colours.dark_bg_color : widget._fromHot ? Color(0xfff0f0f0) : null,
-                          borderRadius: const BorderRadius.all(Radius.circular(18))),
-                      padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          _spaceRow(),
-                          Gaps.vGap10,
-                          TweetBodyWrapper(tweet.body, height: 2.0, selectable: true),
-                          TweetMediaWrapper(tweet.id, medias: tweet.medias),
-                          widget.newLink
-                              ? TweetLinkWrapper2(widget._tweet, _getLinkTask, fromHot: widget._fromHot)
-                              : TweetLinkWrapper(tweet),
-                          Gaps.vGap8,
-                          _viewContainer(),
-                          Gaps.vGap15,
-                          Divider(),
-                          Gaps.vGap10,
-                          _praiseWrapper(context),
-                          TweetPraiseWrapper2(praiseAccounts),
-                          _replyWrapper(context),
-                          TweetReplyWrapper(tweet, replies,
-                              (TweetReply tr, String tarAccNick, String tarAccId) {
-                            String hintText = "回复：$tarAccNick";
-                            if (tweet.anonymous && tarAccId == tweet.account.id) {
-                              hintText = "回复：作者";
-                            }
-                            showBottomSheetReplyContainer(2, true, hintText, (String value, bool anonymous) {
-                              TweetReply reply = TRUtil.assembleReply(tweet, value, false, false,
-                                  parentId: tr.parentId, tarAccountId: tarAccId);
-                              reply.sentTime = DateTime.now();
-                              TRUtil.publicReply(
-                                  context,
-                                  reply,
-                                  (bool success, TweetReply newReply) =>
-                                      this.handleSendResult(success, newReply));
-                            });
-                          }, () {
-                            setState(() {
-                              _getReplyTask = getTweetReply();
-                            });
-                          }),
-                        ],
-                      ),
-                    ))
-                  : Container(
-                      alignment: Alignment.topCenter, child: prefix0.WidgetUtil.getLoadingAnimation()),
-            ),
-          );
-        }));
+        onPointerDown: (_) {
+          hideBottomSheetReplyContainer();
+        },
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) =>
+              _sliverBuilder(context, innerBoxIsScrolled),
+          body: widget._tweet != null
+              ? SingleChildScrollView(
+                  child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(18))),
+                  padding: const EdgeInsets.only(
+                      top: 10.0, left: 10.0, right: 10.0, bottom: 50.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _spaceRow(),
+                      Gaps.vGap10,
+                      TweetBodyWrapper(tweet.body,
+                          height: 2.0, selectable: true),
+                      TweetMediaWrapper(tweet.id, medias: tweet.medias),
+                      widget.newLink
+                          ? TweetLinkWrapper2(widget._tweet, _getLinkTask,
+                              fromHot: widget._fromHot)
+                          : TweetLinkWrapper(tweet),
+                      Gaps.vGap8,
+                      _viewContainer(),
+                      Gaps.vGap15,
+                      Divider(),
+                      Gaps.vGap10,
+                      _praiseWrapper(context),
+                      TweetPraiseWrapper2(praiseAccounts),
+                      _replyWrapper(context),
+                      TweetReplyWrapper(tweet, replies,
+                          (TweetReply tr, String tarAccNick, String tarAccId) {
+                        String hintText = "回复：$tarAccNick";
+                        if (tweet.anonymous && tarAccId == tweet.account.id) {
+                          hintText = "回复：作者";
+                        }
+                        showBottomSheetReplyContainer(2, false, hintText,
+                            (String value, bool anonymous) {
+                          TweetReply reply = TRUtil.assembleReply(
+                              tweet, value, false, false,
+                              parentId: tr.parentId, tarAccountId: tarAccId);
+                          reply.sentTime = DateTime.now();
+                          TRUtil.publicReply(
+                              context,
+                              reply,
+                              (bool success, TweetReply newReply) =>
+                                  this.handleSendResult(success, newReply));
+                        });
+                      }, () {
+                        setState(() {
+                          _getReplyTask = getTweetReply();
+                        });
+                      }),
+                    ],
+                  ),
+                ))
+              : Container(
+                  alignment: Alignment.topCenter,
+                  child: prefix0.WidgetUtil.getLoadingAnimation()),
+        ),
+      );
+    }));
   }
 
   Widget _praiseWrapper(BuildContext context) {
@@ -406,13 +454,14 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         child: TitleItemWrapper(
             Text(
               "点赞",
-              style:
-                  TextStyle(color: ColorConstant.TWEET_DETAIL_PRAISE_ROW_COLOR, fontSize: Dimens.font_sp14),
+              style: pfStyle.copyWith(
+                  fontSize: Dimens.font_sp14, color: Colors.grey),
             ),
             subTitleText: tweet.praise > 0
                 ? Text("${tweet.praise}",
-                    style: TextStyle(
-                        color: ColorConstant.getTweetTimeColor(context), fontSize: Dimens.font_sp13p5))
+                    style: pfStyle.copyWith(
+                        color: ColorConstant.getTweetTimeColor(context),
+                        fontSize: Dimens.font_sp13p5))
                 : null,
             suffixWidget: GestureDetector(
                 behavior: HitTestBehavior.translucent,
@@ -422,7 +471,7 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                       : PathConstant.ICON_PRAISE_ICON_UN_PRAISE,
                   width: 20,
                   height: 20,
-                  color: widget._tweet.loved ? Colors.pink[100] : Colors.grey,
+                  color: widget._tweet.loved ? Colors.yellow[600] : Colors.grey,
                 ),
                 onTap: () => updatePraise(context, widget._tweet))));
   }
@@ -433,13 +482,15 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         child: TitleItemWrapper(
           Text(
             "评论",
-            style: TextStyle(color: ColorConstant.TWEET_DETAIL_REPLY_ROW_COLOR, fontSize: Dimens.font_sp14),
+            style: pfStyle.copyWith(
+                fontSize: Dimens.font_sp14, color: Colors.grey),
           ),
           subTitleText: tweet.replyCount > 0
               ? Text(
                   "${tweet.replyCount}",
-                  style: TextStyle(
-                      color: ColorConstant.getTweetTimeColor(context), fontSize: Dimens.font_sp13p5),
+                  style: pfStyle.copyWith(
+                      color: ColorConstant.getTweetTimeColor(context),
+                      fontSize: Dimens.font_sp13p5),
                 )
               : null,
           suffixWidget: tweet.enableReply
@@ -448,11 +499,16 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                   child: prefix0.LoadAssetIcon(PathConstant.ICON_COMMENT_ICON,
                       width: 20, height: 20, color: Colors.grey),
                   onTap: () {
-                    showBottomSheetReplyContainer(1, true, "评论", (String value, bool anonymous) {
-                      TweetReply reply = TRUtil.assembleReply(tweet, value, anonymous, true);
+                    showBottomSheetReplyContainer(1, true, "评论",
+                        (String value, bool anonymous) {
+                      TweetReply reply =
+                          TRUtil.assembleReply(tweet, value, anonymous, true);
                       reply.sentTime = DateTime.now();
                       TRUtil.publicReply(
-                          context, reply, (success, data) => this.handleSendResult(success, data));
+                          context,
+                          reply,
+                          (success, data) =>
+                              this.handleSendResult(success, data));
                     });
                   })
               : null,
@@ -479,7 +535,9 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
           } else {
             // 子回复
             int parentId = newReply.parentId;
-            TweetReply tr2 = tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
+            TweetReply tr2 = tweet.dirReplies
+                .where((dirReply) => dirReply.id == parentId)
+                .first;
             setState(() {
               widget._tweet.replyCount++;
               if (tr2.children == null) {
@@ -489,18 +547,24 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             });
           }
         } else {
-          ToastUtil.showToast(context, TextConstant.TWEET_REPLY_FAIL, gravity: ToastGravity.CENTER);
+          ToastUtil.showToast(context, TextConstant.TWEET_REPLY_FAIL,
+              gravity: ToastGravity.CENTER);
         }
       }
     } else {
-      ToastUtil.showToast(context, TextConstant.TWEET_REPLY_FAIL, gravity: ToastGravity.CENTER);
+      ToastUtil.showToast(context, TextConstant.TWEET_REPLY_FAIL,
+          gravity: ToastGravity.CENTER);
     }
   }
 
-  void showBottomSheetReplyContainer(replyType, showAnonymous, hintText, onSend) {
-    _bottomSheetController = Scaffold.of(this.myContext).showBottomSheet((context) =>
-        TweetIndexCommentWrapper(
-            showAnonymous: showAnonymous, replyType: replyType, hintText: hintText, onSend: onSend));
+  void showBottomSheetReplyContainer(
+      replyType, showAnonymous, hintText, onSend) {
+    _bottomSheetController = Scaffold.of(this.myContext).showBottomSheet(
+        (context) => TweetIndexCommentWrapper(
+            showAnonymous: showAnonymous,
+            replyType: replyType,
+            hintText: hintText,
+            onSend: onSend));
   }
 
   void hideBottomSheetReplyContainer() {
@@ -523,20 +587,25 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
 //      Navigator.pop(context);
 //    }));
     String accountId = Application.getAccountId;
-    if (!StringUtil.isEmpty(accountId) && accountId == widget._tweet.account.id) {
+    if (!StringUtil.isEmpty(accountId) &&
+        accountId == widget._tweet.account.id) {
       // 作者自己的内容
-      items.add(BottomSheetItem(Icon(Icons.delete, color: Colors.redAccent), '删除', () {
+      items.add(BottomSheetItem(
+          Icon(Icons.delete, color: Colors.redAccent), '删除', () {
         Navigator.pop(context);
         _showDeleteBottomSheet();
       }));
     } else {
       // 非自己
-      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_alt, color: Colors.deepOrange), '屏蔽此内容', () {
+      items.add(BottomSheetItem(
+          Icon(Icons.do_not_disturb_alt, color: Colors.yellow), '屏蔽此内容', () {
         Navigator.pop(context);
         _showShieldedBottomSheet();
       }));
 
-      items.add(BottomSheetItem(Icon(Icons.do_not_disturb_on, color: Colors.red), '屏蔽此人', () {
+      items.add(BottomSheetItem(
+          Icon(Icons.do_not_disturb_on, color: Colors.orangeAccent), '屏蔽此人',
+          () {
         Navigator.pop(context);
         _showShieldedAccountBottomSheet();
       }));
@@ -548,7 +617,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
         ),
         '举报', () {
       NavigatorUtils.goBack(context);
-      NavigatorUtils.goReportPage(context, ReportPage.REPORT_TWEET, widget._tweet.id.toString(), "推文内容举报");
+      NavigatorUtils.goReportPage(context, ReportPage.REPORT_TWEET,
+          widget._tweet.id.toString(), "推文内容举报");
     }));
     return items;
   }
@@ -558,24 +628,27 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       SliverAppBar(
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: Icon(Icons.more_horiz),
             onPressed: () {
               BottomSheetUtil.showBottomSheetView(context, _getSheetItems());
             },
           )
         ],
         backgroundColor: widget._fromHot
-            ? (isDark ? Colours.dark_bg_color : Color(0xfff0f0f0))
+            ? (isDark ? Colours.dark_bg_color : Color(0xfffDfDfD))
             : (isDark ? Colours.dark_bg_color : null),
         centerTitle: true,
         //标题居中
         title: Text(
           '详情',
-          style: const TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.5),
+          style: pfStyle.copyWith(
+              fontSize: Dimens.font_sp16,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.2),
         ),
         elevation: 0.4,
         floating: true,
-        pinned: !widget._fromHot,
+        pinned: true,
         snap: false,
         leading: GestureDetector(
             onTap: () => Navigator.pop(context),
@@ -599,19 +672,25 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
                                 text: '当前热门榜：',
                                 style: TextStyle(
                                     fontSize: Dimens.font_sp16,
-                                    color: ThemeUtils.isDark(context) ? Colors.grey : Colors.black)),
+                                    color: ThemeUtils.isDark(context)
+                                        ? Colors.grey
+                                        : Colors.black)),
                             TextSpan(
                                 text: 'No. ',
                                 style: TextStyle(
                                     fontSize: Dimens.font_sp16,
-                                    color: ThemeUtils.isDark(context) ? Colors.grey : Colors.black)),
+                                    color: ThemeUtils.isDark(context)
+                                        ? Colors.grey
+                                        : Colors.black)),
                             TextSpan(
                                 text: '${widget.hotRank}  ',
                                 style: TextStyle(
                                     fontSize: Dimens.font_sp16,
                                     color: widget.hotRank < 5
                                         ? Colors.redAccent
-                                        : (ThemeUtils.isDark(context) ? Colors.grey : Colors.black)))
+                                        : (ThemeUtils.isDark(context)
+                                            ? Colors.grey
+                                            : Colors.black)))
                           ])),
                           getFires(widget.hotRank),
                         ],
@@ -651,7 +730,8 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
     );
   }
 
-  void showReplyContainer(String destAccountNick, String destAccountId, bool dirAno) {
+  void showReplyContainer(
+      String destAccountNick, String destAccountId, bool dirAno) {
     print('show reply container');
     if (StringUtil.isEmpty(destAccountNick)) {
       setState(() {
@@ -708,7 +788,9 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             } else {
               // 子回复
               int parentId = newReply.parentId;
-              TweetReply tr2 = tweet.dirReplies.where((dirReply) => dirReply.id == parentId).first;
+              TweetReply tr2 = tweet.dirReplies
+                  .where((dirReply) => dirReply.id == parentId)
+                  .first;
               setState(() {
                 widget._tweet.replyCount++;
                 if (tr2.children == null) {
@@ -741,18 +823,23 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
       builder: (BuildContext context) {
         return SimpleConfirmBottomSheet(
           onTapDelete: () async {
-            Utils.showDefaultLoading(context);
-            Result r = await TweetApi.deleteAccountTweets(Application.getAccountId, widget._tweet.id);
-            NavigatorUtils.goBack(context);
+            Utils.showDefaultLoading(this.myContext);
+            Result r = await TweetApi.deleteAccountTweets(
+                Application.getAccountId, widget._tweet.id);
+            NavigatorUtils.goBack(this.myContext);
             if (r == null) {
-              ToastUtil.showToast(context, '服务错误');
+              ToastUtil.showToast(this.myContext, '服务错误');
             } else {
               if (r.isSuccess) {
-                ToastUtil.showToast(context, '删除成功');
-                Provider.of<TweetProvider>(context).delete(widget._tweet.id);
-                NavigatorUtils.goBack(context);
+                Provider.of<TweetProvider>(this.myContext)
+                    .delete(widget._tweet.id);
+                ToastUtil.showToast(this.myContext, '删除成功');
+                NavigatorUtils.goBack(this.myContext);
+                if (widget.onDelete != null) {
+                  widget.onDelete(widget._tweet.id);
+                }
               } else {
-                ToastUtil.showToast(context, '用户身份验证失败');
+                ToastUtil.showToast(this.myContext, '用户身份验证失败');
               }
             }
           },
@@ -769,14 +856,18 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             tip: "您确认屏蔽此条内容，屏蔽后我们将会减少类似推荐",
             onTapDelete: () async {
               Utils.showDefaultLoading(Application.context);
-              List<String> unlikeList = SpUtil.getStringList(SharedConstant.MY_UN_LIKED, defValue: List());
+              List<String> unlikeList = SpUtil.getStringList(
+                  SharedConstant.MY_UN_LIKED,
+                  defValue: List());
               if (unlikeList == null) {
                 unlikeList = List();
               }
               unlikeList.add(widget._tweet.id.toString());
-              await SpUtil.putStringList(SharedConstant.MY_UN_LIKED, unlikeList);
+              await SpUtil.putStringList(
+                  SharedConstant.MY_UN_LIKED, unlikeList);
 
-              final _tweetProvider = Provider.of<TweetProvider>(Application.context);
+              final _tweetProvider =
+                  Provider.of<TweetProvider>(Application.context);
               _tweetProvider.delete(widget._tweet.id);
               NavigatorUtils.goBack(Application.context);
               ToastUtil.showToast(Application.context, '屏蔽成功');
@@ -794,13 +885,16 @@ class TweetDetailState extends State<TweetDetail> with AutomaticKeepAliveClientM
             tip: "您确认屏蔽此用户，屏蔽后此用户的内容将对您不可见",
             onTapDelete: () async {
               Utils.showDefaultLoading(Application.context);
-              Result r = await UnlikeAPI.unlikeAccount(widget._tweet.account.id.toString());
+              Result r = await UnlikeAPI.unlikeAccount(
+                  widget._tweet.account.id.toString());
               NavigatorUtils.goBack(Application.context);
               if (r == null) {
-                ToastUtil.showToast(Application.context, TextConstant.TEXT_SERVICE_ERROR);
+                ToastUtil.showToast(
+                    Application.context, TextConstant.TEXT_SERVICE_ERROR);
               } else {
                 if (r.isSuccess) {
-                  final _tweetProvider = Provider.of<TweetProvider>(Application.context);
+                  final _tweetProvider =
+                      Provider.of<TweetProvider>(Application.context);
                   _tweetProvider.delete(widget._tweet.id);
                   NavigatorUtils.goBack(Application.context);
                 } else {

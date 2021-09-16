@@ -27,6 +27,7 @@ TweetReply _$TweetReplyFromJson(Map<String, dynamic> json) {
     ..hot = json['hot'] as int
     ..praise = json['praise'] as int
     ..replyCount = json['replyCount'] as int
+    ..bizCode = json['bizCode'] as String
     ..gmtModified = json['gmtModified'] == null
         ? null
         : DateTime.parse(json['gmtModified'] as String)
@@ -52,6 +53,7 @@ Map<String, dynamic> _$TweetReplyToJson(TweetReply instance) =>
       'hot': instance.hot,
       'praise': instance.praise,
       'replyCount': instance.replyCount,
+      'bizCode': instance.bizCode,
       'gmtModified': instance.gmtModified?.toIso8601String(),
       'gmtCreated': instance.gmtCreated?.toIso8601String(),
       'sentTime': DateUtil.formatDate(instance.sentTime, format: DateFormats.full),

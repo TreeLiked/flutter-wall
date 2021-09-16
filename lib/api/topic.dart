@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:core' as prefix1;
 import 'dart:core';
 
@@ -6,27 +5,17 @@ import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:iap_app/api/api.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/hot_tweet.dart';
-import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/topic/add_topic.dart';
 import 'package:iap_app/model/topic/base_tr.dart';
 import 'package:iap_app/model/topic/topic.dart';
-import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
-import 'package:iap_app/util/string.dart';
 
 class TopicApi {
   static Future<Result> createTopic(AddTopic addTopicParam) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_CREATE;
-    print("craete topic -> $url");
     try {
       Response response = await httpUtil.dio.post(url, data: addTopicParam.toJson());
-      print(response);
       return Result.fromJson(Api.convertResponse(response.data));
     } on DioError catch (e) {
       String error = Api.formatError(e);
@@ -39,7 +28,6 @@ class TopicApi {
 
   static Future<List<Topic>> queryTopics(int currentPage) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_BATCH_QUERY;
-    print(url);
     Response response;
     try {
       response = await httpUtil.dio.get(url + "?currentPage=$currentPage");
@@ -64,12 +52,10 @@ class TopicApi {
 
   static Future<Topic> queryTopicById(int topicId) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_SINGLE_QUERY + "?tId=$topicId";
-    print(url);
     Response response;
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       if (json['isSuccess'] == true) {
         dynamic jsonData = json["data"];
         return Topic.fromJson(jsonData);
@@ -82,11 +68,9 @@ class TopicApi {
 
   static Future<Result> modTopicStatus(int topicId, bool close) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_STATUS_MOD + "?tId=$topicId" ;
-    print("mod topic  status-> $url");
     try {
       Response response =
           await httpUtil.dio.post(url, data: {"tId": topicId, "acId": Application.getAccountId});
-      print(response);
       return Result.fromJson(Api.convertResponse(response.data));
     } on DioError catch (e) {
       String error = Api.formatError(e);
@@ -100,13 +84,12 @@ class TopicApi {
   static Future<List<MainTopicReply>> queryTopicMainReplies(int topicId, int currentPage, int pageSize,
       {String order = BaseTopicReply.QUERY_ORDER_HOT}) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_REPLY_SINGLE_QUERY;
-    print(url);
+    ;
     var data = {"topicId": topicId, "currentPage": currentPage, "pageSize": pageSize, "order": order};
     Response response;
     try {
       response = await httpUtil.dio.post(url, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       bool success = json["isSuccess"];
       if (success) {
         Map<String, dynamic> pageData = json["data"];
@@ -118,9 +101,6 @@ class TopicApi {
           return MainTopicReply.fromJson(m);
         }).toList();
 
-        topicReplyList.forEach((m) {
-          print("${m.praised}");
-        });
         return topicReplyList;
       }
     } on DioError catch (e) {
@@ -133,7 +113,7 @@ class TopicApi {
       int topicId, int refId, int currentPage, int pageSize,
       {String order = BaseTopicReply.QUERY_ORDER_TIME}) async {
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_REPLY_SUB_QUERY;
-    print(url);
+    ;
     var data = {
       "topicId": topicId,
       "refId": refId,
@@ -145,7 +125,6 @@ class TopicApi {
     try {
       response = await httpUtil.dio.post(url, data: data);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json);
       bool success = json["isSuccess"];
       if (success) {
         Map<String, dynamic> pageData = json["data"];
@@ -156,10 +135,6 @@ class TopicApi {
         List<SubTopicReply> topicReplyList = jsonData.map((m) {
           return SubTopicReply.fromJson(m);
         }).toList();
-
-        topicReplyList.forEach((m) {
-          print("${m.praised}");
-        });
         return topicReplyList;
       }
     } on DioError catch (e) {
@@ -190,7 +165,7 @@ class TopicApi {
     };
 
     String url = Api.API_BASE_INF_URL + Api.API_TOPIC_ADD_REPLY;
-    print(url);
+    ;
     Response response;
     try {
       response = await httpUtil.dio.post(url, data: data);
@@ -206,7 +181,7 @@ class TopicApi {
     String url = Api.API_BASE_INF_URL +
         (praise ? Api.API_TOPIC_REPLY_PRAISE : Api.API_TOPIC_REPLY_CANCEL_PRAISE) +
         "?replyId=$replyId";
-    print(url);
+    ;
     Response response;
     try {
       response = await httpUtil.dio.get(url);

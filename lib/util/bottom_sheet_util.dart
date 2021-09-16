@@ -1,14 +1,15 @@
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/topic.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
+import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/component/bottom_sheet_choic_item.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/topic/add_topic_reply.dart';
@@ -127,7 +128,7 @@ class BottomSheetUtil {
                               GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(top: 15),
-                                  width: ScreenUtil.screenWidthDp * 0.95 - 30,
+                                  width: ScreenUtil.screenWidth * 0.95 - 30,
                                   child: CupertinoButton(
                                     padding: EdgeInsets.all(0),
                                     onPressed: () => NavigatorUtils.goBack(context),
@@ -156,7 +157,8 @@ class BottomSheetUtil {
         });
   }
 
-  static void showBottomSheet(BuildContext context, double heightFactor, Widget content) {
+  static void showBottomSheet(BuildContext context, double heightFactor, Widget content,
+      {bool topLine = true, Widget topWidget}) {
     bool isDark = ThemeUtils.isDark(context);
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
@@ -173,23 +175,29 @@ class BottomSheetUtil {
                         borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
                     child: Stack(
                       children: <Widget>[
-                        Positioned(
-                          left: (Application.screenWidth - 50) / 2,
-                          top: 10.0,
-                          child: Container(
-                            child: Container(
-                                height: 5.0,
-                                width: 50.0,
-                                decoration: BoxDecoration(
-                                    color: Color(0xffaeb4bd), borderRadius: BorderRadius.circular(73.0))),
-                          ),
-                        ),
+                        topLine
+                            ? Positioned(
+                                left: (Application.screenWidth - 50) / 2,
+                                top: 10.0,
+                                child: Container(
+                                  child: Container(
+                                      height: 5.0,
+                                      width: 50.0,
+                                      decoration: BoxDecoration(
+                                          color: Color(0xffaeb4bd),
+                                          borderRadius: BorderRadius.circular(73.0))),
+                                ),
+                              )
+                            : (topWidget ?? Gaps.empty),
                         SafeArea(
-                          top: false,
-                          child: SingleChildScrollView(
-                            child: content,
-                          ),
-                        )
+                            top: false,
+                            child: Container(
+                              margin:
+                                  EdgeInsets.only(top: topLine ? 20.0 : (topWidget == null ? 10.0 : 50.0)),
+                              child: SingleChildScrollView(
+                                child: content,
+                              ),
+                            ))
                       ],
                     ))
               ],
@@ -231,7 +239,7 @@ class BottomSheetUtil {
                                         flex: 1,
                                         child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('回复详情', style: TextStyles.textBold14))),
+                                            child: Text('详情', style: TextStyles.textBold14))),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
@@ -245,7 +253,7 @@ class BottomSheetUtil {
                                 ),
                                 Gaps.vGap16,
                                 Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.end,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: <Widget>[
                                     AccountAvatar(
                                       avatarUrl: reply.author.avatarUrl,
@@ -298,7 +306,7 @@ class BottomSheetUtil {
             return Stack(
               children: <Widget>[
                 Container(
-                    height: Application.screenHeight / 1.8,
+                    height: Application.screenHeight * 0.5,
                     decoration: BoxDecoration(
                         color: !isDark ? Color(0xffEbEcEd) : Colours.dark_bg_color,
                         borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
@@ -311,15 +319,12 @@ class BottomSheetUtil {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Expanded(
-                                      flex: 1,
-                                      child: Gaps.empty,
-                                    ),
+                                    Expanded(flex: 1, child: Gaps.empty),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('回复详情', style: TextStyles.textBold16))),
+                                            child: Text('回复详情', style: TextStyles.textSize18))),
                                     Expanded(
                                         flex: 1,
                                         child: Container(
@@ -333,9 +338,11 @@ class BottomSheetUtil {
                                 ),
                                 Gaps.vGap16,
                                 Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.end,
-                                  children: <Widget>[
+                                  alignment: WrapAlignment.start,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
                                     AccountAvatar(
+                                      whitePadding: true,
                                       avatarUrl: dirAnon || isAuthorAndTweetAnon
                                           ? PathConstant.ANONYMOUS_PROFILE
                                           : reply.account.avatarUrl,
@@ -344,19 +351,20 @@ class BottomSheetUtil {
                                           ? null
                                           : () => NavigatorUtils.goAccountProfile2(context, reply.account),
                                     ),
+                                    Gaps.hGap10,
                                     RichText(
                                       softWrap: true,
                                       text: TextSpan(children: [
                                         TextSpan(
                                             text: dirAnon
-                                                ? " " + TextConstant.TWEET_ANONYMOUS_REPLY_NICK
+                                                ? TextConstant.TWEET_ANONYMOUS_REPLY_NICK
                                                 : isAuthorAndTweetAnon
-                                                    ? " " + TextConstant.TWEET_AUTHOR_TEXT
-                                                    : "  ${reply.account.nick}",
+                                                    ? TextConstant.TWEET_AUTHOR_TEXT
+                                                    : "${reply.account.nick}",
                                             style: TextStyle(
                                                 fontSize: Dimens.font_sp16, color: Colours.app_main)),
                                         TextSpan(
-                                            text: " 回复于 ${TimeUtil.getShortTime(reply.sentTime)}",
+                                            text: "回复于 ${TimeUtil.getShortTime(reply.sentTime)}",
                                             style: TextStyle(fontSize: Dimens.font_sp16, color: Colors.grey)),
                                       ]),
                                     ),
@@ -364,10 +372,15 @@ class BottomSheetUtil {
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 10),
-                                  child: Text("${reply.body}",
+                                  child: ExtendedText("${reply.body}",
+                                      maxLines: 999,
+                                      softWrap: true,
+                                      textAlign: TextAlign.left,
+                                      specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
+                                      selectionEnabled: true,
                                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
-                                              fontSize: Dimens.font_sp16)
-                                          .copyWith(height: 2.0)),
+                                          fontSize: Dimens.font_sp16)
+                                          .copyWith(height: 2.0, letterSpacing: 1.2))
                                 )
                               ],
                             )),

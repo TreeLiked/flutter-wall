@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/res/styles.dart';
-import 'package:iap_app/style/text_style.dart';
 
 // class SwitchItem extends StatefulWidget {
 //   @override

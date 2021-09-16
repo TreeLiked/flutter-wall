@@ -5,7 +5,6 @@ import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/my_special_text_builder.dart';
-import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/component/bottom_sheet_confirm_multi.dart';
 import 'package:iap_app/component/simgple_tag.dart';
 import 'package:iap_app/global/color_constant.dart';
@@ -13,6 +12,7 @@ import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/gender.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/model/tweet_type.dart';
@@ -20,8 +20,8 @@ import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -83,18 +83,18 @@ class TweetReplyItemDetail extends StatelessWidget {
                       ? [
                           MultiBottomSheetItem(
                               text: '举报',
-                              style: TextStyle(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
+                              style: pfStyle.copyWith(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
                               onTap: () => NavigatorUtils.goReportPage(
                                   context, ReportPage.REPORT_TWEET_REPLY, reply.id.toString(), "评论举报")),
                           MultiBottomSheetItem(
                               text: '删除',
-                              style: TextStyle(color: Color(0xff4682B4), fontSize: Dimens.font_sp13p5),
+                              style: pfStyle.copyWith(color: Color(0xff4682B4), fontSize: Dimens.font_sp13p5),
                               onTap: () => delReply(reply.id))
                         ]
                       : [
                           MultiBottomSheetItem(
                               text: '举报',
-                              style: TextStyle(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
+                              style: pfStyle.copyWith(color: Color(0xffCD5C5C), fontSize: Dimens.font_sp13p5),
                               onTap: () => NavigatorUtils.goReportPage(
                                   context, ReportPage.REPORT_TWEET_REPLY, reply.id.toString(), "评论举报"))
                         ],
@@ -111,6 +111,7 @@ class TweetReplyItemDetail extends StatelessWidget {
                 child: AccountAvatar(
                     size: SizeConstant.TWEET_PROFILE_SIZE,
                     avatarUrl: boo1 ? PathConstant.ANONYMOUS_PROFILE : reply.account.avatarUrl,
+                    gender: boo1 ? Gender.UNKNOWN : Gender.parseGenderByAccount(reply.account),
                     onTap: boo1 ? null : () => NavigatorUtils.goAccountProfile2(context, reply.account)),
               ),
               Expanded(
@@ -170,12 +171,13 @@ class TweetReplyItemDetail extends StatelessWidget {
                       },
                     text: authorNick ?? "",
                     style: TweetReplyUtil.getTweetReplyStyle(
-                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
+                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp14))
                 : WidgetSpan(
                     child: SimpleTag(
                     '作者',
-                    round: false,
-                    bgColor: tweetTypeMap[tweetType].color.withAlpha(200),
+                    round: true,
+                    radius: 5.0,
+                    bgColor: tweetTypeMap[tweetType].color.withAlpha(180),
                     textColor: Colors.white,
                     verticalPadding: 0,
                   )),
@@ -183,8 +185,9 @@ class TweetReplyItemDetail extends StatelessWidget {
                 ? WidgetSpan(
                     child: SimpleTag(
                     '作者',
-                    round: false,
-                    bgColor: tweetTypeMap[tweetType].color.withAlpha(200),
+                    round: true,
+                      radius: 5.0,
+                      bgColor: tweetTypeMap[tweetType].color.withAlpha(180),
                     textColor: Colors.white,
                     verticalPadding: 0,
                     leftMargin: 5,
@@ -193,7 +196,7 @@ class TweetReplyItemDetail extends StatelessWidget {
             !directReply
                 ? TextSpan(
                     text: ' 回复 ',
-                    style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14, context: context))
+                    style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp13p5, context: context))
                 : emptyTs,
             !directReply
                 ? TextSpan(
@@ -205,7 +208,7 @@ class TweetReplyItemDetail extends StatelessWidget {
                       },
                     text: (targetAuthorAndTweetAnon ? TextConstant.TWEET_AUTHOR_TEXT : reply.tarAccount.nick),
                     style: TweetReplyUtil.getTweetReplyStyle(
-                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp15))
+                        tweetAnonymous, reply.anonymous, isAuthorReply, Dimens.font_sp14))
                 : emptyTs
           ]),
         ),
@@ -234,27 +237,31 @@ class TweetReplyItemDetail extends StatelessWidget {
 //        },
         child: Container(
       margin: const EdgeInsets.only(top: 1.5),
-      child: ExtendedText("${body.trimRight()}",
+      child: ExtendedText("${body}",
           maxLines: 3,
           softWrap: true,
           textAlign: TextAlign.left,
           specialTextSpanBuilder: MySpecialTextSpanBuilder(showAtBackground: false),
           onSpecialTextTap: (dynamic parameter) {},
-          selectionEnabled: false,
-          overFlowTextSpan: OverFlowTextSpan(children: [
-            TextSpan(text: ' \u2026 '),
-            TextSpan(
-                text: "查看全部",
-                style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: Dimens.font_sp15,
+          selectionEnabled: true,
+          overflowWidget: TextOverflowWidget(
+            // fixedOffset: Offset(10.0, 0.0),
+              child: Row(children: <Widget>[
+            GestureDetector(
+                child: Text(
+                  '..查看全部',
+                  style: pfStyle.copyWith(
+                    color: Colors.blue,
+                    fontSize: Dimens.font_sp14,
+                  ),
                 ),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => BottomSheetUtil.showBottomSheetSingleTweetReplyDetail(
+                onTap: () {
+                  BottomSheetUtil.showBottomSheetSingleTweetReplyDetail(
                       context, reply, reply.anonymous, tweetAnonymous && reply.account.id == tweetAccountId,
-                      onTap: () => NavigatorUtils.goBack(context))),
-          ]),
-          style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp15, context: context)),
+                      onTap: () => NavigatorUtils.goBack(context));
+                })
+          ])),
+          style: TweetReplyUtil.getReplyBodyStyle(Dimens.font_sp14, context: context)),
     ));
   }
 
@@ -263,7 +270,8 @@ class TweetReplyItemDetail extends StatelessWidget {
         padding: EdgeInsets.only(top: 1.0),
         child: Text(
           TimeUtil.getShortTime(reply.sentTime),
-          style: TextStyle(fontSize: Dimens.font_sp14, color: ColorConstant.getTweetTimeColor(context)),
+          style:
+              pfStyle.copyWith(fontSize: Dimens.font_sp12, color: ColorConstant.getTweetTimeColor(context)),
         ));
   }
 
@@ -273,7 +281,7 @@ class TweetReplyItemDetail extends StatelessWidget {
           onTap: () => delReply(reply.id),
           child: Container(
             padding: EdgeInsets.only(left: 10.0),
-            child: Text('删除', style: TextStyle(fontSize: Dimens.font_sp13, color: Color(0xff4682B4))),
+            child: Text('删除', style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Color(0xff4682B4))),
           ));
     }
     return Gaps.empty;
@@ -288,8 +296,7 @@ class TweetReplyItemDetail extends StatelessWidget {
       } else {
         ToastUtil.showToast(context, '删除成功');
       }
-      print(tweetId);
-      Provider.of<TweetProvider>(context).deleteReply(tweetId, parentId, replyId, reply.type);
+      Provider.of<TweetProvider>(context, listen: false).deleteReply(tweetId, parentId, replyId, reply.type);
     } else {
       ToastUtil.showToast(context, '删除失败');
     }

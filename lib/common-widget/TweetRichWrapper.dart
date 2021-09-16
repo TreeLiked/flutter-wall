@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -42,7 +41,7 @@ class TweetRichWrapper extends NetNormalWidget<WebLinkModel> {
     return GestureDetector(
         onTap: () => NavigatorUtils.goWebViewPage(context, t.title, t.url),
         child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+            padding: const EdgeInsets.only(left: 15.0, top: 10.0, right: 8.0, bottom: 10.0),
             margin: const EdgeInsets.only(top: 8.0),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),

@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -17,22 +19,22 @@ class WebViewPage extends StatefulWidget {
     Key key,
     @required this.title,
     @required this.url,
+    this.source,
   }) : super(key: key);
 
   final String title;
   final String url;
+  final String source;
 
   @override
   _WebViewPageState createState() => _WebViewPageState();
-
-
 }
 
 class _WebViewPageState extends State<WebViewPage> {
   final Completer<WebViewController> _controller = Completer<WebViewController>();
 
-
   WebView wv;
+
   @override
   void dispose() {
     super.dispose();
@@ -40,13 +42,12 @@ class _WebViewPageState extends State<WebViewPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    // return Gaps.empty;
     wv = WebView(
       initialUrl: widget.url,
       javascriptMode: JavascriptMode.unrestricted,
       onWebViewCreated: (WebViewController webViewController) async {
         _controller.complete(webViewController);
-        print((await webViewController.getTitle()).toString());
       },
     );
 
@@ -73,9 +74,14 @@ class _WebViewPageState extends State<WebViewPage> {
             child: Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
-                  title: Text("${widget.title}"),
+                  title: Text("${widget.title}", style: pfStyle),
                   leading: IconButton(
                     onPressed: () {
+                      if(!StringUtil.isEmpty(widget.source) && widget.source == "1") {
+                        // 从splash页面进来的广告页面
+                        NavigatorUtils.goIndex(context);
+                        return;
+                      }
                       NavigatorUtils.goBack(context);
                     },
                     tooltip: 'Back',
@@ -91,14 +97,28 @@ class _WebViewPageState extends State<WebViewPage> {
                       icon: Icon(Icons.more_vert),
                       onPressed: () => {
                         BottomSheetUtil.showBottomSheetView(context, [
-                          BottomSheetItem(Icon(Icons.content_copy), "复制链接", () {
+                          BottomSheetItem(
+                              Icon(
+                                Icons.content_copy,
+                                color: Colors.lightBlue,
+                              ),
+                              "复制链接", () {
                             ToastUtil.showToast(context, '已复制');
                             NavigatorUtils.goBack(context);
                             Utils.copyTextToClipBoard(widget.url);
                           }),
+                          BottomSheetItem(
+                              Icon(
+                                Icons.refresh,
+                                color: Colors.green,
+                              ),
+                              "刷新", () async {
+                            NavigatorUtils.goBack(context);
+                            await (await (_controller?.future)).clearCache();
+                          }),
                         ])
                       },
-                    )
+                    ),
                   ],
                 ),
                 body: wv),

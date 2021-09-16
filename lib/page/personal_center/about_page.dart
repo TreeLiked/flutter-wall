@@ -1,18 +1,14 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/common-widget/click_item.dart';
-import 'package:iap_app/common-widget/update_dialog.dart';
+import 'package:iap_app/common-widget/simple_confirm.dart';
 import 'package:iap_app/config/auth_constant.dart';
-import 'package:iap_app/model/version/pub_v.dart';
 import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/res/resources.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
@@ -26,7 +22,7 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  static const double _logoWidth = 88.0;
+  static const double _logoSize = 77.0;
 
   @override
   void dispose() {
@@ -34,9 +30,12 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    print('about page state build');
+  void initState() {
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     final bool isDark = ThemeUtils.isDark(context);
     bool ios = Platform.isIOS;
     return Scaffold(
@@ -45,34 +44,39 @@ class _AboutPageState extends State<AboutPage> {
       ),
       body: Column(
         children: <Widget>[
-          Gaps.vGap50,
-//          FlutterLogo(
-//            size: 100.0,
-//            colors: _colors[Random.secure().nextInt(7)],
-//            textColor: _randomColor(),
-//            style: _styles[Random.secure().nextInt(3)],
-//            curve: _curves[Random.secure().nextInt(12)],
-//          ),
-          Container(
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LoadAssetImage(
-                    'wall_logo',
-                    width: _logoWidth,
-                    height: _logoWidth,
-                    color: Colors.amber,
-                  ))),
+          Gaps.vGap30,
+          GestureDetector(
+            child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: isDark ? Colors.white12 : Colors.black12, width: 1.0),
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LoadAssetImage(
+                      'wall_logo',
+                      width: _logoSize,
+                      height: _logoSize,
+                    ))),
+            onTap: () => ToastUtil.showToast(context, "Hey ~ Contact and join me"),
+          ),
 
-          Gaps.vGap10,
+          Gaps.vGap30,
 //          ClickItem(
 //              title: "Github",
 //              content: "请我喝咖啡",
 //              onTap: () {
 //                NavigatorUtils.goWebViewPage(context, "Wall", "https://gitee.com/treeliked/iap-app");
 //              }),
-          ClickItem(
-            title: "关于我们",
-            content: '满月',
+
+          GestureDetector(
+            child: ClickItem(
+              title: "关于我们",
+              content: 'iutr.tech'.toUpperCase(),
+            ),
+            onLongPress: () => ToastUtil.showToast(
+                context,
+                '${Application.getDeviceId} - ${Platform.isIOS ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}' ??
+                    "NULL"),
           ),
           ClickItem(
               title: "使用须知",
@@ -82,20 +86,34 @@ class _AboutPageState extends State<AboutPage> {
                 NavigatorUtils.goWebViewPage(
                     context, "Wall服务协议", "http://almond-donuts.iutr.tech:8088/terms.html");
               }),
-          ClickItem(
-            title: '检查更新',
-            content: 'v${ios?SharedConstant.VERSION_REMARK_IOS:SharedConstant.VERSION_REMARK_ANDROID}',
-            onTap: () async {
-              Utils.showDefaultLoadingWithBounds(context);
-              VersionUtils.checkUpdate(context: context).then((result) {
-                NavigatorUtils.goBack(context);
-                VersionUtils.displayUpdateDialog(result, context: context);
-              });
-            },
+          GestureDetector(
+            child: ClickItem(
+              title: '检查更新',
+              content: 'v${ios ? SharedConstant.VERSION_REMARK_IOS : SharedConstant.VERSION_REMARK_ANDROID}',
+              onTap: () async {
+                Utils.showDefaultLoadingWithBounds(context);
+                VersionUtils.checkUpdate(context: context).then((result) {
+                  NavigatorUtils.goBack(context);
+                  VersionUtils.displayUpdateDialog(result, context: context);
+                });
+              },
+            ),
           ),
           ClickItem(
             title: "问题反馈",
             onTap: () => NavigatorUtils.goReportPage(context, ReportPage.REPORT_SYSTEM, "-1", "系统反馈"),
+          ),
+          ClickItem(
+            title: '联系我们',
+            onTap: () async {
+              Utils.displayDialog(
+                  context,
+                  SimpleConfirmDialog(
+                    '联系我们',
+                    '你可以添加微信号：dlwlrma73或发送邮件到 im.lqs2@icloud.com和我联系',
+                  ),
+                  barrierDismissible: true);
+            },
           ),
 
           ClickItem(

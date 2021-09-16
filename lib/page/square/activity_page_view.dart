@@ -7,7 +7,6 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
-import 'package:iap_app/style/text_style.dart';
 
 class ActivityPageView extends StatefulWidget {
   @override
@@ -63,7 +62,7 @@ class _ActivityPageView extends State<ActivityPageView>
         controller: SwiperController(),
         scrollDirection: Axis.horizontal,
         autoplay: true,
-        onTap: (index) => print('点击了第$index'),
+        onTap: (index) {},
       ),
     );
   }

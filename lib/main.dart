@@ -2,33 +2,30 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:device_info/device_info.dart';
-import 'package:fluro/fluro.dart';
+import 'package:common_utils/common_utils.dart';
+import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:iap_app/api/api.dart';
-import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
-import 'package:iap_app/page/common/org_sel_page.dart';
-import 'package:iap_app/page/login/account_info_set.dart';
-import 'package:iap_app/page/login/org_info_set.dart';
+import 'package:iap_app/bloc/msg_bloc.dart';
 import 'package:iap_app/page/splash_page.dart';
-import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/provider/account_local.dart';
+import 'package:iap_app/provider/circle_tweet_provider.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/theme_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/provider/tweet_typs_filter.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/util/string.dart';
+import 'package:iap_app/util/JPushUtil.dart';
+import 'package:iap_app/util/umeng_util.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-
-
 //  TestWidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(AlmondDonuts());
@@ -43,7 +40,8 @@ void main() {
 }
 
 class AlmondDonuts extends StatefulWidget {
-  static const  bool inProduction = const bool.fromEnvironment("dart.vm.product");
+  static const bool inProduction = const bool.fromEnvironment("dart.vm.product");
+
   @override
   State<StatefulWidget> createState() {
     return AlmondDonutsState();
@@ -51,13 +49,14 @@ class AlmondDonuts extends StatefulWidget {
 }
 
 class AlmondDonutsState extends State<AlmondDonuts> {
+  static const String _TAG = "AlmondDonutsState";
+
   final JPush _jPush = JPush();
 
   AlmondDonutsState() {
-    final Router router = Router();
+    final router = fluro.FluroRouter();
     Routes.configureRoutes(router);
     Application.router = router;
-
   }
 
   @override
@@ -65,27 +64,32 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     super.initState();
 
     initPlatformState();
-    print('------------------main 生产环境=${AlmondDonuts.inProduction}--------------------------');
+    initUMengAnalytics();
+
+    LogUtil.init(tag: "Wall", maxLen: 1024);
+    LogUtil.e("Main 生产环境=${AlmondDonuts.inProduction}", tag: "AlmondDonuts");
     _jPush.getRegistrationID().then((rid) {
       if (rid != null && rid.length != 0) {
         Application.setDeviceId(rid);
-        _getAndUpdateDeviceInfo(rid);
+        // _getAndUpdateDeviceInfo(rid);
+      } else {
+        LogUtil.e("获取不到RegistrationId", tag: "AlmondDonuts");
       }
     });
 
-//    var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
-//    var localNotification = LocalNotification(
-//        id: 234,
-//        title: 'fadsfa',
-//        buildId: 1,
-//        content: 'fdas',
-//        fireTime: fireDate,
-//        subtitle: 'fasf',
-//        badge: 5,
-//        extra: {"fa": "0"});
-//    _jPush.sendLocalNotification(localNotification).then((res) {
-//      print(res);
-//    });
+    // var fireDate = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + 3000);
+    // var localNotification = LocalNotification(
+    //     id: 234,
+    //     title: 'fadsfa',
+    //     buildId: 1,
+    //     content: 'fdas',
+    //     fireTime: fireDate,
+    //     subtitle: 'fasf',
+    //     badge: 5,
+    //     extra: {"fa": "0"});
+    // _jPush.sendLocalNotification(localNotification).then((res) {
+    //   print(res);
+    // });
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Color(0xff000000), statusBarIconBrightness: Brightness.dark));
@@ -96,11 +100,12 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     _jPush.addEventHandler(
       // 接收通知回调方法。
       onReceiveNotification: (Map<String, dynamic> message) async {
-        print("flutter onReceiveNotification: $message");
+        LogUtil.e("flutter onReceiveNotification: $message", tag: _TAG);
       },
       // 点击通知回调方法。
       onOpenNotification: (Map<String, dynamic> message) async {
-        print("flutter onOpenNotification: $message");
+        LogUtil.e("flutter onOpenNotification: $message", tag: _TAG);
+
         _jPush.clearAllNotifications();
 
         Map<String, dynamic> extraMap;
@@ -111,7 +116,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
         } else {
           return;
         }
-        print(extraMap);
+        LogUtil.e(extraMap, tag: _TAG);
         if (extraMap == null) {
           return;
         }
@@ -121,7 +126,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       },
       // 接收自定义消息回调方法。
       onReceiveMessage: (Map<String, dynamic> message) async {
-        print("flutter onReceiveMessage: $message");
+        LogUtil.e("flutter onReceiveMessage: $message", tag: _TAG);
       },
     );
   }
@@ -149,6 +154,7 @@ class AlmondDonutsState extends State<AlmondDonuts> {
 
   Future<void> initPlatformState() async {
     addEventListeners();
+    JPushUtil.jPush = _jPush;
     _jPush.setup(
       appKey: "2541d486ffc85cf504572f6e",
       channel: "developer-default",
@@ -156,46 +162,65 @@ class AlmondDonutsState extends State<AlmondDonuts> {
       production: AlmondDonuts.inProduction,
       debug: !AlmondDonuts.inProduction,
     );
-    if (Platform.isIOS) {
-      _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
-    }
 //    _jPush.applyPushAuthority(new NotificationSettingsIOS(sound: true, alert: true, badge: true));
     if (!mounted) return;
+  }
+
+  Future<void> initUMengAnalytics() async {
+    await UMengUtil.initUMengAnalytics();
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(builder: (_) => AccountLocalProvider()),
-          ChangeNotifierProvider(builder: (_) => TweetTypesFilterProvider()),
-          ChangeNotifierProvider(builder: (_) => ThemeProvider()),
-          ChangeNotifierProvider(builder: (_) => TweetProvider()),
-        ],
-        child: Consumer<ThemeProvider>(builder: (_, provider, __) {
-          return MaterialApp(
-            title: 'Wall',
-            //showPerformanceOverlay: true, //显示性能标签
-            debugShowCheckedModeBanner: false,
-            theme: provider.getTheme(),
-            darkTheme: provider.getTheme(isDarkMode: true),
+      providers: [
+        ChangeNotifierProvider(create: (BuildContext context) => AccountLocalProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => TweetTypesFilterProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => TweetProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => CircleTweetProvider()),
+        ChangeNotifierProvider(create: (BuildContext context) => MsgProvider()),
+      ],
+      // child:  MaterialApp(
+      //     title: 'Wall',
+      //     //showPerformanceOverlay: true, //显示性能标签
+      //     debugShowCheckedModeBanner: false,
+      //     home: SplashPage(),
+      //     onGenerateRoute: Application.router.generator,
+      //     localizationsDelegates: const [
+      //       GlobalMaterialLocalizations.delegate,
+      //       GlobalWidgetsLocalizations.delegate,
+      //       GlobalCupertinoLocalizations.delegate,
+      //       DefaultCupertinoLocalizations.delegate
+      //     ],
+      //     supportedLocales: const [const Locale('zh', 'CH')],
+      //   )
+      // );
+      child: Consumer<ThemeProvider>(builder: (_, provider, __) {
+        return MaterialApp(
+          title: 'Wall',
+          //showPerformanceOverlay: true, //显示性能标签
+          debugShowCheckedModeBanner: false,
+          theme: provider.getTheme(),
+          darkTheme: provider.getTheme(isDarkMode: true),
+          home: SplashPage(),
 //            home: SplashPage(),
-            home: SplashPage(),
-            onGenerateRoute: Application.router.generator,
-            // localizationsDelegates: const [
-            //   GlobalMaterialLocalizations.delegate,
-            //   GlobalWidgetsLocalizations.delegate,
-            //   GlobalCupertinoLocalizations.delegate,
-            // ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              DefaultCupertinoLocalizations.delegate
-            ],
-            supportedLocales: const [const Locale('zh', 'CH')],
-          );
-        }));
+          onGenerateRoute: Application.router.generator,
+          // localizationsDelegates: const [
+          //   GlobalMaterialLocalizations.delegate,
+          //   GlobalWidgetsLocalizations.delegate,
+          //   GlobalCupertinoLocalizations.delegate,
+          // ],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            DefaultCupertinoLocalizations.delegate
+          ],
+          supportedLocales: const [const Locale('zh', 'CH')],
+        );
+      }),
+    );
 
     // return ChangeNotifierProvider<ThemeProvider>(
     //   builder: (_) => ThemeProvider(),
@@ -218,74 +243,6 @@ class AlmondDonutsState extends State<AlmondDonuts> {
     //     },
     //   ),
     // );
-  }
-
-  void _getAndUpdateDeviceInfo(String regId) async {
-    print("reg id 获取成功---$regId");
-    DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      print(iosInfo);
-      _updateDeviceInfo("IPHONE", "IOS", iosInfo.systemVersion, regId);
-    } else if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      print(_readAndroidBuildData(androidInfo));
-      _updateDeviceInfo(androidInfo.brand.toUpperCase(), "ANDROID", androidInfo.device, regId);
-    } else {
-      debugPrint("Unsupport Platform type");
-    }
-  }
-
-  void _updateDeviceInfo(String name, String platform, String model, String regId) async {
-    DeviceApi.updateDeviceInfo(Application.getAccountId, name, platform, model, regId);
-  }
-
-  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
-    return <String, dynamic>{
-      'name': data.name,
-      'systemName': data.systemName,
-      'systemVersion': data.systemVersion,
-      'model': data.model,
-      'localizedModel': data.localizedModel,
-      'identifierForVendor': data.identifierForVendor,
-      'isPhysicalDevice': data.isPhysicalDevice,
-      'utsname.sysname:': data.utsname.sysname,
-      'utsname.nodename:': data.utsname.nodename,
-      'utsname.release:': data.utsname.release,
-      'utsname.version:': data.utsname.version,
-      'utsname.machine:': data.utsname.machine,
-    };
-  }
-
-  Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
-    return <String, dynamic>{
-      'version.securityPatch': build.version.securityPatch,
-      'version.sdkInt': build.version.sdkInt,
-      'version.release': build.version.release,
-      'version.previewSdkInt': build.version.previewSdkInt,
-      'version.incremental': build.version.incremental,
-      'version.codename': build.version.codename,
-      'version.baseOS': build.version.baseOS,
-      'board': build.board,
-      'bootloader': build.bootloader,
-      'brand': build.brand,
-      'device': build.device,
-      'display': build.display,
-      'fingerprint': build.fingerprint,
-      'hardware': build.hardware,
-      'host': build.host,
-      'id': build.id,
-      'manufacturer': build.manufacturer,
-      'model': build.model,
-      'product': build.product,
-      'supported32BitAbis': build.supported32BitAbis,
-      'supported64BitAbis': build.supported64BitAbis,
-      'supportedAbis': build.supportedAbis,
-      'tags': build.tags,
-      'type': build.type,
-      'isPhysicalDevice': build.isPhysicalDevice,
-      'androidId': build.androidId
-    };
   }
 }
 

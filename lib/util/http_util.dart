@@ -1,17 +1,27 @@
 import 'dart:async';
-import 'package:html/dom.dart';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:html/dom.dart';
 import 'package:iap_app/api/api.dart';
+import 'package:iap_app/api/device.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
+import 'package:iap_app/model/result_code.dart';
 import 'package:iap_app/model/web_link.dart';
+import 'package:iap_app/provider/msg_provider.dart';
+import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/routes/routes.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/html_util.dart';
 import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 var httpUtil = HttpUtil(baseUrl: Api.API_BASE_INF_URL, header: headersJson);
 var httpUtil2 = HttpUtil(baseUrl: Api.API_BASE_MEMBER_URL, header: headersJson);
@@ -26,13 +36,17 @@ Map<String, dynamic> headers = {
 Map<String, dynamic> headersJson = {
   "Accept": "application/json",
   "Content-Type": "application/json; charset=UTF-8",
-  "INDENTIFY-ID": "",
+  "identify-id": Application.getAccountId ?? "",
   "user-agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
+  "version": Platform.isAndroid
+      ? "${SharedConstant.VERSION_ID_ANDROID}_${SharedConstant.VERSION_REMARK_ANDROID}"
+      : "${SharedConstant.VERSION_ID_IOS}_${SharedConstant.VERSION_REMARK_IOS}",
 };
 
 class HttpUtil {
-  static final String authKey = "Authorization";
+  static final String _TAG = "HttpUtil";
+  static final String authKey = SharedConstant.AUTH_HEADER_VALUE;
 
   Dio dio;
   BaseOptions options;
@@ -72,22 +86,23 @@ class HttpUtil {
   HttpUtil({String baseUrl = Api.API_BASE_INF_URL, Map<String, dynamic> header}) {
     this.headers = header;
     options = BaseOptions(
-      // 请求基地址，一般为域名，可以包含路径
-      // baseUrl: baseUrl,
-      //连接服务器超时时间，单位是毫秒.
-      connectTimeout: 10000,
+        // 请求基地址，一般为域名，可以包含路径
+        // baseUrl: baseUrl,
+        //连接服务器超时时间，单位是毫秒.
+        connectTimeout: 10000,
 
-      //[如果返回数据是json(content-type)，dio默认会自动将数据转为json，无需再手动转](https://github.com/flutterchina/dio/issues/30)
-      // responseType: ResponseType.plain,
+        //[如果返回数据是json(content-type)，dio默认会自动将数据转为json，无需再手动转](https://github.com/flutterchina/dio/issues/30)
+        // responseType: ResponseType.plain,
 
-      ///  响应流上前后两次接受到数据的间隔，单位为毫秒。如果两次间隔超过[receiveTimeout]，
-      ///  [Dio] 将会抛出一个[DioErrorType.RECEIVE_TIMEOUT]的异常.
-      ///  注意: 这并不是接收数据的总时限.
-      receiveTimeout: 30000,
-      headers: header,
-    );
+        ///  响应流上前后两次接受到数据的间隔，单位为毫秒。如果两次间隔超过[receiveTimeout]，
+        ///  [Dio] 将会抛出一个[DioErrorType.RECEIVE_TIMEOUT]的异常.
+        ///  注意: 这并不是接收数据的总时限.
+        receiveTimeout: 30000,
+        headers: header,
+        followRedirects: true);
 
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
+    // dio = new Dio(options)..interceptors.add(getMyInterceptor());
 
     String myToken = Application.getLocalAccountToken;
     if (myToken == null) {
@@ -113,7 +128,7 @@ class HttpUtil {
       receiveTimeout: 30000,
       headers: this.headers,
     );
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
   }
 
   void clearAuthToken() {
@@ -125,14 +140,13 @@ class HttpUtil {
       receiveTimeout: 30000,
       headers: this.headers,
     );
-    dio = new Dio(options);
+    dio = new Dio(options)..interceptors.add(getMyInterceptor());
   }
 
   Future<Result<T>> get<T>(url, {data, options, cancelToken}) async {
     print('get请求启动! url：$url ,body: $data');
     Response response;
     Result result = Result(isSuccess: false);
-
     try {
       response = await dio.get(
         url,
@@ -156,10 +170,7 @@ class HttpUtil {
     Result result = Result(isSuccess: false);
     Response response;
     try {
-      response = await dio.post(
-        url,
-        data: data,
-      );
+      response = await dio.post(url, data: data, options: options, cancelToken: cancelToken);
       print('post请求成功!response.data：${response.data}');
       Map<String, dynamic> json = response.data;
       return Result.fromJson(json);
@@ -182,10 +193,79 @@ class HttpUtil {
       String html = resp.data;
       if (!StringUtil.isEmpty(html)) {
         Document doc = HtmlUtils.parseDocument(html);
-
         return WebLinkModel(url, HtmlUtils.getDocTitle(doc) ?? url, HtmlUtils.getDocFaviconPath(doc));
       }
     }
     return null;
+  }
+
+  static InterceptorsWrapper getMyInterceptor() {
+    return InterceptorsWrapper(
+      onRequest: (options, handler) => requestInterceptor(options, handler),
+      onResponse: (response, handler) => responseInterceptor(response, handler),
+      // onError: (DioError dioError) => errorInterceptor(dioError)
+    );
+  }
+
+  static dynamic requestInterceptor(RequestOptions options, RequestInterceptorHandler handler) async {
+    String requestId = new Uuid().v1().substring(0, 8);
+    LogUtil.e('--> Request  to [ $requestId ] -->  ${options.uri}', tag: _TAG);
+    options.extra.addAll({"RequestId": requestId});
+    return handler.next(options);
+  }
+
+  static dynamic responseInterceptor(Response resp, ResponseInterceptorHandler handler) async {
+    String val = resp.data.toString();
+    String requestPath = resp.requestOptions.path;
+    String requestId = resp.requestOptions.extra['RequestId'];
+    LogUtil.e(
+        '<-- Response to [ $requestId ] <-- $requestPath: ${val.length > 100 ? val.substring(0, 100) : val}',
+        tag: _TAG);
+    Map<String, dynamic> resMap = Api.convertResponse(resp.data);
+    if (resMap != null && resMap.isNotEmpty && resMap.containsKey("code") && resMap.containsKey("success")) {
+      String code = resMap["code"].toString();
+      if (code == ResultCode.LOGIN_OUT) {
+        print("登出了哦-------");
+
+        BuildContext context = Application.context;
+
+        if (Application.getDeviceId != null) {
+          DeviceApi.removeDeviceInfo(Application.getAccountId, Application.getDeviceId);
+        }
+        Application.setLocalAccountToken(null);
+        Application.setAccount(null);
+        Application.setAccountId(null);
+        await SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_TOKEN);
+        await SpUtil.remove(SharedConstant.LOCAL_ACCOUNT_ID);
+
+        await SpUtil.remove(SharedConstant.LOCAL_ORG_ID);
+        await SpUtil.remove(SharedConstant.LOCAL_ORG_NAME);
+
+        await SpUtil.remove(SharedConstant.LOCAL_FILTER_TYPES);
+        await SpUtil.remove(SharedConstant.MY_UN_LIKED);
+        await SpUtil.clear();
+
+        Provider.of<MsgProvider>(context, listen: false).clear();
+
+        httpUtil.clearAuthToken();
+        httpUtil2.clearAuthToken();
+
+        if (resMap["message"] != null) {
+          ToastUtil.showToast(context, resMap["message"], gravity: ToastGravity.CENTER);
+        }
+        NavigatorUtils.push(context, Routes.loginPage, clearStack: true);
+
+        print("-------------------------------finish---------------------------------");
+
+        return handler.next(resp);
+      }
+    }
+    return handler.next(resp);
+  }
+
+  static int get lineNumber {
+    final re = RegExp(r'^#1[ \t]+.+:(?<line>[0-9]+):[0-9]+\)$', multiLine: true);
+    final match = re.firstMatch(StackTrace.current.toString());
+    return (match == null) ? -1 : int.parse(match.namedGroup('line'));
   }
 }

@@ -17,7 +17,8 @@ PubVersion _$PubVersionFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['pubTime'] as String)
     ..description = json['description'] as String
-    ..updateDesc = json['updateDesc'] as String;
+    ..updateDesc = json['updateDesc'] as String
+    ..cover = json['cover'] as String;
 }
 
 Map<String, dynamic> _$PubVersionToJson(PubVersion instance) =>
@@ -29,5 +30,6 @@ Map<String, dynamic> _$PubVersionToJson(PubVersion instance) =>
       'apkUrl': instance.apkUrl,
       'pubTime': instance.pubTime?.toIso8601String(),
       'description': instance.description,
-      'updateDesc': instance.updateDesc
+      'updateDesc': instance.updateDesc,
+      'cover': instance.cover
     };

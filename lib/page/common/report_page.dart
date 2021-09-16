@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/report.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
@@ -17,6 +17,7 @@ class ReportPage extends StatelessWidget {
   static const REPORT_TOPIC = "TOPIC";
   static const REPORT_TOPIC_REPLY = "TOPIC_REPLY";
   static const REPORT_ACCOUNT = "ACCOUNT";
+  static const REPORT_CIRCLE = "CIRCLE";
 
   static const REPORT_SYSTEM = "SYSTEM";
 
@@ -44,9 +45,10 @@ class ReportPage extends StatelessWidget {
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
-                color: isDark ? Colours.dark_bg_color_darker : Colours.bg_color,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
+                  color: ThemeUtils.isDark(context)
+                      ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                      : ColorConstant.TWEET_RICH_BG,
+                  borderRadius: BorderRadius.circular(8.0)),
               padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 15.0),
               margin: const EdgeInsets.only(left: 2.0, right: 2.0),
               child: TextField(

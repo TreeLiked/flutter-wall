@@ -12,6 +12,7 @@ import 'package:iap_app/api/univer.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/text_field.dart';
 import 'package:iap_app/config/auth_constant.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/result.dart';
@@ -36,7 +37,6 @@ import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/version_utils.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:provider/provider.dart';
-import 'package:rxdart/rxdart.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -44,6 +44,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _SMSLoginPageState extends State<LoginPage> {
+  static const String _TAG = "_SMSLoginPageState";
+
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _vCodeController = TextEditingController();
   TextEditingController _iCodeController = TextEditingController();
@@ -79,7 +81,7 @@ class _SMSLoginPageState extends State<LoginPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await SpUtil.getInstance();
       // 由于SpUtil未初始化，所以MaterialApp获取的为默认主题配置，这里同步一下。
-      Provider.of<ThemeProvider>(context).syncTheme();
+      Provider.of<ThemeProvider>(context, listen: false).syncTheme();
     });
     _phoneController.addListener(_verifyPhone);
 //    _vCodeController.addListener(_verifyCode);
@@ -147,7 +149,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         httpUtil2.updateAuthToken(token);
         await SpUtil.putString(SharedConstant.LOCAL_ACCOUNT_TOKEN, token);
 
-        _loadStorageTweetTypes();
+        // _loadStorageTweetTypes();
         // 查询账户信息
         Account acc = await MemberApi.getMyAccount(token);
         if (acc == null) {
@@ -156,9 +158,9 @@ class _SMSLoginPageState extends State<LoginPage> {
           return;
         }
         // 绑定账户信息到本地账户数据提供器
-        AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context);
+        AccountLocalProvider accountLocalProvider = Provider.of<AccountLocalProvider>(context, listen: false);
         accountLocalProvider.setAccount(acc);
-        print(accountLocalProvider.account.toJson());
+        LogUtil.e(accountLocalProvider.account.toJson(), tag: _TAG);
         Application.setAccount(acc);
         Application.setAccountId(acc.id);
 
@@ -179,12 +181,12 @@ class _SMSLoginPageState extends State<LoginPage> {
         // 跳转到首页
         NavigatorUtils.push(context, Routes.splash, clearStack: true);
       } else {
-        if (res.code == MemberResultCode.INVALID_PHONE) {
+        if (res.code == ResultCode.INVALID_PHONE) {
           NavigatorUtils.goBack(context);
           ToastUtil.showToast(context, '错误的手机号，非法请求');
           return;
         }
-        if (res.code == MemberResultCode.UN_REGISTERED_PHONE) {
+        if (res.code == ResultCode.UN_REGISTERED_PHONE) {
           // 未注册流程
           NavigatorUtils.goBack(context);
           Result r = await InviteAPI.checkIsInInvitation();
@@ -201,15 +203,14 @@ class _SMSLoginPageState extends State<LoginPage> {
           NavigatorUtils.push(context, LoginRouter.loginInfoPage);
         } else {
           NavigatorUtils.goBack(context);
-          ToastUtil.showServiceExpToast(context);
+          if (StringUtil.isEmpty(res.message)) {
+            ToastUtil.showServiceExpToast(context);
+          } else {
+            ToastUtil.showToast(context, res.message);
+          }
         }
       }
     });
-  }
-
-  Future<void> _loadStorageTweetTypes() async {
-    TweetTypesFilterProvider tweetTypesFilterProvider = Provider.of<TweetTypesFilterProvider>(context);
-    tweetTypesFilterProvider.updateTypeNames();
   }
 
   @override
@@ -217,12 +218,13 @@ class _SMSLoginPageState extends State<LoginPage> {
     isDark = ThemeUtils.isDark(context);
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
-          padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(110)),
+          padding: EdgeInsets.only(top: prefix2.ScreenUtil().setHeight(200)),
           child: defaultTargetPlatform == TargetPlatform.iOS
-              ? FormKeyboardActions(
+              ? KeyboardActions(
                   child: _buildBody(),
+                  config: KeyboardActionsConfig(actions: []),
                 )
               : SingleChildScrollView(
                   child: _buildBody(),
@@ -237,20 +239,21 @@ class _SMSLoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("登录后即可展示自己", style: TextStyles.textBold24),
+          Text("登录后即可加入Wall", style: TextStyles.textBold24),
+          // Gaps.vGap5,
+          // Text("与上千万大学生发掘精彩", style: TextStyles.textBold14),
           _renderSubBody(),
           Gaps.vGap30,
           Container(
             decoration: BoxDecoration(
-              color: !isDark ? Color(0xfff7f8f8) : Colours.dark_bg_color_darker,
-              borderRadius: BorderRadius.circular(15.0),
-            ),
+                color: isDark ? ColorConstant.TWEET_RICH_BG_DARK : Color(0xffF5F5F5),
+                borderRadius: BorderRadius.circular(10.0)),
             child: Row(
               children: <Widget>[
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   margin: const EdgeInsets.only(right: 10),
-                  child: Text('+86', style: TextStyles.textSize16),
+                  child: Text('+ 86', style: TextStyles.textSize16),
                 ),
                 Gaps.vLine,
                 Expanded(
@@ -326,8 +329,8 @@ class _SMSLoginPageState extends State<LoginPage> {
           _renderHit('未注册的手机号通过验证后将自动注册'),
           Gaps.vGap8,
           _renderGetCodeLine(),
-          Gaps.vGap16,
-//          _renderOtherLine(),
+          Gaps.vGap30,
+          // _renderOtherLine(),
         ],
       ),
     );
@@ -338,7 +341,7 @@ class _SMSLoginPageState extends State<LoginPage> {
         margin: const EdgeInsets.only(top: 15),
         child: RichText(
           softWrap: true,
-          maxLines: 3,
+          maxLines: 8,
           text: TextSpan(children: [
             TextSpan(text: "登录即表示同意 ", style: TextStyles.textGray14),
             TextSpan(
@@ -367,8 +370,12 @@ class _SMSLoginPageState extends State<LoginPage> {
         margin: const EdgeInsets.only(top: 15),
         child: FlatButton(
           child: Text(!_codeWaiting ? '获取短信验证码' : '重新获取 $s(s)', style: TextStyle(color: Colors.white)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
-          color: _canGetCode ? Colors.amber: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          color: _canGetCode
+              ? Colors.amber
+              : !isDark
+                  ? Color(0xffD7D6D9)
+                  : ColorConstant.TWEET_RICH_BG_DARK,
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           disabledColor: !isDark ? Color(0xffD7D6D9) : Colours.dark_bg_color_darker,
           onPressed: _codeWaiting
@@ -384,6 +391,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                     NavigatorUtils.goBack(context);
                     if (res == null) {
                       ToastUtil.showToast(context, TextConstant.TEXT_SERVICE_ERROR);
+                      return;
                     }
                     if (res.isSuccess) {
                       ToastUtil.showToast(context, '发送成功');
@@ -395,8 +403,7 @@ class _SMSLoginPageState extends State<LoginPage> {
                         this._canGetCode = false;
                         _codeWaiting = true;
                       });
-                      _subscription =
-                          Observable.periodic(Duration(seconds: 1), (i) => i).take(second).listen((i) {
+                      _subscription = Stream.periodic(Duration(seconds: 1), (int i) {
                         setState(() {
                           s = second - i - 1;
                           if (s < 1) {
@@ -404,7 +411,17 @@ class _SMSLoginPageState extends State<LoginPage> {
                             _codeWaiting = false;
                           }
                         });
-                      });
+                      }).take(second).listen((event) {});
+                      // _subscription =
+                      //     Observable.periodic(Duration(seconds: 1), (i) => i).take(second).listen((i) {
+                      //       setState(() {
+                      //         s = second - i - 1;
+                      //         if (s < 1) {
+                      //           _canGetCode = true;
+                      //           _codeWaiting = false;
+                      //         }
+                      //       });
+                      // });
                       return Future.value(true);
                     } else {
                       ToastUtil.showToast(context, res.message);

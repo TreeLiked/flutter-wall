@@ -6,7 +6,6 @@ import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/widget_util.dart';
-import 'package:provider/provider.dart';
 
 class TweetTypeSelectPage extends StatefulWidget {
   final String title;
@@ -40,7 +39,7 @@ class _TweetTypeSelectPage extends State<TweetTypeSelectPage> {
   @override
   Widget build(BuildContext context) {
     // if (filterProvider == null) {
-    //   filterProvider = Provider.of<TweetTypesFilterProvider>(context);
+    //   filterProvider = Provider.of<TweetTypesFilterProvider>(context, listen: false);
     // }
 
     // if (widget.filter) {

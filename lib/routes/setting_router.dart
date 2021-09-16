@@ -8,6 +8,7 @@ import 'package:iap_app/page/personal_center/account_school_info.dart';
 import 'package:iap_app/page/personal_center/history_push.dart';
 import 'package:iap_app/page/personal_center/institute_info_set.dart';
 import 'package:iap_app/page/personal_center/invitation.dart';
+import 'package:iap_app/page/personal_center/my_subscribe.dart';
 import 'package:iap_app/page/personal_center/notification_page.dart';
 import 'package:iap_app/page/personal_center/other_setting.dart';
 import 'package:iap_app/page/personal_center/personal_center.dart';
@@ -35,10 +36,11 @@ class SettingRouter implements IRouterProvider {
   static String orgChoosePage = "/pc/org";
 
   static String historyPushPage = "/pc/history";
+  static String mySubscribePage = "/pc/subscribe";
   static String notificationSettingPage = "/pc/notifiSetting";
 
   @override
-  void initRouter(Router router) {
+  void initRouter(FluroRouter router) {
     router.define(settingPage,
         handler: Handler(handlerFunc: (_, params) => PersonalCenter()),transitionType: TransitionType.fadeIn);
 
@@ -72,6 +74,9 @@ class SettingRouter implements IRouterProvider {
 
     router.define(historyPushPage,
         handler: Handler(handlerFunc: (_, params) => HistoryPushedPage()));
+
+    router.define(mySubscribePage,
+        handler: Handler(handlerFunc: (_, params) => MySubscribePage()));
 
     router.define(notificationSettingPage,
         handler: Handler(handlerFunc: (_, params) => NotificationSettingPage()));

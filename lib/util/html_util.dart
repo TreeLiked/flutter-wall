@@ -26,8 +26,8 @@ class HtmlUtils {
     if (doc != null) {
       List<Element> links = doc.getElementsByTagName("link");
       if (checkListNotEmpty(links)) {
-        for (final ele in links) {
-          LinkedHashMap<dynamic, String> attrs = ele.attributes;
+        for (final Element ele in links) {
+          LinkedHashMap<String, String> attrs = ele.attributes;
           if (checkMapNotEmpty(attrs)) {
             if (attrs.containsKey("rel") || attrs.containsKey("REL")) {
               String val = attrs["rel"] ?? attrs["REL"];

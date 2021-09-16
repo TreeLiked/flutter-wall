@@ -15,8 +15,7 @@ class FlexibleDetailBar extends StatelessWidget {
   final Widget Function(BuildContext context, double t) builder;
 
   static double percentage(BuildContext context) {
-    _FlexibleDetail value =
-        context.inheritFromWidgetOfExactType(_FlexibleDetail);
+    _FlexibleDetail value = context.dependOnInheritedWidgetOfExactType();
     assert(value != null, 'ooh , can not find');
     return value.t;
   }
@@ -33,16 +32,14 @@ class FlexibleDetailBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FlexibleSpaceBarSettings settings =
-        context.inheritFromWidgetOfExactType(FlexibleSpaceBarSettings);
+        context.dependOnInheritedWidgetOfExactType();
 
     final List<Widget> children = <Widget>[];
 
     final double deltaExtent = settings.maxExtent - settings.minExtent;
     // 0.0 -> Expanded
     // 1.0 -> Collapsed to toolbar
-    final double t =
-        (1.0 - (settings.currentExtent - settings.minExtent) / deltaExtent)
-            .clamp(0.0, 1.0);
+    final double t = (1.0 - (settings.currentExtent - settings.minExtent) / deltaExtent).clamp(0.0, 1.0);
 
     //背景添加视差滚动效果
     children.add(Positioned(
@@ -55,7 +52,7 @@ class FlexibleDetailBar extends StatelessWidget {
 
     //为content 添加 底部的 padding
     double bottomPadding = 0;
-    SliverAppBar sliverBar = context.ancestorWidgetOfExactType(SliverAppBar);
+    SliverAppBar sliverBar = context.dependOnInheritedWidgetOfExactType();
     if (sliverBar != null && sliverBar.bottom != null) {
       bottomPadding = sliverBar.bottom.preferredSize.height;
     }
@@ -69,9 +66,7 @@ class FlexibleDetailBar extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.only(bottom: bottomPadding),
           child: Material(
-              child: DefaultTextStyle(
-                  style: Theme.of(context).primaryTextTheme.body1,
-                  child: content),
+              child: DefaultTextStyle(style: Theme.of(context).primaryTextTheme.body1, child: content),
               elevation: 0,
               color: Colors.transparent),
         ),
@@ -117,8 +112,6 @@ class FlexShadowBackground extends StatelessWidget {
     var t = FlexibleDetailBar.percentage(context);
     t = Curves.ease.transform(t) / 2 + 0.2;
     return Container(
-      decoration:
-          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(25))),
       foregroundDecoration: BoxDecoration(color: Colors.black.withOpacity(t)),
       child: child,
     );

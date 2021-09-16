@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/message.dart';
-import 'package:iap_app/application.dart';
-import 'package:iap_app/common-widget/imgae_container.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
@@ -150,7 +148,7 @@ class SystemCardItem extends StatelessWidget {
                     msg.readStatus == ReadStatus.UNREAD
                         ? RedPoint(
                             msg,
-                            color: Colors.pinkAccent,
+                            color: Color(0xff00CED1),
                           )
                         : Gaps.empty,
                     Images.arrowRight,
@@ -179,7 +177,7 @@ class SystemCardItem extends StatelessWidget {
             softWrap: true,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp15)),
+            style: pfStyle.copyWith(color: Colors.grey, fontSize: Dimens.font_sp15)),
       );
     } else if (cover != null) {
       return Container(

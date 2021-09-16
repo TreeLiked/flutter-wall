@@ -1,21 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/tweet.dart';
-import 'package:iap_app/application.dart';
-import 'package:iap_app/component/tweet/item/tweet_reply_item_simple.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/global_config.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet.dart';
-import 'package:iap_app/model/tweet_reply.dart';
+import 'package:iap_app/model/tweet_type.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/widget_util.dart';
@@ -77,7 +74,7 @@ class TweetPraiseWrapper extends StatelessWidget {
     if (hasPraise && len > GlobalConfig.MAX_DISPLAY_PRAISE) {
       int diff = len - GlobalConfig.MAX_DISPLAY_PRAISE;
       spans.add(TextSpan(
-        text: " 等共${len}人刚刚赞过",
+        text: " 等共$len人刚刚赞过",
         style: MyDefaultTextStyle.getTweetBodyStyle(context, fontSize: 13.0),
       ));
     }
@@ -86,8 +83,10 @@ class TweetPraiseWrapper extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
         decoration: BoxDecoration(
-          color: ThemeUtils.isDark(context) ? ColorConstant.TWEET_RICH_BG_DARK : ColorConstant.TWEET_RICH_BG,
-          borderRadius: BorderRadius.circular(8.0),
+          color: ThemeUtils.isDark(context)
+                  ? ColorConstant.DEFAULT_BAR_BACK_COLOR_DARK
+                  : ColorConstant.TWEET_RICH_BG_2,
+          borderRadius: BorderRadius.circular(5.0),
         ),
         child: Wrap(
             alignment: WrapAlignment.start, crossAxisAlignment: WrapCrossAlignment.center, children: items));
@@ -97,8 +96,8 @@ class TweetPraiseWrapper extends StatelessWidget {
     if (tweet.latestPraise == null) {
       tweet.latestPraise = List();
     }
-    final _tweetProvider = Provider.of<TweetProvider>(context);
-    final _localAccProvider = Provider.of<AccountLocalProvider>(context);
+    final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
+    final _localAccProvider = Provider.of<AccountLocalProvider>(context, listen: false);
     _tweetProvider.updatePraise(context, _localAccProvider.account, tweet.id, !tweet.loved);
     await TweetApi.operateTweet(tweet.id, 'PRAISE', tweet.loved);
     if (tweet.loved) {

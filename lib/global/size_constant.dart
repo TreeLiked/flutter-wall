@@ -1,11 +1,10 @@
-import 'package:flutter/widgets.dart';
 import 'package:iap_app/res/dimens.dart';
 
 class SizeConstant {
   static const double TWEET_REPLY_ICON_SIZE = 20;
   static const double TWEET_REPLY_FONT_SIZE = 14;
 
-  static const double TWEET_NICK_SIZE = 14;
+  static const double TWEET_NICK_SIZE = 15;
 
   static const double TWEET_PROFILE_SIZE = 42;
 

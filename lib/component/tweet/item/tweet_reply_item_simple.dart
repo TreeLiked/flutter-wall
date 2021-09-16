@@ -1,10 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/routes/fluro_navigator.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/toast_util.dart';
 
@@ -55,13 +52,13 @@ class TweetReplyItemSimple extends StatelessWidget {
 
           child: RichText(
             maxLines: 2,
-            overflow: TextOverflow.fade,
+            overflow: TextOverflow.ellipsis,
             softWrap: true,
             text: TextSpan(children: [
               TextSpan(
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      if (!dirReplyAnonymous) {
+                      if (!dirReplyAnonymous && !(isAuthorReply && tweetAnonymous)) {
                         onTapAccount(reply.account, false);
                       }
                     },
@@ -72,7 +69,7 @@ class TweetReplyItemSimple extends StatelessWidget {
                   ? emptyTs
                   : TextSpan(
                       text: ' 回复 ',
-                      style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp14, context: context)),
+                      style: TweetReplyUtil.getTweetHuiFuStyle(Dimens.font_sp13p5, context: context)),
               dirReply
                   ? emptyTs
                   : TextSpan(

@@ -23,6 +23,8 @@ class TweetAccount {
   /// 班级
   String cla;
 
+  String gender;
+
   TweetAccount();
 
 

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/theme_utils.dart';
 
 class TitleItemWrapper extends StatelessWidget {
   final Text titleText;

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
+import 'package:iap_app/common-widget/empty_view.dart';
 import 'package:iap_app/component/hot_app_bar.dart';
 import 'package:iap_app/component/tweet/tweet_hot_card.dart';
 import 'package:iap_app/global/oss_canstant.dart';
@@ -16,9 +18,11 @@ import 'package:iap_app/model/media.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:iap_app/util/widget_util.dart';
+import 'package:iap_app/util/umeng_util.dart';
 
 class HotToday extends StatefulWidget {
   @override
@@ -28,7 +32,7 @@ class HotToday extends StatefulWidget {
 }
 
 class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin {
-  double _expandedHeight = ScreenUtil().setWidth(380);
+  double _expandedHeight = ScreenUtil().setWidth(600);
 
   UniHotTweet hotTweet;
 
@@ -41,6 +45,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
 
   final String defaultCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
   String _currentCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
+  String _preCover = PathConstant.HOT_COVER_URL + OssConstant.THUMBNAIL_SUFFIX;
   List<String> _covers;
   int _currentCoverIndex = 0;
   Timer _loadCoverTimer;
@@ -49,6 +54,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
   void initState() {
     super.initState();
     // _futureTask = getData();
+    UMengUtil.userGoPage(UMengUtil.PAGE_TWEET_INDEX_HOT);
     _headerNotifier = LinkHeaderNotifier();
   }
 
@@ -69,7 +75,7 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     UniHotTweet ht = await TweetApi.queryOrgHotTweets(Application.getOrgId);
 
     if (ht == null) {
-      ToastUtil.showToast(context, '当前访问过多，请稍后重试');
+      ToastUtil.showToast(context, '当前访问人数较多，请稍后重试');
       setState(() {
         this.hotTweet = null;
       });
@@ -105,13 +111,18 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       }
       setState(() {
         _currentCover = _covers[_currentCoverIndex++];
+        if (_currentCoverIndex > 0) {
+          _preCover = _covers[_currentCoverIndex - 1];
+        }
       });
     });
   }
 
   void extractCovers() {
     _covers?.clear();
-    _covers = new List();
+    if (_covers == null) {
+      _covers = new List();
+    }
     _covers.add(defaultCover);
     if (hotTweet == null) {
       return;
@@ -121,10 +132,17 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
       int len = bts.length;
       for (int i = 0; i < len; i++) {
         if (bts[i].cover != null && bts[i].cover.mediaType == Media.TYPE_IMAGE) {
-          _covers.add(bts[i].cover.url);
+          _covers.add(bts[i].cover.url + OssConstant.THUMBNAIL_SUFFIX);
         }
       }
-      loopDisplayCover();
+      // loopDisplayCover();
+      setState(() {
+        _covers = _covers;
+        _currentCover = _covers[0];
+        if (!CollectionUtil.isListEmpty(_covers)) {
+          _currentCover = _covers[Random().nextInt(_covers.length)];
+        }
+      });
     }
   }
 
@@ -152,7 +170,15 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
     super.build(context);
     bool loadingOrRedisInit = hotTweet == null;
     bool noData = !loadingOrRedisInit && CollectionUtil.isListEmpty(hotTweet.tweets);
-    return Scaffold(
+    bool showTrend = !noData;
+    if (hotTweet != null && hotTweet.lastFetched != null) {
+      if (hotTweet.lastFetched.hour == 23 && hotTweet.lastFetched.minute == 30) {
+        showTrend = false;
+      }
+    }
+    return SafeArea(
+        child: Scaffold(
+      backgroundColor: ThemeUtils.isDark(context) ? null : Colors.white,
       body: EasyRefresh.custom(
           header: LinkHeader(
             _headerNotifier,
@@ -166,7 +192,15 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
             HotAppBarWidget(
               headerNotifier: _headerNotifier,
               backgroundImg: _currentCover,
+              // backgroundImgs: (_covers == null || _covers.length == 1) ? null : _covers,
               count: 10,
+              cache: true,
+              displayLeading: false,
+              lightShadow: Colors.black38,
+              outerMargin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+              outerRadius: BorderRadius.circular(8.0),
+              imageRadius: BorderRadius.circular(8.0),
+              sigma: 0,
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -179,17 +213,17 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                         children: [
                           TextSpan(
                               text: '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
-                              style: TextStyle(fontSize: 30)),
+                              style: pfStyle.copyWith(fontSize: Dimens.font_sp15 * 2, color: Colors.white)),
                           TextSpan(
                               text: '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}',
-                              style: TextStyle(fontSize: 16)),
+                              style: pfStyle.copyWith(fontSize: Dimens.font_sp16, color: Colors.white)),
                         ],
                       ),
                     ),
                   ),
                   Container(
                     padding: EdgeInsets.only(left: ScreenUtil().setWidth(40)),
-                    margin: EdgeInsets.only(bottom: ScreenUtil().setWidth(20)),
+                    margin: EdgeInsets.only(bottom: ScreenUtil().setHeight(40)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -197,14 +231,15 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                           '精选20条校园最热门的内容，每半小时更新一次',
                           softWrap: true,
                           maxLines: 2,
-                          style: TextStyle(fontSize: Dimens.font_sp14, color: Colors.white70),
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp14, color: Color(0xddffffff)),
                         ),
+                        Gaps.vGap2,
                         Text(
                           '上次更新时间：' +
                               (hotTweet != null
                                   ? DateUtil.formatDate(hotTweet.lastFetched, format: "HH:mm").toString()
                                   : '暂未更新'),
-                          style: TextStyle(fontSize: 13, color: Colors.white60),
+                          style: pfStyle.copyWith(fontSize: Dimens.font_sp13, color: Color(0xddffffff)),
                         )
                       ],
                     ),
@@ -212,48 +247,32 @@ class _HotTodayState extends State<HotToday> with AutomaticKeepAliveClientMixin 
                 ],
               ),
               expandedHeight: _expandedHeight,
-              title: '校园热门',
+              title: '',
             ),
-            new SliverFixedExtentList(
-              itemExtent: loadingOrRedisInit ? 0 : !noData ? 100 : Application.screenHeight,
-              delegate: new SliverChildBuilderDelegate((BuildContext context, int index) {
-                //创建列表项
-                if (hotTweet == null) {
-                  return Gaps.empty;
-                }
-                var tweets = hotTweet.tweets;
-                if (tweets == null || tweets.length == 0) {
-                  return _noDataView();
-                }
-                return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1));
-              }, childCount: loadingOrRedisInit ? 0 : !noData ? hotTweet.tweets.length : 1),
-            ),
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 10.0, top: 3.0),
+              sliver: SliverList(
+                  delegate: new SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  if (hotTweet == null) {
+                    return Gaps.empty;
+                  }
+                  var tweets = hotTweet.tweets;
+                  if (tweets == null || tweets.length == 0) {
+                    return EmptyView(
+                        lightImg: "no_data", darkImg: "no_data_dark", text: '快去抢占热门吧 ～', topMargin: 50);
+                  }
+                  return TweetHotCard(tweets[index], index, () => _forwardDetail(tweets[index].id, index + 1),
+                      showTrend: showTrend);
+                },
+                childCount: loadingOrRedisInit ? 0 : (!noData ? hotTweet.tweets.length : 1),
+              )),
+            )
+            // Gaps.vGap5
           ],
           onRefresh: _onRefresh,
           onLoad: null),
-    );
-  }
-
-  _noDataView() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          height: ScreenUtil().setHeight(100),
-        ),
-        SizedBox(
-            width: ScreenUtil().setHeight(250),
-            child: LoadAssetImage(
-              'no_data',
-              fit: BoxFit.cover,
-            )),
-        Gaps.vGap16,
-        Text('快去抢占热门吧~',
-            style: TextStyle(color: Colors.grey, fontSize: Dimens.font_sp14, letterSpacing: 1.0)),
-      ],
-    );
+    ));
   }
 
   _forwardDetail(int tweetId, int rank) {

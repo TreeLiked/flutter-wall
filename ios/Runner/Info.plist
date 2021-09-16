@@ -22,6 +22,21 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
+			<key>CFBundleURLName</key>
+			<string>tencentApiIdentifier</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>tencent101821734</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -42,7 +57,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSCameraUsageDescription</key>
-	<string>“Wall”请求在您使用期间获取您的相机权限，以上传头像或发送图片</string>
+	<string>“Wall”请求在您使用期间获取您的相机权限，以上传头像或发表图片内容</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Not Used</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -51,8 +66,10 @@
 	<string>Not Used</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Not Used</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像、发表图片或保存内容等</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像或发送图片</string>
+	<string>“Wall”请求在您使用期间获取您的相册权限，以上传头像或发表图片内容</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Not Used</string>
 	<key>UILaunchStoryboardName</key>

@@ -17,6 +17,7 @@ class AvatarOriginPage extends StatelessWidget {
             tag: 'avatar',
             child: GestureDetector(
               child: CachedNetworkImage(
+                width: double.infinity,
                 imageUrl: avatarUrl,
                 fit: BoxFit.fitWidth,
               ),

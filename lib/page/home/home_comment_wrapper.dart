@@ -10,7 +10,6 @@ import 'package:iap_app/model/tweet_reply.dart';
 import 'package:iap_app/provider/account_local.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/string.dart';
@@ -63,6 +62,7 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                       children: <Widget>[
                         AccountAvatar(
                           cache: true,
+                          whitePadding: true,
                           avatarUrl: curReply != null && curReply.anonymous
                               ? PathConstant.ANONYMOUS_PROFILE
                               : provider.account.avatarUrl,
@@ -74,7 +74,6 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
                               child: TextField(
                                 controller: _controller,
                                 focusNode: _focusNode,
-
                                 maxLength: 512,
                                 maxLines: 1,
                                 maxLengthEnforced: false,
@@ -126,14 +125,14 @@ class HomeCommentWrapperState extends State<HomeCommentWrapper> {
     curReply.body = value;
     Account acc = Account.fromId(Application.getAccountId);
     curReply.account = acc;
+    curReply.bizCode = "1";
 
     await TweetApi.pushReply(curReply, curReply.tweetId).then((result) {
-      print(result.data);
       if (result.isSuccess) {
         TweetReply newReply = TweetReply.fromJson(result.data);
         _controller.clear();
         hideReplyContainer();
-        final _tweetProvider = Provider.of<TweetProvider>(context);
+        final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
         _tweetProvider.updateReply(context, newReply);
       } else {
         _controller.clear();

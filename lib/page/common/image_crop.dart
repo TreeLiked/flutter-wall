@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/app_bar.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:image_crop/image_crop.dart';
@@ -30,7 +31,7 @@ class _ImageCropContainerState extends State<ImageCropContainer> {
 
     return Scaffold(
         appBar: MyAppBar(
-          backgroundColor: Colors.black,
+          actionColor: Colors.amber,
           actionName: "完成",
           onPressed: () async {
             final scale = widget.cropKey.currentState.scale;

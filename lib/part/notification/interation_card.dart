@@ -4,11 +4,9 @@ import 'package:iap_app/api/message.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
 import 'package:iap_app/common-widget/imgae_container.dart';
-import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/path_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
 import 'package:iap_app/model/account.dart';
-import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
 import 'package:iap_app/model/message/tweet_praise_message.dart';
@@ -73,6 +71,10 @@ class InteractionCardItem extends StatelessWidget {
       cover = temp.coverUrl;
       refId = temp.tweetId;
       accountAnonymous = temp.anonymous;
+      if (!accountAnonymous) {
+        // 是否是匿名推文，作者回复别人
+
+      }
     } else if (mstT == MessageType.TOPIC_REPLY) {
       // 话题回复
       TopicReplyMessage temp = message as TopicReplyMessage;
@@ -115,18 +117,20 @@ class InteractionCardItem extends StatelessWidget {
 //          );
 //        },
         child: Container(
-            margin: const EdgeInsets.only(left: 15.0, bottom: 8.0, right: 10.0, top: 8.0),
+            margin: const EdgeInsets.only(left: 15.0, bottom: 4.0, right: 15.0, top: 4.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Container(
-                        margin: const EdgeInsets.only(right: 12.0),
+                        margin: const EdgeInsets.only(right: 10.0),
                         child: AccountAvatar(
                             cache: true,
-                            size: 34.0,
+                            size: 40.0,
                             avatarUrl: !accountAnonymous ? account.avatarUrl : PathConstant.ANONYMOUS_PROFILE,
                             onTap: () => _handleGoAccount(context, account)))
                   ],
@@ -161,11 +165,11 @@ class InteractionCardItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           optType == 0
-                              ? const LoadAssetSvg("love_fill",
-                                  width: 20, height: 20, color: Color(0xffaeb4bd))
+                              ? LoadAssetSvg("love_fill",
+                                  width: 20, height: 20, color: Color(0xffFA8072))
                               : Gaps.empty,
                           optType == 0
-                              ? const Text(' 赞了你', style: const TextStyle())
+                              ? Text(' 赞了你', style: pfStyle.copyWith(fontSize: Dimens.font_sp14))
                               : Flexible(
                                   child: RichText(
                                     softWrap: true,
@@ -180,7 +184,7 @@ class InteractionCardItem extends StatelessWidget {
                                           text: delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : '$replyBody',
                                           style: delete
                                               ? const TextStyle(
-                                                  color: Color(0xffaeb4bd), fontSize: Dimens.font_sp15)
+                                                  color: Color(0xffaeb4bd), fontSize: Dimens.font_sp14)
                                               : MyDefaultTextStyle.getMainTextBodyStyle(isDark,
                                                   fontSize: Dimens.font_sp14)),
                                     ]),
@@ -209,8 +213,8 @@ class InteractionCardItem extends StatelessWidget {
         anonymous ? TextConstant.TWEET_ANONYMOUS_NICK : account.nick ?? TextConstant.TEXT_UN_CATCH_ERROR,
         softWrap: true,
         overflow: TextOverflow.ellipsis,
-        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp15, context: thisContext, bold: true)
-            .copyWith(letterSpacing: 1.1),
+        style: MyDefaultTextStyle.getTweetNickStyle(Dimens.font_sp14, context: thisContext, bold: false)
+            .copyWith(color: isDark ? Colors.grey : Color(0xff6C7B8B)),
       ),
     );
   }
@@ -218,7 +222,7 @@ class InteractionCardItem extends StatelessWidget {
   _buildTime(DateTime dt) {
     return Container(
         margin: const EdgeInsets.only(left: 5.0),
-        child: Text(DateUtil.formatDate(dt,format: "M/dd HH:mm"), style: MyDefaultTextStyle.getTweetTimeStyle(thisContext)));
+        child: Text(TimeUtil.getShortTime(dt), style: MyDefaultTextStyle.getTweetTimeStyle(thisContext)));
   }
 
   _buildBody(String refBody, String cover) {
@@ -231,8 +235,15 @@ class InteractionCardItem extends StatelessWidget {
             style: const TextStyle(color: Color(0xffaeb4bd), fontSize: Dimens.font_sp14)),
       );
     } else if (cover != null) {
-      return ImageContainer(
-          url: cover, width: Application.screenWidth / 4, maxHeight: Application.screenHeight / 4);
+      return Container(
+        child: Text('[图片]',
+            softWrap: true,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Color(0xffaeb4bd), fontSize: Dimens.font_sp14)),
+      );
+      // return ImageContainer(
+      //     url: cover, width: Application.screenWidth / 4, maxHeight: Application.screenHeight / 4);
     } else {
       return Gaps.empty;
     }

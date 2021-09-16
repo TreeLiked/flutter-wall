@@ -1,8 +1,10 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/model/account.dart';
+import 'package:iap_app/model/account/circle_account.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/tweet.dart';
+import 'package:iap_app/page/index/index.dart';
 import 'package:iap_app/page/tweet_detail.dart';
 import 'package:iap_app/routes/routes.dart';
 import 'package:iap_app/util/common_util.dart';
@@ -55,10 +57,19 @@ class NavigatorUtils {
   }
 
   // 跳到WebView页
-  static goWebViewPage(BuildContext context, String title, String url) {
+  static goWebViewPage(BuildContext context, String title, String url, {String source = "0"}) {
     //fluro 不支持传中文,需转换
-    push(
-        context, '${Routes.webViewPage}?title=${Uri.encodeComponent(title)}&url=${Uri.encodeComponent(url)}');
+
+    if (url.contains("music.163.com")) {
+      title = "网易云音乐";
+    } else if (url.contains("y.qq.com")) {
+      title = "QQ音乐";
+    } else if (url.contains("kugou.com")) {
+      title = "酷狗音乐";
+    }
+
+    push(context,
+        '${Routes.webViewPage}?title=${Uri.encodeComponent(title)}&url=${Uri.encodeComponent(url)}&source=$source');
   }
 
   static void goAccountProfile(BuildContext context, SimpleAccount account) {
@@ -73,6 +84,17 @@ class NavigatorUtils {
   }
 
   static void goAccountProfile2(BuildContext context, Account account) {
+    if (account == null) {
+      return;
+    }
+    push(
+        context,
+        Routes.accountProfile +
+            Utils.packConvertArgs(
+                {'nick': account.nick, 'accId': account.id, 'avatarUrl': account.avatarUrl}));
+  }
+
+  static void goAccountProfile3(BuildContext context, CircleAccount account) {
     if (account == null) {
       return;
     }
@@ -102,6 +124,13 @@ class NavigatorUtils {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => TweetDetail(tweet)),
+    );
+  }
+
+  static void goIndex(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Index()),
     );
   }
 }

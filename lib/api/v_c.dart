@@ -3,12 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:iap_app/api/api.dart';
-import 'package:iap_app/api/member.dart';
 import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
-import 'package:iap_app/model/university.dart';
 import 'package:iap_app/model/version/pub_v.dart';
-import 'package:iap_app/util/collection.dart';
 import 'package:iap_app/util/http_util.dart';
 
 class VCAPI {
@@ -18,7 +15,7 @@ class VCAPI {
     Response response;
     String url = Api.API_CHECK_AVAILABLE +
         "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}";
-    print(url);
+    ;
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
@@ -34,13 +31,13 @@ class VCAPI {
     Response response;
     String url = Api.API_CHECK_UPDATE +
         "?versionId=${ios ? SharedConstant.VERSION_ID_IOS : SharedConstant.VERSION_ID_ANDROID}&platform=${ios ? 'IOS' : 'ANDROID'}";
-    print(url);
+    ;
+    String error;
+    Result<PubVersion> r = new Result();
     try {
       response = await httpUtil.dio.get(url);
       Map<String, dynamic> json = Api.convertResponse(response.data);
-      print(json.toString());
       bool success = json["isSuccess"];
-      Result<PubVersion> r = new Result();
       dynamic json2 = json["data"];
       if (success) {
         // 当前版本可用
@@ -60,8 +57,10 @@ class VCAPI {
       }
       return r;
     } on DioError catch (e) {
-      Api.formatError(e);
+      error = Api.formatError(e);
+      r.isSuccess = false;
+      r.message = error;
     }
-    return null;
+    return r;
   }
 }

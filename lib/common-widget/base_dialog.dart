@@ -72,7 +72,7 @@ class BaseDialog extends StatelessWidget {
                               child: FlatButton(
                                 child: Text(
                                   leftText,
-                                  style: TextStyle(fontSize: Dimens.font_sp18),
+                                  style: TextStyle(fontSize: Dimens.font_sp15),
                                 ),
                                 textColor: Colours.text_gray,
                                 onPressed: () {
@@ -93,7 +93,7 @@ class BaseDialog extends StatelessWidget {
                         child: FlatButton(
                           child: Text(
                             rightText,
-                            style: TextStyle(fontSize: Dimens.font_sp18),
+                            style: TextStyle(fontSize: Dimens.font_sp15),
                           ),
                           textColor: Theme.of(context).primaryColor,
                           onPressed: () {

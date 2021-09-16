@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,13 +8,11 @@ import 'package:iap_app/application.dart';
 import 'package:iap_app/global/oss_canstant.dart';
 import 'package:iap_app/model/photo_wrap_item.dart';
 import 'package:iap_app/page/common/report_page.dart';
-import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/bottom_sheet_util.dart';
 import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:image_picker_saver/image_picker_saver.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -86,7 +82,9 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                 scrollPhysics: const BouncingScrollPhysics(),
                 builder: _buildItem,
                 itemCount: widget.galleryItems.length,
-                loadingChild: widget.loadingChild,
+                // loadingBuilder: LoadB,
+                loadingBuilder: (context, _) => widget.loadingChild,
+                // loadingChild: widget.loadingChild,
                 backgroundDecoration: widget.backgroundDecoration,
                 pageController: widget.pageController,
                 onPageChanged: onPageChanged,
@@ -94,7 +92,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               ),
               Positioned(
                   // left: sw / 2,
-                  top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(10),
+                  top: ScreenUtil.statusBarHeight + ScreenUtil().setHeight(20),
                   left: 10,
                   child: Container(
                     width: Application.screenWidth - 20,
@@ -145,17 +143,33 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
                       Flexible(
                         flex: 1,
                         child: Container(
-                            margin: EdgeInsets.only(top: 0, right: 20.0),
+                            margin: EdgeInsets.only(top: 0, right: 0.0),
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                                 child: Icon(
                                   Icons.more_horiz,
-                                  color: Colors.grey,
+                                  color: Colors.white70,
                                 ),
                                 onTap: () => displayOptions())),
                       ),
                     ]),
                   )),
+              Positioned(
+                  bottom: Application.screenHeight * 0.1,
+                  left: Application.screenWidth * 0.05,
+                  child: GestureDetector(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        color: Colors.white12,
+                        width: 35,
+                        height: 35,
+                        alignment: Alignment.center,
+                        child: Icon(Icons.arrow_back, color: Colors.amber, size: 20),
+                      ),
+                    ),
+                    onTap: () => NavigatorUtils.goBack(context),
+                  ))
             ],
           )),
     ));
@@ -169,7 +183,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
     List<Widget> dots = List();
     for (int i = 0; i < len; i++) {
       dots.add(
-          _genDot(margin: 3.0, size: 8.0, realColor: currentIndex == i ? Colors.amber : Color(0xff343434)));
+          _genDot(margin: 3.0, size: 8.0, realColor: currentIndex == i ? Colors.amber : Color(0xffCDCDCD)));
     }
     return dots;
   }
@@ -198,15 +212,21 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
             ),
             '保存到本地', () async {
           Utils.showDefaultLoadingWithBounds(context, text: "正在保存");
-          var response = await Dio()
-              .get(widget.galleryItems[currentIndex].url, options: Options(responseType: ResponseType.bytes));
+          bool saveResult = false;
           try {
-            var path = await ImagePickerSaver.saveFile(fileData: Uint8List.fromList(response.data));
+            bool hasPermission = await PermissionUtil.checkAndRequestStorage(context);
+            if (hasPermission) {
+              saveResult = await Utils.downloadAndSaveImageFromUrl(widget.galleryItems[currentIndex].url);
+            }
           } catch (e, stack) {
-//            ToastUtil.showToast(context, '保存失败');
+            saveResult = false;
           } finally {
-            ToastUtil.showToast(context, '已保存到手机相册');
             Navigator.pop(context);
+            if (saveResult) {
+              ToastUtil.showToast(context, '已保存到手机相册');
+            } else {
+              ToastUtil.showToast(context, '保存失败');
+            }
           }
         }),
         BottomSheetItem(

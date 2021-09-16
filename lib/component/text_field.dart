@@ -3,14 +3,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iap_app/res/colors.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/res/dimens.dart';
-import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/style/text_style.dart';
-import 'package:iap_app/util/widget_util.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// 登录模块的输入框封装
 class MyTextField extends StatefulWidget {
@@ -101,7 +98,8 @@ class _MyTextFieldState extends State<MyTextField> {
   Widget build(BuildContext context) {
     if (widget.config != null && defaultTargetPlatform == TargetPlatform.iOS) {
       // 因Android平台输入法兼容问题，所以只配置IOS平台
-      FormKeyboardActions.setKeyboardActions(context, widget.config);
+
+      // FormKeyboardActions.setKeyboardActions(context, widget.config);
     }
     ThemeData themeData = Theme.of(context);
     bool isDark = themeData.brightness == Brightness.dark;
@@ -118,7 +116,7 @@ class _MyTextFieldState extends State<MyTextField> {
 //          style:
 //              TextStyle(color: widget.keyboardType == TextInputType.text ? Colors.black87 : Colors.white70),
 
-            style: TextStyle(fontSize: Dimens.font_sp16),
+            style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
             textInputAction: TextInputAction.done,
             keyboardType: widget.keyboardType,
             // 数字、手机号限制格式为0到9(白名单)， 密码限制不包含汉字（黑名单）

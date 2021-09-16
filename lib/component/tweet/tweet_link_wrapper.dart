@@ -1,17 +1,16 @@
-import 'package:extended_text/extended_text.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/common-widget/TweetRichWrapper.dart';
 import 'package:iap_app/common-widget/my_future_builder.dart';
-import 'package:iap_app/common-widget/my_special_text_builder.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/web_link.dart';
-import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
-import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/http_util.dart';
 import 'package:iap_app/util/string.dart';
 
 class TweetLinkWrapper extends StatelessWidget {
+  static const String _TAG = "TweetLinkWrapper";
+
   final BaseTweet tweet;
   final bool fromHot;
 
@@ -35,12 +34,12 @@ class TweetLinkWrapper extends StatelessWidget {
     if (link == null || link == "") {
       return Gaps.empty;
     }
-    final wrapper = TweetRichWrapper(tweet: tweet,fromHot: fromHot);
+    final wrapper = TweetRichWrapper(tweet: tweet, fromHot: fromHot);
     tweet.linkWrapper = wrapper;
 
     return Container(
       child: FutureBuilderWidget<WebLinkModel>(
-        loadData: (context) => HttpUtil.loadHtml(context, link),
+        loadData: (context) => HttpUtil.loadHtml(context, link.trim()),
         commonWidget: wrapper,
       ),
     );
@@ -76,7 +75,7 @@ class _TweetLinkWrapper2 extends State<TweetLinkWrapper2> {
     if (link == null || link == "") {
       return Gaps.empty;
     }
-    final wrapper = TweetRichWrapper(tweet: tweet,fromHot: true);
+    final wrapper = TweetRichWrapper(tweet: tweet, fromHot: true);
 
     return Container(
       child: FutureBuilderWidget<WebLinkModel>(

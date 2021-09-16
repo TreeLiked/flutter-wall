@@ -1,5 +1,4 @@
 import 'package:iap_app/model/account/simple_account.dart';
-import 'package:iap_app/model/media.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'base_tr.g.dart';

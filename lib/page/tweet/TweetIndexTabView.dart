@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iap_app/api/tweet.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/component/tweet/tweet_card.dart';
-import 'package:iap_app/component/tweet/tweet_comment_wrapper.dart';
+import 'package:iap_app/component/tweet/tweet_card_new.dart';
 import 'package:iap_app/component/tweet/tweet_no_data_view.dart';
 import 'package:iap_app/model/page_param.dart';
 import 'package:iap_app/model/tweet.dart';
 import 'package:iap_app/model/tweet_reply.dart';
-import 'package:iap_app/page/home/home_comment_wrapper.dart';
-import 'package:iap_app/page/personal_center/personal_center.dart';
 import 'package:iap_app/page/tweet/tweet_comment_wrapper.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/provider/tweet_provider.dart';
-import 'package:iap_app/util/account_util.dart';
 import 'package:iap_app/util/collection.dart';
+import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/page_shared.widget.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:iap_app/util/tweet_reply_util.dart';
@@ -31,7 +29,7 @@ class TweetIndexTabView extends StatefulWidget {
 }
 
 class _TweetIndexTabViewState extends State<TweetIndexTabView> {
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  RefreshController _refreshController = PageSharedWidget.tabIndexRefreshController;
 
 //  List<TabIconData> tabIconsList = TabIconData.tabIconsList;
   AnimationController animationController;
@@ -49,11 +47,11 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
 
   @override
   Widget build(BuildContext context) {
-    tweetProvider = Provider.of<TweetProvider>(context);
+    tweetProvider = Provider.of<TweetProvider>(context, listen: false);
     return Scaffold(
-//      bottomSheet: Container(
-//        child: Text("12333213"),
-//      ),
+      // bottomSheet: Container(
+      //   child: Text("12333213"),
+      // ),
       body: Consumer<TweetProvider>(builder: (context, provider, _) {
         var tweets = provider.displayTweets;
         return Listener(
@@ -102,29 +100,33 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
                           primary: true,
                           itemCount: tweets.length,
                           itemBuilder: (context, index) {
-                            return TweetCard2(
+                            return TweetCardNew(
                               tweets[index],
                               displayExtra: true,
                               displayPraise: true,
                               displayComment: true,
                               displayLink: true,
                               canPraise: true,
-                              onClickComment: () {
+                              indexInList: index,
+                              onClickComment:
+                                  (TweetReply subReply, String targetNick, String targetAccountId) {
                                 _bottomSheetController =
                                     Scaffold.of(context).showBottomSheet((context) => Container(
                                             child: TweetIndexCommentWrapper(
-                                          replyType: 1,
-                                          showAnonymous: true,
-                                          hintText: '评论',
+                                          // 如果是子回复 ，reply不为空
+                                          replyType: subReply == null ? 1 : 2,
+                                          showAnonymous: subReply == null,
+                                          hintText: targetNick != null ? '回复: $targetNick' : '评论',
                                           onSend: (String value, bool anonymous) async {
                                             TweetReply reply = TRUtil.assembleReply(
-                                                tweets[index], value, anonymous, true);
-                                            reply.sentTime = DateTime.now();
+                                                tweets[index], value, anonymous, true,
+                                                subReply: subReply);
+
                                             await TRUtil.publicReply(context, reply,
                                                 (bool success, TweetReply newReply) {
                                               if (success) {
                                                 closeReplyInput();
-                                                final _tweetProvider = Provider.of<TweetProvider>(context);
+                                                final _tweetProvider = Provider.of<TweetProvider>(context, listen: false);
                                                 _tweetProvider.updateReply(context, newReply);
                                               } else {
                                                 ToastUtil.showToast(context, "评论失败，请稍后再试");
@@ -143,15 +145,17 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   void closeReplyInput() {
-    _bottomSheetController?.close();
+    if (_bottomSheetController != null) {
+      _bottomSheetController.close();
+    }
   }
 
   Future<void> _onRefresh(BuildContext context) async {
-    print('On refresh');
     _refreshController.resetNoData();
     _currentPage = 1;
     List<BaseTweet> temp = await getData(_currentPage);
     tweetProvider.update(temp, clear: true, append: false);
+    Provider.of<MsgProvider>(context, listen: false).updateTweetNewCnt(0);
     if (temp == null) {
       _refreshController.refreshFailed();
     } else {
@@ -177,15 +181,12 @@ class _TweetIndexTabViewState extends State<TweetIndexTabView> {
   }
 
   Future getData(int page) async {
-    print('get data ------$page------');
     List<BaseTweet> pbt = await (TweetApi.queryTweets(PageParam(
       page,
       pageSize: 10,
       orgId: Application.getOrgId,
-//        types: ((typesFilterProvider.selectAll ?? true) ? null : typesFilterProvider.selTypeNames)))
       types: null,
     )));
-
     return pbt;
   }
 }

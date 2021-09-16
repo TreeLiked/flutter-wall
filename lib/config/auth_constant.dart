@@ -1,7 +1,8 @@
-import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
-
 class SharedConstant {
+  static const String AUTH_HEADER_VALUE = "Authorization";
+  static const String ORG_ID_HEADER_VALUE = "OrgId";
+
+
   static const String LOCAL_ACCOUNT_ID = "ACCOUNT_ID";
 
   static const String LOCAL_ACCOUNT_TOKEN = "ACCOUNT_TOKEN";
@@ -17,13 +18,18 @@ class SharedConstant {
 
   static const String THEME = "APP_THEME";
 
+  static const String LAST_CLEAR_CACHE = "CACHE_LAST_INVALID_DATE";
+
   /// 每个版本都应该维护并且更新的版本号
   /// 同时更新 android/app/src/build.gradle
-  static const int VERSION_ID_ANDROID = 11;
-  static const int VERSION_ID_IOS = 11;
-  static const String VERSION_REMARK_ANDROID = "2.0.1";
-  static const String VERSION_REMARK_IOS = "2.0.1";
+  static const int VERSION_ID_ANDROID = 32;
+  static const int VERSION_ID_IOS = 32;
+
+  static const String VERSION_REMARK_ANDROID = "2.9.1";
+  static const String VERSION_REMARK_IOS = "2.9.1";
 
   /// 维护本地屏蔽列表
   static const String MY_UN_LIKED = "MY_UNLIKED";
+
+  static const String ANDROID_APP_ID = "com.iutr.iap_app";
 }

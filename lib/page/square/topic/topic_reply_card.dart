@@ -3,12 +3,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iap_app/api/topic.dart';
 import 'package:iap_app/common-widget/account_avatar.dart';
-import 'package:iap_app/component/bottom_sheet_confirm.dart';
 import 'package:iap_app/global/size_constant.dart';
 import 'package:iap_app/model/account/simple_account.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/topic/base_tr.dart';
-import 'package:iap_app/page/common/report_page.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
@@ -35,7 +33,6 @@ class TopicReplyCardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("topic reply card build");
     return !isSub ? _renderMainCard(context, reply) : _renderSubCard(context, subTopicReply);
   }
 
@@ -75,15 +72,22 @@ class TopicReplyCardItem extends StatelessWidget {
                   child: ExtendedText("${reply.body}",
                       maxLines: 3,
                       selectionEnabled: true,
-                      overFlowTextSpan: OverFlowTextSpan(children: [
-                        TextSpan(text: ' \u2026 '),
-                        TextSpan(
-                            text: "查看更多",
-                            style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
-                                  onTap: () => NavigatorUtils.goBack(context)))
-                      ]),
+                      overflowWidget:TextOverflowWidget(child: Row(children: <Widget>[
+                        const Text(' \u2026 '),
+                        RaisedButton(
+                          child: const Text('查看更多'),
+                          onPressed: () {
+                            BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
+                                onTap: () => NavigatorUtils.goBack(context));
+                          },
+                        ),
+                        // TextSpan(
+                        //     text: "查看更多",
+                        //     style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
+                        //     recognizer: TapGestureRecognizer()
+                        //       ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(context, reply,
+                        //           onTap: () => NavigatorUtils.goBack(context)))
+                      ])),
                       softWrap: true,
                       overflow: TextOverflow.fade,
                       style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,
@@ -219,16 +223,16 @@ class TopicReplyCardItem extends StatelessWidget {
                 ExtendedText("${subTopicReply.body}",
                     maxLines: 3,
                     selectionEnabled: true,
-                    overFlowTextSpan: OverFlowTextSpan(children: [
-                      TextSpan(text: ' \u2026 '),
-                      TextSpan(
-                          text: "查看更多",
-                          style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(
-                                context, subTopicReply,
-                                onTap: () => NavigatorUtils.goBack(context)))
-                    ]),
+                    // overFlowTextSpan: OverFlowTextSpan(children: [
+                    //   TextSpan(text: ' \u2026 '),
+                    //   TextSpan(
+                    //       text: "查看更多",
+                    //       style: const TextStyle(color: Colors.grey, fontSize: Dimens.font_sp13p5),
+                    //       recognizer: TapGestureRecognizer()
+                    //         ..onTap = () => BottomSheetUtil.showBottomSheetSingleReplyDetail(
+                    //             context, subTopicReply,
+                    //             onTap: () => NavigatorUtils.goBack(context)))
+                    // ]),
                     softWrap: true,
                     overflow: TextOverflow.fade,
                     style: MyDefaultTextStyle.getMainTextBodyStyle(isDark,

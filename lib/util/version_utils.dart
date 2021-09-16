@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/api/v_c.dart';
 import 'package:iap_app/application.dart';
 import 'package:iap_app/common-widget/update_dialog.dart';
+import 'package:iap_app/config/auth_constant.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/model/version/pub_v.dart';
 import 'package:iap_app/util/toast_util.dart';
@@ -14,7 +14,7 @@ class VersionUtils {
 
   /// 应用安装
   static void install(String path) {
-    InstallPlugin.installApk(path, "com.iutr.iap_app");
+    InstallPlugin.installApk(path, SharedConstant.ANDROID_APP_ID);
   }
 
   /// AppStore跳转
@@ -44,7 +44,7 @@ class VersionUtils {
           VersionUtils.showUpdateDialog(context ?? Application.context, result.data, true);
         } else {
           if (!slient) {
-            ToastUtil.showToast(context, "测试版本");
+            ToastUtil.showToast(context, "新版本");
           }
         }
       } else {

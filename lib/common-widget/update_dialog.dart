@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' as f1;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iap_app/model/version/pub_v.dart';
 import 'package:iap_app/res/colors.dart';
@@ -11,7 +13,10 @@ import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/res/styles.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
+import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/common_util.dart';
 import 'package:iap_app/util/image_utils.dart';
+import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/version_utils.dart';
 
@@ -74,7 +79,9 @@ class _UpdateDialogState extends State<UpdateDialog> {
                           borderRadius: const BorderRadius.only(
                               topLeft: const Radius.circular(8.0), topRight: const Radius.circular(8.0)),
                           image: DecorationImage(
-                            image: ImageUtils.getAssetImage("update_head", format: 'jpg'),
+                            image: StringUtil.isEmpty(widget.version.cover)
+                                ? ImageUtils.getAssetImage("update_head", format: 'jpg')
+                                : CachedNetworkImageProvider(widget.version.cover),
                             fit: BoxFit.cover,
                           ),
                         )),
@@ -154,7 +161,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                               )),
                                           child: Text(
                                             "残忍拒绝",
-                                            style: TextStyle(fontSize: Dimens.font_sp16),
+                                            style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
                                           ),
                                         ),
                                       )
@@ -183,7 +190,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                                     ),
                                     child: Text(
                                       "立即更新",
-                                      style: TextStyle(fontSize: Dimens.font_sp16),
+                                      style: pfStyle.copyWith(fontSize: Dimens.font_sp16),
                                     ),
                                   ),
                                 )
@@ -200,8 +207,15 @@ class _UpdateDialogState extends State<UpdateDialog> {
   _download(int versionId) async {
     try {
       await DirectoryUtil.getInstance();
+      await DirectoryUtil.initStorageDir();
       DirectoryUtil.createStorageDirSync(category: 'apk');
-      String path = DirectoryUtil.getStoragePath(fileName: 'deer', category: 'apk', format: 'apk');
+      String path = DirectoryUtil.getStoragePath(fileName: 'wall', category: 'apk', format: 'apk');
+      print("------------安装PATH--------, $path");
+
+      // Directory storageDir = await getExternalStorageDirectory();
+      // String storagePath = storageDir.path;
+      // File file = new File('$storagePath/${Config.APP_NAME}v${_version}.apk');
+
       File file = File(path);
 
       /// 链接可能会失效

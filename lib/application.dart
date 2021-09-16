@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model/account.dart';
 
 class Application {
-  static Router router;
+  static FluroRouter router;
   static GlobalKey<NavigatorState> key = GlobalKey();
   static SharedPreferences sp;
   static double screenWidth;
@@ -81,4 +81,10 @@ class Application {
   static void setLocalAccountToken(String token) {
     _localAccountToken = token;
   }
+
+
+  static void calTweetImageWidth() {
+
+  }
+
 }

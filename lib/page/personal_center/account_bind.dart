@@ -8,11 +8,7 @@ import 'package:iap_app/model/account.dart';
 import 'package:iap_app/model/account/account_edit_param.dart';
 import 'package:iap_app/model/result.dart';
 import 'package:iap_app/provider/account_local.dart';
-import 'package:iap_app/routes/fluro_navigator.dart';
-import 'package:iap_app/routes/routes.dart';
-import 'package:iap_app/routes/setting_router.dart';
 import 'package:iap_app/util/common_util.dart';
-import 'package:iap_app/util/string.dart';
 import 'package:iap_app/util/toast_util.dart';
 import 'package:provider/provider.dart';
 

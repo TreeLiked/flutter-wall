@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:iap_app/res/colors.dart';
 
 class CircleHeader extends StatefulWidget {
   final LinkHeaderNotifier linkNotifier;

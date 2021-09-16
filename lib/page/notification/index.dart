@@ -1,31 +1,38 @@
 import 'dart:async';
-import 'dart:math';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:iap_app/api/message.dart';
-import 'package:iap_app/common-widget/text_clickable_iitem.dart';
 import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/text_constant.dart';
+import 'package:iap_app/global/theme_constant.dart';
+import 'package:iap_app/model/im_dto.dart';
 import 'package:iap_app/model/message/asbtract_message.dart';
+import 'package:iap_app/model/message/circle_system_message.dart';
 import 'package:iap_app/model/message/plain_system_message.dart';
-import 'package:iap_app/model/message/popular_message.dart';
 import 'package:iap_app/model/message/topic_reply_message.dart';
 import 'package:iap_app/model/message/tweet_praise_message.dart';
 import 'package:iap_app/model/message/tweet_reply_message.dart';
 import 'package:iap_app/page/notification/index_main_item.dart';
+import 'package:iap_app/page/notification/index_main_item_new.dart';
+import 'package:iap_app/provider/msg_provider.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
 import 'package:iap_app/routes/fluro_navigator.dart';
 import 'package:iap_app/routes/notification_router.dart';
 import 'package:iap_app/routes/setting_router.dart';
-import 'package:iap_app/util/common_util.dart';
+import 'package:iap_app/style/text_style.dart';
+import 'package:iap_app/util/PermissionUtil.dart';
 import 'package:iap_app/util/message_util.dart';
 import 'package:iap_app/util/theme_utils.dart';
 import 'package:iap_app/util/toast_util.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:iap_app/util/umeng_util.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:event_bus/event_bus.dart';
 
 class NotificationIndexPage extends StatefulWidget {
   @override
@@ -37,10 +44,12 @@ class NotificationIndexPage extends StatefulWidget {
 
 class _NotificationIndexPageState extends State<NotificationIndexPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<NotificationIndexPage> {
-  String iconSubPath = "heart";
-  String iconSchoolPath = "hat";
-  String iconContactPath = "wave";
-  String iconOfficialPath = "author";
+  String iconSubPath = "self2";
+  String iconSchoolPath = "school2";
+  String circleNotiPath = "circle_noti";
+  String iconContactPath = "contact2";
+  String iconOfficialPath = "official2";
+  static const String _TAG = "_NotificationIndexPageState";
 
   final String noMessage = "暂无新通知";
 
@@ -50,173 +59,238 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
 
   dynamic _latestInteractionMsg;
   dynamic _latestSystemMsg;
+  dynamic _latestCircleMsg;
 
-  SingleMessageControl interactionMsgCtrl = MessageUtil.interactionMsgControl;
-  SingleMessageControl sysMsgCtrl = MessageUtil.systemMsgControl;
+  // 控制消息总线
+  StreamSubscription _subscription;
 
   @override
   void initState() {
     super.initState();
-    _loopQueryInteraction(true);
-    _loopQuerySystem(true);
+    // 校验通知权限
+    UMengUtil.userGoPage(UMengUtil.PAGE_NOTI_INDEX);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      checkNotification();
+    });
+    _subscription = wsCommandEventBus.on<ImDTO>().listen((ImDTO data) {
+      int c = data.command;
+      if (c == ImDTO.COMMAND_TWEET_PRAISED ||
+          c == ImDTO.COMMAND_TWEET_REPLIED ||
+          c == ImDTO.COMMAND_PULL_MSG) {
+        _fetchLatestMessage();
+      }
+    });
+    _subscription.resume();
+  }
+
+  void checkNotification() async {
+    Future.delayed(Duration(seconds: 3)).then((value) =>
+        PermissionUtil.checkAndRequestNotification(context, showTipIfDetermined: true, probability: 39));
+  }
+
+  _fetchLatestMessageAndCount() async {
+    _fetchLatestMessage();
+    _refreshController.refreshCompleted();
   }
 
   _fetchLatestMessage() async {
-    _fetchLatestSystemMsg();
-    _fetchLatestInteractionMsg();
+    MessageUtil.batchQueryMsgCnt(
+            context, [MessageCategory.INTERACTION, MessageCategory.SYSTEM, MessageCategory.CIRCLE])
+        .then((Map<String, int> cateCodeMsgCnt) {
+      List<String> codes = [];
+      cateCodeMsgCnt.forEach((code, msgCnt) {
+        if (msgCnt > 0) {
+          codes.add(code);
+        }
+      });
+      MessageAPI.batchFetchLatestMessage(codes).then((Map<String, AbstractMessage> cateCodeMsg) {
+        cateCodeMsg.forEach((code, msg) {
+          MessageCategory c = codeMsgCategoryMap[code];
+          if (c == MessageCategory.INTERACTION) {
+            _fetchLatestInteractionMsg(msg: msg);
+          } else if (c == MessageCategory.SYSTEM) {
+            _fetchLatestSystemMsg(msg: msg);
+          } else if (c == MessageCategory.CIRCLE) {
+            _fetchLatestCircleMsg(msg: msg);
+          }
+        });
+      });
+    });
   }
 
-  Future<void> _fetchLatestSystemMsg() async {
-    MessageAPI.fetchLatestMessage(0).then((msg) {
+  // 查询的具体的系统消息内容
+  Future<void> _fetchLatestSystemMsg({AbstractMessage msg}) async {
+    if (msg != null) {
       setState(() {
         this._latestSystemMsg = msg;
       });
-    }).whenComplete(() => _refreshController.refreshCompleted());
+      return;
+    }
+    MessageAPI.fetchLatestMessage(MessageCategory.SYSTEM).then((msg) {
+      setState(() {
+        this._latestSystemMsg = msg;
+      });
+    });
   }
 
-  Future<void> _fetchLatestInteractionMsg() async {
-    MessageAPI.fetchLatestMessage(1).then((msg) {
+  // 查询的具体的互动消息内容
+  Future<void> _fetchLatestInteractionMsg({AbstractMessage msg}) async {
+    if (msg != null) {
+      setState(() {
+        this._latestInteractionMsg = msg;
+      });
+      return;
+    }
+    MessageAPI.fetchLatestMessage(MessageCategory.INTERACTION).then((msg) {
       if (msg != null && msg.readStatus == ReadStatus.UNREAD) {
-        _loopQueryInteraction(false);
         setState(() {
           this._latestInteractionMsg = msg;
-        });
-      }
-    }).whenComplete(() => _refreshController.refreshCompleted());
-  }
-
-  _loopQueryInteraction(bool loop) {
-    MessageAPI.queryInteractionMessageCount().then((count) {
-      if (count != -1) {
-        if (interactionMsgCtrl.localCount != count) {
-          interactionMsgCtrl.localCount = count;
-          print('发现新消息，开始刷新');
-          if (!_refreshController.isRefresh) {
-            _refreshController.requestRefresh();
-          }
-          _fetchLatestSystemMsg().then((_) {
-            // 刷新完成后增加小红点
-            interactionMsgCtrl.streamCount = count;
-          });
-        }
-      }
-    }).whenComplete(() {
-      if (loop) {
-        Future.delayed(Duration(seconds: 60)).then((_) {
-          _loopQueryInteraction(true);
         });
       }
     });
   }
 
-  _loopQuerySystem(bool loop) {
-    MessageAPI.querySystemMessageCount().then((count) {
-      if (count != -1) {
-        if (sysMsgCtrl.localCount != count) {
-          sysMsgCtrl.localCount = count;
-          if (!_refreshController.isRefresh) {
-            _refreshController.requestRefresh();
-          }
-          sysMsgCtrl.streamCount = count;
-
-//          print('发现新消息，开始刷新');
-//          _fetchLatestInteractionMsg().then((_) {
-//          });
-        }
-      }
-    }).whenComplete(() {
-      if (loop) {
-        Future.delayed(Duration(minutes: 30)).then((_) {
-          _loopQuerySystem(true);
-        });
-      }
+  // 查询最新的圈子内容
+  Future<void> _fetchLatestCircleMsg({AbstractMessage msg}) async {
+    if (msg != null) {
+      setState(() {
+        this._latestCircleMsg = msg;
+      });
+      return;
+    }
+    AbstractMessage msg1 = await MessageAPI.fetchLatestMessage(MessageCategory.CIRCLE_INTERACTION);
+    AbstractMessage msg2 = await MessageAPI.fetchLatestMessage(MessageCategory.CIRCLE_SYS);
+    if (msg1 == null) {
+      setState(() {
+        _latestCircleMsg = msg2;
+      });
+      return;
+    }
+    if (msg2 == null) {
+      setState(() {
+        _latestCircleMsg = msg1;
+      });
+      return;
+    }
+    setState(() {
+      _latestCircleMsg = msg1.sentTime.compareTo(msg2.sentTime) > 0 ? msg1 : msg2;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-//    print('notification build');
+    LogUtil.e('notification build', tag: _TAG);
 //    print('notification' + (ModalRoute.of(context).isCurrent ? "当前页面" : "不是当前页面"));
 
-    checkAndRequestNotificationPermission();
     isDark = ThemeUtils.isDark(context);
-    Color _badgeColor = isDark ? Colours.dark_app_main : Colours.app_main;
 
-    return Scaffold(
-      backgroundColor: ThemeUtils.getBackColor(context),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text('消息',
-            style: TextStyle(fontSize: Dimens.font_sp18, fontWeight: FontWeight.w400, letterSpacing: 1.3)),
-        centerTitle: false,
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back), iconSize: 23.0, onPressed: () => NavigatorUtils.goBack(context)),
-      ),
-      body: SafeArea(
-        top: false,
-        child: SmartRefresher(
-            controller: _refreshController,
-            enablePullDown: true,
-            enablePullUp: false,
-            header: MaterialClassicHeader(
-              color: Colors.amber,
-              backgroundColor: isDark? ColorConstant.MAIN_BG_DARK:ColorConstant.MAIN_BG,
-            ),
+    return Consumer<MsgProvider>(builder: (_, provider, __) {
+      return Scaffold(
+        backgroundColor: ThemeUtils.getBackColor(context),
+        appBar: AppBar(
+          backgroundColor: isDark ? ColorConstant.MAIN_BG_DARK : Colors.white,
+          automaticallyImplyLeading: false,
+          title: Text('我的消息',
+              style: pfStyle.copyWith(
+                  fontSize: Dimens.font_sp16p5, fontWeight: FontWeight.w500, letterSpacing: 1.1)),
+          centerTitle: true,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                size: 18,
+              ),
+              onPressed: () => NavigatorUtils.goBack(context)),
+        ),
+        body: SafeArea(
+          top: false,
+          child: SmartRefresher(
+              controller: _refreshController,
+              enablePullDown: true,
+              enablePullUp: false,
+              // header: MaterialClassicHeader(
+              //   color: Colors.amber,
+              //   backgroundColor: isDark ? ColorConstant.MAIN_BG_DARK : ColorConstant.MAIN_BG,
+              // ),
+              header: WaterDropHeader(
+                waterDropColor: isDark ? Color(0xff6E7B8B) : Color(0xffE6E6FA),
+                complete: const Text('刷新完成', style: pfStyle),
+              ),
 //            header: Utils.getDefaultRefreshHeader(),
-            onRefresh: _fetchLatestMessage,
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  MainMessageItem(
-                    iconPath: iconSubPath,
-                    title: "我的订阅",
-                    body: "暂无订阅消息",
-                    color: Colors.pink[300],
-                    onTap: () => ToastUtil.showToast(context, "当前没有订阅内容"),
-                  ),
-                  MainMessageItem(
+              onRefresh: _fetchLatestMessageAndCount,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    MainMessageItemNew(
+                      iconPath: iconSubPath,
+                      iconPadding: 8.5,
+                      iconColor: Color(0xff87CEFF),
+                      title: "私信",
+                      body: "暂无私信消息",
+                      color: Color(0xffF0F8FF),
+                      onTap: () => ToastUtil.showToast(context, "当前没有私信消息"),
+                    ),
+                    MainMessageItemNew(
                       iconPath: iconSchoolPath,
-                      title: "校园公告",
-                      tagName: "官方",
+                      title: "校园",
+                      official: true,
                       body: "暂无新通知",
                       pointType: true,
                       onTap: () {
                         NavigatorUtils.push(context, NotificationRouter.campusMain);
                       },
-                      color: Colors.amber),
-                  MainMessageItem(
-                      iconPath: iconContactPath,
-                      color: Colors.lightGreen,
-                      title: "与我有关",
-                      body: _latestInteractionMsg == null ? noMessage : _getInteractionBody(),
-                      time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
-                      controller: MessageUtil.interactionMsgControl.controller,
+                      color: Color(0xffFCF1F4),
+                      iconColor: Color(0xffFF69B4),
+                    ),
+                    MainMessageItemNew(
+                      iconPath: circleNotiPath,
+                      title: "圈子",
+                      official: true,
+                      body: _getCircleMsgBody(),
+                      iconPadding: 8.5,
+                      msgCnt: provider.circleTotal,
                       onTap: () {
-                        _latestInteractionMsg = null;
-                        interactionMsgCtrl.clear();
-                        MessageUtil.clearNotificationCnt();
-                        NavigatorUtils.push(context, NotificationRouter.interactiveMain);
-                      }),
-                  Gaps.vGap4,
-                  MainMessageItem(
-                    iconPath: iconOfficialPath,
-                    color: Colors.lightBlueAccent,
-                    title: "Wall",
-                    tagName: "官方",
-                    controller: MessageUtil.systemStreamCntCtrl,
-                    body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
-                    time: _latestSystemMsg == null ? null : _latestSystemMsg.sentTime,
-                    pointType: true,
-                    onTap: () {
-                      NavigatorUtils.push(context, NotificationRouter.systemMain);
-                    },
-                  ),
-                ],
-              ),
-            )),
-      ),
-    );
+                        ToastUtil.showToast(context, '圈子即将开放，敬请期待');
+                        // NavigatorUtils.push(context, NotificationRouter.circleMain);
+                      },
+                      color: Colors.lightGreen[50],
+                      iconColor: Colors.lightGreen,
+                    ),
+                    MainMessageItemNew(
+                        iconPath: iconContactPath,
+                        color: Color(0xffEBFAF4),
+                        iconColor: Color(0xff00CED1),
+                        iconPadding: 9.5,
+                        title: "互动",
+                        msgCnt: provider.tweetInterCnt,
+                        body: _getInteractionBody(),
+                        time: _latestInteractionMsg == null ? null : _latestInteractionMsg.sentTime,
+                        onTap: () {
+                          _latestInteractionMsg = null;
+                          NavigatorUtils.push(context, NotificationRouter.interactiveMain);
+                        }),
+                    Gaps.vGap5,
+                    MainMessageItemNew(
+                      iconPath: iconOfficialPath,
+                      color: Color(0xffFEF7E7),
+                      iconColor: Color(0xffDAA520),
+                      title: "WALL",
+                      tagName: "官方",
+                      msgCnt: provider.sysCnt,
+                      body: _latestSystemMsg == null ? noMessage : _getSystemMsgBody(),
+                      time: _latestSystemMsg == null ? null : _latestSystemMsg.sentTime,
+                      pointType: false,
+                      onTap: () {
+                        NavigatorUtils.push(context, NotificationRouter.systemMain);
+                      },
+                    ),
+                  ],
+                ),
+              )),
+        ),
+      );
+    });
   }
 
   String _getInteractionBody() {
@@ -231,7 +305,7 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         String content = message.delete != null && message.delete
             ? TextConstant.TEXT_TWEET_REPLY_DELETED
             : message.replyContent;
-        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 评论了你: $content";
+        return "${message.anonymous ? '[匿名用户]' : message.replier.nick} 回复了你: $content";
       } else if (_latestInteractionMsg.messageType == MessageType.TOPIC_REPLY) {
         TopicReplyMessage message = _latestInteractionMsg as TopicReplyMessage;
         String content = message.delete ? TextConstant.TEXT_TWEET_REPLY_DELETED : message.replyContent;
@@ -259,6 +333,15 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
     }
   }
 
+  String _getCircleMsgBody() {
+    if (_latestCircleMsg == null) {
+      return noMessage;
+    } else {
+      CircleSystemMessage message = _latestCircleMsg as CircleSystemMessage;
+      return message.getSimpleBody();
+    }
+  }
+
   Text _getBadgeText(dynamic content) {
     return Text(
       content.toString(),
@@ -283,34 +366,6 @@ class _NotificationIndexPageState extends State<NotificationIndexPage>
         },
       )
     ];
-  }
-
-  void checkAndRequestNotificationPermission() async {
-    PermissionStatus permission =
-        await PermissionHandler().checkPermissionStatus(PermissionGroup.notification);
-
-    if (permission != PermissionStatus.granted) {
-//      Map<PermissionGroup, PermissionStatus> permissions =
-      await PermissionHandler().requestPermissions([PermissionGroup.notification]);
-      permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.notification);
-      if (permission != PermissionStatus.granted) {
-        int random = Random().nextInt(100);
-        if (random == 79) {
-          print(random);
-          Utils.showSimpleConfirmDialog(
-              context,
-              '无法发送通知',
-              '你未开启"允许Wall发送通知"选项，将收不到包括用户私信，点赞评论等的通知',
-              ClickableText('知道了', () {
-                NavigatorUtils.goBack(context);
-              }),
-              ClickableText('去设置', () async {
-                await PermissionHandler().openAppSettings();
-              }),
-              barrierDismissible: false);
-        }
-      }
-    }
   }
 
   @override

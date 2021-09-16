@@ -1,41 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iap_app/global/color_constant.dart';
 import 'package:iap_app/global/path_constant.dart';
+import 'package:iap_app/global/theme_constant.dart';
 import 'package:iap_app/res/colors.dart';
 import 'package:iap_app/res/dimens.dart';
 import 'package:iap_app/res/gaps.dart';
+import 'package:iap_app/style/text_style.dart';
 import 'package:iap_app/util/theme_utils.dart';
 
 /// 自定义AppBar
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar(
       {Key key,
-      this.backgroundColor,
+      this.actionColor,
+      this.background,
       this.title: "",
       this.centerTitle: "",
       this.actionName: "",
+      this.actionWidget,
       this.backImg: PathConstant.ICON_GO_BACK_ARROW,
       this.onPressed,
       this.isBack: true})
       : super(key: key);
 
-  final Color backgroundColor;
+  final Color actionColor;
+  final Color background;
   final String title;
   final String centerTitle;
   final String backImg;
   final String actionName;
   final VoidCallback onPressed;
+  final Widget actionWidget;
   final bool isBack;
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeUtils.isDark(context);
     Color _backgroundColor;
+    Color _actionBtnColor;
 
-    if (backgroundColor == null) {
-      _backgroundColor = ThemeUtils.getBackgroundColor(context);
-    } else {
-      _backgroundColor = backgroundColor;
-    }
+    _backgroundColor = background ?? isDark ? ThemeConstant.darkBG : Colors.white;
+    _actionBtnColor = actionColor ?? Colors.amber[700];
 
     SystemUiOverlayStyle _overlayStyle =
         ThemeData.estimateBrightnessForColor(_backgroundColor) == Brightness.dark
@@ -59,9 +65,10 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 18,
-                          letterSpacing: 1.2,
+                        style: pfStyle.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: Dimens.font_sp16p5,
+                          letterSpacing: 1.1,
                           color:
                               _overlayStyle == SystemUiOverlayStyle.light ? Colours.dark_text : Colours.text,
                         )),
@@ -75,7 +82,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         FocusScope.of(context).unfocus();
                         Navigator.maybePop(context);
                       },
-                      tooltip: 'Back',
+                      tooltip: '返回',
                       padding: const EdgeInsets.all(12.0),
                       icon: Image.asset(
                         backImg,
@@ -84,31 +91,27 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                     )
                   : Gaps.empty,
               Positioned(
-                right: 0.0,
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                      buttonTheme: ButtonThemeData(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    minWidth: 60.0,
+                  right: 8.0,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                        buttonTheme: ButtonThemeData(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      minWidth: 60.0,
+                    )),
+                    child: actionWidget ??
+                        (actionName.isEmpty
+                            ? Gaps.empty
+                            : TextButton(
+                                child: Text(
+                                  actionName,
+                                  key: const Key('actionName'),
+                                  style: pfStyle.copyWith(
+                                      fontSize: Dimens.font_sp13,
+                                      color: onPressed == null ? Colors.grey : _actionBtnColor),
+                                ),
+                                onPressed: onPressed,
+                              ))
                   )),
-                  child: actionName.isEmpty
-                      ? Container()
-                      : FlatButton(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-//                    color: Colors.amber,
-                          child: Text(
-                            actionName,
-                            key: const Key('actionName'),
-                            style: const TextStyle(fontSize: Dimens.font_sp14),
-                          ),
-                          textColor: Colors.amber,
-                          disabledColor: Colors.grey,
-                          highlightColor: Colors.transparent,
-                          onPressed: onPressed,
-                        ),
-                ),
-              ),
             ],
           ),
         ),
